@@ -1,0 +1,41 @@
+#ifndef VIDEOFRAMEWIDGET_H
+#define VIDEOFRAMEWIDGET_H
+
+#include <QScrollArea>
+#include <QImage>
+#include <QPixmap>
+
+// Forward declarations
+class QVBoxLayout;
+class QLabel;
+class QResizeEvent;
+
+namespace vfg
+{
+    /*
+     * Implements a simple video frame widget for displaying images (frames)
+     */
+    class VideoFrameWidget : public QWidget
+    {
+        Q_OBJECT
+    private:
+        QVBoxLayout* layout;
+        QLabel* frameLabel;
+        QPixmap framePixmap;
+
+        void updateFrameSize();
+    public:
+        explicit VideoFrameWidget(QWidget *parent = 0);
+
+        void setFullsize(bool value);
+    protected:
+        void resizeEvent(QResizeEvent *event);
+
+    signals:
+
+    public slots:
+        void setFrame(QImage img);
+    };
+}
+
+#endif // VIDEOFRAMEWIDGET_H
