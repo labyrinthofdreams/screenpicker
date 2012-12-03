@@ -91,7 +91,7 @@ void vfg::VideoFrameGrabber::load(QString filename)
 
     const FFMS_VideoProperties *videoProps = FFMS_GetVideoProperties(videoSource);
     currentFrame = 0;
-    numFrames = videoProps->NumFrames;
+    numFrames = videoProps->NumFrames - 1;
     emit videoReady(videoProps);
 }
 
@@ -102,27 +102,36 @@ bool vfg::VideoFrameGrabber::hasVideo() const
 
 unsigned vfg::VideoFrameGrabber::lastFrame() const
 {
-    return currentFrame;
+    return currentFrame + 1;
 }
 
-void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
+const FFMS_Frame* vfg::VideoFrameGrabber::internalGetFrame(unsigned frameNum)
 {
     if(frameNum > numFrames)
     {
-        emit errorOccurred(tr("Invalid frame number"));
-        return;
+        emit errorOccurred(tr("Frame number over range: %1").arg(frameNum));
+        return NULL;
     }
 
     const FFMS_Frame *curFrame = FFMS_GetFrame(videoSource, frameNum, &errorInfo);
     if (curFrame == NULL)
     {
-        emit errorOccurred(tr("Failed to retrieve frame %1").arg(frameNum));
-        return;
+        emit errorOccurred(tr("Failed to retrieve frame: %1").arg(frameNum));
+        return NULL;
     }
 
     currentFrame = frameNum;
+    return curFrame;
+}
 
-    emit frameGrabbed(curFrame);
+void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
+{
+    // Because frame requests are between range 1 - n
+    --frameNum;
+    const FFMS_Frame* frame = internalGetFrame(frameNum);
+
+    if(frame != NULL)
+        emit frameGrabbed(frame);
 }
 
 void vfg::VideoFrameGrabber::requestNextFrame()
@@ -134,7 +143,10 @@ void vfg::VideoFrameGrabber::requestNextFrame()
     }
 
     ++currentFrame;
-    requestFrame(currentFrame);
+    const FFMS_Frame* frame = internalGetFrame(currentFrame);
+
+    if(frame != NULL)
+        emit frameGrabbed(frame);
 }
 
 void vfg::VideoFrameGrabber::requestPreviousFrame()
@@ -146,25 +158,17 @@ void vfg::VideoFrameGrabber::requestPreviousFrame()
     }
 
     --currentFrame;
-    requestFrame(currentFrame);
+    const FFMS_Frame* frame = internalGetFrame(currentFrame);
+
+    if(frame != NULL)
+        emit frameGrabbed(frame);
 }
 
 const FFMS_Frame* vfg::VideoFrameGrabber::getFrame(unsigned frameNum)
 {
-    if(frameNum > numFrames)
-    {
-        emit errorOccurred(tr("Invalid frame number"));
-        return NULL;
-    }
-
-    const FFMS_Frame *curFrame = FFMS_GetFrame(videoSource, frameNum, &errorInfo);
-    if (curFrame == NULL)
-    {
-        emit errorOccurred(tr("Failed to retrieve frame"));
-        return NULL;
-    }
-
-    return curFrame;
+    --frameNum;
+    const FFMS_Frame* frame = internalGetFrame(frameNum);
+    return frame;
 }
 
 QImage vfg::convertToQImage(const FFMS_Frame *frame)

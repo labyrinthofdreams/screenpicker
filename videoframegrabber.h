@@ -25,20 +25,22 @@ namespace vfg
         int pixelFormats[2];
         unsigned numFrames;
         unsigned currentFrame;
+
+        // Captures the exact frame number between range 0 - n
+        const FFMS_Frame* internalGetFrame(unsigned frameNum);
     public:
         explicit VideoFrameGrabber(QObject *parent = 0);
         ~VideoFrameGrabber();
         // Load video file
         void load(QString filename);
-        // Return frame by frame number
+        // Return frame by frame number between range 1 - n
         void requestFrame(unsigned frameNum);
         void requestNextFrame();
         void requestPreviousFrame();
+        const FFMS_Frame* getFrame(unsigned frameNum);
 
         bool hasVideo() const;
         unsigned lastFrame() const;
-
-        const FFMS_Frame* getFrame(unsigned frameNum);
     signals:
         // Fired when video has been loaded
         // Video properties are passed in the signal
