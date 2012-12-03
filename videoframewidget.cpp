@@ -15,6 +15,7 @@ vfg::VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
                               QSizePolicy::Ignored);
 
     layout = new QVBoxLayout;
+    layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(frameLabel);
     setLayout(layout);
 
