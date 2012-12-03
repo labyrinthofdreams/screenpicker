@@ -26,14 +26,14 @@ namespace vfg
         unsigned numFrames;
         unsigned currentFrame;
 
-        // Captures the exact frame number between range 0 - n
+        // Captures the exact frame between range 0 - n
         const FFMS_Frame* internalGetFrame(unsigned frameNum);
     public:
         explicit VideoFrameGrabber(QObject *parent = 0);
         ~VideoFrameGrabber();
         // Load video file
         void load(QString filename);
-        // Return frame by frame number between range 1 - n
+        // Captures the exact frame between range 1 - n
         void requestFrame(unsigned frameNum);
         void requestNextFrame();
         void requestPreviousFrame();
