@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(videoLoaded(const FFMS_VideoProperties*)));
     connect(frameGrabber, SIGNAL(frameGrabbed(const FFMS_Frame*)),
             this, SLOT(frameReceived(const FFMS_Frame*)));
+    connect(frameGrabber, SIGNAL(errorOccurred(QString)),
+            this, SLOT(videoError(QString)));
 
     frameWidget = new vfg::VideoFrameWidget(this);
     ui->videoFrameArea->setWidget(frameWidget);
