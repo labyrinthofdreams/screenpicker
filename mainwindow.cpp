@@ -113,11 +113,6 @@ void MainWindow::on_previousButton_clicked()
     ui->seekSlider->setValue(current);
 }
 
-void MainWindow::on_generateButton_clicked()
-{
-
-}
-
 void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
 {
     if(checked && frameGrabber->hasVideo())
@@ -150,7 +145,50 @@ void MainWindow::on_seekSlider_sliderMoved(int position)
     ui->currentFrameLabel->setText(QString::number(position));
 }
 
+void MainWindow::on_generateButton_clicked()
+{
+    const unsigned selected = ui->seekSlider->value();
+    const unsigned step = ui->frameStepSpinBox->value();
+    const unsigned num = ui->screenshotsSpinBox->value();
+    const unsigned total = step * num;
+    const unsigned lastPos = selected + total;
+    const unsigned totalFrames = frameGrabber->totalFrames();
+    for(unsigned i = selected; i < lastPos; i += step)
+    {
+        if(i > totalFrames)
+        {
+            break;
+        }
+
+        const FFMS_Frame* frame = frameGrabber->getFrame(i);
+        if(unsaved.contains(i))
+        {
+            unsaved.remove(i);
+        }
+
+        QImage img = vfg::convertToQImage(frame);
+        unsaved.insert(i, img);
+
+        QLabel *tmp = new QLabel;
+        tmp->setPixmap(QPixmap::fromImage(img.scaledToWidth(100)));
+        unsavedLayout->addWidget(tmp);
+    }
+    ui->seekSlider->setValue(selected + total);
+}
+
 void MainWindow::on_grabButton_clicked()
 {
+    const unsigned selected = ui->seekSlider->value();
+    const FFMS_Frame* frame = frameGrabber->getFrame(selected);
+    if(unsaved.contains(selected))
+    {
+        unsaved.remove(selected);
+    }
 
+    QImage img = vfg::convertToQImage(frame);
+    unsaved.insert(selected, img);
+
+    QLabel *tmp = new QLabel;
+    tmp->setPixmap(QPixmap::fromImage(img.scaledToWidth(100)));
+    unsavedLayout->addWidget(tmp);
 }

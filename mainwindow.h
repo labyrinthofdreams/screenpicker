@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QString>
+#include <QMap>
 
 // Forward declarations
 class FlowLayout;
@@ -58,6 +59,9 @@ private:
 
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::VideoFrameWidget* frameWidget;
+
+    QMap<int, QImage> unsaved;
+    QMap<int, QImage> saved;
 };
 
 #endif // MAINWINDOW_H
