@@ -66,11 +66,12 @@ void MainWindow::videoLoaded(const FFMS_VideoProperties *videoProps)
                             .arg(videoProps->CropRight)
                             .arg(videoProps->CropTop));
 
+    const unsigned numFrames = videoProps->NumFrames - 1;
     // Update total frame number
-    ui->totalFramesLabel->setText(QString::number(videoProps->NumFrames));
+    ui->totalFramesLabel->setText(QString::number(numFrames));
     // Update maximum for seek slider
     ui->seekSlider->setEnabled(true);
-    ui->seekSlider->setMaximum(videoProps->NumFrames);
+    ui->seekSlider->setMaximum(numFrames);
     // Show first frame
     frameGrabber->requestFrame(0);
 }
