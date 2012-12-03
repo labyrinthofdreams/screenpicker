@@ -116,7 +116,7 @@ void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
     const FFMS_Frame *curFrame = FFMS_GetFrame(videoSource, frameNum, &errorInfo);
     if (curFrame == NULL)
     {
-        emit errorOccurred(tr("Failed to retrieve frame"));
+        emit errorOccurred(tr("Failed to retrieve frame %1").arg(frameNum));
         return;
     }
 
