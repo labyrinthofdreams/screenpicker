@@ -2,11 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QPlainTextEdit>
 #include <QString>
 
 // Forward declarations
 class FlowLayout;
+class QPlainTextEdit;
 
 struct FFMS_VideoProperties;
 struct FFMS_Frame;
