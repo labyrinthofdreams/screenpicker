@@ -59,5 +59,6 @@ void vfg::VideoFrameWidget::setFullsize(bool value)
     else
     {
         setMinimumSize(1, 1);
+        setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
     }
 }
