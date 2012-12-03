@@ -173,6 +173,11 @@ const FFMS_Frame* vfg::VideoFrameGrabber::getFrame(unsigned frameNum)
     return frame;
 }
 
+unsigned vfg::VideoFrameGrabber::totalFrames() const
+{
+    return numFrames + 1;
+}
+
 QImage vfg::convertToQImage(const FFMS_Frame *frame)
 {
     if(frame == NULL)

@@ -49,6 +49,7 @@ namespace vfg
         const FFMS_Frame* getFrame(unsigned frameNum);
         // Returns last captured frame number + 1
         unsigned lastFrame() const;
+        unsigned totalFrames() const;
     signals:
         // Fired when video has been loaded
         // Video properties are passed in the signal
