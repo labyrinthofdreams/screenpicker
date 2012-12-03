@@ -73,6 +73,8 @@ void MainWindow::videoLoaded(const FFMS_VideoProperties *videoProps)
     // Update maximum for seek slider
     ui->seekSlider->setEnabled(true);
     ui->seekSlider->setMaximum(numFrames);
+    // Move slider back to first frame
+    ui->seekSlider->setValue(vfg::FirstFrame);
     // Show first frame
     frameGrabber->requestFrame(vfg::FirstFrame);
 }
