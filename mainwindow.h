@@ -51,7 +51,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    FlowLayout *screenshotLayout;
+    FlowLayout *unsavedLayout;
     FlowLayout *savedLayout;
 
     vfg::VideoFrameGrabber* frameGrabber;

@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->videoFrameArea->setWidget(frameWidget);
 
     // Widgets/layouts for the tabs
-    screenshotLayout = new FlowLayout;
+    unsavedLayout = new FlowLayout;
     savedLayout = new FlowLayout;
 
     ui->unsavedWidget->setLayout(unsavedLayout);
