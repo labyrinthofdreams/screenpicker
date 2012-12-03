@@ -6,7 +6,6 @@
 
 // Forward declarations
 class FlowLayout;
-class QPlainTextEdit;
 
 struct FFMS_VideoProperties;
 struct FFMS_Frame;
@@ -54,7 +53,6 @@ private:
 
     FlowLayout *screenshotLayout;
     FlowLayout *savedLayout;
-    QPlainTextEdit *logger;
 
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::VideoFrameWidget* frameWidget;

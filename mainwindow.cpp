@@ -23,14 +23,9 @@ MainWindow::MainWindow(QWidget *parent) :
     frameWidget = new vfg::VideoFrameWidget(this);
     ui->videoFrameArea->setWidget(frameWidget);
 
-
-
     // Widgets/layouts for the tabs
     screenshotLayout = new FlowLayout;
     savedLayout = new FlowLayout;
-    logger = new QPlainTextEdit(this);
-    QVBoxLayout* loggerLayout = new QVBoxLayout;
-    loggerLayout->addWidget(logger);
 
     // The flow layouts need to be added inside scroll areas
     // so that we get scroll bars
@@ -45,24 +40,12 @@ MainWindow::MainWindow(QWidget *parent) :
     savedArea->setWidgetResizable(true);
     savedArea->setWidget(savedDummy);
 
-    // Populate with some pixmaps for testing...
-    for(int i = 0; i < 50; ++i)
-    {
-        QLabel *w = new QLabel(this);
-        QPixmap img;
-        img.load("C:/tt0023634.jpg");
-        img = img.scaledToWidth(100);
-        w->setPixmap(img);
-        screenshotLayout->addWidget(w);
-    }
-
     QVBoxLayout* dummy0 = new QVBoxLayout;
     QVBoxLayout* dummy1 = new QVBoxLayout;
     dummy0->addWidget(screenshotArea);
     dummy1->addWidget(savedArea);
     ui->tabWidget->widget(0)->setLayout(dummy0);
     ui->tabWidget->widget(1)->setLayout(dummy1);
-    ui->tabWidget->widget(2)->setLayout(loggerLayout);
 }
 
 MainWindow::~MainWindow()
@@ -76,25 +59,25 @@ void MainWindow::on_actionOpen_triggered()
     if(filename.isEmpty())
         return;
 
-    logger->clear();
-    logger->appendPlainText(tr("Loading file... %1").arg(filename));
+    ui->logger->clear();
+    ui->logger->appendPlainText(tr("Loading file... %1").arg(filename));
     frameGrabber->load(filename);
 }
 
 void MainWindow::videoLoaded(const FFMS_VideoProperties *videoProps)
 {
-    logger->appendPlainText(tr("Number of frames: %1")
+    ui->logger->appendPlainText(tr("Number of frames: %1")
                             .arg(videoProps->NumFrames));
-    logger->appendPlainText(tr("Start / End time: %1 %2")
+    ui->logger->appendPlainText(tr("Start / End time: %1 %2")
                             .arg(videoProps->FirstTime)
                             .arg(videoProps->LastTime));
-    logger->appendPlainText(tr("FPS: %1 / %2")
+    ui->logger->appendPlainText(tr("FPS: %1 / %2")
                             .arg(videoProps->FPSNumerator)
                             .arg(videoProps->FPSDenominator));
-    logger->appendPlainText(tr("SAR (num / den): %1 / %2")
+    ui->logger->appendPlainText(tr("SAR (num / den): %1 / %2")
                             .arg(videoProps->SARNum)
                             .arg(videoProps->SARDen));
-    logger->appendPlainText(tr("Crop: Bottom: %1 Left: %2 Right: %3 Top: %4")
+    ui->logger->appendPlainText(tr("Crop: Bottom: %1 Left: %2 Right: %3 Top: %4")
                             .arg(videoProps->CropBottom)
                             .arg(videoProps->CropLeft)
                             .arg(videoProps->CropRight)
@@ -124,7 +107,7 @@ void MainWindow::frameReceived(const FFMS_Frame *frame)
 
 void MainWindow::videoError(QString msg)
 {
-    logger->appendPlainText(msg);
+    ui->logger->appendPlainText(msg);
 }
 
 void MainWindow::on_nextButton_clicked()
@@ -150,14 +133,14 @@ void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
     {
         const FFMS_Frame* frame = frameGrabber->getFrame(0);
         frameWidget->setFullsize(true);
-        logger->appendPlainText(tr("Resolution locked to %1x%2")
+        ui->logger->appendPlainText(tr("Resolution locked to %1x%2")
                                 .arg(frame->ScaledHeight)
                                 .arg(frame->ScaledWidth));
     }
     else
     {
         frameWidget->setFullsize(false);
-        logger->appendPlainText(tr("Resolution unlocked"));
+        ui->logger->appendPlainText(tr("Resolution unlocked"));
     }
 }
 
