@@ -121,6 +121,8 @@ void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
     if(checked && frameGrabber->hasVideo())
     {
         const FFMS_Frame* frame = frameGrabber->getFrame(vfg::FirstFrame);
+        if(frame == NULL)
+            return;
 
         frameWidget->setFullsize(true);
         ui->logger->appendPlainText(tr("Resolution locked to %1x%2")
