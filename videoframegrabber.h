@@ -23,7 +23,11 @@ namespace vfg
         FFMS_VideoSource *videoSource;     
 
         int pixelFormats[2];
+
+        // Last frame - 1
         unsigned numFrames;
+
+        // Between range 0 - (last frame - 1)
         unsigned currentFrame;
 
         // Captures the exact frame between range 0 - n
@@ -33,13 +37,13 @@ namespace vfg
         ~VideoFrameGrabber();
         // Load video file
         void load(QString filename);
+        bool hasVideo() const;
         // Captures the exact frame between range 1 - n
         void requestFrame(unsigned frameNum);
         void requestNextFrame();
         void requestPreviousFrame();
         const FFMS_Frame* getFrame(unsigned frameNum);
-
-        bool hasVideo() const;
+        // Returns last captured frame number + 1
         unsigned lastFrame() const;
     signals:
         // Fired when video has been loaded
