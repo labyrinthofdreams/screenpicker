@@ -128,6 +128,7 @@ void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
 {
     // Because frame requests are between range 1 - n
     --frameNum;
+
     const FFMS_Frame* frame = internalGetFrame(frameNum);
 
     if(frame != NULL)
@@ -167,6 +168,7 @@ void vfg::VideoFrameGrabber::requestPreviousFrame()
 const FFMS_Frame* vfg::VideoFrameGrabber::getFrame(unsigned frameNum)
 {
     --frameNum;
+
     const FFMS_Frame* frame = internalGetFrame(frameNum);
     return frame;
 }

@@ -66,16 +66,15 @@ void MainWindow::videoLoaded(const FFMS_VideoProperties *videoProps)
                             .arg(videoProps->CropRight)
                             .arg(videoProps->CropTop));
 
-    const unsigned curFrame = 1;
     const unsigned numFrames = videoProps->NumFrames;
     // Update frame numbers on the labels
-    ui->currentFrameLabel->setText(QString::number(curFrame));
+    ui->currentFrameLabel->setText(QString::number(vfg::FirstFrame));
     ui->totalFramesLabel->setText(QString::number(numFrames));
     // Update maximum for seek slider
     ui->seekSlider->setEnabled(true);
     ui->seekSlider->setMaximum(numFrames);
     // Show first frame
-    frameGrabber->requestFrame(curFrame);
+    frameGrabber->requestFrame(vfg::FirstFrame);
 }
 
 void MainWindow::frameReceived(const FFMS_Frame *frame)
@@ -121,7 +120,8 @@ void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
 {
     if(checked && frameGrabber->hasVideo())
     {
-        const FFMS_Frame* frame = frameGrabber->getFrame(0);
+        const FFMS_Frame* frame = frameGrabber->getFrame(vfg::FirstFrame);
+
         frameWidget->setFullsize(true);
         ui->logger->appendPlainText(tr("Resolution locked to %1x%2")
                                 .arg(frame->ScaledHeight)

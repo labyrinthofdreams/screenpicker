@@ -8,6 +8,10 @@
 
 namespace vfg
 {
+    enum {
+        FirstFrame = 1
+    };
+
     // Convert FFMS_Frame to QImage
     QImage convertToQImage(const FFMS_Frame* frame);
 
