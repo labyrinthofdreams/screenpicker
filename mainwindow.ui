@@ -172,7 +172,7 @@
              <string>Lock video size to original resolution</string>
             </property>
             <property name="text">
-             <string>Original resolution</string>
+             <string>Fullsize</string>
             </property>
            </widget>
           </item>
