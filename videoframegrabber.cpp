@@ -90,6 +90,7 @@ void vfg::VideoFrameGrabber::load(QString filename)
     }
 
     const FFMS_VideoProperties *videoProps = FFMS_GetVideoProperties(videoSource);
+    currentFrame = 0;
     numFrames = videoProps->NumFrames;
     emit videoReady(videoProps);
 }
