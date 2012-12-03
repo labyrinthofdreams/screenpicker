@@ -96,13 +96,17 @@ void MainWindow::videoError(QString msg)
 void MainWindow::on_nextButton_clicked()
 {
     frameGrabber->requestNextFrame();
-    ui->currentFrameLabel->setText(QString::number(frameGrabber->lastFrame()));
+    const unsigned current = frameGrabber->lastFrame();
+    ui->currentFrameLabel->setText(QString::number(current));
+    ui->seekSlider->setValue(current);
 }
 
 void MainWindow::on_previousButton_clicked()
 {
     frameGrabber->requestPreviousFrame();
-    ui->currentFrameLabel->setText(QString::number(frameGrabber->lastFrame()));
+    const unsigned current = frameGrabber->lastFrame();
+    ui->currentFrameLabel->setText(QString::number(current));
+    ui->seekSlider->setValue(current);
 }
 
 void MainWindow::on_generateButton_clicked()
