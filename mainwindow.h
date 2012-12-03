@@ -48,6 +48,8 @@ private slots:
 
     void on_seekSlider_sliderMoved(int position);
 
+    void on_grabButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 

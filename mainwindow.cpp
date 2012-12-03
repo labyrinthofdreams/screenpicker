@@ -138,3 +138,8 @@ void MainWindow::on_seekSlider_sliderMoved(int position)
 {
     ui->currentFrameLabel->setText(QString::number(position));
 }
+
+void MainWindow::on_grabButton_clicked()
+{
+
+}
