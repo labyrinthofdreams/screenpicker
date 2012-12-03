@@ -105,7 +105,7 @@ unsigned vfg::VideoFrameGrabber::lastFrame() const
     return currentFrame;
 }
 
-void vfg::VideoFrameGrabber::grabFrame(unsigned frameNum)
+void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
 {
     if(frameNum > numFrames)
     {
@@ -125,7 +125,7 @@ void vfg::VideoFrameGrabber::grabFrame(unsigned frameNum)
     emit frameGrabbed(curFrame);
 }
 
-void vfg::VideoFrameGrabber::grabNextFrame()
+void vfg::VideoFrameGrabber::requestNextFrame()
 {
     if(currentFrame == numFrames)
     {
@@ -134,10 +134,10 @@ void vfg::VideoFrameGrabber::grabNextFrame()
     }
 
     ++currentFrame;
-    grabFrame(currentFrame);
+    requestFrame(currentFrame);
 }
 
-void vfg::VideoFrameGrabber::grabPreviousFrame()
+void vfg::VideoFrameGrabber::requestPreviousFrame()
 {
     if(currentFrame == 0)
     {
@@ -146,7 +146,7 @@ void vfg::VideoFrameGrabber::grabPreviousFrame()
     }
 
     --currentFrame;
-    grabFrame(currentFrame);
+    requestFrame(currentFrame);
 }
 
 const FFMS_Frame* vfg::VideoFrameGrabber::getFrame(unsigned frameNum)

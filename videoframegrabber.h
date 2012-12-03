@@ -31,9 +31,9 @@ namespace vfg
         // Load video file
         void load(QString filename);
         // Return frame by frame number
-        void grabFrame(unsigned frameNum);
-        void grabNextFrame();
-        void grabPreviousFrame();
+        void requestFrame(unsigned frameNum);
+        void requestNextFrame();
+        void requestPreviousFrame();
 
         bool hasVideo() const;
         unsigned lastFrame() const;

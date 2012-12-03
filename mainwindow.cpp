@@ -72,7 +72,7 @@ void MainWindow::videoLoaded(const FFMS_VideoProperties *videoProps)
     ui->seekSlider->setEnabled(true);
     ui->seekSlider->setMaximum(videoProps->NumFrames);
     // Show first frame
-    frameGrabber->grabFrame(0);
+    frameGrabber->requestFrame(0);
 }
 
 void MainWindow::frameReceived(const FFMS_Frame *frame)
@@ -95,13 +95,13 @@ void MainWindow::videoError(QString msg)
 
 void MainWindow::on_nextButton_clicked()
 {
-    frameGrabber->grabNextFrame();
+    frameGrabber->requestNextFrame();
     ui->currentFrameLabel->setText(QString::number(frameGrabber->lastFrame()));
 }
 
 void MainWindow::on_previousButton_clicked()
 {
-    frameGrabber->grabPreviousFrame();
+    frameGrabber->requestPreviousFrame();
     ui->currentFrameLabel->setText(QString::number(frameGrabber->lastFrame()));
 }
 
@@ -130,7 +130,7 @@ void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
 
 void MainWindow::on_seekSlider_valueChanged(int value)
 {
-    frameGrabber->grabFrame(value);
+    frameGrabber->requestFrame(value);
     ui->currentFrameLabel->setText(QString::number(value));
 }
 
