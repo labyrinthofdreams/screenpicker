@@ -27,14 +27,8 @@ MainWindow::MainWindow(QWidget *parent) :
     screenshotLayout = new FlowLayout;
     savedLayout = new FlowLayout;
 
-    // The flow layouts need to be added inside scroll areas
-    // so that we get scroll bars
-    QWidget* screenshotDummy = new QWidget(this);
-    QWidget* savedDummy = new QWidget(this);
-    screenshotDummy->setLayout(screenshotLayout);
-    savedDummy->setLayout(savedLayout);
-    ui->unsavedTabScrollArea->setWidget(screenshotDummy);
-    ui->savedTabScrollArea->setWidget(savedDummy);
+    ui->unsavedWidget->setLayout(unsavedLayout);
+    ui->savedWidget->setLayout(savedLayout);
 }
 
 MainWindow::~MainWindow()
