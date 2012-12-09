@@ -34,7 +34,7 @@ private slots:
 
     void videoLoaded(const FFMS_VideoProperties* videoProps);
 
-    void frameReceived(const FFMS_Frame* frame);
+    void frameReceived(QImage frame);
 
     void videoError(QString msg);
 

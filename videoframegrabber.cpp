@@ -129,10 +129,9 @@ void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
     // Because frame requests are between range 1 - n
     --frameNum;
 
-    const FFMS_Frame* frame = internalGetFrame(frameNum);
+    QImage frame = vfg::convertToQImage(internalGetFrame(frameNum));
 
-    if(frame != NULL)
-        emit frameGrabbed(frame);
+    emit frameGrabbed(frame);
 }
 
 void vfg::VideoFrameGrabber::requestNextFrame()
@@ -144,10 +143,9 @@ void vfg::VideoFrameGrabber::requestNextFrame()
     }
 
     ++currentFrame;
-    const FFMS_Frame* frame = internalGetFrame(currentFrame);
+    QImage frame = vfg::convertToQImage(internalGetFrame(currentFrame));
 
-    if(frame != NULL)
-        emit frameGrabbed(frame);
+    emit frameGrabbed(frame);
 }
 
 void vfg::VideoFrameGrabber::requestPreviousFrame()
@@ -159,10 +157,9 @@ void vfg::VideoFrameGrabber::requestPreviousFrame()
     }
 
     --currentFrame;
-    const FFMS_Frame* frame = internalGetFrame(currentFrame);
+    QImage frame = vfg::convertToQImage(internalGetFrame(currentFrame));
 
-    if(frame != NULL)
-        emit frameGrabbed(frame);
+    emit frameGrabbed(frame);
 }
 
 const FFMS_Frame* vfg::VideoFrameGrabber::getFrame(unsigned frameNum)

@@ -55,7 +55,7 @@ namespace vfg
         // Video properties are passed in the signal
         void videoReady(const FFMS_VideoProperties* videoProps);
         // Fired when frame is available
-        void frameGrabbed(const FFMS_Frame* frame);
+        void frameGrabbed(QImage frame);
         // Fired in the event that an error happens
         void errorOccurred(QString msg);
     public slots:
