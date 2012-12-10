@@ -9,6 +9,7 @@ class QLabel;
 
 class QKeyEvent;
 class QResizeEvent;
+class QMouseEvent;
 
 namespace vfg
 {
@@ -22,20 +23,24 @@ namespace vfg
     public:
         explicit VideoFrameThumbnail(QWidget *parent = 0);
         void setThumbnail(QPixmap thumbnail);
+        void setFrameNumber(unsigned frame);
 
     private:
         QVBoxLayout *layout;
         QLabel *pixmapLabel;
         QPixmap thumb;
 
+        unsigned frameNumber;
+
         void updateFrameSize();
 
     protected:
         void keyPressEvent(QKeyEvent *event);
+        void mouseDoubleClickEvent(QMouseEvent *event);
         void resizeEvent(QResizeEvent *event);
 
     signals:
-        void selected(int frameId);
+        void selected(unsigned frameId);
 
     public slots:
 

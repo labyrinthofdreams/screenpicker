@@ -23,12 +23,24 @@ void vfg::VideoFrameThumbnail::setThumbnail(QPixmap thumbnail)
     updateFrameSize();
 }
 
+void vfg::VideoFrameThumbnail::setFrameNumber(unsigned frame)
+{
+    frameNumber = frame;
+}
+
 void vfg::VideoFrameThumbnail::updateFrameSize()
 {
     qDebug() << pixmapLabel->size();
     pixmapLabel->setPixmap(thumb.scaledToWidth(pixmapLabel->width(),
                                                Qt::SmoothTransformation));
     qDebug() << pixmapLabel->size();
+}
+
+void vfg::VideoFrameThumbnail::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event);
+
+    emit selected(frameNumber);
 }
 
 void vfg::VideoFrameThumbnail::resizeEvent(QResizeEvent *event)

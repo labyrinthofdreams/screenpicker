@@ -37,6 +37,8 @@ private slots:
 
     void videoError(QString msg);
 
+    void thumbnailDoubleClicked(unsigned frameNumber);
+
     void on_nextButton_clicked();
 
     void on_previousButton_clicked();

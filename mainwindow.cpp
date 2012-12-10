@@ -87,6 +87,12 @@ void MainWindow::videoError(QString msg)
     ui->logger->appendPlainText(msg);
 }
 
+void MainWindow::thumbnailDoubleClicked(unsigned frameNumber)
+{
+    ui->seekSlider->setValue(frameNumber);
+    frameGrabber->requestFrame(frameNumber);
+}
+
 void MainWindow::on_nextButton_clicked()
 {
     frameGrabber->requestNextFrame();
@@ -172,6 +178,8 @@ void MainWindow::on_grabButton_clicked()
 
         vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(this);
         thumb->setThumbnail(QPixmap::fromImage(frame));
+        thumb->setFrameNumber(selected);
+        connect(thumb, SIGNAL(selected(uint)), this, SLOT(thumbnailDoubleClicked(uint)));
         unsaved.insert(selected, thumb);
         unsavedLayout->addWidget(thumb);
     }
