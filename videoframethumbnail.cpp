@@ -57,7 +57,5 @@ void vfg::VideoFrameThumbnail::keyPressEvent(QKeyEvent *event)
 {
     Q_UNUSED(event);
 
-
-
-    emit selected(1);
+    emit selected(frameNumber);
 }
