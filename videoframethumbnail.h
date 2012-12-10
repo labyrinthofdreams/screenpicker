@@ -19,6 +19,7 @@ namespace vfg
     private:
         QVBoxLayout *layout;
         QLabel *pixmapLabel;
+        QPixmap thumb;
         void updateFrameSize();
 
     protected:

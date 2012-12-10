@@ -12,7 +12,9 @@ vfg::VideoFrameThumbnail::VideoFrameThumbnail(QWidget *parent) :
 
 void vfg::VideoFrameThumbnail::setThumbnail(QPixmap thumbnail)
 {
-    pixmapLabel->setPixmap(thumbnail);
+    thumb = thumbnail;
+    updateFrameSize();
+}
 void vfg::VideoFrameThumbnail::updateFrameSize()
 {
     qDebug() << pixmapLabel->size();
