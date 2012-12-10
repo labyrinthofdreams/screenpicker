@@ -7,7 +7,6 @@
 class QVBoxLayout;
 class QLabel;
 
-class QKeyEvent;
 class QResizeEvent;
 class QMouseEvent;
 
@@ -35,7 +34,7 @@ namespace vfg
         void updateFrameSize();
 
     protected:
-        void keyPressEvent(QKeyEvent *event);
+        void mousePressEvent(QMouseEvent *event);
         void mouseDoubleClickEvent(QMouseEvent *event);
         void resizeEvent(QResizeEvent *event);
 

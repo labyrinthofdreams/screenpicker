@@ -53,7 +53,7 @@ void vfg::VideoFrameThumbnail::resizeEvent(QResizeEvent *event)
     updateFrameSize();
 }
 
-void vfg::VideoFrameThumbnail::keyPressEvent(QKeyEvent *event)
+void vfg::VideoFrameThumbnail::mousePressEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
 
