@@ -15,8 +15,6 @@ MainWindow::MainWindow(QWidget *parent) :
     frameGrabber = new vfg::VideoFrameGrabber(this);
     connect(frameGrabber, SIGNAL(videoReady(const FFMS_VideoProperties*)),
             this, SLOT(videoLoaded(const FFMS_VideoProperties*)));
-    connect(frameGrabber, SIGNAL(frameGrabbed(QImage)),
-            this, SLOT(frameReceived(QImage)));
     connect(frameGrabber, SIGNAL(errorOccurred(QString)),
             this, SLOT(videoError(QString)));
 
