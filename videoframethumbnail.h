@@ -7,8 +7,15 @@
 class QVBoxLayout;
 class QLabel;
 
+class QKeyEvent;
+class QResizeEvent;
+
 namespace vfg
 {
+    /**
+     * @brief The VideoFrameThumbnail class
+     * Displays video thumbnail, emits a frame number when selected
+     */
     class VideoFrameThumbnail : public QWidget
     {
         Q_OBJECT
@@ -20,6 +27,7 @@ namespace vfg
         QVBoxLayout *layout;
         QLabel *pixmapLabel;
         QPixmap thumb;
+
         void updateFrameSize();
 
     protected:
