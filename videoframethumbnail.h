@@ -37,6 +37,7 @@ namespace vfg
         void mousePressEvent(QMouseEvent *event);
         void mouseDoubleClickEvent(QMouseEvent *event);
         void resizeEvent(QResizeEvent *event);
+        void paintEvent(QPaintEvent *event);
 
     signals:
         void selected(unsigned frameId);

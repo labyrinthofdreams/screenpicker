@@ -57,5 +57,17 @@ void vfg::VideoFrameThumbnail::mousePressEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
 
+    setStyleSheet("background-color: #e0e0e0; border: 1px solid #dd22ff;");
+
     emit selected(frameNumber);
+}
+
+void vfg::VideoFrameThumbnail::paintEvent(QPaintEvent *event)
+{
+    Q_UNUSED(event);
+
+    QStyleOption o;
+    o.initFrom(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
 }
