@@ -19,9 +19,11 @@ namespace vfg
     private:
         QVBoxLayout *layout;
         QLabel *pixmapLabel;
+        void updateFrameSize();
 
     protected:
         void keyPressEvent(QKeyEvent *event);
+        void resizeEvent(QResizeEvent *event);
 
     signals:
         void selected(int frameId);

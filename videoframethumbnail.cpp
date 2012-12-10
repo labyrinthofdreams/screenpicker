@@ -13,6 +13,22 @@ vfg::VideoFrameThumbnail::VideoFrameThumbnail(QWidget *parent) :
 void vfg::VideoFrameThumbnail::setThumbnail(QPixmap thumbnail)
 {
     pixmapLabel->setPixmap(thumbnail);
+void vfg::VideoFrameThumbnail::updateFrameSize()
+{
+    qDebug() << pixmapLabel->size();
+    pixmapLabel->setPixmap(thumb.scaledToWidth(pixmapLabel->width(),
+                                               Qt::SmoothTransformation));
+    qDebug() << pixmapLabel->size();
+}
+
+void vfg::VideoFrameThumbnail::resizeEvent(QResizeEvent *event)
+{
+    Q_UNUSED(event);
+
+    if(thumb.isNull())
+        return;
+
+    updateFrameSize();
 }
 
 void vfg::VideoFrameThumbnail::keyPressEvent(QKeyEvent *event)
