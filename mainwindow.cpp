@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 #include "videoframegrabber.h"
 #include "videoframewidget.h"
+#include "videoframethumbnail.h"
 #include "ffms.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -149,18 +150,15 @@ void MainWindow::on_generateButton_clicked()
             break;
         }
 
-        const FFMS_Frame* frame = frameGrabber->getFrame(i);
-        if(unsaved.contains(i))
+        if(!unsaved.contains(i))
         {
-            unsaved.remove(i);
+            QImage frame = vfg::convertToQImage(frameGrabber->getFrame(i));
+
+            vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(this);
+            thumb->setThumbnail(QPixmap::fromImage(frame));
+            unsaved.insert(i, thumb);
+            unsavedLayout->addWidget(thumb);
         }
-
-        QImage img = vfg::convertToQImage(frame);
-        unsaved.insert(i, img);
-
-        QLabel *tmp = new QLabel;
-        tmp->setPixmap(QPixmap::fromImage(img.scaledToWidth(100)));
-        unsavedLayout->addWidget(tmp);
     }
     ui->seekSlider->setValue(selected + total);
 }
@@ -168,16 +166,13 @@ void MainWindow::on_generateButton_clicked()
 void MainWindow::on_grabButton_clicked()
 {
     const unsigned selected = ui->seekSlider->value();
-    const FFMS_Frame* frame = frameGrabber->getFrame(selected);
-    if(unsaved.contains(selected))
-    {
-        unsaved.remove(selected);
+    if(!unsaved.contains(selected))
+    {        
+        QImage frame = vfg::convertToQImage(frameGrabber->getFrame(selected));
+
+        vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(this);
+        thumb->setThumbnail(QPixmap::fromImage(frame));
+        unsaved.insert(selected, thumb);
+        unsavedLayout->addWidget(thumb);
     }
-
-    QImage img = vfg::convertToQImage(frame);
-    unsaved.insert(selected, img);
-
-    QLabel *tmp = new QLabel;
-    tmp->setPixmap(QPixmap::fromImage(img.scaledToWidth(100)));
-    unsavedLayout->addWidget(tmp);
 }
