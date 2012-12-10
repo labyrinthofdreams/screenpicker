@@ -23,6 +23,10 @@ MainWindow::MainWindow(QWidget *parent) :
     frameWidget = new vfg::VideoFrameWidget(this);
     ui->videoFrameArea->setWidget(frameWidget);
 
+    // Connect grabber to the widget
+    connect(frameGrabber, SIGNAL(frameGrabbed(QImage)),
+            frameWidget, SLOT(setFrame(QImage)));
+
     // Widgets/layouts for the tabs
     unsavedLayout = new FlowLayout;
     savedLayout = new FlowLayout;
@@ -77,11 +81,6 @@ void MainWindow::videoLoaded(const FFMS_VideoProperties *videoProps)
     ui->seekSlider->setValue(vfg::FirstFrame);
     // Show first frame
     frameGrabber->requestFrame(vfg::FirstFrame);
-}
-
-void MainWindow::frameReceived(QImage frame)
-{
-    frameWidget->setFrame(frame);
 }
 
 void MainWindow::videoError(QString msg)
