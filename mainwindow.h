@@ -14,6 +14,7 @@ struct FFMS_Frame;
 namespace vfg {
     class VideoFrameGrabber;
     class VideoFrameWidget;
+    class VideoFrameThumbnail;
 }
 
 namespace Ui {
@@ -58,7 +59,7 @@ private:
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::VideoFrameWidget* frameWidget;
 
-    QMap<int, QImage> unsaved;
+    QMap<int, vfg::VideoFrameThumbnail*> unsaved;
     QMap<int, QImage> saved;
 };
 
