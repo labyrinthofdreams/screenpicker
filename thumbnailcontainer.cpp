@@ -15,6 +15,9 @@ void vfg::ThumbnailContainer::addThumbnail(vfg::VideoFrameThumbnail *thumbnail)
     connect(thumbnail, SIGNAL(selected(vfg::VideoFrameThumbnail*)),
             this, SLOT(handleThumbnailSelection(vfg::VideoFrameThumbnail*)));
 
+    connect(thumbnail, SIGNAL(doubleClicked(vfg::VideoFrameThumbnail*)),
+            this, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)));
+
     layout->addWidget(thumbnail);
 }
 

@@ -22,6 +22,7 @@ namespace vfg
         void addThumbnail(vfg::VideoFrameThumbnail* thumbnail);
 
     signals:
+        void thumbnailDoubleClicked(vfg::VideoFrameThumbnail* thumbnail);
 
     public slots:
 
