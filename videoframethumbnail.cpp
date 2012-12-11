@@ -36,6 +36,10 @@ void vfg::VideoFrameThumbnail::markUnselected()
     setStyleSheet("background-color: inherit; border: 0;");
 }
 
+unsigned vfg::VideoFrameThumbnail::frameNum() const
+{
+    return frameNumber;
+}
 
 void vfg::VideoFrameThumbnail::mouseDoubleClickEvent(QMouseEvent *event)
 {

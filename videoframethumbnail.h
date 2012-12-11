@@ -26,6 +26,7 @@ namespace vfg
         void markSelected();
         void markUnselected();
 
+        unsigned frameNum() const;
 
     private:
         QVBoxLayout *layout;
