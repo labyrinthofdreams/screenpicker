@@ -30,6 +30,9 @@ MainWindow::MainWindow(QWidget *parent) :
     savedLayout = new FlowLayout;    
 
     ui->savedWidget->setLayout(savedLayout);
+
+    connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)),
+            this, SLOT(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)));
 }
 
 MainWindow::~MainWindow()
@@ -85,10 +88,10 @@ void MainWindow::videoError(QString msg)
     ui->logger->appendPlainText(msg);
 }
 
-void MainWindow::thumbnailDoubleClicked(unsigned frameNumber)
+void MainWindow::thumbnailDoubleClicked(vfg::VideoFrameThumbnail *thumbnail)
 {
-    ui->seekSlider->setValue(frameNumber);
-    frameGrabber->requestFrame(frameNumber);
+    ui->seekSlider->setValue(thumbnail->frameNum());
+    frameGrabber->requestFrame(thumbnail->frameNum());
 }
 
 void MainWindow::on_nextButton_clicked()

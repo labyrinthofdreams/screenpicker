@@ -37,7 +37,7 @@ private slots:
 
     void videoError(QString msg);
 
-    void thumbnailDoubleClicked(unsigned frameNumber);
+    void thumbnailDoubleClicked(vfg::VideoFrameThumbnail* thumbnail);
 
     void on_nextButton_clicked();
 
