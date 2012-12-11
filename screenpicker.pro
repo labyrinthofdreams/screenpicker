@@ -14,13 +14,15 @@ SOURCES += main.cpp\
     flowlayout.cpp \
     videoframegrabber.cpp \
     videoframewidget.cpp \
-    videoframethumbnail.cpp
+    videoframethumbnail.cpp \
+    thumbnailcontainer.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
     videoframegrabber.h \
     videoframewidget.h \
-    videoframethumbnail.h
+    videoframethumbnail.h \
+    thumbnailcontainer.h
 
 FORMS    += mainwindow.ui
 
