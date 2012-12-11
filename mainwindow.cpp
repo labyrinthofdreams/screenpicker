@@ -27,10 +27,8 @@ MainWindow::MainWindow(QWidget *parent) :
             frameWidget, SLOT(setFrame(QImage)));
 
     // Widgets/layouts for the tabs
-    unsavedLayout = new FlowLayout;
-    savedLayout = new FlowLayout;
+    savedLayout = new FlowLayout;    
 
-    ui->unsavedWidget->setLayout(unsavedLayout);
     ui->savedWidget->setLayout(savedLayout);
 }
 
@@ -163,7 +161,6 @@ void MainWindow::on_generateButton_clicked()
             vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(this);
             thumb->setThumbnail(QPixmap::fromImage(frame));
             unsaved.insert(i, thumb);
-            unsavedLayout->addWidget(thumb);
         }
     }
     ui->seekSlider->setValue(selected + total);
@@ -179,8 +176,8 @@ void MainWindow::on_grabButton_clicked()
         vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(this);
         thumb->setThumbnail(QPixmap::fromImage(frame));
         thumb->setFrameNumber(selected);
-        connect(thumb, SIGNAL(selected(uint)), this, SLOT(thumbnailDoubleClicked(uint)));
+        //connect(thumb, SIGNAL(selected(uint)), this, SLOT(thumbnailDoubleClicked(uint)));
         unsaved.insert(selected, thumb);
-        unsavedLayout->addWidget(thumb);
+        ui->unsavedWidget->addThumbnail(thumb);
     }
 }
