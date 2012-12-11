@@ -36,11 +36,21 @@ void vfg::VideoFrameThumbnail::updateFrameSize()
     qDebug() << pixmapLabel->size();
 }
 
+void vfg::VideoFrameThumbnail::markSelected()
+{
+    setStyleSheet("background-color: #e0e0e0; border: 1px solid #dd22ff;");
+}
+
+void vfg::VideoFrameThumbnail::markUnselected()
+{
+    setStyleSheet("background-color: inherit; border: 0;");
+}
+
 void vfg::VideoFrameThumbnail::mouseDoubleClickEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
 
-    emit selected(frameNumber);
+    //emit selected(this);
 }
 
 void vfg::VideoFrameThumbnail::resizeEvent(QResizeEvent *event)
@@ -57,9 +67,7 @@ void vfg::VideoFrameThumbnail::mousePressEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
 
-    setStyleSheet("background-color: #e0e0e0; border: 1px solid #dd22ff;");
-
-    emit selected(frameNumber);
+    emit selected(this);
 }
 
 void vfg::VideoFrameThumbnail::paintEvent(QPaintEvent *event)

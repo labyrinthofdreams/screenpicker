@@ -24,6 +24,9 @@ namespace vfg
         void setThumbnail(QPixmap thumbnail);
         void setFrameNumber(unsigned frame);
 
+        void markSelected();
+        void markUnselected();
+
     private:
         QVBoxLayout *layout;
         QLabel *pixmapLabel;
@@ -40,7 +43,7 @@ namespace vfg
         void paintEvent(QPaintEvent *event);
 
     signals:
-        void selected(unsigned frameId);
+        void selected(vfg::VideoFrameThumbnail* thumbnail);
 
     public slots:
 
