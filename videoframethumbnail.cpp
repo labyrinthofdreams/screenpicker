@@ -36,11 +36,12 @@ void vfg::VideoFrameThumbnail::markUnselected()
     setStyleSheet("background-color: inherit; border: 0;");
 }
 
+
 void vfg::VideoFrameThumbnail::mouseDoubleClickEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
 
-    //emit selected(this);
+    emit doubleClicked(this);
 }
 
 void vfg::VideoFrameThumbnail::resizeEvent(QResizeEvent *event)

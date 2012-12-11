@@ -20,10 +20,12 @@ namespace vfg
     {
         Q_OBJECT
     public:
-        explicit VideoFrameThumbnail(unsigned frame, QPixmap thumbnail, QWidget *parent = 0);
+        explicit VideoFrameThumbnail(unsigned frame, QPixmap thumbnail,
+                                     QWidget *parent = 0);
 
         void markSelected();
         void markUnselected();
+
 
     private:
         QVBoxLayout *layout;
@@ -42,6 +44,7 @@ namespace vfg
 
     signals:
         void selected(vfg::VideoFrameThumbnail* thumbnail);
+        void doubleClicked(vfg::VideoFrameThumbnail* thumbnail);
 
     public slots:
 
