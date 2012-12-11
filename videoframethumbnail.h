@@ -20,9 +20,7 @@ namespace vfg
     {
         Q_OBJECT
     public:
-        explicit VideoFrameThumbnail(QWidget *parent = 0);
-        void setThumbnail(QPixmap thumbnail);
-        void setFrameNumber(unsigned frame);
+        explicit VideoFrameThumbnail(unsigned frame, QPixmap thumbnail, QWidget *parent = 0);
 
         void markSelected();
         void markUnselected();

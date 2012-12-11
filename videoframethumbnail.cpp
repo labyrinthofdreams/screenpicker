@@ -2,10 +2,13 @@
 #include <QDebug>
 #include "videoframethumbnail.h"
 
-vfg::VideoFrameThumbnail::VideoFrameThumbnail(QWidget *parent) :
+vfg::VideoFrameThumbnail::VideoFrameThumbnail(unsigned frame, QPixmap thumbnail, QWidget *parent) :
     QWidget(parent)
 {
+    frameNumber = frame;
+    thumb = thumbnail;
     pixmapLabel = new QLabel;
+    pixmapLabel->setPixmap(thumb);
 //    pixmapLabel->setSizePolicy(QSizePolicy::Ignored,
 //                               QSizePolicy::Ignored);
     layout = new QVBoxLayout;
@@ -15,17 +18,6 @@ vfg::VideoFrameThumbnail::VideoFrameThumbnail(QWidget *parent) :
     setFixedWidth(100);
     setContentsMargins(0, 0, 0, 0);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-}
-
-void vfg::VideoFrameThumbnail::setThumbnail(QPixmap thumbnail)
-{
-    thumb = thumbnail;
-    updateFrameSize();
-}
-
-void vfg::VideoFrameThumbnail::setFrameNumber(unsigned frame)
-{
-    frameNumber = frame;
 }
 
 void vfg::VideoFrameThumbnail::updateFrameSize()
