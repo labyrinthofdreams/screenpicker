@@ -49,9 +49,6 @@ void vfg::VideoFrameThumbnail::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
 
-    if(thumb.isNull())
-        return;
-
     updateFrameSize();
 }
 
