@@ -22,11 +22,15 @@ void vfg::ThumbnailContainer::handleThumbnailSelection(vfg::VideoFrameThumbnail 
 {
     // Do nothing if same selection
     if(activeWidget == thumbnail)
+    {
         return;
+    }
 
     // Mark previous as unselected only if it there is previous
     if(activeWidget)
+    {
         activeWidget->markUnselected();
+    }
 
     thumbnail->markSelected();
     activeWidget = thumbnail;
