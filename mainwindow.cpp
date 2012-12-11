@@ -158,9 +158,9 @@ void MainWindow::on_generateButton_clicked()
         {
             QImage frame = vfg::convertToQImage(frameGrabber->getFrame(i));
 
-            vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(this);
-            thumb->setThumbnail(QPixmap::fromImage(frame));
-            unsaved.insert(i, thumb);
+//            vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(this);
+//            thumb->setThumbnail(QPixmap::fromImage(frame));
+//            unsaved.insert(i, thumb);
         }
     }
     ui->seekSlider->setValue(selected + total);
@@ -172,10 +172,9 @@ void MainWindow::on_grabButton_clicked()
     if(!unsaved.contains(selected))
     {        
         QImage frame = vfg::convertToQImage(frameGrabber->getFrame(selected));
+        QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200);
 
-        vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(this);
-        thumb->setThumbnail(QPixmap::fromImage(frame));
-        thumb->setFrameNumber(selected);
+        vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(selected, thumbnail, this);
         //connect(thumb, SIGNAL(selected(uint)), this, SLOT(thumbnailDoubleClicked(uint)));
         unsaved.insert(selected, thumb);
         ui->unsavedWidget->addThumbnail(thumb);
