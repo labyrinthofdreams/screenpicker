@@ -22,10 +22,8 @@ vfg::VideoFrameThumbnail::VideoFrameThumbnail(unsigned frame, QPixmap thumbnail,
 
 void vfg::VideoFrameThumbnail::updateFrameSize()
 {
-    qDebug() << pixmapLabel->size();
     pixmapLabel->setPixmap(thumb.scaledToWidth(pixmapLabel->width(),
                                                Qt::SmoothTransformation));
-    qDebug() << pixmapLabel->size();
 }
 
 void vfg::VideoFrameThumbnail::markSelected()
