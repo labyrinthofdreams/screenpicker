@@ -15,7 +15,7 @@ namespace vfg
     private:
         FlowLayout* layout;
 
-        vfg::VideoFrameThumbnail* lastClicked;
+        vfg::VideoFrameThumbnail* activeWidget;
     public:
         explicit ThumbnailContainer(QWidget *parent = 0);
 
