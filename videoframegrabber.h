@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QImage>
 #include <QString>
-#include "ffms.h"
 
 namespace vfg
 {
@@ -12,32 +11,22 @@ namespace vfg
         FirstFrame = 1
     };
 
-    // Convert FFMS_Frame to QImage
-    QImage convertToQImage(const FFMS_Frame* frame);
+    class AbstractVideoSource;
 
     // Class declaration
     class VideoFrameGrabber : public QObject
     {
         Q_OBJECT
     private:
-        bool com_inited;
-        char errorBuffer[1024];
-        FFMS_ErrorInfo errorInfo;
-
-        FFMS_VideoSource *videoSource;     
-
-        int pixelFormats[2];
+        vfg::AbstractVideoSource* avs;
 
         // Last frame - 1
         unsigned numFrames;
 
         // Between range 0 - (last frame - 1)
         unsigned currentFrame;
-
-        // Captures the exact frame between range 0 - n
-        const FFMS_Frame* internalGetFrame(unsigned frameNum);
     public:
-        explicit VideoFrameGrabber(QObject *parent = 0);
+        explicit VideoFrameGrabber(vfg::AbstractVideoSource* avs, QObject *parent = 0);
         ~VideoFrameGrabber();
         // Load video file
         void load(QString filename);
@@ -46,14 +35,14 @@ namespace vfg
         void requestFrame(unsigned frameNum);
         void requestNextFrame();
         void requestPreviousFrame();
-        const FFMS_Frame* getFrame(unsigned frameNum);
+        QImage getFrame(unsigned frameNum);
         // Returns last captured frame number + 1
         unsigned lastFrame() const;
         unsigned totalFrames() const;
     signals:
         // Fired when video has been loaded
         // Video properties are passed in the signal
-        void videoReady(const FFMS_VideoProperties* videoProps);
+        void videoReady();
         // Fired when frame is available
         void frameGrabbed(QImage frame);
         // Fired in the event that an error happens
