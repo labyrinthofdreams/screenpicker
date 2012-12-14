@@ -15,16 +15,23 @@ SOURCES += main.cpp\
     videoframegrabber.cpp \
     videoframewidget.cpp \
     videoframethumbnail.cpp \
-    thumbnailcontainer.cpp
+    thumbnailcontainer.cpp \
+    avisynthvideosource.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
     videoframegrabber.h \
     videoframewidget.h \
     videoframethumbnail.h \
-    thumbnailcontainer.h
+    thumbnailcontainer.h \
+    abstractvideosource.h \
+    avisynthvideosource.h
 
 FORMS    += mainwindow.ui
 
-INCLUDEPATH += C:\cpplibs\ffms-2.17-sdk\include
-LIBS += -LC:\cpplibs\ffms-2.17-sdk -lffms2 -lole32
+INCLUDEPATH += C:\cpplibs\avs2yuv-0.24bm2\avs2yuv\src
+#LIBS += -LC:\cpplibs\ffms-2.17-sdk -lffms2 -lole32
+
+# These are needed for Avisynth compilation
+QMAKE_CXXFLAGS += -fpermissive
+DEFINES -= UNICODE
