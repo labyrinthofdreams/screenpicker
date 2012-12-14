@@ -36,6 +36,11 @@ bool vfg::VideoFrameGrabber::hasVideo() const
     return (avs != NULL);
 }
 
+const vfg::AbstractVideoSource* vfg::VideoFrameGrabber::getVideoSource()
+{
+    return avs;
+}
+
 unsigned vfg::VideoFrameGrabber::lastFrame() const
 {
     return currentFrame + 1;
@@ -45,6 +50,7 @@ void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
 {
     // Because frame requests are between range 1 - n
     --frameNum;
+    currentFrame = frameNum;
 
     QImage frame = avs->getFrame(frameNum);
 
