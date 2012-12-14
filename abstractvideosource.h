@@ -12,8 +12,9 @@ namespace vfg
         AbstractVideoSource() {}
         virtual ~AbstractVideoSource() {}
         virtual void load(QString fileName) = 0;
+        virtual unsigned getNumFrames() const = 0;
         virtual QImage getFrame(unsigned frameNumber) = 0;
-        static QString getSupportedFormats();
+        virtual QString getSupportedFormats() = 0;
     };
 }
 
