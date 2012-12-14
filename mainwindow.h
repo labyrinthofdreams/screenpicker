@@ -8,9 +8,6 @@
 // Forward declarations
 class FlowLayout;
 
-struct FFMS_VideoProperties;
-struct FFMS_Frame;
-
 namespace vfg {
     class VideoFrameGrabber;
     class VideoFrameWidget;
