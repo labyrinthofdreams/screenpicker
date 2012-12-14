@@ -18,6 +18,7 @@ vfg::VideoFrameThumbnail::VideoFrameThumbnail(unsigned frame, QPixmap thumbnail,
     setFixedWidth(100);
     setContentsMargins(0, 0, 0, 0);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
 void vfg::VideoFrameThumbnail::updateFrameSize()
