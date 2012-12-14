@@ -1,11 +1,12 @@
 #include <QtGui>
+#include <exception>
 #include "flowlayout.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "videoframegrabber.h"
 #include "videoframewidget.h"
 #include "videoframethumbnail.h"
-#include "ffms.h"
+#include "avisynthvideosource.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,9 +14,18 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    frameGrabber = new vfg::VideoFrameGrabber(this);
-    connect(frameGrabber, SIGNAL(videoReady(const FFMS_VideoProperties*)),
-            this, SLOT(videoLoaded(const FFMS_VideoProperties*)));
+    try
+    {
+         vfg::AvisynthVideoSource* avs = new vfg::AvisynthVideoSource;
+         frameGrabber = new vfg::VideoFrameGrabber(avs, this);
+    }
+    catch(std::exception& ex)
+    {
+        throw;
+    }
+
+    connect(frameGrabber, SIGNAL(videoReady()),
+            this, SLOT(videoLoaded()));
     connect(frameGrabber, SIGNAL(errorOccurred(QString)),
             this, SLOT(videoError(QString)));
 
@@ -42,35 +52,28 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionOpen_triggered()
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open video"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open video"),
+                                                    QString(),
+                                                    frameGrabber->getVideoSource()->getSupportedFormats());
     if(filename.isEmpty())
         return;
 
-    ui->logger->clear();
-    ui->logger->appendPlainText(tr("Loading file... %1").arg(filename));
-    frameGrabber->load(filename);
+    try
+    {
+        frameGrabber->load(filename);
+        ui->logger->clear();
+        ui->logger->appendPlainText(tr("Loading file... %1").arg(filename));
+    }
+    catch(std::exception& ex)
+    {
+        QMessageBox::warning(this, tr("Error while loading file"),
+                             QString(ex.what()));
+    }
 }
 
-void MainWindow::videoLoaded(const FFMS_VideoProperties *videoProps)
+void MainWindow::videoLoaded()
 {
-    ui->logger->appendPlainText(tr("Number of frames: %1")
-                            .arg(videoProps->NumFrames));
-    ui->logger->appendPlainText(tr("Start / End time: %1 %2")
-                            .arg(videoProps->FirstTime)
-                            .arg(videoProps->LastTime));
-    ui->logger->appendPlainText(tr("FPS: %1 / %2")
-                            .arg(videoProps->FPSNumerator)
-                            .arg(videoProps->FPSDenominator));
-    ui->logger->appendPlainText(tr("SAR (num / den): %1 / %2")
-                            .arg(videoProps->SARNum)
-                            .arg(videoProps->SARDen));
-    ui->logger->appendPlainText(tr("Crop: Bottom: %1 Left: %2 Right: %3 Top: %4")
-                            .arg(videoProps->CropBottom)
-                            .arg(videoProps->CropLeft)
-                            .arg(videoProps->CropRight)
-                            .arg(videoProps->CropTop));
-
-    const unsigned numFrames = videoProps->NumFrames;
+    const unsigned numFrames = frameGrabber->totalFrames();
     // Update frame numbers on the labels
     ui->currentFrameLabel->setText(QString::number(vfg::FirstFrame));
     ui->totalFramesLabel->setText(QString::number(numFrames));
@@ -114,14 +117,12 @@ void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
 {
     if(checked && frameGrabber->hasVideo())
     {
-        const FFMS_Frame* frame = frameGrabber->getFrame(vfg::FirstFrame);
-        if(frame == NULL)
-            return;
+        QImage frame = frameGrabber->getFrame(vfg::FirstFrame);
 
         frameWidget->setFullsize(true);
         ui->logger->appendPlainText(tr("Resolution locked to %1x%2")
-                                .arg(frame->ScaledHeight)
-                                .arg(frame->ScaledWidth));
+                                .arg(frame.height())
+                                .arg(frame.width()));
     }
     else
     {
@@ -159,7 +160,7 @@ void MainWindow::on_generateButton_clicked()
 
         if(!unsaved.contains(i))
         {
-            QImage frame = vfg::convertToQImage(frameGrabber->getFrame(i));
+            QImage frame = frameGrabber->getFrame(i);
 
 //            vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(this);
 //            thumb->setThumbnail(QPixmap::fromImage(frame));
@@ -174,7 +175,7 @@ void MainWindow::on_grabButton_clicked()
     const unsigned selected = ui->seekSlider->value();
     if(!unsaved.contains(selected))
     {        
-        QImage frame = vfg::convertToQImage(frameGrabber->getFrame(selected));
+        QImage frame = frameGrabber->getFrame(selected);
         QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200);
 
         vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(selected, thumbnail, this);

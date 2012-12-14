@@ -30,7 +30,7 @@ private slots:
 
     void on_actionOpen_triggered();
 
-    void videoLoaded(const FFMS_VideoProperties* videoProps);
+    void videoLoaded();
 
     void videoError(QString msg);
 
