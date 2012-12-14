@@ -55,18 +55,25 @@ void AvisynthVideoSource::load(QString fileName)
         throw std::runtime_error("Imported script does not have video data");
     }
 
-    // Convert input to RGB32
-    const char* arg_name[2] = {NULL, "interlaced"};
-    AVS_Value arg_arr[2] = {res, avs_new_value_bool(0)};
-    AVS_Value conv_tmp = avsHandle.func.avs_invoke(avsHandle.env, "ConvertToRGB",
-                                                   avs_new_value_array(arg_arr, 2), arg_name);
-    if(avs_is_error(conv_tmp))
+    // Video must be RGB32
+    if(!avs_is_rgb32(info))
     {
         avsHandle.func.avs_release_value(res);
-        throw std::runtime_error("Failed to convert input clip to RGB24");
+        throw std::runtime_error("Video is not RGB32. Add ConvertToRGB() to your script.");
     }
 
-    res = internal_avs_update_clip(&avsHandle, &info, conv_tmp, res);
+    // Convert input to RGB32
+//    const char* arg_name[2] = {NULL, "interlaced"};
+//    AVS_Value arg_arr[2] = {res, avs_new_value_bool(0)};
+//    AVS_Value conv_tmp = avsHandle.func.avs_invoke(avsHandle.env, "ConvertToRGB",
+//                                                   avs_new_value_array(arg_arr, 2), arg_name);
+//    if(avs_is_error(conv_tmp))
+//    {
+//        avsHandle.func.avs_release_value(res);
+//        throw std::runtime_error("Failed to convert input clip to RGB32");
+//    }
+
+//    res = internal_avs_update_clip(&avsHandle, &info, conv_tmp, res);
     avsHandle.func.avs_release_value(res);
 }
 
@@ -83,8 +90,6 @@ QImage AvisynthVideoSource::getFrame(unsigned frameNumber)
     {
         return QImage();
     }
-
-    qDebug() << frame->pitch << frame->row_size;
 
     QImage image(info->width, info->height, QImage::Format_ARGB32);
     const unsigned scanlineLength = info->width * 4;
