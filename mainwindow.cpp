@@ -8,6 +8,8 @@
 #include "videoframethumbnail.h"
 #include "avisynthvideosource.h"
 
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -179,8 +181,24 @@ void MainWindow::on_grabButton_clicked()
         QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200);
 
         vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(selected, thumbnail, this);
+        connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+                this, SLOT(handleUnsavedMenu(QPoint)));
         //connect(thumb, SIGNAL(selected(uint)), this, SLOT(thumbnailDoubleClicked(uint)));
         unsaved.insert(selected, thumb);
         ui->unsavedWidget->addThumbnail(thumb);
+    }
+}
+
+void MainWindow::handleUnsavedMenu(const QPoint &pos)
+{
+    QMenu menu;
+    QAction *saveAction = new QAction(tr("Save"), this);
+    saveAction->setData(1);
+    menu.addAction(saveAction);
+
+    QAction* selected = menu.exec(QCursor::pos());
+    if(selected && selected->data().toInt() == 1)
+    {
+        // Move unsaved
     }
 }

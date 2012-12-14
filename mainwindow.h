@@ -7,6 +7,7 @@
 
 // Forward declarations
 class FlowLayout;
+class QPoint;
 
 namespace vfg {
     class VideoFrameGrabber;
@@ -35,6 +36,8 @@ private slots:
     void videoError(QString msg);
 
     void thumbnailDoubleClicked(vfg::VideoFrameThumbnail* thumbnail);
+
+    void handleUnsavedMenu(const QPoint& pos);
 
     void on_nextButton_clicked();
 
