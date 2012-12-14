@@ -19,6 +19,7 @@ AvisynthVideoSource::AvisynthVideoSource() :
         const char *error = avsHandle.func.avs_get_error(avsHandle.env);
         if(error)
         {
+            internal_avs_close_library(&avsHandle);
             // Throw if AviSynth script environment fails
             throw std::runtime_error(error);
         }
@@ -77,6 +78,11 @@ void AvisynthVideoSource::load(QString fileName)
     avsHandle.func.avs_release_value(res);
 }
 
+unsigned AvisynthVideoSource::getNumFrames() const
+{
+    return info->num_frames;
+}
+
 QImage AvisynthVideoSource::getFrame(unsigned frameNumber)
 {
     if(frameNumber >= info->num_frames)
@@ -107,6 +113,6 @@ QImage AvisynthVideoSource::getFrame(unsigned frameNumber)
 
 QString AvisynthVideoSource::getSupportedFormats()
 {
-    static QString formats = "Avisynth files (*.avs)";
+    static const QString formats = "Avisynth files (*.avs)";
     return formats;
 }

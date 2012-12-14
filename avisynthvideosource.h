@@ -19,9 +19,9 @@ namespace vfg
         ~AvisynthVideoSource();
 
         void load(QString fileName);
+        unsigned getNumFrames() const;
         QImage getFrame(unsigned frameNumber);
-
-        static QString getSupportedFormats();
+        QString getSupportedFormats();
     };
 }
 
