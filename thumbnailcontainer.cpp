@@ -21,6 +21,16 @@ void vfg::ThumbnailContainer::addThumbnail(vfg::VideoFrameThumbnail *thumbnail)
     layout->addWidget(thumbnail);
 }
 
+void vfg::ThumbnailContainer::clearThumbnails()
+{
+    QLayoutItem *item;
+    while((item = layout->takeAt(0)))
+    {
+        delete item->widget();
+        delete item;
+    }
+}
+
 void vfg::ThumbnailContainer::handleThumbnailSelection(vfg::VideoFrameThumbnail *thumbnail)
 {
     // Do nothing if same selection
