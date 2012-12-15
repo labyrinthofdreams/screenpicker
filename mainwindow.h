@@ -55,6 +55,8 @@ private slots:
 
     void on_actionSave_thumbnails_triggered();
 
+    void on_clearThumbsButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 

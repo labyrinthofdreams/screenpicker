@@ -304,3 +304,9 @@ void MainWindow::on_actionSave_thumbnails_triggered()
     }
     prog.setValue(numSaved);
 }
+
+void MainWindow::on_clearThumbsButton_clicked()
+{
+    ui->unsavedWidget->clearThumbnails();
+    unsaved.clear();
+}
