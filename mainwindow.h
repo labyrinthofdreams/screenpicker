@@ -10,7 +10,6 @@ class QPoint;
 
 namespace vfg {
     class VideoFrameGrabber;
-    class VideoFrameWidget;
     class VideoFrameThumbnail;
 }
 
@@ -65,7 +64,6 @@ private:
     Ui::MainWindow *ui;
 
     vfg::VideoFrameGrabber* frameGrabber;
-    vfg::VideoFrameWidget* frameWidget;
 
     QMap<int, QImage> unsaved;
     QMap<int, QImage> saved;

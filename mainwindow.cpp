@@ -3,7 +3,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "videoframegrabber.h"
-#include "videoframewidget.h"
 #include "videoframethumbnail.h"
 #include "avisynthvideosource.h"
 
@@ -17,9 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
     {
          vfg::AvisynthVideoSource* avs = new vfg::AvisynthVideoSource;
          frameGrabber = new vfg::VideoFrameGrabber(avs, this);
-
-         frameWidget = new vfg::VideoFrameWidget(this);
-         ui->videoFrameArea->setWidget(frameWidget);
     }
     catch(std::exception& ex)
     {
@@ -33,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Connect grabber to the widget
     connect(frameGrabber, SIGNAL(frameGrabbed(QImage)),
-            frameWidget, SLOT(setFrame(QImage)));    
+            ui->videoFrameWidget, SLOT(setFrame(QImage)));
 
     connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)),
             this, SLOT(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)));
@@ -109,7 +105,7 @@ void MainWindow::on_previousButton_clicked()
 
 void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
 {
-    frameWidget->setFullsize(checked);
+    ui->videoFrameWidget->setFullsize(checked);
     if(checked)
     {
         if(frameGrabber->hasVideo())
