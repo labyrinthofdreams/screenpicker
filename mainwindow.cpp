@@ -155,10 +155,14 @@ void MainWindow::on_generateButton_clicked()
         if(!unsaved.contains(i))
         {
             QImage frame = frameGrabber->getFrame(i);
+            QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200);
 
-//            vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(this);
-//            thumb->setThumbnail(QPixmap::fromImage(frame));
-//            unsaved.insert(i, thumb);
+            vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(i, thumbnail, this);
+            connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+                    this, SLOT(handleUnsavedMenu(QPoint)));
+            //connect(thumb, SIGNAL(selected(uint)), this, SLOT(thumbnailDoubleClicked(uint)));
+            unsaved.insert(i, thumb);
+            ui->unsavedWidget->addThumbnail(thumb);
         }
     }
     ui->seekSlider->setValue(selected + total);
