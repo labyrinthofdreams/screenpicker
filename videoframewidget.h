@@ -22,6 +22,7 @@ namespace vfg
         QVBoxLayout* layout;
         QLabel* frameLabel;
         QPixmap framePixmap;
+        bool fullsize;
 
         void updateFrameSize();
     public:

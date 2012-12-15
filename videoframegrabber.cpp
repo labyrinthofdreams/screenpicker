@@ -33,7 +33,7 @@ void vfg::VideoFrameGrabber::load(QString filename)
 
 bool vfg::VideoFrameGrabber::hasVideo() const
 {
-    return (avs != NULL);
+    return avs->hasVideo();
 }
 
 const vfg::AbstractVideoSource* vfg::VideoFrameGrabber::getVideoSource()

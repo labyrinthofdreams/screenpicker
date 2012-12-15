@@ -2,7 +2,9 @@
 #include "videoframewidget.h"
 
 vfg::VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent),
+    framePixmap(),
+    fullsize(false)
 {
     frameLabel = new QLabel;
     frameLabel->setSizePolicy(QSizePolicy::Expanding,
@@ -45,6 +47,21 @@ void vfg::VideoFrameWidget::setFrame(QImage img)
 
 void vfg::VideoFrameWidget::updateFrameSize()
 {
+    if(framePixmap.isNull())
+    {
+        return;
+    }
+
+    if(!fullsize)
+    {
+        setMinimumSize(1, 1);
+        setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+    }
+    else
+    {
+        setFixedSize(framePixmap.size());
+    }
+
     frameLabel->setPixmap(framePixmap.scaled(frameLabel->size(),
                                              Qt::KeepAspectRatio,
                                              Qt::SmoothTransformation));
@@ -52,13 +69,7 @@ void vfg::VideoFrameWidget::updateFrameSize()
 
 void vfg::VideoFrameWidget::setFullsize(bool value)
 {
-    if(value)
-    {
-        setFixedSize(framePixmap.size());
-    }
-    else
-    {
-        setMinimumSize(1, 1);
-        setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-    }
+    fullsize = value;
+
+    updateFrameSize();
 }
