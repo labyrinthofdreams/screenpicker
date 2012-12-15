@@ -1,4 +1,5 @@
-#include <QtGui>
+#include <QString>
+#include <QImage>
 #include <stdexcept>
 #include "avisynthvideosource.h"
 
@@ -20,7 +21,6 @@ AvisynthVideoSource::AvisynthVideoSource() :
         const char *error = avsHandle.func.avs_get_error(avsHandle.env);
         if(error)
         {
-            internal_avs_close_library(&avsHandle);
             // Throw if AviSynth script environment fails
             throw std::runtime_error(error);
         }
@@ -29,13 +29,13 @@ AvisynthVideoSource::AvisynthVideoSource() :
 
 AvisynthVideoSource::~AvisynthVideoSource()
 {
-    internal_avs_close_library(&avsHandle);
+    internal_avs_close_library(&avsHandle, hasVideo());
 }
 
 void AvisynthVideoSource::load(QString fileName)
 {
     // If you don't store the converted data temporarily,
-    // you will have a memory leak
+    // you will have a memory leak (or so they say)
     QByteArray tmp = fileName.toLocal8Bit();
     AVS_Value arg = avs_new_value_string(tmp.constData());
     AVS_Value res = avsHandle.func.avs_invoke(avsHandle.env, "Import", arg, NULL);
