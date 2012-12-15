@@ -247,7 +247,7 @@ void MainWindow::on_actionSave_thumbnails_triggered()
     if(saved.isEmpty())
     {
         QMessageBox::information(this, tr("Save thumbnails..."),
-                                 tr("Nothing to save. Add at least one thumbnail to be saved."));
+                                 tr("Nothing to save. Add one or more thumbnails to save."));
         return;
     }
 
@@ -255,6 +255,21 @@ void MainWindow::on_actionSave_thumbnails_triggered()
     if(dir.isEmpty())
     {
         return;
+    }
+
+    bool resizeOk = false;
+    int resizeWidth;
+    QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Resize thumbnails"),
+                                                                tr("Do you want to resize thumbnails?"),
+                                                                QMessageBox::Yes, QMessageBox::No);
+    if(clicked == QMessageBox::Yes)
+    {
+        QImage dummyImage = saved.begin().value();
+        int imageWidth = dummyImage.width();
+
+        resizeWidth = QInputDialog::getInt(this, tr("Resize thumbnails"), tr("Resize to width (100-%2):")
+                                           .arg(QString::number(imageWidth)),
+                                           imageWidth, 100, imageWidth, 10, &resizeOk);
     }
 
     int numSaved = saved.size();
@@ -276,9 +291,15 @@ void MainWindow::on_actionSave_thumbnails_triggered()
                                  tr("Saved %1 of %2 thumbnails").arg(current).arg(numSaved));
             break;
         }
-        QImage saveImage = iter.value();
+
         QString filename = QString("%1.png").arg(QString::number(iter.key()));
         QString savePath = saveDir.absoluteFilePath(filename);
+
+        QImage saveImage = iter.value();
+        if(resizeOk)
+        {
+            saveImage = saveImage.scaledToWidth(resizeWidth, Qt::SmoothTransformation);
+        }
         saveImage.save(savePath, "PNG");
     }
     prog.setValue(numSaved);
