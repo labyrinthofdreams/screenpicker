@@ -20,6 +20,7 @@ namespace vfg
         explicit ThumbnailContainer(QWidget *parent = 0);
 
         void addThumbnail(vfg::VideoFrameThumbnail* thumbnail);
+        vfg::VideoFrameThumbnail* takeSelected();
 
     signals:
         void thumbnailDoubleClicked(vfg::VideoFrameThumbnail* thumbnail);

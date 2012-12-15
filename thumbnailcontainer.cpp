@@ -38,3 +38,14 @@ void vfg::ThumbnailContainer::handleThumbnailSelection(vfg::VideoFrameThumbnail 
     thumbnail->markSelected();
     activeWidget = thumbnail;
 }
+
+vfg::VideoFrameThumbnail* vfg::ThumbnailContainer::takeSelected()
+{
+    // Bugfix: If the widget is not marked unselected before removing it,
+    // it won't remove the stylesheet from the container
+    activeWidget->markUnselected();
+    layout->removeWidget(activeWidget);
+    vfg::VideoFrameThumbnail* ret = activeWidget;
+    activeWidget = NULL;
+    return ret;
+}
