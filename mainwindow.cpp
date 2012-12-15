@@ -257,16 +257,29 @@ void MainWindow::on_actionSave_thumbnails_triggered()
         return;
     }
 
+    int numSaved = saved.size();
+    QProgressDialog prog("", "", 0, numSaved, this);
+    prog.setWindowModality(Qt::WindowModal);
+    prog.setCancelButton(0);
+    prog.setMinimumDuration(0);
     QDir saveDir(dir);
     QMapIterator<int, QImage> iter(saved);
     while(iter.hasNext())
     {
         iter.next();
+        int current = prog.value();
+        prog.setLabelText(tr("Saving image %1 of %2").arg(current).arg(numSaved));
+        prog.setValue(current + 1);
+        if(prog.wasCanceled())
+        {
+            QMessageBox::warning(this, tr("Saving thumbnails aborted"),
+                                 tr("Saved %1 of %2 thumbnails").arg(current).arg(numSaved));
+            break;
+        }
         QImage saveImage = iter.value();
-        QString savePath = saveDir.absoluteFilePath(QString("%1.png").arg(QString::number(iter.key())));
+        QString filename = QString("%1.png").arg(QString::number(iter.key()));
+        QString savePath = saveDir.absoluteFilePath(filename);
         saveImage.save(savePath, "PNG");
     }
-
-    QMessageBox::information(this, tr("Save thumbnails..."),
-                             tr("Saved!"));
+    prog.setValue(numSaved);
 }
