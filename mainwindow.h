@@ -57,6 +57,10 @@ private slots:
 
     void on_clearThumbsButton_clicked();
 
+    void on_thumbnailSizeSlider_sliderMoved(int position);
+
+    void on_thumbnailSizeSlider_valueChanged(int value);
+
 private:
     Ui::MainWindow *ui;
 

@@ -31,6 +31,18 @@ void vfg::ThumbnailContainer::clearThumbnails()
     }
 }
 
+void vfg::ThumbnailContainer::resizeThumbnails(unsigned width)
+{
+    for(int i = 0; i < layout->count(); ++i)
+    {
+        QLayoutItem* item = layout->itemAt(i);
+        if(item)
+        {
+            item->widget()->setFixedWidth(width);
+        }
+    }
+}
+
 void vfg::ThumbnailContainer::handleThumbnailSelection(vfg::VideoFrameThumbnail *thumbnail)
 {
     // Do nothing if same selection

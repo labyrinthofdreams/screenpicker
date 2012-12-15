@@ -45,7 +45,7 @@
              <x>0</x>
              <y>0</y>
              <width>876</width>
-             <height>86</height>
+             <height>81</height>
             </rect>
            </property>
           </widget>
@@ -230,7 +230,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>852</width>
-                 <height>232</height>
+                 <height>212</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -269,7 +269,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>852</width>
-                 <height>261</height>
+                 <height>241</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -296,6 +296,19 @@
         </item>
        </layout>
       </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QSlider" name="thumbnailSizeSlider">
+      <property name="minimum">
+       <number>100</number>
+      </property>
+      <property name="maximum">
+       <number>400</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
      </widget>
     </item>
    </layout>

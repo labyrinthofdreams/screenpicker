@@ -310,3 +310,15 @@ void MainWindow::on_clearThumbsButton_clicked()
     ui->unsavedWidget->clearThumbnails();
     unsaved.clear();
 }
+
+void MainWindow::on_thumbnailSizeSlider_sliderMoved(int position)
+{
+    ui->unsavedWidget->resizeThumbnails(position);
+    ui->savedWidget->resizeThumbnails(position);
+}
+
+void MainWindow::on_thumbnailSizeSlider_valueChanged(int value)
+{
+    ui->unsavedWidget->resizeThumbnails(value);
+    ui->savedWidget->resizeThumbnails(value);
+}
