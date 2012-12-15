@@ -6,7 +6,6 @@
 #include <QMap>
 
 // Forward declarations
-class FlowLayout;
 class QPoint;
 
 namespace vfg {
@@ -39,6 +38,8 @@ private slots:
 
     void handleUnsavedMenu(const QPoint& pos);
 
+    void handleSavedMenu(const QPoint& pos);
+
     void on_nextButton_clicked();
 
     void on_previousButton_clicked();
@@ -54,8 +55,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-
-    FlowLayout *savedLayout;
 
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::VideoFrameWidget* frameWidget;

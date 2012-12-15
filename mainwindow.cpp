@@ -1,14 +1,11 @@
 #include <QtGui>
 #include <exception>
-#include "flowlayout.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "videoframegrabber.h"
 #include "videoframewidget.h"
 #include "videoframethumbnail.h"
 #include "avisynthvideosource.h"
-
-
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -20,6 +17,9 @@ MainWindow::MainWindow(QWidget *parent) :
     {
          vfg::AvisynthVideoSource* avs = new vfg::AvisynthVideoSource;
          frameGrabber = new vfg::VideoFrameGrabber(avs, this);
+
+         frameWidget = new vfg::VideoFrameWidget(this);
+         ui->videoFrameArea->setWidget(frameWidget);
     }
     catch(std::exception& ex)
     {
@@ -31,17 +31,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(frameGrabber, SIGNAL(errorOccurred(QString)),
             this, SLOT(videoError(QString)));
 
-    frameWidget = new vfg::VideoFrameWidget(this);
-    ui->videoFrameArea->setWidget(frameWidget);
-
     // Connect grabber to the widget
     connect(frameGrabber, SIGNAL(frameGrabbed(QImage)),
-            frameWidget, SLOT(setFrame(QImage)));
-
-    // Widgets/layouts for the tabs
-    savedLayout = new FlowLayout;    
-
-    ui->savedWidget->setLayout(savedLayout);
+            frameWidget, SLOT(setFrame(QImage)));    
 
     connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)),
             this, SLOT(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)));
@@ -200,5 +192,34 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
     if(selected && selected->data().toInt() == 1)
     {
         // Move unsaved
+        vfg::VideoFrameThumbnail* thumb = ui->unsavedWidget->takeSelected();
+        disconnect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+                   this, SLOT(handleUnsavedMenu(QPoint)));
+        connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+                this, SLOT(handleSavedMenu(QPoint)));
+
+        ui->savedWidget->addThumbnail(thumb);
+    }
+}
+
+void MainWindow::handleSavedMenu(const QPoint &pos)
+{
+    QMenu menu;
+    QAction *unsaveAction = new QAction(tr("Unsave"), this);
+    unsaveAction->setData(1);
+    menu.addAction(unsaveAction);
+
+    QAction* selected = menu.exec(QCursor::pos());
+    if(selected && selected->data().toInt() == 1)
+    {
+        // If user chooses to unsave a thumbnail,
+        // we just remove it because we don't care
+        vfg::VideoFrameThumbnail* thumb = ui->savedWidget->takeSelected();
+        disconnect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+                   this, SLOT(handleSavedMenu(QPoint)));
+        connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+                this, SLOT(handleUnsavedMenu(QPoint)));
+
+        ui->unsavedWidget->addThumbnail(thumb);
     }
 }

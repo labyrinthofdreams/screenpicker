@@ -212,7 +212,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="first">
            <attribute name="title">
@@ -258,13 +258,13 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>98</width>
-                 <height>28</height>
+                 <width>852</width>
+                 <height>261</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_7">
                 <item>
-                 <widget class="QWidget" name="savedWidget" native="true"/>
+                 <widget class="vfg::ThumbnailContainer" name="savedWidget" native="true"/>
                 </item>
                </layout>
               </widget>
