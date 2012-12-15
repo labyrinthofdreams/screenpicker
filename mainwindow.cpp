@@ -191,7 +191,7 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
     QAction* selected = menu.exec(QCursor::pos());
     if(selected && selected->data().toInt() == 1)
     {
-        // Move unsaved
+        // Move thumbnail from unsaved tab to saved tab
         vfg::VideoFrameThumbnail* thumb = ui->unsavedWidget->takeSelected();
         disconnect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                    this, SLOT(handleUnsavedMenu(QPoint)));
@@ -212,8 +212,7 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
     QAction* selected = menu.exec(QCursor::pos());
     if(selected && selected->data().toInt() == 1)
     {
-        // If user chooses to unsave a thumbnail,
-        // we just remove it because we don't care
+        // Move thumbnail from saved tab to unsaved tab
         vfg::VideoFrameThumbnail* thumb = ui->savedWidget->takeSelected();
         disconnect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                    this, SLOT(handleSavedMenu(QPoint)));
