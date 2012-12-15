@@ -5,7 +5,8 @@
 using namespace vfg;
 
 AvisynthVideoSource::AvisynthVideoSource() :
-    AbstractVideoSource()
+    AbstractVideoSource(),
+    info(NULL)
 {
     if(internal_avs_load_library(&avsHandle) < 0)
     {
@@ -76,6 +77,11 @@ void AvisynthVideoSource::load(QString fileName)
 
 //    res = internal_avs_update_clip(&avsHandle, &info, conv_tmp, res);
     avsHandle.func.avs_release_value(res);
+}
+
+bool AvisynthVideoSource::hasVideo() const
+{
+    return (info != NULL) && avs_has_video(info);
 }
 
 unsigned AvisynthVideoSource::getNumFrames() const
