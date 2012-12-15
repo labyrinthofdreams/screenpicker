@@ -109,17 +109,12 @@ void MainWindow::on_previousButton_clicked()
 
 void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
 {
-    qDebug() << 1;
     frameWidget->setFullsize(checked);
-    qDebug() << 2;
     if(checked)
     {
-        qDebug() << 50;
         if(frameGrabber->hasVideo())
         {
-            qDebug() << 3;
             QImage frame = frameGrabber->getFrame(vfg::FirstFrame);
-qDebug() << 4;
 
             ui->logger->appendPlainText(tr("Resolution locked to %1x%2")
                                     .arg(frame.height())
@@ -172,7 +167,7 @@ void MainWindow::on_generateButton_clicked()
             connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                     this, SLOT(handleUnsavedMenu(QPoint)));
             //connect(thumb, SIGNAL(selected(uint)), this, SLOT(thumbnailDoubleClicked(uint)));
-            unsaved.insert(i, thumb);
+            unsaved.insert(i, frame);
             ui->unsavedWidget->addThumbnail(thumb);
         }
     }
@@ -191,7 +186,7 @@ void MainWindow::on_grabButton_clicked()
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleUnsavedMenu(QPoint)));
         //connect(thumb, SIGNAL(selected(uint)), this, SLOT(thumbnailDoubleClicked(uint)));
-        unsaved.insert(selected, thumb);
+        unsaved.insert(selected, frame);
         ui->unsavedWidget->addThumbnail(thumb);
     }
 }
@@ -212,6 +207,10 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
                    this, SLOT(handleUnsavedMenu(QPoint)));
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleSavedMenu(QPoint)));
+
+        // Move unsaved cached QImage to saved cache
+        QImage tmpUnsaved = unsaved.take(thumb->frameNum());
+        saved.insert(thumb->frameNum(), tmpUnsaved);
 
         ui->savedWidget->addThumbnail(thumb);
     }
@@ -234,6 +233,40 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleUnsavedMenu(QPoint)));
 
+        // Move saved cached QImage to unsaved cache
+        QImage tmpSaved = saved.take(thumb->frameNum());
+        unsaved.insert(thumb->frameNum(), tmpSaved);
+
         ui->unsavedWidget->addThumbnail(thumb);
     }
+}
+
+void MainWindow::on_actionSave_thumbnails_triggered()
+{
+    // Save saved images to disk
+    if(saved.isEmpty())
+    {
+        QMessageBox::information(this, tr("Save thumbnails..."),
+                                 tr("Nothing to save. Add at least one thumbnail to be saved."));
+        return;
+    }
+
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select save directory"));
+    if(dir.isEmpty())
+    {
+        return;
+    }
+
+    QDir saveDir(dir);
+    QMapIterator<int, QImage> iter(saved);
+    while(iter.hasNext())
+    {
+        iter.next();
+        QImage saveImage = iter.value();
+        QString savePath = saveDir.absoluteFilePath(QString("%1.png").arg(QString::number(iter.key())));
+        saveImage.save(savePath, "PNG");
+    }
+
+    QMessageBox::information(this, tr("Save thumbnails..."),
+                             tr("Saved!"));
 }

@@ -53,13 +53,15 @@ private slots:
 
     void on_grabButton_clicked();
 
+    void on_actionSave_thumbnails_triggered();
+
 private:
     Ui::MainWindow *ui;
 
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::VideoFrameWidget* frameWidget;
 
-    QMap<int, vfg::VideoFrameThumbnail*> unsaved;
+    QMap<int, QImage> unsaved;
     QMap<int, QImage> saved;
 };
 
