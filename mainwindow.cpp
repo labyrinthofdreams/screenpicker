@@ -147,9 +147,21 @@ void MainWindow::on_generateButton_clicked()
     const unsigned total = step * num;
     const unsigned lastPos = selected + total;
     const unsigned totalFrames = frameGrabber->totalFrames();
-    for(unsigned i = selected; i < lastPos; i += step)
+    QProgressDialog progress("", tr("Cancel"), 0, num, this);
+    progress.setMinimumDuration(0);
+    progress.setWindowModality(Qt::WindowModal);
+    unsigned lastProcessed = selected;
+    QList<vfg::VideoFrameThumbnail*> frames;
+    for(unsigned i = selected, j = 1; i < lastPos; i += step, ++j, lastProcessed += step)
     {
         if(i > totalFrames)
+        {
+            break;
+        }
+
+        progress.setLabelText(tr("Generating image %1 of %2").arg(j).arg(num));
+        progress.setValue(j);
+        if(progress.wasCanceled())
         {
             break;
         }
@@ -162,12 +174,17 @@ void MainWindow::on_generateButton_clicked()
             vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(i, thumbnail, this);
             connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                     this, SLOT(handleUnsavedMenu(QPoint)));
-            //connect(thumb, SIGNAL(selected(uint)), this, SLOT(thumbnailDoubleClicked(uint)));
+            frames.append(thumb);
             unsaved.insert(i, frame);
-            ui->unsavedWidget->addThumbnail(thumb);
         }
+        //qApp->processEvents();
     }
-    ui->seekSlider->setValue(selected + total);
+    while(!frames.isEmpty())
+    {
+        ui->unsavedWidget->addThumbnail(frames.takeFirst());
+    }
+    progress.setValue(num);
+    ui->seekSlider->setValue(lastProcessed);
 }
 
 void MainWindow::on_grabButton_clicked()
