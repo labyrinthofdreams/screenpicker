@@ -16,7 +16,8 @@ SOURCES += main.cpp\
     videoframewidget.cpp \
     videoframethumbnail.cpp \
     thumbnailcontainer.cpp \
-    avisynthvideosource.cpp
+    avisynthvideosource.cpp \
+    scripteditor.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -25,9 +26,11 @@ HEADERS  += mainwindow.h \
     videoframethumbnail.h \
     thumbnailcontainer.h \
     abstractvideosource.h \
-    avisynthvideosource.h
+    avisynthvideosource.h \
+    scripteditor.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    scripteditor.ui
 
 INCLUDEPATH += C:\cpplibs\avs2yuv-0.24bm2\avs2yuv\src
 #LIBS += -LC:\cpplibs\ffms-2.17-sdk -lffms2 -lole32
@@ -38,3 +41,6 @@ DEFINES -= UNICODE
 
 OTHER_FILES += \
     default.avs
+
+RESOURCES += \
+    resources.qrc

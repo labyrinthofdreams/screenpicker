@@ -11,6 +11,7 @@ class QPoint;
 namespace vfg {
     class VideoFrameGrabber;
     class VideoFrameThumbnail;
+    class ScriptEditor;
 }
 
 namespace Ui {
@@ -29,6 +30,8 @@ private slots:
 
     void on_actionOpen_triggered();
 
+    void loadFromAvisynthScript(QString path);
+
     void videoLoaded();
 
     void videoError(QString msg);
@@ -46,6 +49,7 @@ private slots:
     void on_generateButton_clicked();
 
     void on_originalResolutionCheckBox_toggled(bool checked);
+
     void on_seekSlider_valueChanged(int value);
 
     void on_seekSlider_sliderMoved(int position);
@@ -62,10 +66,14 @@ private slots:
 
     void on_saveThumbnailsButton_clicked();
 
+    void on_actionAvisynth_Script_Editor_triggered();
+
 private:
     Ui::MainWindow *ui;
 
     vfg::VideoFrameGrabber* frameGrabber;
+
+    vfg::ScriptEditor* scriptEditor;
 
     QMap<int, QImage> unsaved;
     QMap<int, QImage> saved;

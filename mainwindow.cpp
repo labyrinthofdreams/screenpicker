@@ -5,6 +5,7 @@
 #include "videoframegrabber.h"
 #include "videoframethumbnail.h"
 #include "avisynthvideosource.h"
+#include "scripteditor.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -16,6 +17,10 @@ MainWindow::MainWindow(QWidget *parent) :
     {
          vfg::AvisynthVideoSource* avs = new vfg::AvisynthVideoSource;
          frameGrabber = new vfg::VideoFrameGrabber(avs, this);
+
+         scriptEditor = new vfg::ScriptEditor;
+         connect(scriptEditor, SIGNAL(scriptUpdated(QString)),
+                 this, SLOT(loadFromAvisynthScript(QString)));
     }
     catch(std::exception& ex)
     {
@@ -38,6 +43,9 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+
+    if(scriptEditor)
+        delete scriptEditor;
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -53,6 +61,19 @@ void MainWindow::on_actionOpen_triggered()
         frameGrabber->load(filename);
         ui->logger->clear();
         ui->logger->appendPlainText(tr("Loading file... %1").arg(filename));
+    }
+    catch(std::exception& ex)
+    {
+        QMessageBox::warning(this, tr("Error while loading file"),
+                             QString(ex.what()));
+    }
+}
+
+void MainWindow::loadFromAvisynthScript(QString path)
+{
+    try
+    {
+        frameGrabber->load(path);
     }
     catch(std::exception& ex)
     {
@@ -339,4 +360,39 @@ void MainWindow::on_saveThumbnailsButton_clicked()
         saveImage.save(savePath, "PNG");
     }
     prog.setValue(numSaved);
+}
+
+void MainWindow::on_actionAvisynth_Script_Editor_triggered()
+{
+    QDir appDir(QDir::currentPath());
+    QString scriptPath = appDir.absoluteFilePath("default.avs");
+    QFile outFile(scriptPath);
+    QFile inFile(":/scripts/default.avs");
+    if(!outFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+    {
+        QMessageBox::critical(this, tr("Avisynth Script Editor"),
+                              tr("Failed to write Avisynth script to disk. Make sure app directory is writable."));
+        return;
+    }
+    if(!inFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::critical(this, tr("Avisynth Script Editor"),
+                              tr("Failed to open resource file. Try again."));
+    }
+
+    QTextStream in(&inFile);
+    QTextStream out(&outFile);
+    out << in.readAll();
+
+    inFile.close();
+    outFile.close();
+
+    if(!scriptEditor->loadFile(scriptPath))
+    {
+        QMessageBox::critical(this, tr("Avisynth Script Editor"),
+                              tr("Failed to open default.avs, make sure default.avs exists in the app directory"));
+        return;
+    }
+
+    scriptEditor->show();
 }
