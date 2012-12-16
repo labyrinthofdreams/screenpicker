@@ -107,6 +107,7 @@ QImage AvisynthVideoSource::getFrame(unsigned frameNumber)
     const unsigned scanlineLength = info->width * 4;
     const int pitch = avs_get_pitch(frame);
     const BYTE* data = avs_get_read_ptr(frame);
+    // If we used y instead of sy the image would be created upside-down
     for(int y = 0, sy = info->height - 1; y < info->height; ++y, --sy)
     {
         memcpy(image.scanLine(sy), data + y * pitch, scanlineLength);
