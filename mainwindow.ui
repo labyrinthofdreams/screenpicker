@@ -226,7 +226,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="first">
            <attribute name="title">
@@ -267,11 +267,17 @@
             </item>
             <item>
              <widget class="QSlider" name="thumbnailSizeSlider">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimum">
                <number>100</number>
               </property>
               <property name="maximum">
-               <number>400</number>
+               <number>200</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
