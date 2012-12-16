@@ -42,10 +42,10 @@ void ScriptEditor::on_updateButton_clicked()
 {
     // Write updated script
     QFile outFile(filepath);
-    if(!outFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
+    if(!outFile.open(QFile::WriteOnly | QFile::Truncate))
     {
         QMessageBox::critical(this, tr("Avisynth Script Editor"),
-                              tr("Failed to write Avisynth script to disk. Make sure app directory is writable."));
+                              tr("Failed to open Avisynth script for writing. Make sure folder isn't read-only."));
         return;
     }
 
