@@ -75,8 +75,12 @@ private:
 
     vfg::ScriptEditor* scriptEditor;
 
+    QString avisynthScriptFile;
+
     QMap<int, QImage> unsaved;
     QMap<int, QImage> saved;
+
+    void createAvisynthScriptFile();
 };
 
 #endif // MAINWINDOW_H

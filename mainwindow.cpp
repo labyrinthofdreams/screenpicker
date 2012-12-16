@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
          scriptEditor = new vfg::ScriptEditor;
          connect(scriptEditor, SIGNAL(scriptUpdated(QString)),
                  this, SLOT(loadFromAvisynthScript(QString)));
+
+         createAvisynthScriptFile();
     }
     catch(std::exception& ex)
     {
@@ -46,6 +48,24 @@ MainWindow::~MainWindow()
 
     if(scriptEditor)
         delete scriptEditor;
+}
+
+void MainWindow::createAvisynthScriptFile()
+{
+    QDir appDir(QDir::currentPath());
+    avisynthScriptFile = appDir.absoluteFilePath("default.avs");
+    QFile inFile(":/scripts/default.avs");
+    QFile outFile(avisynthScriptFile);
+
+    if(!inFile.open(QFile::ReadOnly | QFile::Text))
+        return;
+
+    if(!outFile.open(QFile::WriteOnly | QFile::Truncate))
+        return;
+
+    QTextStream in(&inFile);
+    QTextStream out(&outFile);
+    out << in.readAll();
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -364,30 +384,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
 
 void MainWindow::on_actionAvisynth_Script_Editor_triggered()
 {
-    QDir appDir(QDir::currentPath());
-    QString scriptPath = appDir.absoluteFilePath("default.avs");
-    QFile outFile(scriptPath);
-    QFile inFile(":/scripts/default.avs");
-    if(!outFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
-    {
-        QMessageBox::critical(this, tr("Avisynth Script Editor"),
-                              tr("Failed to write Avisynth script to disk. Make sure app directory is writable."));
-        return;
-    }
-    if(!inFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        QMessageBox::critical(this, tr("Avisynth Script Editor"),
-                              tr("Failed to open resource file. Try again."));
-    }
-
-    QTextStream in(&inFile);
-    QTextStream out(&outFile);
-    out << in.readAll();
-
-    inFile.close();
-    outFile.close();
-
-    if(!scriptEditor->loadFile(scriptPath))
+    if(!scriptEditor->loadFile(avisynthScriptFile))
     {
         QMessageBox::critical(this, tr("Avisynth Script Editor"),
                               tr("Failed to open default.avs, make sure default.avs exists in the app directory"));
