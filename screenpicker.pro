@@ -35,3 +35,6 @@ INCLUDEPATH += C:\cpplibs\avs2yuv-0.24bm2\avs2yuv\src
 # These are needed for Avisynth compilation
 QMAKE_CXXFLAGS += -fpermissive
 DEFINES -= UNICODE
+
+OTHER_FILES += \
+    default.avs
