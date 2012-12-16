@@ -175,7 +175,7 @@ void MainWindow::on_generateButton_clicked()
             connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                     this, SLOT(handleUnsavedMenu(QPoint)));
             frames.append(thumb);
-            unsaved.insert(i, frame);
+            //unsaved.insert(i, frame);
         }
         //qApp->processEvents();
     }
@@ -222,8 +222,8 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
                 this, SLOT(handleSavedMenu(QPoint)));
 
         // Move unsaved cached QImage to saved cache
-        QImage tmpUnsaved = unsaved.take(thumb->frameNum());
-        saved.insert(thumb->frameNum(), tmpUnsaved);
+//        QImage tmpUnsaved = unsaved.take(thumb->frameNum());
+//        saved.insert(thumb->frameNum(), tmpUnsaved);
 
         ui->savedWidget->addThumbnail(thumb);
     }
@@ -247,8 +247,8 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
                 this, SLOT(handleUnsavedMenu(QPoint)));
 
         // Move saved cached QImage to unsaved cache
-        QImage tmpSaved = saved.take(thumb->frameNum());
-        unsaved.insert(thumb->frameNum(), tmpSaved);
+//        QImage tmpSaved = saved.take(thumb->frameNum());
+//        unsaved.insert(thumb->frameNum(), tmpSaved);
 
         ui->unsavedWidget->addThumbnail(thumb);
     }
