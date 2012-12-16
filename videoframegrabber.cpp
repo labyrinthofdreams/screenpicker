@@ -12,7 +12,8 @@ vfg::VideoFrameGrabber::VideoFrameGrabber(vfg::AbstractVideoSource *avs,
 
 vfg::VideoFrameGrabber::~VideoFrameGrabber()
 {
-    delete avs;
+    if(avs)
+        delete avs;
 }
 
 void vfg::VideoFrameGrabber::load(QString filename)
