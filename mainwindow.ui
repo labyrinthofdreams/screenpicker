@@ -226,7 +226,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="first">
            <attribute name="title">
@@ -296,7 +296,7 @@
                  <x>0</x>
                  <y>0</y>
                  <width>852</width>
-                 <height>241</height>
+                 <height>232</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -305,6 +305,13 @@
                 </item>
                </layout>
               </widget>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="saveThumbnailsButton">
+              <property name="text">
+               <string>Save</string>
+              </property>
              </widget>
             </item>
            </layout>
@@ -340,7 +347,6 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionSave_thumbnails"/>
    </widget>
    <widget class="QMenu" name="menuVideo">
     <property name="title">

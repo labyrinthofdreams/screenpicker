@@ -60,6 +60,8 @@ private slots:
 
     void on_thumbnailSizeSlider_valueChanged(int value);
 
+    void on_saveThumbnailsButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 

@@ -256,6 +256,29 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
 
 void MainWindow::on_actionSave_thumbnails_triggered()
 {
+
+}
+
+void MainWindow::on_clearThumbsButton_clicked()
+{
+    ui->unsavedWidget->clearThumbnails();
+    unsaved.clear();
+}
+
+void MainWindow::on_thumbnailSizeSlider_sliderMoved(int position)
+{
+    ui->unsavedWidget->resizeThumbnails(position);
+    ui->savedWidget->resizeThumbnails(position);
+}
+
+void MainWindow::on_thumbnailSizeSlider_valueChanged(int value)
+{
+    ui->unsavedWidget->resizeThumbnails(value);
+    ui->savedWidget->resizeThumbnails(value);
+}
+
+void MainWindow::on_saveThumbnailsButton_clicked()
+{
     // Save saved images to disk
     if(saved.isEmpty())
     {
@@ -316,22 +339,4 @@ void MainWindow::on_actionSave_thumbnails_triggered()
         saveImage.save(savePath, "PNG");
     }
     prog.setValue(numSaved);
-}
-
-void MainWindow::on_clearThumbsButton_clicked()
-{
-    ui->unsavedWidget->clearThumbnails();
-    unsaved.clear();
-}
-
-void MainWindow::on_thumbnailSizeSlider_sliderMoved(int position)
-{
-    ui->unsavedWidget->resizeThumbnails(position);
-    ui->savedWidget->resizeThumbnails(position);
-}
-
-void MainWindow::on_thumbnailSizeSlider_valueChanged(int value)
-{
-    ui->unsavedWidget->resizeThumbnails(value);
-    ui->savedWidget->resizeThumbnails(value);
 }
