@@ -76,7 +76,6 @@ private:
 
     vfg::ScriptEditor* scriptEditor;
 
-    QString avisynthScriptFile;
     QSet<unsigned> framesToSave;
 
     void createAvisynthScriptFile();
