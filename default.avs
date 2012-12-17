@@ -11,6 +11,8 @@ LoadPlugin("avisynth/ffms2.dll")
 LoadPlugin("avisynth/TIVTC.dll")
 
 # Load video
+# Use MPEG2Source for .d2v project files
+# MPEG2Source(PathToVideo)
 FFVideoSource(PathToVideo)
 
 # Our application currently only understands RGB32
