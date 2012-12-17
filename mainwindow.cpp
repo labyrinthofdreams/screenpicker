@@ -54,7 +54,13 @@ MainWindow::~MainWindow()
 void MainWindow::createAvisynthScriptFile()
 {
     QDir appDir(QDir::currentPath());
-    avisynthScriptFile = appDir.absoluteFilePath("default.avs");
+    QString avisynthScriptFile = appDir.absoluteFilePath("default.avs");
+
+    // Only create the default Avisynth script template file
+    // if it doesn't exist to allow the user to change it
+    if(QFile::exists(avisynthScriptFile))
+        return;
+
     QFile inFile(":/scripts/default.avs");
     QFile outFile(avisynthScriptFile);
 
@@ -72,16 +78,23 @@ void MainWindow::createAvisynthScriptFile()
 void MainWindow::on_actionOpen_triggered()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open video"),
-                                                    QString(),
-                                                    frameGrabber->getVideoSource()->getSupportedFormats());
+                                                    "", "Avisynth (*.avs);;All (*.*)");
     if(filename.isEmpty())
         return;
 
     try
     {
-        frameGrabber->load(filename);
-        ui->logger->clear();
-        ui->logger->appendPlainText(tr("Loading file... %1").arg(filename));
+        QFileInfo file(filename);
+        if(file.suffix() == "avs")
+        {
+            scriptEditor->loadScript(filename);
+        }
+        else
+        {
+            scriptEditor->loadVideo(filename);
+        }
+
+        scriptEditor->show();
     }
     catch(std::exception& ex)
     {
@@ -374,12 +387,12 @@ void MainWindow::on_saveThumbnailsButton_clicked()
 
 void MainWindow::on_actionAvisynth_Script_Editor_triggered()
 {
-    if(!scriptEditor->loadFile(avisynthScriptFile))
-    {
-        QMessageBox::critical(this, tr("Avisynth Script Editor"),
-                              tr("Failed to open default.avs, make sure default.avs exists in the app directory"));
-        return;
-    }
+//    if(!scriptEditor->loadFile(avisynthScriptFile))
+//    {
+//        QMessageBox::critical(this, tr("Avisynth Script Editor"),
+//                              tr("Failed to open default.avs, make sure default.avs exists in the app directory"));
+//        return;
+//    }
 
     scriptEditor->show();
 }
