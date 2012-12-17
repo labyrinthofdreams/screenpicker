@@ -9,7 +9,8 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    framesToSave()
 {
     ui->setupUi(this);
 
@@ -265,6 +266,7 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
         // Move unsaved cached QImage to saved cache
 //        QImage tmpUnsaved = unsaved.take(thumb->frameNum());
 //        saved.insert(thumb->frameNum(), tmpUnsaved);
+        framesToSave.insert(thumb->frameNum());
 
         ui->savedWidget->addThumbnail(thumb);
     }
@@ -290,6 +292,7 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
         // Move saved cached QImage to unsaved cache
 //        QImage tmpSaved = saved.take(thumb->frameNum());
 //        unsaved.insert(thumb->frameNum(), tmpSaved);
+        framesToSave.remove(thumb->frameNum());
 
         ui->unsavedWidget->addThumbnail(thumb);
     }
@@ -320,10 +323,10 @@ void MainWindow::on_thumbnailSizeSlider_valueChanged(int value)
 void MainWindow::on_saveThumbnailsButton_clicked()
 {
     // Save saved images to disk
-    if(saved.isEmpty())
+    if(framesToSave.isEmpty())
     {
-        QMessageBox::information(this, tr("Save thumbnails..."),
-                                 tr("Nothing to save. Add one or more thumbnails to save."));
+        QMessageBox::information(this, tr("Save screenshots"),
+                                 tr("Nothing to save. Add one or more screenshots to save."));
         return;
     }
 
@@ -340,25 +343,22 @@ void MainWindow::on_saveThumbnailsButton_clicked()
                                                                 QMessageBox::Yes, QMessageBox::No);
     if(clicked == QMessageBox::Yes)
     {
-        QImage dummyImage = saved.begin().value();
-        int imageWidth = dummyImage.width();
-
-        resizeWidth = QInputDialog::getInt(this, tr("Resize thumbnails"), tr("Resize to width (100-%2):")
-                                           .arg(QString::number(imageWidth)),
-                                           imageWidth, 100, imageWidth, 10, &resizeOk);
+        // TODO: Remove hard-coded resize values
+        resizeWidth = QInputDialog::getInt(this, tr("Resize thumbnails"), tr("Resize to width:"),
+                                           500, 100, 1920, 10, &resizeOk);
     }
 
-    int numSaved = saved.size();
-    QProgressDialog prog("", "", 0, numSaved, this);
+    int numSaved = framesToSave.count();
+    QProgressDialog prog("", "Cancel", 0, numSaved, this);
     prog.setWindowModality(Qt::WindowModal);
     prog.setCancelButton(0);
     prog.setMinimumDuration(0);
     QDir saveDir(dir);
-    QMapIterator<int, QImage> iter(saved);
+    QSetIterator<unsigned> iter(framesToSave);
     while(iter.hasNext())
     {
-        iter.next();
-        int current = prog.value();
+        const unsigned frameNumber = iter.next();
+        const int current = prog.value();
         prog.setLabelText(tr("Saving image %1 of %2").arg(current).arg(numSaved));
         prog.setValue(current + 1);
         if(prog.wasCanceled())
@@ -368,15 +368,16 @@ void MainWindow::on_saveThumbnailsButton_clicked()
             break;
         }
 
-        QString filename = QString("%1.png").arg(QString::number(iter.key()));
+        QString filename = QString("%1.png").arg(QString::number(frameNumber));
         QString savePath = saveDir.absoluteFilePath(filename);
 
-        QImage saveImage = iter.value();
+        // Get current frame
+        QImage frame = frameGrabber->getFrame(frameNumber);
         if(resizeOk)
         {
-            saveImage = saveImage.scaledToWidth(resizeWidth, Qt::SmoothTransformation);
+            frame = frame.scaledToWidth(resizeWidth, Qt::SmoothTransformation);
         }
-        saveImage.save(savePath, "PNG");
+        frame.save(savePath, "PNG");
     }
     prog.setValue(numSaved);
 }
