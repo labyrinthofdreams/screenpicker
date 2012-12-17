@@ -248,6 +248,9 @@
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_8">
+                <property name="margin">
+                 <number>0</number>
+                </property>
                 <item>
                  <widget class="vfg::ThumbnailContainer" name="unsavedWidget" native="true"/>
                 </item>
@@ -306,6 +309,9 @@
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_7">
+                <property name="margin">
+                 <number>0</number>
+                </property>
                 <item>
                  <widget class="vfg::ThumbnailContainer" name="savedWidget" native="true"/>
                 </item>
@@ -358,7 +364,6 @@
     <property name="title">
      <string>Video</string>
     </property>
-    <addaction name="actionOpen_Video"/>
     <addaction name="actionOpen"/>
     <addaction name="separator"/>
     <addaction name="actionAvisynth_Script_Editor"/>
@@ -369,7 +374,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
    <property name="text">
-    <string>Open Avisynth Script</string>
+    <string>Open...</string>
    </property>
   </action>
   <action name="actionSave_thumbnails">
@@ -385,11 +390,6 @@
   <action name="actionAvisynth_Script_Editor">
    <property name="text">
     <string>Avisynth Script Editor</string>
-   </property>
-  </action>
-  <action name="actionOpen_Video">
-   <property name="text">
-    <string>Open Video</string>
    </property>
   </action>
  </widget>
