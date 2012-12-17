@@ -208,18 +208,13 @@ void MainWindow::on_generateButton_clicked()
             break;
         }
 
-        if(!unsaved.contains(i))
-        {
-            QImage frame = frameGrabber->getFrame(i);
-            QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200);
+        QImage frame = frameGrabber->getFrame(i);
+        QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200);
 
-            vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(i, thumbnail, this);
-            connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
-                    this, SLOT(handleUnsavedMenu(QPoint)));
-            frames.append(thumb);
-            //unsaved.insert(i, frame);
-        }
-        //qApp->processEvents();
+        vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(i, thumbnail, this);
+        connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+                this, SLOT(handleUnsavedMenu(QPoint)));
+        frames.append(thumb);
     }
     while(!frames.isEmpty())
     {
@@ -231,19 +226,14 @@ void MainWindow::on_generateButton_clicked()
 
 void MainWindow::on_grabButton_clicked()
 {
-    const unsigned selected = ui->seekSlider->value();
-    if(!unsaved.contains(selected))
-    {        
-        QImage frame = frameGrabber->getFrame(selected);
-        QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200);
+    const unsigned selected = ui->seekSlider->value();      
+    QImage frame = frameGrabber->getFrame(selected);
+    QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200);
 
-        vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(selected, thumbnail, this);
-        connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
-                this, SLOT(handleUnsavedMenu(QPoint)));
-        //connect(thumb, SIGNAL(selected(uint)), this, SLOT(thumbnailDoubleClicked(uint)));
-        unsaved.insert(selected, frame);
-        ui->unsavedWidget->addThumbnail(thumb);
-    }
+    vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(selected, thumbnail, this);
+    connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+            this, SLOT(handleUnsavedMenu(QPoint)));
+    ui->unsavedWidget->addThumbnail(thumb);
 }
 
 void MainWindow::handleUnsavedMenu(const QPoint &pos)
@@ -348,7 +338,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
                                            500, 100, 1920, 10, &resizeOk);
     }
 
-    int numSaved = framesToSave.count();
+    const int numSaved = framesToSave.count();
     QProgressDialog prog("", "Cancel", 0, numSaved, this);
     prog.setWindowModality(Qt::WindowModal);
     prog.setCancelButton(0);
