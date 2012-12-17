@@ -303,7 +303,6 @@ void MainWindow::on_actionSave_thumbnails_triggered()
 void MainWindow::on_clearThumbsButton_clicked()
 {
     ui->unsavedWidget->clearThumbnails();
-    unsaved.clear();
 }
 
 void MainWindow::on_thumbnailSizeSlider_sliderMoved(int position)
