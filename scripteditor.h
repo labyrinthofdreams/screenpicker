@@ -18,17 +18,18 @@ namespace vfg
         explicit ScriptEditor(QWidget *parent = 0);
         ~ScriptEditor();
 
-        bool loadFile(QString path);
+        void loadVideo(QString path);
+        void loadScript(QString path);
     private slots:
         void on_updateButton_clicked();
 
     private:
         Ui::ScriptEditor *ui;
 
-        QString filepath;
-
     signals:
-        void scriptUpdated(QString path);
+        // Emits name of the temporary script path
+        // with our modified script
+        void scriptUpdated(QString tmpScriptPath);
     };
 }
 

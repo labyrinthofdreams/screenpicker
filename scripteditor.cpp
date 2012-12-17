@@ -7,8 +7,7 @@ using namespace vfg;
 
 ScriptEditor::ScriptEditor(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ScriptEditor),
-    filepath()
+    ui(new Ui::ScriptEditor)
 {
     ui->setupUi(this);        
 }
@@ -18,30 +17,44 @@ ScriptEditor::~ScriptEditor()
     delete ui;
 }
 
-bool ScriptEditor::loadFile(QString path)
+void ScriptEditor::loadScript(QString path)
 {
     QFile scriptfile(path);
     if(!scriptfile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        return false;
+        throw std::runtime_error("Failed to open file for reading.");
     }
+
+    QTextStream in(&scriptfile);
+    QString script = in.readAll();
 
     ui->plainTextEdit->clear();
-    QTextStream in(&scriptfile);
-    while(!in.atEnd())
+    ui->plainTextEdit->appendPlainText(script);
+
+    on_updateButton_clicked();
+}
+
+void ScriptEditor::loadVideo(QString path)
+{
+    QFile inFile("default.avs");
+    if(!inFile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        ui->plainTextEdit->appendPlainText(in.readLine());
+        throw std::runtime_error("Failed to open script file for reading.");
     }
 
-    filepath = path;
+    QTextStream in(&inFile);
+    QString parsedScript = in.readAll().arg(path);
 
-    return true;
+    ui->plainTextEdit->clear();
+    ui->plainTextEdit->appendPlainText(parsedScript);
+
+    on_updateButton_clicked();
 }
 
 void ScriptEditor::on_updateButton_clicked()
 {
     // Write updated script
-    QFile outFile(filepath);
+    QFile outFile("temp.avs");
     if(!outFile.open(QFile::WriteOnly | QFile::Truncate))
     {
         QMessageBox::critical(this, tr("Avisynth Script Editor"),
@@ -54,5 +67,5 @@ void ScriptEditor::on_updateButton_clicked()
 
     outFile.close();
 
-    emit scriptUpdated(filepath);
+    emit scriptUpdated("temp.avs");
 }
