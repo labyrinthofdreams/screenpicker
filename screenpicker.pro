@@ -42,4 +42,5 @@ DEFINES -= UNICODE
 OTHER_FILES += \
     default.avs
 
-RESOURCES +=
+RESOURCES += \
+    resources.qrc
