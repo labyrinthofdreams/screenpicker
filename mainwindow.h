@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QString>
 #include <QMap>
+#include <QSet>
 
 // Forward declarations
 class QPoint;
@@ -79,6 +80,7 @@ private:
 
     QMap<int, QImage> unsaved;
     QMap<int, QImage> saved;
+    QSet<unsigned> framesToSave;
 
     void createAvisynthScriptFile();
 };
