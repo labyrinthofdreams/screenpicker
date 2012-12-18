@@ -208,6 +208,7 @@ void MainWindow::on_generateButton_clicked()
     const unsigned total = step * num;
     const unsigned lastPos = selected + total;
     const unsigned totalFrames = frameGrabber->totalFrames();
+    const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
     QProgressDialog progress("", tr("Cancel"), 0, num, this);
     progress.setMinimumDuration(0);
     progress.setWindowModality(Qt::WindowModal);
@@ -231,6 +232,7 @@ void MainWindow::on_generateButton_clicked()
         QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::FastTransformation);
 
         vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(i, thumbnail, this);
+        thumb->setFixedWidth(thumbnailSize);
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleUnsavedMenu(QPoint)));
         frames.append(thumb);
@@ -246,10 +248,12 @@ void MainWindow::on_generateButton_clicked()
 void MainWindow::on_grabButton_clicked()
 {
     const unsigned selected = ui->seekSlider->value();      
+    const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
     QImage frame = frameGrabber->getFrame(selected);
     QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200);
 
     vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(selected, thumbnail, this);
+    thumb->setFixedWidth(thumbnailSize);
     connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handleUnsavedMenu(QPoint)));
     ui->unsavedWidget->addThumbnail(thumb);
