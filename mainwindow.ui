@@ -244,60 +244,81 @@
            <attribute name="title">
             <string>Screenshots</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
+           <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
-             <widget class="QScrollArea" name="unsavedTabScrollArea">
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
-              <widget class="QWidget" name="scrollAreaWidgetContents_3">
-               <property name="geometry">
-                <rect>
-                 <x>0</x>
-                 <y>0</y>
-                 <width>852</width>
-                 <height>207</height>
-                </rect>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_8">
-                <property name="margin">
-                 <number>0</number>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="QScrollArea" name="unsavedTabScrollArea">
+                <property name="widgetResizable">
+                 <bool>true</bool>
                 </property>
+                <widget class="QWidget" name="scrollAreaWidgetContents_3">
+                 <property name="geometry">
+                  <rect>
+                   <x>0</x>
+                   <y>0</y>
+                   <width>850</width>
+                   <height>228</height>
+                  </rect>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_8">
+                  <property name="margin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="vfg::ThumbnailContainer" name="unsavedWidget" native="true"/>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <item>
-                 <widget class="vfg::ThumbnailContainer" name="unsavedWidget" native="true"/>
+                 <widget class="QSlider" name="thumbnailSizeSlider">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimum">
+                   <number>100</number>
+                  </property>
+                  <property name="maximum">
+                   <number>200</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="clearThumbsButton">
+                  <property name="toolTip">
+                   <string>Clear all unsaved thumbnails</string>
+                  </property>
+                  <property name="text">
+                   <string>Clear</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                </layout>
-              </widget>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="clearThumbsButton">
-              <property name="toolTip">
-               <string>Clear all unsaved thumbnails</string>
-              </property>
-              <property name="text">
-               <string>Clear</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="thumbnailSizeSlider">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimum">
-               <number>100</number>
-              </property>
-              <property name="maximum">
-               <number>200</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
@@ -305,38 +326,59 @@
            <attribute name="title">
             <string>Saved</string>
            </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_5">
+           <layout class="QVBoxLayout" name="verticalLayout_11">
             <item>
-             <widget class="QScrollArea" name="savedTabScrollArea">
-              <property name="widgetResizable">
-               <bool>true</bool>
-              </property>
-              <widget class="QWidget" name="scrollAreaWidgetContents_2">
-               <property name="geometry">
-                <rect>
-                 <x>0</x>
-                 <y>0</y>
-                 <width>852</width>
-                 <height>232</height>
-                </rect>
-               </property>
-               <layout class="QVBoxLayout" name="verticalLayout_7">
-                <property name="margin">
-                 <number>0</number>
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <item>
+               <widget class="QScrollArea" name="savedTabScrollArea">
+                <property name="widgetResizable">
+                 <bool>true</bool>
                 </property>
+                <widget class="QWidget" name="scrollAreaWidgetContents_2">
+                 <property name="geometry">
+                  <rect>
+                   <x>0</x>
+                   <y>0</y>
+                   <width>850</width>
+                   <height>228</height>
+                  </rect>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_7">
+                  <property name="margin">
+                   <number>0</number>
+                  </property>
+                  <item>
+                   <widget class="vfg::ThumbnailContainer" name="savedWidget" native="true"/>
+                  </item>
+                 </layout>
+                </widget>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
                 <item>
-                 <widget class="vfg::ThumbnailContainer" name="savedWidget" native="true"/>
+                 <widget class="QPushButton" name="saveThumbnailsButton">
+                  <property name="text">
+                   <string>Save</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                </layout>
-              </widget>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="saveThumbnailsButton">
-              <property name="text">
-               <string>Save</string>
-              </property>
-             </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
