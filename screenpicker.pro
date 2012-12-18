@@ -35,7 +35,7 @@ FORMS    += mainwindow.ui \
 INCLUDEPATH += C:\cpplibs\avs2yuv-0.24bm2\avs2yuv\src
 
 # These are needed for Avisynth compilation
-QMAKE_CXXFLAGS += -fpermissive -O3 -ffast-math -Wall -Wshadow -Wempty-body -I. -fomit-frame-pointer -s -fno-tree-vectorize -fno-zero-initialized-in-bss
+QMAKE_CXXFLAGS += -fpermissive
 DEFINES -= UNICODE
 
 OTHER_FILES += \
