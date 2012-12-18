@@ -18,6 +18,16 @@ void vfg::ThumbnailContainer::addThumbnail(vfg::VideoFrameThumbnail *thumbnail)
     connect(thumbnail, SIGNAL(doubleClicked(vfg::VideoFrameThumbnail*)),
             this, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)));
 
+    if(layout->count() == 100)
+    {
+        QLayoutItem *item = layout->takeAt(0);
+        if(item)
+        {
+            delete item->widget();
+            delete item;
+        }
+    }
+
     layout->addWidget(thumbnail);
 }
 
