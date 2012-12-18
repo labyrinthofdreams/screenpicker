@@ -129,6 +129,12 @@ void MainWindow::videoLoaded()
     ui->seekSlider->setValue(vfg::FirstFrame);
     // Show first frame
     frameGrabber->requestFrame(vfg::FirstFrame);
+
+    // Enable buttons
+    ui->previousButton->setEnabled(true);
+    ui->nextButton->setEnabled(true);
+    ui->grabButton->setEnabled(true);
+    ui->generateButton->setEnabled(true);
 }
 
 void MainWindow::videoError(QString msg)
@@ -222,7 +228,7 @@ void MainWindow::on_generateButton_clicked()
         }
 
         QImage frame = frameGrabber->getFrame(i);
-        QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200);
+        QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::FastTransformation);
 
         vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(i, thumbnail, this);
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
