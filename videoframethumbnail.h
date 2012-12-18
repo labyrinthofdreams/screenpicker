@@ -22,6 +22,7 @@ namespace vfg
     public:
         explicit VideoFrameThumbnail(unsigned frame, QPixmap thumbnail,
                                      QWidget *parent = 0);
+        ~VideoFrameThumbnail();
 
         void markSelected();
         void markUnselected();

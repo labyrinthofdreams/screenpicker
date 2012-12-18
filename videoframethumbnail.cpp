@@ -21,10 +21,15 @@ vfg::VideoFrameThumbnail::VideoFrameThumbnail(unsigned frame, QPixmap thumbnail,
     setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
+vfg::VideoFrameThumbnail::~VideoFrameThumbnail()
+{
+    qDebug() << "Destroy video frame #" << frameNumber;
+}
+
 void vfg::VideoFrameThumbnail::updateFrameSize()
 {
     pixmapLabel->setPixmap(thumb.scaledToWidth(pixmapLabel->width(),
-                                               Qt::SmoothTransformation));
+                                               Qt::FastTransformation));
 }
 
 void vfg::VideoFrameThumbnail::markSelected()
