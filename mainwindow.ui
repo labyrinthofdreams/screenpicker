@@ -425,6 +425,7 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuVideo">
     <property name="title">
@@ -446,6 +447,11 @@
   <action name="actionAvisynth_Script_Editor">
    <property name="text">
     <string>Avisynth Script Editor</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
    </property>
   </action>
  </widget>

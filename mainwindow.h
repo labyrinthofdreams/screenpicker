@@ -67,6 +67,8 @@ private slots:
 
     void on_actionAvisynth_Script_Editor_triggered();
 
+    void on_actionQuit_triggered();
+
 private:
     Ui::MainWindow *ui;
 

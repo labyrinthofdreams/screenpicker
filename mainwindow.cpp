@@ -401,3 +401,8 @@ void MainWindow::on_actionAvisynth_Script_Editor_triggered()
 
     scriptEditor->show();
 }
+
+void MainWindow::on_actionQuit_triggered()
+{
+    close();
+}
