@@ -25,6 +25,8 @@ AvisynthVideoSource::AvisynthVideoSource() :
             throw std::runtime_error(error);
         }
     }
+
+    avsHandle.func.avs_set_memory_max(avsHandle.env, 128);
 }
 
 AvisynthVideoSource::~AvisynthVideoSource()
