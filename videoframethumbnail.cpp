@@ -15,7 +15,7 @@ vfg::VideoFrameThumbnail::VideoFrameThumbnail(unsigned frame, QPixmap thumbnail,
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(pixmapLabel);
     setLayout(layout);
-    setFixedWidth(100);
+    //setFixedWidth(100);
     setContentsMargins(0, 0, 0, 0);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setContextMenuPolicy(Qt::CustomContextMenu);
