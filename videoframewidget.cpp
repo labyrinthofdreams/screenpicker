@@ -7,8 +7,6 @@ vfg::VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
     fullsize(false)
 {
     frameLabel = new QLabel;
-    frameLabel->setSizePolicy(QSizePolicy::Expanding,
-                              QSizePolicy::Expanding);
     frameLabel->setAlignment(Qt::AlignCenter);
     // If size policy is not ignored,
     // it prevents the resizeEvent() from being called properly
@@ -23,7 +21,7 @@ vfg::VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
 
     setAutoFillBackground(true);
     QPalette plt = palette();
-    plt.setColor(QPalette::Window, Qt::red);
+    plt.setColor(QPalette::Window, Qt::white);
     setPalette(plt);
 
     setContentsMargins(0, 0, 0, 0);
@@ -56,15 +54,16 @@ void vfg::VideoFrameWidget::updateFrameSize()
     {
         setMinimumSize(1, 1);
         setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+
+        frameLabel->setPixmap(framePixmap.scaled(frameLabel->size(),
+                                                 Qt::KeepAspectRatio,
+                                                 Qt::SmoothTransformation));
     }
     else
     {
-        setFixedSize(framePixmap.size());
+        frameLabel->setPixmap(framePixmap);
+        setFixedHeight(framePixmap.height());
     }
-
-    frameLabel->setPixmap(framePixmap.scaled(frameLabel->size(),
-                                             Qt::KeepAspectRatio,
-                                             Qt::SmoothTransformation));
 }
 
 void vfg::VideoFrameWidget::setFullsize(bool value)
