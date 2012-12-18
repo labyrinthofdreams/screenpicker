@@ -9,6 +9,7 @@ LoadPlugin("avisynth/DGDecode.dll")
 LoadPlugin("avisynth/ffms2.dll")
 # For TFM, TDecimate, ...
 LoadPlugin("avisynth/TIVTC.dll")
+Import("avisynth/FFMS2.avsi")
 
 # Load video
 # Use MPEG2Source for .d2v project files
@@ -27,4 +28,5 @@ ConvertToRGB32()
 # Crop(8,2,-10,-4)
 
 # If you want to display info about frames
+# Doesn't work well with MPEG2Source()
 # FFInfo(framenum=true, frametype=true, cfrtime=false, vfrtime=false)
