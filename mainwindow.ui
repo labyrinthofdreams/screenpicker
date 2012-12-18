@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>ScreenPicker</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -47,6 +47,18 @@
              <width>876</width>
              <height>86</height>
             </rect>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_9">
             <property name="margin">
@@ -294,16 +306,6 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="clearThumbsButton">
-                  <property name="toolTip">
-                   <string>Clear all unsaved thumbnails</string>
-                  </property>
-                  <property name="text">
-                   <string>Clear</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
                  <spacer name="horizontalSpacer_2">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
@@ -315,6 +317,16 @@
                    </size>
                   </property>
                  </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="clearThumbsButton">
+                  <property name="toolTip">
+                   <string>Clear all unsaved thumbnails</string>
+                  </property>
+                  <property name="text">
+                   <string>Clear</string>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </item>
@@ -357,13 +369,6 @@
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_4">
                 <item>
-                 <widget class="QPushButton" name="saveThumbnailsButton">
-                  <property name="text">
-                   <string>Save</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
                  <spacer name="horizontalSpacer_3">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
@@ -375,6 +380,13 @@
                    </size>
                   </property>
                  </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="saveThumbnailsButton">
+                  <property name="text">
+                   <string>Save</string>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </item>
