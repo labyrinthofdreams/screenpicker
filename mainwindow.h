@@ -57,8 +57,6 @@ private slots:
 
     void on_grabButton_clicked();
 
-    void on_actionSave_thumbnails_triggered();
-
     void on_clearThumbsButton_clicked();
 
     void on_thumbnailSizeSlider_sliderMoved(int position);

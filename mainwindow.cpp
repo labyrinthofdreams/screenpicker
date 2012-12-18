@@ -301,11 +301,6 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
     }
 }
 
-void MainWindow::on_actionSave_thumbnails_triggered()
-{
-
-}
-
 void MainWindow::on_clearThumbsButton_clicked()
 {
     ui->unsavedWidget->clearThumbnails();
