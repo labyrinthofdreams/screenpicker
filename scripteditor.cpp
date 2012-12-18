@@ -14,6 +14,7 @@ ScriptEditor::ScriptEditor(QWidget *parent) :
 
 ScriptEditor::~ScriptEditor()
 {
+    QFile::remove("temp.avs");
     delete ui;
 }
 
