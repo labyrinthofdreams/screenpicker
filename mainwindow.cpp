@@ -78,7 +78,7 @@ void MainWindow::createAvisynthScriptFile()
 void MainWindow::on_actionOpen_triggered()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open video"),
-                                                    "", "Avisynth (*.avs);;All (*.*)");
+                                                    "", "All (*.*);;Avisynth (*.avs, *.avsi);;DGIndex (*.d2v)");
     if(filename.isEmpty())
         return;
 
