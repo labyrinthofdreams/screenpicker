@@ -122,6 +122,6 @@ QImage AvisynthVideoSource::getFrame(unsigned frameNumber)
 
 QString AvisynthVideoSource::getSupportedFormats()
 {
-    static const QString formats = "Avisynth files (*.avs)";
+    static const QString formats = "Avisynth files (*.avs,*.avsi)";
     return formats;
 }
