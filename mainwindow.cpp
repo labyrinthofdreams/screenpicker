@@ -179,25 +179,6 @@ void MainWindow::on_previousButton_clicked()
 void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
 {
     ui->videoFrameWidget->setFullsize(checked);
-    if(checked)
-    {
-        if(frameGrabber->hasVideo())
-        {
-            QImage frame = frameGrabber->getFrame(vfg::FirstFrame);
-
-            ui->logger->appendPlainText(tr("Resolution locked to %1x%2")
-                                    .arg(frame.height())
-                                    .arg(frame.width()));
-        }
-        else
-        {
-            ui->logger->appendPlainText(tr("Resolution locked"));
-        }
-    }
-    else
-    {
-        ui->logger->appendPlainText(tr("Resolution unlocked"));
-    }
 }
 
 
