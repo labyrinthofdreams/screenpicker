@@ -76,7 +76,9 @@ vfg::VideoFrameThumbnail* vfg::ThumbnailContainer::takeSelected()
     // Bugfix: If the widget is not marked unselected before removing it,
     // it won't remove the stylesheet from the container
     activeWidget->markUnselected();
-    layout->removeWidget(activeWidget);
+
+    int widgetIndex = layout->indexOf(activeWidget);
+    QLayoutItem* item = layout->takeAt(widgetIndex);
     vfg::VideoFrameThumbnail* ret = activeWidget;
     activeWidget = NULL;
     return ret;
