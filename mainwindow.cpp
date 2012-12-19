@@ -368,9 +368,10 @@ void MainWindow::on_saveThumbnailsButton_clicked()
                                                                 QMessageBox::Yes, QMessageBox::No);
     if(clicked == QMessageBox::Yes)
     {
-        // TODO: Remove hard-coded resize values
+        QSize frameSize = ui->videoFrameWidget->getFrameSize();
+        const int resizeTo = frameSize.width() / 2;
         resizeWidth = QInputDialog::getInt(this, tr("Resize thumbnails"), tr("Resize to width:"),
-                                           500, 100, 1920, 10, &resizeOk);
+                                           resizeTo, 100, frameSize.width(), 10, &resizeOk);
     }
 
     const int numSaved = framesToSave.count();
