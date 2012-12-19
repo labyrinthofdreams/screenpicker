@@ -39,6 +39,8 @@ void vfg::ThumbnailContainer::clearThumbnails()
         delete item->widget();
         delete item;
     }
+
+    activeWidget = NULL;
 }
 
 void vfg::ThumbnailContainer::resizeThumbnails(unsigned width)
