@@ -186,6 +186,9 @@
             <property name="enabled">
              <bool>false</bool>
             </property>
+            <property name="toolTip">
+             <string>Generate n screenshots with m frame step</string>
+            </property>
             <property name="text">
              <string>Generate</string>
             </property>
@@ -200,6 +203,9 @@
           </item>
           <item>
            <widget class="QSpinBox" name="frameStepSpinBox">
+            <property name="toolTip">
+             <string>Number of frames between each generated screenshot</string>
+            </property>
             <property name="minimum">
              <number>1</number>
             </property>
@@ -220,6 +226,9 @@
           </item>
           <item>
            <widget class="QSpinBox" name="screenshotsSpinBox">
+            <property name="toolTip">
+             <string>Number of screenshots to generate</string>
+            </property>
             <property name="prefix">
              <string/>
             </property>
@@ -306,6 +315,9 @@
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
+                  <property name="toolTip">
+                   <string>Adjust thumbnail size</string>
+                  </property>
                   <property name="minimum">
                    <number>100</number>
                   </property>
@@ -339,6 +351,9 @@
                 </item>
                 <item>
                  <widget class="QLabel" name="numUnsavedScreensLabel">
+                  <property name="toolTip">
+                   <string>Number of unsaved screenshots</string>
+                  </property>
                   <property name="text">
                    <string>0</string>
                   </property>
@@ -347,7 +362,7 @@
                 <item>
                  <widget class="QPushButton" name="clearThumbsButton">
                   <property name="toolTip">
-                   <string>Clear all unsaved thumbnails</string>
+                   <string>Clear all unsaved screenshots</string>
                   </property>
                   <property name="text">
                    <string>Clear</string>
@@ -409,6 +424,9 @@
                 </item>
                 <item>
                  <widget class="QPushButton" name="saveThumbnailsButton">
+                  <property name="toolTip">
+                   <string>Save screenshots</string>
+                  </property>
                   <property name="text">
                    <string>Save</string>
                   </property>

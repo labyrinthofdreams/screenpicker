@@ -39,7 +39,11 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="avisynthPluginsPathLineEdit"/>
+      <widget class="QLineEdit" name="avisynthPluginsPathLineEdit">
+       <property name="toolTip">
+        <string>Absolute path to Avisynth plugins directory</string>
+       </property>
+      </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="saveAvisynthScriptsLabel">
@@ -49,7 +53,11 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QCheckBox" name="saveAvisynthScriptsCheckBox"/>
+      <widget class="QCheckBox" name="saveAvisynthScriptsCheckBox">
+       <property name="toolTip">
+        <string>If checked, saves the used Avisynth script to the opened file's directory</string>
+       </property>
+      </widget>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="showScriptEditorLabel">
@@ -59,7 +67,11 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QCheckBox" name="showScriptEditorCheckBox"/>
+      <widget class="QCheckBox" name="showScriptEditorCheckBox">
+       <property name="toolTip">
+        <string>If checked, opens the script editor when loading a file</string>
+       </property>
+      </widget>
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="maxThumbnailsLabel">
@@ -76,6 +88,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="toolTip">
+        <string>Maximum number of thumbnails to display under the Screenshots tab. Oldest are removed first.</string>
+       </property>
        <property name="minimum">
         <number>1</number>
        </property>
@@ -88,6 +103,9 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="toolTip">
+      <string/>
+     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
