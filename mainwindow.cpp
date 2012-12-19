@@ -84,16 +84,7 @@ void MainWindow::on_actionOpen_triggered()
 
     try
     {
-        QFileInfo file(filename);
-        if(file.suffix() == "avs")
-        {
-            scriptEditor->loadScript(filename);
-        }
-        else
-        {
-            scriptEditor->loadVideo(filename);
-        }
-
+        scriptEditor->load(filename);
         scriptEditor->show();
     }
     catch(std::exception& ex)
