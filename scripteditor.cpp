@@ -56,6 +56,26 @@ void ScriptEditor::loadVideo(QString path)
     on_updateButton_clicked();
 }
 
+void ScriptEditor::load(QString path)
+{
+    try
+    {
+        QFileInfo file(path);
+        if(file.suffix() == "avs")
+        {
+            loadScript(path);
+        }
+        else
+        {
+            loadVideo(path);
+        }
+    }
+    catch(std::exception& ex)
+    {
+        throw;
+    }
+}
+
 void ScriptEditor::on_updateButton_clicked()
 {
     // Write updated script
