@@ -225,7 +225,7 @@ void MainWindow::on_generateButton_clicked()
         QImage frame = frameGrabber->getFrame(i);
         QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
 
-        vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(i, thumbnail, this);
+        vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(i, thumbnail);
         thumb->setFixedWidth(thumbnailSize);
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleUnsavedMenu(QPoint)));
@@ -247,7 +247,7 @@ void MainWindow::on_grabButton_clicked()
     QImage frame = frameGrabber->getFrame(selected);
     QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
 
-    vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(selected, thumbnail, this);
+    vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(selected, thumbnail);
     thumb->setFixedWidth(thumbnailSize);
     connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handleUnsavedMenu(QPoint)));
