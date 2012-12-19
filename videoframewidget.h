@@ -9,6 +9,7 @@
 class QVBoxLayout;
 class QLabel;
 class QResizeEvent;
+class QSize;
 
 namespace vfg
 {
@@ -29,6 +30,7 @@ namespace vfg
         explicit VideoFrameWidget(QWidget *parent = 0);
 
         void setFullsize(bool value);
+        QSize getFrameSize() const;
     protected:
         void resizeEvent(QResizeEvent *event);
 

@@ -72,3 +72,11 @@ void vfg::VideoFrameWidget::setFullsize(bool value)
 
     updateFrameSize();
 }
+
+QSize vfg::VideoFrameWidget::getFrameSize() const
+{
+    if(framePixmap.isNull())
+        return QSize();
+
+    return framePixmap.size();
+}
