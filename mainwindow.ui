@@ -411,16 +411,6 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="log">
-           <attribute name="title">
-            <string>Log</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_4">
-            <item>
-             <widget class="QPlainTextEdit" name="logger"/>
-            </item>
-           </layout>
-          </widget>
          </widget>
         </item>
        </layout>
