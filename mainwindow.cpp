@@ -397,3 +397,34 @@ void MainWindow::on_actionQuit_triggered()
 {
     close();
 }
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *ev)
+{
+    ev->acceptProposedAction();
+}
+
+void MainWindow::dropEvent(QDropEvent *ev)
+{
+    QList<QUrl> urls = ev->mimeData()->urls();
+    if(urls.length() > 1)
+    {
+        ev->ignore();
+        QMessageBox::information(this, tr("Drop event"),
+                                 tr("You can drop only one file"));
+        return;
+    }
+
+    ev->acceptProposedAction();
+
+    try
+    {
+        QString filename = urls.at(0).toLocalFile();
+        scriptEditor->load(filename);
+        scriptEditor->show();
+    }
+    catch(std::exception& ex)
+    {
+        QMessageBox::warning(this, tr("Error while loading file"),
+                             QString(ex.what()));
+    }
+}

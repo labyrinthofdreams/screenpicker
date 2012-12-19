@@ -8,6 +8,8 @@
 
 // Forward declarations
 class QPoint;
+class QDragEvent;
+class QDropEvent;
 
 namespace vfg {
     class VideoFrameGrabber;
@@ -79,6 +81,10 @@ private:
     QSet<unsigned> framesToSave;
 
     void createAvisynthScriptFile();
+
+protected:
+    void dragEnterEvent(QDragEnterEvent *ev);
+    void dropEvent(QDropEvent *ev);
 };
 
 #endif // MAINWINDOW_H
