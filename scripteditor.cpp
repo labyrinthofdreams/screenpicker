@@ -7,7 +7,8 @@ using namespace vfg;
 
 ScriptEditor::ScriptEditor(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ScriptEditor)
+    ui(new Ui::ScriptEditor),
+    savePath("temp.avs")
 {
     ui->setupUi(this);        
 }
