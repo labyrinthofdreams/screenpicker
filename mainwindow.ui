@@ -144,6 +144,9 @@
             <property name="text">
              <string>Previous</string>
             </property>
+            <property name="shortcut">
+             <string>Left</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -157,6 +160,9 @@
             <property name="text">
              <string>Next</string>
             </property>
+            <property name="shortcut">
+             <string>Right</string>
+            </property>
            </widget>
           </item>
           <item>
@@ -169,6 +175,9 @@
             </property>
             <property name="text">
              <string>Grab</string>
+            </property>
+            <property name="shortcut">
+             <string>G</string>
             </property>
            </widget>
           </item>
@@ -457,10 +466,16 @@
    <property name="text">
     <string>Open...</string>
    </property>
+   <property name="shortcut">
+    <string>O</string>
+   </property>
   </action>
   <action name="actionAvisynth_Script_Editor">
    <property name="text">
     <string>Avisynth Script Editor</string>
+   </property>
+   <property name="shortcut">
+    <string>A</string>
    </property>
   </action>
   <action name="actionQuit">
@@ -471,6 +486,9 @@
   <action name="actionOptions">
    <property name="text">
     <string>Options</string>
+   </property>
+   <property name="shortcut">
+    <string>P</string>
    </property>
   </action>
  </widget>
