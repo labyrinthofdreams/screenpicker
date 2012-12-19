@@ -97,9 +97,8 @@ vfg::VideoFrameThumbnail* vfg::ThumbnailContainer::takeSelected()
 
     vfg::VideoFrameThumbnail* ret = item->widget();
 
-    // Bugfix: If this item is not deleted, the ownership will remain
-    // in the layout, causing weird crashes when it's deleted in clearThumbnails()
-    // and when the widget is then used later
+    // Bugfix: If this item is not deleted, the ownership of the widget will remain
+    // in the container
     delete item;
     activeWidget = NULL;
 
