@@ -88,7 +88,13 @@ vfg::VideoFrameThumbnail* vfg::ThumbnailContainer::takeSelected()
     QLayoutItem* item = layout->takeAt(widgetIndex);
 
     vfg::VideoFrameThumbnail* ret = item->widget();
+
+    // Bugfix: If this item is not deleted, the ownership will remain
+    // in the layout, causing weird crashes when it's deleted in clearThumbnails()
+    // and when the widget is then used later
+    delete item;
     activeWidget = NULL;
+
     return ret;
 }
 
