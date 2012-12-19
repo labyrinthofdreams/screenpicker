@@ -84,6 +84,9 @@ void MainWindow::on_actionOpen_triggered()
 
     try
     {
+        ui->unsavedWidget->clearThumbnails();
+        ui->savedWidget->clearThumbnails();
+
         scriptEditor->load(filename);
         scriptEditor->show();
     }
@@ -423,6 +426,9 @@ void MainWindow::dropEvent(QDropEvent *ev)
 
     try
     {
+        ui->unsavedWidget->clearThumbnails();
+        ui->savedWidget->clearThumbnails();
+
         QString filename = urls.at(0).toLocalFile();
         scriptEditor->load(filename);
         scriptEditor->show();
