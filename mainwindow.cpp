@@ -234,6 +234,7 @@ void MainWindow::on_generateButton_clicked()
     }
     progress.setValue(num);
     ui->seekSlider->setValue(lastProcessed);
+    ui->numUnsavedScreensLabel->setText(QString::number(ui->unsavedWidget->numThumbnails()));
 }
 
 void MainWindow::on_grabButton_clicked()
@@ -248,6 +249,7 @@ void MainWindow::on_grabButton_clicked()
     connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handleUnsavedMenu(QPoint)));
     ui->unsavedWidget->addThumbnail(thumb);
+    ui->numUnsavedScreensLabel->setText(QString::number(ui->unsavedWidget->numThumbnails()));
 }
 
 void MainWindow::handleUnsavedMenu(const QPoint &pos)
@@ -273,6 +275,7 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
         framesToSave.insert(thumb->frameNum());
 
         ui->savedWidget->addThumbnail(thumb);
+        ui->numUnsavedScreensLabel->setText(QString::number(ui->unsavedWidget->numThumbnails()));
     }
 }
 
@@ -299,12 +302,14 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
         framesToSave.remove(thumb->frameNum());
 
         ui->unsavedWidget->addThumbnail(thumb);
+        ui->numUnsavedScreensLabel->setText(QString::number(ui->unsavedWidget->numThumbnails()));
     }
 }
 
 void MainWindow::on_clearThumbsButton_clicked()
 {
     ui->unsavedWidget->clearThumbnails();
+    ui->numUnsavedScreensLabel->setText(QString::number(ui->unsavedWidget->numThumbnails()));
 }
 
 void MainWindow::on_thumbnailSizeSlider_sliderMoved(int position)

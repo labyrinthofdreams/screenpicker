@@ -322,6 +322,20 @@
                  </spacer>
                 </item>
                 <item>
+                 <widget class="QLabel" name="unsavedScreensLabel">
+                  <property name="text">
+                   <string>Screenshots:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="numUnsavedScreensLabel">
+                  <property name="text">
+                   <string>0</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QPushButton" name="clearThumbsButton">
                   <property name="toolTip">
                    <string>Clear all unsaved thumbnails</string>
