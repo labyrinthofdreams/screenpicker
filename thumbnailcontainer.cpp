@@ -1,6 +1,7 @@
 #include "videoframethumbnail.h"
 #include "thumbnailcontainer.h"
 #include "flowlayout.h"
+#include <QDebug>
 
 vfg::ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
     QWidget(parent),
@@ -34,6 +35,7 @@ void vfg::ThumbnailContainer::addThumbnail(vfg::VideoFrameThumbnail *thumbnail)
 void vfg::ThumbnailContainer::clearThumbnails()
 {
     QLayoutItem *item;
+    qDebug() << layout->count();
     while((item = layout->takeAt(0)))
     {
         delete item->widget();
@@ -85,7 +87,7 @@ vfg::VideoFrameThumbnail* vfg::ThumbnailContainer::takeSelected()
     int widgetIndex = layout->indexOf(activeWidget);
     QLayoutItem* item = layout->takeAt(widgetIndex);
 
-    vfg::VideoFrameThumbnail* ret = activeWidget;
+    vfg::VideoFrameThumbnail* ret = item->widget();
     activeWidget = NULL;
     return ret;
 }
