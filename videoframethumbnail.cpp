@@ -29,7 +29,7 @@ vfg::VideoFrameThumbnail::~VideoFrameThumbnail()
 void vfg::VideoFrameThumbnail::updateFrameSize()
 {
     pixmapLabel->setPixmap(thumb.scaledToWidth(pixmapLabel->width(),
-                                               Qt::FastTransformation));
+                                               Qt::SmoothTransformation));
 }
 
 void vfg::VideoFrameThumbnail::markSelected()

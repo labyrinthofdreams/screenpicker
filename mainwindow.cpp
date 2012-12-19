@@ -220,7 +220,7 @@ void MainWindow::on_generateButton_clicked()
         }
 
         QImage frame = frameGrabber->getFrame(i);
-        QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::FastTransformation);
+        QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
 
         vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(i, thumbnail, this);
         thumb->setFixedWidth(thumbnailSize);
@@ -241,7 +241,7 @@ void MainWindow::on_grabButton_clicked()
     const unsigned selected = ui->seekSlider->value();      
     const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
     QImage frame = frameGrabber->getFrame(selected);
-    QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200);
+    QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
 
     vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(selected, thumbnail, this);
     thumb->setFixedWidth(thumbnailSize);
