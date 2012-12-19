@@ -83,3 +83,8 @@ vfg::VideoFrameThumbnail* vfg::ThumbnailContainer::takeSelected()
     activeWidget = NULL;
     return ret;
 }
+
+int vfg::ThumbnailContainer::numThumbnails() const
+{
+    return layout->count();
+}

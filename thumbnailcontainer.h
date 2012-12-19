@@ -23,6 +23,7 @@ namespace vfg
         void clearThumbnails();
         void resizeThumbnails(unsigned width);
         vfg::VideoFrameThumbnail* takeSelected();
+        int numThumbnails() const;
 
     signals:
         void thumbnailDoubleClicked(vfg::VideoFrameThumbnail* thumbnail);
