@@ -6,6 +6,7 @@
 #include "videoframethumbnail.h"
 #include "avisynthvideosource.h"
 #include "scripteditor.h"
+#include "configdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -24,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
                  this, SLOT(loadFromAvisynthScript(QString)));
 
          createAvisynthScriptFile();
+         createConfig();
     }
     catch(std::exception& ex)
     {
@@ -75,6 +77,18 @@ void MainWindow::createAvisynthScriptFile()
     out << in.readAll();
 }
 
+void MainWindow::createConfig()
+{
+    if(!QFile::exists("config.ini"))
+    {
+        QSettings cfg("config.ini", QSettings::IniFormat);
+        cfg.setValue("avisynthpluginspath", QDir::currentPath().append("/avisynth"));
+        cfg.setValue("savescripts", false);
+        cfg.setValue("showscripteditor", true);
+        cfg.setValue("maxthumbnails", 100);
+    }
+}
+
 void MainWindow::on_actionOpen_triggered()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open video"),
@@ -88,7 +102,11 @@ void MainWindow::on_actionOpen_triggered()
         ui->savedWidget->clearThumbnails();
 
         scriptEditor->load(filename);
-        scriptEditor->show();
+
+        QSettings cfg("config.ini", QSettings::IniFormat);
+        bool showEditor = cfg.value("showscripteditor").toBool();
+        if(showEditor)
+            scriptEditor->show();
     }
     catch(std::exception& ex)
     {
@@ -431,11 +449,21 @@ void MainWindow::dropEvent(QDropEvent *ev)
 
         QString filename = urls.at(0).toLocalFile();
         scriptEditor->load(filename);
-        scriptEditor->show();
+
+        QSettings cfg("config.ini", QSettings::IniFormat);
+        bool showEditor = cfg.value("showscripteditor").toBool();
+        if(showEditor)
+            scriptEditor->show();
     }
     catch(std::exception& ex)
     {
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
     }
+}
+
+void MainWindow::on_actionOptions_triggered()
+{
+    vfg::ConfigDialog configDialog;
+    configDialog.exec();
 }

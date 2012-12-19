@@ -17,7 +17,8 @@ SOURCES += main.cpp\
     videoframethumbnail.cpp \
     thumbnailcontainer.cpp \
     avisynthvideosource.cpp \
-    scripteditor.cpp
+    scripteditor.cpp \
+    configdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -27,10 +28,12 @@ HEADERS  += mainwindow.h \
     thumbnailcontainer.h \
     abstractvideosource.h \
     avisynthvideosource.h \
-    scripteditor.h
+    scripteditor.h \
+    configdialog.h
 
 FORMS    += mainwindow.ui \
-    scripteditor.ui
+    scripteditor.ui \
+    configdialog.ui
 
 INCLUDEPATH += C:\cpplibs\avs2yuv-0.24bm2\avs2yuv\src
 

@@ -1,3 +1,4 @@
+#include <QSettings>
 #include "videoframethumbnail.h"
 #include "thumbnailcontainer.h"
 #include "flowlayout.h"
@@ -18,14 +19,23 @@ void vfg::ThumbnailContainer::addThumbnail(vfg::VideoFrameThumbnail *thumbnail)
     connect(thumbnail, SIGNAL(doubleClicked(vfg::VideoFrameThumbnail*)),
             this, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)));
 
-    if(layout->count() == 100)
+    QSettings cfg("config.ini", QSettings::IniFormat);
+    const int maxThumbnails = cfg.value("maxthumbnails").toInt();
+    int numThumbnails = layout->count();
+
+    if(numThumbnails >= maxThumbnails)
     {
-        QLayoutItem *item = layout->takeAt(0);
-        if(item)
+        do
         {
-            delete item->widget();
-            delete item;
+            QLayoutItem *item = layout->takeAt(0);
+            if(item)
+            {
+                delete item->widget();
+                delete item;
+                numThumbnails--;
+            }
         }
+        while(numThumbnails >= maxThumbnails);
     }
 
     layout->addWidget(thumbnail);

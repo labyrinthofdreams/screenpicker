@@ -71,6 +71,8 @@ private slots:
 
     void on_actionQuit_triggered();
 
+    void on_actionOptions_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -81,6 +83,7 @@ private:
     QSet<unsigned> framesToSave;
 
     void createAvisynthScriptFile();
+    void createConfig();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *ev);

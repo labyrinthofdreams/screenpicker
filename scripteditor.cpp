@@ -46,10 +46,18 @@ void ScriptEditor::loadVideo(QString path)
         throw std::runtime_error("Failed to open script file for reading.");
     }
 
-    setSavePath(path);
+    QSettings cfg("config.ini", QSettings::IniFormat);
+    QString pluginsPath = cfg.value("avisynthpluginspath").toString();
+    bool saveScripts = cfg.value("savescripts").toBool();
+
+    if(saveScripts)
+        setSavePath(path);
+    else
+        setSavePath("temp.avs");
+
 
     QTextStream in(&inFile);
-    QString parsedScript = in.readAll().arg(path).arg(QDir::currentPath());
+    QString parsedScript = in.readAll().arg(path).arg(pluginsPath);
 
     ui->plainTextEdit->clear();
     ui->plainTextEdit->appendPlainText(parsedScript);
