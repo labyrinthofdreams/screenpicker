@@ -26,6 +26,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
          createAvisynthScriptFile();
          createConfig();
+
+         // Set progress bar max
+         QSettings cfg("config.ini", QSettings::IniFormat);
+         const int maxThumbnails = cfg.value("maxthumbnails").toInt();
+         ui->unsavedProgressBar->setMaximum(maxThumbnails);
     }
     catch(std::exception& ex)
     {
@@ -237,7 +242,7 @@ void MainWindow::on_generateButton_clicked()
     }
     progress.setValue(num);
     ui->seekSlider->setValue(lastProcessed);
-    ui->numUnsavedScreensLabel->setText(QString::number(ui->unsavedWidget->numThumbnails()));
+    ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 }
 
 void MainWindow::on_grabButton_clicked()
@@ -252,7 +257,7 @@ void MainWindow::on_grabButton_clicked()
     connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handleUnsavedMenu(QPoint)));
     ui->unsavedWidget->addThumbnail(thumb);
-    ui->numUnsavedScreensLabel->setText(QString::number(ui->unsavedWidget->numThumbnails()));
+    ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 }
 
 void MainWindow::handleUnsavedMenu(const QPoint &pos)
@@ -278,7 +283,7 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
         framesToSave.insert(thumb->frameNum());
 
         ui->savedWidget->addThumbnail(thumb);
-        ui->numUnsavedScreensLabel->setText(QString::number(ui->unsavedWidget->numThumbnails()));
+        ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
     }
 }
 
@@ -305,14 +310,14 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
         framesToSave.remove(thumb->frameNum());
 
         ui->unsavedWidget->addThumbnail(thumb);
-        ui->numUnsavedScreensLabel->setText(QString::number(ui->unsavedWidget->numThumbnails()));
+        ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
     }
 }
 
 void MainWindow::on_clearThumbsButton_clicked()
 {
     ui->unsavedWidget->clearThumbnails();
-    ui->numUnsavedScreensLabel->setText(QString::number(ui->unsavedWidget->numThumbnails()));
+    ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 }
 
 void MainWindow::on_thumbnailSizeSlider_sliderMoved(int position)
@@ -449,5 +454,12 @@ void MainWindow::dropEvent(QDropEvent *ev)
 void MainWindow::on_actionOptions_triggered()
 {
     vfg::ConfigDialog configDialog;
-    configDialog.exec();
+    const int saved = configDialog.exec();
+
+    if(saved)
+    {
+        QSettings cfg("config.ini", QSettings::IniFormat);
+        const int maxThumbnails = cfg.value("maxthumbnails").toInt();
+        ui->unsavedProgressBar->setMaximum(maxThumbnails);
+    }
 }

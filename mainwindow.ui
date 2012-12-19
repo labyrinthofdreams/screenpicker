@@ -343,19 +343,33 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="QLabel" name="unsavedScreensLabel">
-                  <property name="text">
-                   <string>Screenshots:</string>
+                 <widget class="QProgressBar" name="unsavedProgressBar">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
                   </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="numUnsavedScreensLabel">
+                  <property name="minimumSize">
+                   <size>
+                    <width>150</width>
+                    <height>0</height>
+                   </size>
+                  </property>
                   <property name="toolTip">
-                   <string>Number of unsaved screenshots</string>
+                   <string>How close the number of unsaved screenshots is to the max limit</string>
                   </property>
-                  <property name="text">
-                   <string>0</string>
+                  <property name="minimum">
+                   <number>0</number>
+                  </property>
+                  <property name="value">
+                   <number>0</number>
+                  </property>
+                  <property name="textVisible">
+                   <bool>true</bool>
+                  </property>
+                  <property name="invertedAppearance">
+                   <bool>false</bool>
                   </property>
                  </widget>
                 </item>
