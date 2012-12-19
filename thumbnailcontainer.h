@@ -4,6 +4,7 @@
 #include <QWidget>
 
 class FlowLayout;
+class QMouseEvent;
 
 namespace vfg
 {
@@ -24,6 +25,9 @@ namespace vfg
         void resizeThumbnails(unsigned width);
         vfg::VideoFrameThumbnail* takeSelected();
         int numThumbnails() const;
+
+    protected:
+        void mousePressEvent(QMouseEvent *ev);
 
     signals:
         void thumbnailDoubleClicked(vfg::VideoFrameThumbnail* thumbnail);

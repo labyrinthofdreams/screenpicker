@@ -110,3 +110,14 @@ int vfg::ThumbnailContainer::numThumbnails() const
 {
     return layout->count();
 }
+
+void vfg::ThumbnailContainer::mousePressEvent(QMouseEvent *ev)
+{
+    Q_UNUSED(ev);
+
+    if(activeWidget)
+    {
+        activeWidget->markUnselected();
+        activeWidget = NULL;
+    }
+}
