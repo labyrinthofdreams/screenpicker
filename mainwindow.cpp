@@ -151,7 +151,7 @@ void MainWindow::videoLoaded()
 
 void MainWindow::videoError(QString msg)
 {
-    ui->logger->appendPlainText(msg);
+    statusBar()->showMessage(msg);
 }
 
 void MainWindow::thumbnailDoubleClicked(vfg::VideoFrameThumbnail *thumbnail)
