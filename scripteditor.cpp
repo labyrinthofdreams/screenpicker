@@ -19,12 +19,14 @@ ScriptEditor::~ScriptEditor()
 }
 
 void ScriptEditor::loadScript(QString path)
-{
+{       
     QFile scriptfile(path);
     if(!scriptfile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         throw std::runtime_error("Failed to open file for reading.");
     }
+
+    setSavePath(path);
 
     QTextStream in(&scriptfile);
     QString script = in.readAll();
@@ -43,8 +45,10 @@ void ScriptEditor::loadVideo(QString path)
         throw std::runtime_error("Failed to open script file for reading.");
     }
 
+    setSavePath(path);
+
     QTextStream in(&inFile);
-    QString parsedScript = in.readAll().arg(path);
+    QString parsedScript = in.readAll().arg(path).arg(QDir::currentPath());
 
     ui->plainTextEdit->clear();
     ui->plainTextEdit->appendPlainText(parsedScript);
@@ -55,7 +59,7 @@ void ScriptEditor::loadVideo(QString path)
 void ScriptEditor::on_updateButton_clicked()
 {
     // Write updated script
-    QFile outFile("temp.avs");
+    QFile outFile(savePath);
     if(!outFile.open(QFile::WriteOnly | QFile::Truncate))
     {
         QMessageBox::critical(this, tr("Avisynth Script Editor"),
@@ -68,5 +72,11 @@ void ScriptEditor::on_updateButton_clicked()
 
     outFile.close();
 
-    emit scriptUpdated("temp.avs");
+    emit scriptUpdated(savePath);
+}
+
+void ScriptEditor::setSavePath(QString path)
+{
+    QFileInfo fi(path);
+    savePath = tr("%1/%2.avs").arg(fi.dir().path()).arg(fi.completeBaseName());
 }
