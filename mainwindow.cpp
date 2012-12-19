@@ -112,6 +112,7 @@ void MainWindow::on_actionOpen_triggered()
     {
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
+        scriptEditor->show();
     }
 }
 
@@ -441,6 +442,7 @@ void MainWindow::dropEvent(QDropEvent *ev)
     {
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
+        scriptEditor->show();
     }
 }
 
