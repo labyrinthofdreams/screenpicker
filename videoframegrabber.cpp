@@ -37,7 +37,7 @@ bool vfg::VideoFrameGrabber::hasVideo() const
     return avs->hasVideo();
 }
 
-const vfg::AbstractVideoSource* vfg::VideoFrameGrabber::getVideoSource()
+const vfg::AbstractVideoSource* vfg::VideoFrameGrabber::getVideoSource() const
 {
     return avs;
 }

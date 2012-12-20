@@ -31,7 +31,7 @@ namespace vfg
         // Load video file
         void load(QString filename);
         bool hasVideo() const;
-        const vfg::AbstractVideoSource* getVideoSource();
+        const vfg::AbstractVideoSource* getVideoSource() const;
         // Captures the exact frame between range 1 - n
         void requestFrame(unsigned frameNum);
         void requestNextFrame();
