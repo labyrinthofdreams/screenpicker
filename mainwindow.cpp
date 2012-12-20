@@ -201,36 +201,40 @@ void MainWindow::on_seekSlider_sliderMoved(int position)
 
 void MainWindow::on_generateButton_clicked()
 {
+    // Currently selected frame
     const unsigned selected = ui->seekSlider->value();
+    // Frame step
     const unsigned step = ui->frameStepSpinBox->value();
+    // Number of screenshots to generate
     const unsigned num = ui->screenshotsSpinBox->value();
+    // Total number of frames to jump forward
     const unsigned total = step * num;
+    // Last frame to grab
     const unsigned lastPos = selected + total;
+    // Number of frames in the video
     const unsigned totalFrames = frameGrabber->totalFrames();
     const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
+    // Last processed frame number
+    unsigned lastProcessed = selected;
+    QList<vfg::VideoFrameThumbnail*> frames;
     QProgressDialog progress("", tr("Cancel"), 0, num, this);
     progress.setMinimumDuration(0);
     progress.setWindowModality(Qt::WindowModal);
-    unsigned lastProcessed = selected;
-    QList<vfg::VideoFrameThumbnail*> frames;
-    for(unsigned i = selected, j = 1; i < lastPos; i += step, ++j, lastProcessed += step)
+    for(unsigned currentFrame = selected, frameCtr = 1;
+        currentFrame < lastPos && currentFrame <= totalFrames;
+        currentFrame += step, ++frameCtr, lastProcessed += step)
     {
-        if(i > totalFrames)
-        {
-            break;
-        }
-
-        progress.setLabelText(tr("Generating image %1 of %2").arg(j).arg(num));
-        progress.setValue(j);
+        progress.setLabelText(tr("Generating image %1 of %2").arg(frameCtr).arg(num));
+        progress.setValue(frameCtr);
         if(progress.wasCanceled())
         {
             break;
         }
 
-        QImage frame = frameGrabber->getFrame(i);
+        QImage frame = frameGrabber->getFrame(currentFrame);
         QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
 
-        vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(i, thumbnail);
+        vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(currentFrame, thumbnail);
         thumb->setFixedWidth(thumbnailSize);
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleUnsavedMenu(QPoint)));
@@ -277,9 +281,6 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleSavedMenu(QPoint)));
 
-        // Move unsaved cached QImage to saved cache
-//        QImage tmpUnsaved = unsaved.take(thumb->frameNum());
-//        saved.insert(thumb->frameNum(), tmpUnsaved);
         framesToSave.insert(thumb->frameNum());
 
         ui->savedWidget->addThumbnail(thumb);
@@ -304,9 +305,6 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleUnsavedMenu(QPoint)));
 
-        // Move saved cached QImage to unsaved cache
-//        QImage tmpSaved = saved.take(thumb->frameNum());
-//        unsaved.insert(thumb->frameNum(), tmpSaved);
         framesToSave.remove(thumb->frameNum());
 
         ui->unsavedWidget->addThumbnail(thumb);
@@ -397,13 +395,6 @@ void MainWindow::on_saveThumbnailsButton_clicked()
 
 void MainWindow::on_actionAvisynth_Script_Editor_triggered()
 {
-//    if(!scriptEditor->loadFile(avisynthScriptFile))
-//    {
-//        QMessageBox::critical(this, tr("Avisynth Script Editor"),
-//                              tr("Failed to open default.avs, make sure default.avs exists in the app directory"));
-//        return;
-//    }
-
     scriptEditor->show();
 }
 

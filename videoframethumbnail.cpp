@@ -9,21 +9,13 @@ vfg::VideoFrameThumbnail::VideoFrameThumbnail(unsigned frame, QPixmap thumbnail,
     thumb = thumbnail;
     pixmapLabel = new QLabel;
     pixmapLabel->setPixmap(thumb);
-//    pixmapLabel->setSizePolicy(QSizePolicy::Ignored,
-//                               QSizePolicy::Ignored);
     layout = new QVBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(pixmapLabel);
     setLayout(layout);
-    //setFixedWidth(100);
     setContentsMargins(0, 0, 0, 0);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setContextMenuPolicy(Qt::CustomContextMenu);
-}
-
-vfg::VideoFrameThumbnail::~VideoFrameThumbnail()
-{
-    qDebug() << "Destroy video frame #" << frameNumber;
 }
 
 void vfg::VideoFrameThumbnail::updateFrameSize()

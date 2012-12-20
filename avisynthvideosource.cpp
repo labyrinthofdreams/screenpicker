@@ -63,7 +63,7 @@ void AvisynthVideoSource::load(QString fileName)
     if(!avs_is_rgb32(info))
     {
         avsHandle.func.avs_release_value(res);
-        throw std::runtime_error("Video is not RGB32. Add ConvertToRGB() to your script.");
+        throw std::runtime_error("Video is not RGB32. Add ConvertToRGB32() to your script.");
     }
 
     // Convert input to RGB32
