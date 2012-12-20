@@ -25,6 +25,13 @@ void vfg::ThumbnailContainer::addThumbnail(vfg::VideoFrameThumbnail *thumbnail)
 
     if(numThumbnails >= maxThumbnails)
     {
+        // bugfix: Deleting a selected widget and then accessing it
+        // causes a nasty crash
+        if(activeWidget)
+        {
+            activeWidget->markUnselected();
+            activeWidget = NULL;
+        }
         do
         {
             QLayoutItem *item = layout->takeAt(0);
