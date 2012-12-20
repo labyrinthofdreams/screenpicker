@@ -131,6 +131,7 @@ void MainWindow::loadFromAvisynthScript(QString path)
     {
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
+        scriptEditor->show();
     }
 }
 
