@@ -129,7 +129,7 @@ void MainWindow::loadFromAvisynthScript(QString path)
 {
     try
     {
-        frameGrabber->load(path);
+        frameGrabber->load(path);        
     }
     catch(std::exception& ex)
     {
@@ -142,6 +142,15 @@ void MainWindow::loadFromAvisynthScript(QString path)
 void MainWindow::videoLoaded()
 {
     const unsigned numFrames = frameGrabber->totalFrames();
+    if(lastRequestedFrame > vfg::FirstFrame && numFrames < lastRequestedFrame)
+    {
+        // If last requested frame is not FirstFrame, it means
+        // that we have reloaded our Avisynth script via the editor.
+        // If our reloaded Avisynth script modifies the video
+        // in a way that it outputs less frames than where we
+        // last were, then go back to first frame
+        lastRequestedFrame = vfg::FirstFrame;
+    }
     // Update frame numbers on the labels
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->totalFramesLabel->setText(QString::number(numFrames));
