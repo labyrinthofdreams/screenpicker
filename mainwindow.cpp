@@ -11,7 +11,8 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    framesToSave()
+    framesToSave(),
+    lastRequestedFrame(vfg::FirstFrame)
 {
     ui->setupUi(this);
 
@@ -106,6 +107,9 @@ void MainWindow::on_actionOpen_triggered()
         ui->unsavedWidget->clearThumbnails();
         ui->savedWidget->clearThumbnails();
 
+        // Reset this variable: assume that this route
+        // loads a new file
+        lastRequestedFrame = vfg::FirstFrame;
         scriptEditor->load(filename);
 
         QSettings cfg("config.ini", QSettings::IniFormat);
@@ -139,15 +143,15 @@ void MainWindow::videoLoaded()
 {
     const unsigned numFrames = frameGrabber->totalFrames();
     // Update frame numbers on the labels
-    ui->currentFrameLabel->setText(QString::number(vfg::FirstFrame));
+    ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->totalFramesLabel->setText(QString::number(numFrames));
     // Update maximum for seek slider
     ui->seekSlider->setEnabled(true);
     ui->seekSlider->setMaximum(numFrames);
     // Move slider back to first frame
-    ui->seekSlider->setValue(vfg::FirstFrame);
+    ui->seekSlider->setValue(lastRequestedFrame);
     // Show first frame
-    frameGrabber->requestFrame(vfg::FirstFrame);
+    frameGrabber->requestFrame(lastRequestedFrame);
 
     // Enable buttons
     ui->previousButton->setEnabled(true);
@@ -165,22 +169,23 @@ void MainWindow::thumbnailDoubleClicked(vfg::VideoFrameThumbnail *thumbnail)
 {
     ui->seekSlider->setValue(thumbnail->frameNum());
     frameGrabber->requestFrame(thumbnail->frameNum());
+    lastRequestedFrame = frameGrabber->lastFrame();
 }
 
 void MainWindow::on_nextButton_clicked()
 {
     frameGrabber->requestNextFrame();
-    const unsigned current = frameGrabber->lastFrame();
-    ui->currentFrameLabel->setText(QString::number(current));
-    ui->seekSlider->setValue(current);
+    lastRequestedFrame = frameGrabber->lastFrame();
+    ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
+    ui->seekSlider->setValue(lastRequestedFrame);
 }
 
 void MainWindow::on_previousButton_clicked()
 {
     frameGrabber->requestPreviousFrame();
-    const unsigned current = frameGrabber->lastFrame();
-    ui->currentFrameLabel->setText(QString::number(current));
-    ui->seekSlider->setValue(current);
+    lastRequestedFrame = frameGrabber->lastFrame();
+    ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
+    ui->seekSlider->setValue(lastRequestedFrame);
 }
 
 void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
@@ -192,12 +197,14 @@ void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
 void MainWindow::on_seekSlider_valueChanged(int value)
 {
     frameGrabber->requestFrame(value);
-    ui->currentFrameLabel->setText(QString::number(value));
+    lastRequestedFrame = value;
+    ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
 }
 
 void MainWindow::on_seekSlider_sliderMoved(int position)
 {
-    ui->currentFrameLabel->setText(QString::number(position));
+    lastRequestedFrame = position;
+    ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
 }
 
 void MainWindow::on_generateButton_clicked()
@@ -246,7 +253,8 @@ void MainWindow::on_generateButton_clicked()
         ui->unsavedWidget->addThumbnail(frames.takeFirst());
     }
     progress.setValue(num);
-    ui->seekSlider->setValue(lastProcessed);
+    lastRequestedFrame = lastProcessed;
+    ui->seekSlider->setValue(lastRequestedFrame);
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 }
 
@@ -427,6 +435,9 @@ void MainWindow::dropEvent(QDropEvent *ev)
         ui->unsavedWidget->clearThumbnails();
         ui->savedWidget->clearThumbnails();
 
+        // Reset this variable: assume this route
+        // loads a new file
+        lastRequestedFrame = vfg::FirstFrame;
         QString filename = urls.at(0).toLocalFile();
         scriptEditor->load(filename);
 

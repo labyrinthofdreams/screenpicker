@@ -82,6 +82,8 @@ private:
 
     QSet<unsigned> framesToSave;
 
+    unsigned lastRequestedFrame;
+
     void createAvisynthScriptFile();
     void createConfig();
 
