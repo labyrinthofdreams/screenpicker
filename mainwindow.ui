@@ -48,7 +48,7 @@
              <x>0</x>
              <y>0</y>
              <width>876</width>
-             <height>86</height>
+             <height>114</height>
             </rect>
            </property>
            <property name="sizePolicy">
@@ -139,7 +139,7 @@
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string>Show previous frame</string>
+             <string>Show previous frame (Left)</string>
             </property>
             <property name="text">
              <string>Previous</string>
@@ -155,7 +155,7 @@
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string>Show next frame</string>
+             <string>Show next frame (Right)</string>
             </property>
             <property name="text">
              <string>Next</string>
@@ -171,7 +171,7 @@
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string>Grab currently shown frame</string>
+             <string>Grab currently shown frame (G)</string>
             </property>
             <property name="text">
              <string>Grab</string>
@@ -291,7 +291,7 @@
                    <x>0</x>
                    <y>0</y>
                    <width>850</width>
-                   <height>228</height>
+                   <height>200</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -407,7 +407,7 @@
                    <x>0</x>
                    <y>0</y>
                    <width>850</width>
-                   <height>228</height>
+                   <height>200</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">

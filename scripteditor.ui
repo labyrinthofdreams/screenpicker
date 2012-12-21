@@ -27,10 +27,16 @@
        <item>
         <widget class="QPushButton" name="updateButton">
          <property name="toolTip">
-          <string>Reload script in main application</string>
+          <string>Reload script in main application (F5)</string>
+         </property>
+         <property name="statusTip">
+          <string/>
          </property>
          <property name="text">
           <string>Reload</string>
+         </property>
+         <property name="shortcut">
+          <string>F5</string>
          </property>
         </widget>
        </item>
