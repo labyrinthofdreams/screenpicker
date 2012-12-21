@@ -106,6 +106,7 @@ void MainWindow::on_actionOpen_triggered()
     {
         ui->unsavedWidget->clearThumbnails();
         ui->savedWidget->clearThumbnails();
+        framesToSave.clear();
 
         // Reset this variable: assume that this route
         // loads a new file
@@ -443,6 +444,7 @@ void MainWindow::dropEvent(QDropEvent *ev)
     {
         ui->unsavedWidget->clearThumbnails();
         ui->savedWidget->clearThumbnails();
+        framesToSave.clear();
 
         // Reset this variable: assume this route
         // loads a new file
