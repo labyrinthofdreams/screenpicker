@@ -32,6 +32,9 @@ MainWindow::MainWindow(QWidget *parent) :
          QSettings cfg("config.ini", QSettings::IniFormat);
          const int maxThumbnails = cfg.value("maxthumbnails").toInt();
          ui->unsavedProgressBar->setMaximum(maxThumbnails);
+
+         // Set max thumbnails for the Unsaved screenshots
+         ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
     }
     catch(std::exception& ex)
     {
@@ -475,6 +478,7 @@ void MainWindow::on_actionOptions_triggered()
         QSettings cfg("config.ini", QSettings::IniFormat);
         const int maxThumbnails = cfg.value("maxthumbnails").toInt();
         ui->unsavedProgressBar->setMaximum(maxThumbnails);
+        ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
     }
 }
 
