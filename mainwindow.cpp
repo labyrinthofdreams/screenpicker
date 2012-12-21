@@ -475,3 +475,15 @@ void MainWindow::on_actionOptions_triggered()
         ui->unsavedProgressBar->setMaximum(maxThumbnails);
     }
 }
+
+void MainWindow::on_screenshotsSpinBox_valueChanged(int arg1)
+{
+    QSettings cfg("config.ini", QSettings::IniFormat);
+    const int maxThumbnails = cfg.value("maxthumbnails").toInt();
+
+    if(arg1 > maxThumbnails)
+    {
+        QMessageBox::warning(this, tr(""), tr("Number exceeds maximum thumbnails"));
+        ui->screenshotsSpinBox->setValue(maxThumbnails);
+    }
+}
