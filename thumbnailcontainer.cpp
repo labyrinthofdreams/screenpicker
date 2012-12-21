@@ -5,7 +5,8 @@
 
 vfg::ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
     QWidget(parent),
-    activeWidget(0)
+    activeWidget(0),
+    maxThumbnails(0)
 {
     layout = new FlowLayout;
     setLayout(layout);
@@ -19,11 +20,12 @@ void vfg::ThumbnailContainer::addThumbnail(vfg::VideoFrameThumbnail *thumbnail)
     connect(thumbnail, SIGNAL(doubleClicked(vfg::VideoFrameThumbnail*)),
             this, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)));
 
-    QSettings cfg("config.ini", QSettings::IniFormat);
-    const int maxThumbnails = cfg.value("maxthumbnails").toInt();
-    int numThumbnails = layout->count();
+//    QSettings cfg("config.ini", QSettings::IniFormat);
+//    const int maxThumbnails = cfg.value("maxthumbnails").toInt();
 
-    if(numThumbnails >= maxThumbnails)
+
+    int numThumbnails = layout->count();
+    if((maxThumbnails > 0) && (numThumbnails >= maxThumbnails))
     {
         // bugfix: Deleting a selected widget and then accessing it
         // causes a nasty crash
@@ -115,6 +117,11 @@ vfg::VideoFrameThumbnail* vfg::ThumbnailContainer::takeSelected()
 int vfg::ThumbnailContainer::numThumbnails() const
 {
     return layout->count();
+}
+
+void vfg::ThumbnailContainer::setMaxThumbnails(unsigned max)
+{
+    maxThumbnails = max;
 }
 
 void vfg::ThumbnailContainer::mousePressEvent(QMouseEvent *ev)

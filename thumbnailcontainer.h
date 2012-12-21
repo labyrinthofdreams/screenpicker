@@ -17,6 +17,8 @@ namespace vfg
         FlowLayout* layout;
 
         vfg::VideoFrameThumbnail* activeWidget;
+
+        unsigned maxThumbnails;
     public:
         explicit ThumbnailContainer(QWidget *parent = 0);
 
@@ -25,6 +27,7 @@ namespace vfg
         void resizeThumbnails(unsigned width);
         vfg::VideoFrameThumbnail* takeSelected();
         int numThumbnails() const;
+        void setMaxThumbnails(unsigned max);
 
     protected:
         void mousePressEvent(QMouseEvent *ev);
