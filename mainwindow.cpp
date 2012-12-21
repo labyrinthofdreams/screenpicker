@@ -479,6 +479,12 @@ void MainWindow::on_actionOptions_triggered()
         const int maxThumbnails = cfg.value("maxthumbnails").toInt();
         ui->unsavedProgressBar->setMaximum(maxThumbnails);
         ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
+
+        if(ui->screenshotsSpinBox->value() > maxThumbnails)
+        {
+            QMessageBox::warning(this, tr(""), tr("Number of generated screenshots exceeds max limit. Setting number to max."));
+            ui->screenshotsSpinBox->setValue(maxThumbnails);
+        }
     }
 }
 
