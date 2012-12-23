@@ -383,7 +383,8 @@ void MainWindow::on_saveThumbnailsButton_clicked()
     int resizeWidth;
     QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Resize thumbnails"),
                                                                 tr("Do you want to resize thumbnails?"),
-                                                                QMessageBox::Yes, QMessageBox::No);
+                                                                QMessageBox::Yes | QMessageBox::No,
+                                                                QMessageBox::No);
     if(clicked == QMessageBox::Yes)
     {
         QSize frameSize = ui->videoFrameWidget->getFrameSize();
