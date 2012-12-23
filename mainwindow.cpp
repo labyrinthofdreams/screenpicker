@@ -41,6 +41,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
          const unsigned frameStep = cfg.value("framestep").toInt();
          ui->frameStepSpinBox->setValue(frameStep);
+
+         if(numScreenshots > maxThumbnails)
+         {
+             QMessageBox::warning(this, tr("Invalid screenshot value"),
+                                  tr("Number of screenshots exceeds max limit. Setting value to max."));
+             ui->screenshotsSpinBox->setValue(maxThumbnails);
+         }
     }
     catch(std::exception& ex)
     {
