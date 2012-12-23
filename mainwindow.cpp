@@ -538,5 +538,13 @@ void MainWindow::on_screenshotsSpinBox_valueChanged(int arg1)
     {
         QMessageBox::warning(this, tr(""), tr("Number exceeds maximum thumbnails"));
         ui->screenshotsSpinBox->setValue(maxThumbnails);
+
+        cfg.setValue("numscreenshots", arg1);
     }
+}
+
+void MainWindow::on_frameStepSpinBox_valueChanged(int arg1)
+{
+    QSettings cfg("config.ini", QSettings::IniFormat);
+    cfg.setValue("framestep", arg1);
 }

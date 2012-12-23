@@ -76,6 +76,8 @@ private slots:
 
     void on_screenshotsSpinBox_valueChanged(int arg1);
 
+    void on_frameStepSpinBox_valueChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
 
