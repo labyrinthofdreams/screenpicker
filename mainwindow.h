@@ -10,6 +10,7 @@
 class QPoint;
 class QDragEvent;
 class QDropEvent;
+class QCloseEvent;
 
 namespace vfg {
     class VideoFrameGrabber;
@@ -93,6 +94,7 @@ private:
 protected:
     void dragEnterEvent(QDragEnterEvent *ev);
     void dropEvent(QDropEvent *ev);
+    void closeEvent(QCloseEvent *ev);
 };
 
 #endif // MAINWINDOW_H

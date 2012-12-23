@@ -478,6 +478,20 @@ void MainWindow::dropEvent(QDropEvent *ev)
     }
 }
 
+
+void MainWindow::closeEvent(QCloseEvent *ev)
+{
+    ev->ignore();
+
+    const QMessageBox::StandardButton response =
+            QMessageBox::question(this, tr("Quit?"), tr("Are you sure?"),
+                                  QMessageBox::Yes, QMessageBox::No);
+    if(response == QMessageBox::Yes)
+    {
+        ev->accept();
+    }
+}
+
 void MainWindow::on_actionOptions_triggered()
 {
     vfg::ConfigDialog configDialog;
