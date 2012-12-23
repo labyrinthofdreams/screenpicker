@@ -125,6 +125,8 @@ void MainWindow::on_actionOpen_triggered()
         lastRequestedFrame = vfg::FirstFrame;
         scriptEditor->load(filename);
 
+        setWindowTitle(tr("ScreenPicker - %1").arg(filename));
+
         QSettings cfg("config.ini", QSettings::IniFormat);
         bool showEditor = cfg.value("showscripteditor").toBool();
         if(showEditor)
@@ -462,6 +464,8 @@ void MainWindow::dropEvent(QDropEvent *ev)
         lastRequestedFrame = vfg::FirstFrame;
         QString filename = urls.at(0).toLocalFile();
         scriptEditor->load(filename);
+
+        setWindowTitle(tr("ScreenPicker - %1").arg(filename));
 
         QSettings cfg("config.ini", QSettings::IniFormat);
         bool showEditor = cfg.value("showscripteditor").toBool();
