@@ -118,13 +118,12 @@ void MainWindow::on_actionOpen_triggered()
 
     try
     {
-        resetState();
-
         // Reset this variable: assume that this route
         // loads a new file
         lastRequestedFrame = vfg::FirstFrame;
         scriptEditor->load(filename);
 
+        resetState();
         setWindowTitle(tr("ScreenPicker - %1").arg(filename));
 
         QSettings cfg("config.ini", QSettings::IniFormat);
@@ -457,14 +456,13 @@ void MainWindow::dropEvent(QDropEvent *ev)
 
     try
     {
-        resetState();
-
         // Reset this variable: assume this route
         // loads a new file
         lastRequestedFrame = vfg::FirstFrame;
         QString filename = urls.at(0).toLocalFile();
         scriptEditor->load(filename);
 
+        resetState();
         setWindowTitle(tr("ScreenPicker - %1").arg(filename));
 
         QSettings cfg("config.ini", QSettings::IniFormat);
