@@ -241,6 +241,7 @@ void MainWindow::on_generateButton_clicked()
     QProgressDialog progress("", tr("Cancel"), 0, num, this);
     progress.setMinimumDuration(0);
     progress.setWindowModality(Qt::WindowModal);
+    progress.show();
     for(unsigned currentFrame = selected, frameCtr = 1;
         currentFrame < lastPos && currentFrame <= totalFrames;
         currentFrame += step, ++frameCtr, lastProcessed += step)
