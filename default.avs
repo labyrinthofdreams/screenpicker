@@ -15,6 +15,10 @@ FFVideoSource(PathToVideo)
 
 # PAL DVD 4:3 - 16:15
 #Spline36Resize(768,576)
+# PAL DVD 16:9 - 64:45
+#Spline36Resize(1024, 576)
+# NTSC DVD 4:3 - 8:9
+#Spline36Resize(720, 540)
 # NTSC DVD 16:9 - 32:27
 #Spline36Resize(854,480)
 
