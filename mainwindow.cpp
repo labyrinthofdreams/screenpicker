@@ -98,6 +98,17 @@ void MainWindow::createConfig()
     }
 }
 
+void MainWindow::resetState()
+{
+    ui->unsavedWidget->clearThumbnails();
+    ui->savedWidget->clearThumbnails();
+    framesToSave.clear();
+
+    ui->seekSlider->setValue(vfg::FirstFrame);
+    ui->unsavedProgressBar->setValue(0);
+
+}
+
 void MainWindow::on_actionOpen_triggered()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("Open video"),
@@ -107,9 +118,7 @@ void MainWindow::on_actionOpen_triggered()
 
     try
     {
-        ui->unsavedWidget->clearThumbnails();
-        ui->savedWidget->clearThumbnails();
-        framesToSave.clear();
+        resetState();
 
         // Reset this variable: assume that this route
         // loads a new file
@@ -446,9 +455,7 @@ void MainWindow::dropEvent(QDropEvent *ev)
 
     try
     {
-        ui->unsavedWidget->clearThumbnails();
-        ui->savedWidget->clearThumbnails();
-        framesToSave.clear();
+        resetState();
 
         // Reset this variable: assume this route
         // loads a new file

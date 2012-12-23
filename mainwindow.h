@@ -88,6 +88,7 @@ private:
 
     void createAvisynthScriptFile();
     void createConfig();
+    void resetState();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *ev);
