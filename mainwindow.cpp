@@ -485,7 +485,8 @@ void MainWindow::closeEvent(QCloseEvent *ev)
 
     const QMessageBox::StandardButton response =
             QMessageBox::question(this, tr("Quit?"), tr("Are you sure?"),
-                                  QMessageBox::Yes, QMessageBox::No);
+                                  QMessageBox::Yes | QMessageBox::No,
+                                  QMessageBox::No);
     if(response == QMessageBox::Yes)
     {
         ev->accept();
