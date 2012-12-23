@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
          scriptEditor = new vfg::ScriptEditor;
          connect(scriptEditor, SIGNAL(scriptUpdated(QString)),
-                 this, SLOT(loadFromAvisynthScript(QString)));
+                 this, SLOT(scriptEditorUpdated(QString)));
 
          createAvisynthScriptFile();
          createConfig();
@@ -154,7 +154,7 @@ void MainWindow::on_actionOpen_triggered()
     }
 }
 
-void MainWindow::loadFromAvisynthScript(QString path)
+void MainWindow::scriptEditorUpdated(QString path)
 {
     try
     {

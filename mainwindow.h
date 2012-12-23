@@ -34,7 +34,7 @@ private slots:
 
     void on_actionOpen_triggered();
 
-    void loadFromAvisynthScript(QString path);
+    void scriptEditorUpdated(QString path);
 
     void videoLoaded();
 
