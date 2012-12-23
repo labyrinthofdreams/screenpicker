@@ -35,6 +35,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
          // Set max thumbnails for the Unsaved screenshots
          ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
+
+         const unsigned numScreenshots = cfg.value("numscreenshots").toInt();
+         ui->screenshotsSpinBox->setValue(numScreenshots);
+
+         const unsigned frameStep = cfg.value("framestep").toInt();
+         ui->frameStepSpinBox->setValue(frameStep);
     }
     catch(std::exception& ex)
     {
@@ -95,6 +101,8 @@ void MainWindow::createConfig()
         cfg.setValue("savescripts", false);
         cfg.setValue("showscripteditor", true);
         cfg.setValue("maxthumbnails", 100);
+        cfg.setValue("numscreenshots", 100);
+        cfg.setValue("framestep", 100);
     }
 }
 
