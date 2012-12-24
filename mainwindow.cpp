@@ -307,7 +307,7 @@ void MainWindow::on_grabButton_clicked()
     vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(selected, thumbnail);
     thumb->setFixedWidth(thumbnailSize);
     connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(handleUnsavedMenu(QPoint)));
+            this, SLOT(handleSavedMenu(QPoint)));
     ui->savedWidget->addThumbnail(thumb);
     framesToSave.insert(thumb->frameNum());
 }
