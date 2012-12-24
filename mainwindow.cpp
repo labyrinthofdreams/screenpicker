@@ -146,7 +146,7 @@ void MainWindow::on_actionOpen_triggered()
         if(showEditor)
         {
             scriptEditor->show();
-            scriptEditor->raise();
+            scriptEditor->setWindowState(Qt::WindowActive);
         }
     }
     catch(std::exception& ex)
@@ -154,7 +154,7 @@ void MainWindow::on_actionOpen_triggered()
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
         scriptEditor->show();
-        scriptEditor->raise();
+        scriptEditor->setWindowState(Qt::WindowActive);
     }
 }
 
@@ -169,7 +169,7 @@ void MainWindow::scriptEditorUpdated(QString path)
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
         scriptEditor->show();
-        scriptEditor->raise();
+        scriptEditor->setWindowState(Qt::WindowActive);
     }
 }
 
@@ -450,7 +450,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
 void MainWindow::on_actionAvisynth_Script_Editor_triggered()
 {
     scriptEditor->show();
-    scriptEditor->raise();
+    scriptEditor->setWindowState(Qt::WindowActive);
 }
 
 void MainWindow::on_actionQuit_triggered()
@@ -492,7 +492,7 @@ void MainWindow::dropEvent(QDropEvent *ev)
         if(showEditor)
         {
             scriptEditor->show();
-            scriptEditor->raise();
+            scriptEditor->setWindowState(Qt::WindowActive);
         }
     }
     catch(std::exception& ex)
@@ -500,7 +500,7 @@ void MainWindow::dropEvent(QDropEvent *ev)
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
         scriptEditor->show();
-        scriptEditor->raise();
+        scriptEditor->setWindowState(Qt::WindowActive);
     }
 }
 
