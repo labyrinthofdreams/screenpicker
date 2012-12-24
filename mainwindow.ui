@@ -187,10 +187,13 @@
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string>Generate n screenshots with m frame step</string>
+             <string>Generate n screenshots with m frame step (H)</string>
             </property>
             <property name="text">
              <string>Generate</string>
+            </property>
+            <property name="shortcut">
+             <string>H</string>
             </property>
            </widget>
           </item>
