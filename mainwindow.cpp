@@ -144,13 +144,17 @@ void MainWindow::on_actionOpen_triggered()
         QSettings cfg("config.ini", QSettings::IniFormat);
         bool showEditor = cfg.value("showscripteditor").toBool();
         if(showEditor)
+        {
             scriptEditor->show();
+            scriptEditor->raise();
+        }
     }
     catch(std::exception& ex)
     {
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
         scriptEditor->show();
+        scriptEditor->raise();
     }
 }
 
@@ -165,6 +169,7 @@ void MainWindow::scriptEditorUpdated(QString path)
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
         scriptEditor->show();
+        scriptEditor->raise();
     }
 }
 
@@ -445,6 +450,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
 void MainWindow::on_actionAvisynth_Script_Editor_triggered()
 {
     scriptEditor->show();
+    scriptEditor->raise();
 }
 
 void MainWindow::on_actionQuit_triggered()
@@ -484,13 +490,17 @@ void MainWindow::dropEvent(QDropEvent *ev)
         QSettings cfg("config.ini", QSettings::IniFormat);
         bool showEditor = cfg.value("showscripteditor").toBool();
         if(showEditor)
+        {
             scriptEditor->show();
+            scriptEditor->raise();
+        }
     }
     catch(std::exception& ex)
     {
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
         scriptEditor->show();
+        scriptEditor->raise();
     }
 }
 
