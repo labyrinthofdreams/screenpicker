@@ -318,6 +318,8 @@ void MainWindow::on_grabButton_clicked()
             this, SLOT(handleSavedMenu(QPoint)));
     ui->savedWidget->addThumbnail(thumb);
     framesToSave.insert(thumb->frameNum());
+
+    statusBar()->showMessage(tr("Grabbed frame #%1").arg(selected), 3000);
 }
 
 void MainWindow::handleUnsavedMenu(const QPoint &pos)
