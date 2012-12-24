@@ -519,6 +519,9 @@ void MainWindow::closeEvent(QCloseEvent *ev)
     if(response == QMessageBox::Yes)
     {
         ev->accept();
+
+        // Close script editor if it's open
+        scriptEditor->close();
     }
 }
 
