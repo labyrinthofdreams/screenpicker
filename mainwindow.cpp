@@ -308,8 +308,8 @@ void MainWindow::on_grabButton_clicked()
     thumb->setFixedWidth(thumbnailSize);
     connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handleUnsavedMenu(QPoint)));
-    ui->unsavedWidget->addThumbnail(thumb);
-    ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
+    ui->savedWidget->addThumbnail(thumb);
+    framesToSave.insert(thumb->frameNum());
 }
 
 void MainWindow::handleUnsavedMenu(const QPoint &pos)
