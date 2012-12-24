@@ -65,6 +65,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)),
             this, SLOT(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)));
+
+    connect(ui->savedWidget, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)),
+            this, SLOT(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)));
 }
 
 MainWindow::~MainWindow()
