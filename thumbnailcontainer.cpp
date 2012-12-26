@@ -26,19 +26,21 @@ void vfg::ThumbnailContainer::addThumbnail(vfg::VideoFrameThumbnail *thumbnail)
 
     int numThumbnails = layout->count();
     if((maxThumbnails > 0) && (numThumbnails >= maxThumbnails))
-    {
-        // bugfix: Deleting a selected widget and then accessing it
-        // causes a nasty crash
-        if(activeWidget)
-        {
-            activeWidget->markUnselected();
-            activeWidget = NULL;
-        }
+    {        
         do
         {
             QLayoutItem *item = layout->takeAt(0);
             if(item)
             {
+                // bugfix: Deleting a selected widget and then accessing it
+                // causes a nasty crash
+                // Only mark unselected if it's being removed
+                if(activeWidget && (activeWidget == item->widget()))
+                {
+                    activeWidget->markUnselected();
+                    activeWidget = NULL;
+                }
+
                 delete item->widget();
                 delete item;
                 numThumbnails--;
