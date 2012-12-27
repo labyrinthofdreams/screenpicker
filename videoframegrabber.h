@@ -4,6 +4,9 @@
 #include <QObject>
 #include <QImage>
 #include <QString>
+#include <QSharedPointer>
+
+// TODO: Replace getVideoSource() return type with QWeakPointer
 
 namespace vfg
 {
@@ -18,7 +21,7 @@ namespace vfg
     {
         Q_OBJECT
     private:
-        vfg::AbstractVideoSource* avs;
+        QSharedPointer<vfg::AbstractVideoSource> avs;
 
         // Last frame - 1
         unsigned numFrames;
@@ -26,11 +29,11 @@ namespace vfg
         // Between range 0 - (last frame - 1)
         unsigned currentFrame;
     public:
-        explicit VideoFrameGrabber(vfg::AbstractVideoSource* avs, QObject *parent = 0);
-        ~VideoFrameGrabber();
+        explicit VideoFrameGrabber(QSharedPointer<vfg::AbstractVideoSource> avs, QObject *parent = 0);
         // Load video file
         void load(QString filename);
         bool hasVideo() const;
+        void setVideoSource(QSharedPointer<vfg::AbstractVideoSource> newAvs);
         const vfg::AbstractVideoSource* getVideoSource() const;
         // Captures the exact frame between range 1 - n
         void requestFrame(unsigned frameNum);

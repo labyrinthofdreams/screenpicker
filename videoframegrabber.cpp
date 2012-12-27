@@ -1,7 +1,7 @@
 #include "videoframegrabber.h"
 #include "abstractvideosource.h"
 
-vfg::VideoFrameGrabber::VideoFrameGrabber(vfg::AbstractVideoSource *avs,
+vfg::VideoFrameGrabber::VideoFrameGrabber(QSharedPointer<vfg::AbstractVideoSource> avs,
                                           QObject *parent) :
     QObject(parent),
     avs(avs),
@@ -9,13 +9,6 @@ vfg::VideoFrameGrabber::VideoFrameGrabber(vfg::AbstractVideoSource *avs,
     currentFrame(0)
 {
 }
-
-vfg::VideoFrameGrabber::~VideoFrameGrabber()
-{
-    if(avs)
-        delete avs;
-}
-
 void vfg::VideoFrameGrabber::load(QString filename)
 {
     try
@@ -37,9 +30,14 @@ bool vfg::VideoFrameGrabber::hasVideo() const
     return avs->hasVideo();
 }
 
+void vfg::VideoFrameGrabber::setVideoSource(QSharedPointer<vfg::AbstractVideoSource> newAvs)
+{
+    avs = newAvs;
+}
+
 const vfg::AbstractVideoSource* vfg::VideoFrameGrabber::getVideoSource() const
 {
-    return avs;
+    return avs.data();
 }
 
 unsigned vfg::VideoFrameGrabber::lastFrame() const
