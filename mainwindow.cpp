@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
          // Set progress bar max
          QSettings cfg("config.ini", QSettings::IniFormat);
-         const int maxThumbnails = cfg.value("maxthumbnails").toInt();
+         const unsigned maxThumbnails = cfg.value("maxthumbnails").toInt();
          ui->unsavedProgressBar->setMaximum(maxThumbnails);
 
          // Set max thumbnails for the Unsaved screenshots
@@ -405,7 +405,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
     }
 
     bool resizeOk = false;
-    int resizeWidth;
+    int resizeWidth = 0;
     QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Resize thumbnails"),
                                                                 tr("Do you want to resize thumbnails?"),
                                                                 QMessageBox::Yes | QMessageBox::No,
