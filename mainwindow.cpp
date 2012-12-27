@@ -11,16 +11,17 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
+    frameGrabber(),
+    scriptEditor(),
     framesToSave(),
-    lastRequestedFrame(vfg::FirstFrame),
-    scriptEditor()
+    lastRequestedFrame(vfg::FirstFrame)
 {
     ui->setupUi(this);
 
     try
     {
          vfg::AvisynthVideoSource* avs = new vfg::AvisynthVideoSource;
-         frameGrabber = new vfg::VideoFrameGrabber(avs, this);
+         frameGrabber.reset(new vfg::VideoFrameGrabber(avs, this));
 
          scriptEditor.reset(new vfg::ScriptEditor);
          connect(scriptEditor.data(), SIGNAL(scriptUpdated(QString)),
@@ -55,13 +56,13 @@ MainWindow::MainWindow(QWidget *parent) :
         throw;
     }
 
-    connect(frameGrabber, SIGNAL(videoReady()),
+    connect(frameGrabber.data(), SIGNAL(videoReady()),
             this, SLOT(videoLoaded()));
-    connect(frameGrabber, SIGNAL(errorOccurred(QString)),
+    connect(frameGrabber.data(), SIGNAL(errorOccurred(QString)),
             this, SLOT(videoError(QString)));
 
     // Connect grabber to the widget
-    connect(frameGrabber, SIGNAL(frameGrabbed(QImage)),
+    connect(frameGrabber.data(), SIGNAL(frameGrabbed(QImage)),
             ui->videoFrameWidget, SLOT(setFrame(QImage)));
 
     connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)),
