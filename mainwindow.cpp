@@ -124,16 +124,10 @@ void MainWindow::resetState()
 
     ui->seekSlider->setValue(vfg::FirstFrame);
     ui->unsavedProgressBar->setValue(0);
-
 }
 
-void MainWindow::on_actionOpen_triggered()
+void MainWindow::loadFile(QString filename)
 {
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open video"),
-                                                    "", "All (*.*);;Avisynth (*.avs, *.avsi);;DGIndex (*.d2v)");
-    if(filename.isEmpty())
-        return;
-
     try
     {
         // Reset this variable: assume that this route
@@ -159,6 +153,16 @@ void MainWindow::on_actionOpen_triggered()
         scriptEditor->show();
         scriptEditor->setWindowState(Qt::WindowActive);
     }
+}
+
+void MainWindow::on_actionOpen_triggered()
+{
+    QString filename = QFileDialog::getOpenFileName(this, tr("Open video"),
+                                                    "", "All (*.*);;Avisynth (*.avs, *.avsi);;DGIndex (*.d2v)");
+    if(filename.isEmpty())
+        return;
+
+    loadFile(filename);
 }
 
 void MainWindow::scriptEditorUpdated(QString path)
@@ -481,32 +485,8 @@ void MainWindow::dropEvent(QDropEvent *ev)
 
     ev->acceptProposedAction();
 
-    try
-    {
-        // Reset this variable: assume this route
-        // loads a new file
-        lastRequestedFrame = vfg::FirstFrame;
-        QString filename = urls.at(0).toLocalFile();
-        scriptEditor->load(filename);
-
-        resetState();
-        setWindowTitle(tr("ScreenPicker - %1").arg(filename));
-
-        QSettings cfg("config.ini", QSettings::IniFormat);
-        bool showEditor = cfg.value("showscripteditor").toBool();
-        if(showEditor)
-        {
-            scriptEditor->show();
-            scriptEditor->setWindowState(Qt::WindowActive);
-        }
-    }
-    catch(std::exception& ex)
-    {
-        QMessageBox::warning(this, tr("Error while loading file"),
-                             QString(ex.what()));
-        scriptEditor->show();
-        scriptEditor->setWindowState(Qt::WindowActive);
-    }
+    QString filename = urls.at(0).toLocalFile();
+    loadFile(filename);
 }
 
 

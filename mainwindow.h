@@ -92,6 +92,7 @@ private:
     void createAvisynthScriptFile();
     void createConfig();
     void resetState();
+    void loadFile(QString filename);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *ev);
