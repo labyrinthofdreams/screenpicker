@@ -130,6 +130,8 @@ void MainWindow::loadFile(QString filename)
 {
     try
     {
+        QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
+        frameGrabber->setVideoSource(videoSource);
         // Reset this variable: assume that this route
         // loads a new file
         lastRequestedFrame = vfg::FirstFrame;
