@@ -12,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     framesToSave(),
-    lastRequestedFrame(vfg::FirstFrame)
+    lastRequestedFrame(vfg::FirstFrame),
+    scriptEditor()
 {
     ui->setupUi(this);
 
@@ -21,8 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
          vfg::AvisynthVideoSource* avs = new vfg::AvisynthVideoSource;
          frameGrabber = new vfg::VideoFrameGrabber(avs, this);
 
-         scriptEditor = new vfg::ScriptEditor;
-         connect(scriptEditor, SIGNAL(scriptUpdated(QString)),
+         scriptEditor.reset(new vfg::ScriptEditor);
+         connect(scriptEditor.data(), SIGNAL(scriptUpdated(QString)),
                  this, SLOT(scriptEditorUpdated(QString)));
 
          createAvisynthScriptFile();
@@ -73,9 +74,6 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
-
-    if(scriptEditor)
-        delete scriptEditor;
 }
 
 void MainWindow::createAvisynthScriptFile()

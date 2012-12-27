@@ -5,6 +5,7 @@
 #include <QString>
 #include <QMap>
 #include <QSet>
+#include <QScopedPointer>
 
 // Forward declarations
 class QPoint;
@@ -83,7 +84,7 @@ private:
 
     vfg::VideoFrameGrabber* frameGrabber;
 
-    vfg::ScriptEditor* scriptEditor;
+    QScopedPointer<vfg::ScriptEditor> scriptEditor;
 
     QSet<unsigned> framesToSave;
 
