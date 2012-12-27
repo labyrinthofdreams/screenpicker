@@ -1,4 +1,5 @@
 #include <QtGui>
+#include <QtCore>
 #include <exception>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -20,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     try
     {
-         vfg::AvisynthVideoSource* avs = new vfg::AvisynthVideoSource;
+         QSharedPointer<vfg::AvisynthVideoSource> avs (new vfg::AvisynthVideoSource);
          frameGrabber.reset(new vfg::VideoFrameGrabber(avs, this));
 
          scriptEditor.reset(new vfg::ScriptEditor);
