@@ -34,8 +34,6 @@ void ScriptEditor::loadScript(QString path)
 
     ui->plainTextEdit->clear();
     ui->plainTextEdit->appendPlainText(script);
-
-    on_updateButton_clicked();
 }
 
 void ScriptEditor::loadVideo(QString path)
@@ -61,8 +59,6 @@ void ScriptEditor::loadVideo(QString path)
 
     ui->plainTextEdit->clear();
     ui->plainTextEdit->appendPlainText(parsedScript);
-
-    on_updateButton_clicked();
 }
 
 void ScriptEditor::load(QString path)
