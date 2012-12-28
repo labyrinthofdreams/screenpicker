@@ -93,6 +93,11 @@ unsigned AvisynthVideoSource::getNumFrames() const
 
 QImage AvisynthVideoSource::getFrame(unsigned frameNumber)
 {
+    if(info == NULL)
+    {
+        return QImage();
+    }
+
     if(frameNumber >= info->num_frames)
     {
         return QImage();
