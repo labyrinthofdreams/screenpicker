@@ -139,22 +139,15 @@ void MainWindow::loadFile(QString filename)
 
         resetState();
         setWindowTitle(tr("ScreenPicker - %1").arg(filename));
-
-        QSettings cfg("config.ini", QSettings::IniFormat);
-        bool showEditor = cfg.value("showscripteditor").toBool();
-        if(showEditor)
-        {
-            scriptEditor->show();
-            scriptEditor->setWindowState(Qt::WindowActive);
-        }
     }
     catch(std::exception& ex)
     {
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
-        scriptEditor->show();
-        scriptEditor->setWindowState(Qt::WindowActive);
     }
+
+    scriptEditor->show();
+    scriptEditor->setWindowState(Qt::WindowActive);
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -175,7 +168,7 @@ void MainWindow::scriptEditorUpdated(QString path)
     }
     catch(std::exception& ex)
     {
-        QMessageBox::warning(this, tr("Error while loading file"),
+        QMessageBox::warning(this, tr("Error while loading script"),
                              QString(ex.what()));
         scriptEditor->show();
         scriptEditor->setWindowState(Qt::WindowActive);
