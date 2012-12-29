@@ -1,6 +1,6 @@
 #include <QtGui>
 #include <QtCore>
-#include <exception>
+#include <stdexcept>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "videoframegrabber.h"
@@ -126,28 +126,82 @@ void MainWindow::resetState()
     ui->unsavedProgressBar->setValue(0);
 }
 
-void MainWindow::loadFile(QString filename)
+void MainWindow::loadFile(QString path)
 {
     try
     {
+        QString savedPath = path;
+        QFileInfo info(path);
+        if(info.suffix() != "avs" && info.suffix() != "avsi")
+        {
+            savedPath = "temp.avs";
+
+            // Parse and save Avisynth script
+            QString parsedScript = parseScript(path);
+            saveScript(savedPath, parsedScript);
+        }
+
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
         frameGrabber->setVideoSource(videoSource);
+        frameGrabber->load(savedPath);
         // Reset this variable: assume that this route
         // loads a new file
         lastRequestedFrame = vfg::FirstFrame;
-        scriptEditor->load(filename);
+        scriptEditor->load(savedPath);
 
         resetState();
-        setWindowTitle(tr("ScreenPicker - %1").arg(filename));
+        setWindowTitle(tr("ScreenPicker - %1").arg(path));
+
+        // Load config
+        QSettings cfg("config.ini", QSettings::IniFormat);
+        const bool showEditor = cfg.value("showscripteditor").toBool();
+        if(showEditor)
+        {
+            scriptEditor->show();
+            scriptEditor->setWindowState(Qt::WindowActive);
+        }
     }
     catch(std::exception& ex)
     {
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
+
+        scriptEditor->show();
+        scriptEditor->setWindowState(Qt::WindowActive);
+    }
+}
+
+QString MainWindow::parseScript(QString filepath)
+{
+    QFile scriptfile("default.avs");
+    if(!scriptfile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        throw std::runtime_error("Failed to open script");
     }
 
-    scriptEditor->show();
-    scriptEditor->setWindowState(Qt::WindowActive);
+    QTextStream in(&scriptfile);
+
+    // Load config
+    QSettings cfg("config.ini", QSettings::IniFormat);
+    QString pluginsPath = cfg.value("avisynthpluginspath").toString();
+
+    // Parse avisynth script
+    QString parsedScript = in.readAll();
+    parsedScript = parsedScript.arg(filepath).arg(pluginsPath);
+
+    return parsedScript;
+}
+
+void MainWindow::saveScript(QString path, QString script)
+{
+    QFile outFile(path);
+    if(!outFile.open(QFile::WriteOnly | QFile::Truncate))
+    {
+        throw std::runtime_error("Failed to open file for writing.");
+    }
+
+    QTextStream out(&outFile);
+    out << script;
 }
 
 void MainWindow::on_actionOpen_triggered()
