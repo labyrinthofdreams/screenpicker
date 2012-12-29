@@ -1,4 +1,7 @@
 # Default Avisynth script
+# http://avisynth.org/mediawiki/Internal_functions/Control_functions
+SetMemoryMax(128)
+
 PathToVideo = "%1"
 AvisynthPluginsDir = "%2"
 LoadPlugin(AvisynthPluginsDir + "/DGDecode.dll")
