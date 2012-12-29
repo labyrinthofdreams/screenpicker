@@ -45,5 +45,7 @@ void ScriptEditor::on_updateButton_clicked()
     QTextStream out(&outFile);
     out << ui->plainTextEdit->toPlainText();
 
+    outFile.close();
+
     emit scriptUpdated(savePath);
 }
