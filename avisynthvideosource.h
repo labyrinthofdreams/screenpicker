@@ -4,15 +4,12 @@
 #include "abstractvideosource.h"
 #include "avs_internal.c"
 
-
-
 namespace vfg
 {
     class AvisynthVideoSource : public vfg::AbstractVideoSource
     {
     private:
         avs_hnd_t avsHandle;
-
         const AVS_VideoInfo* info;
     public:
         AvisynthVideoSource();
