@@ -19,66 +19,16 @@ ScriptEditor::~ScriptEditor()
     delete ui;
 }
 
-void ScriptEditor::loadScript(QString path)
-{       
+void ScriptEditor::load(QString path)
+{
     QFile scriptfile(path);
     if(!scriptfile.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         throw std::runtime_error("Failed to open file for reading.");
     }
 
-    setSavePath(path);
-
     QTextStream in(&scriptfile);
-    QString script = in.readAll();
-
-    ui->plainTextEdit->clear();
-    ui->plainTextEdit->appendPlainText(script);
-}
-
-void ScriptEditor::loadVideo(QString path)
-{
-    QFile inFile("default.avs");
-    if(!inFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        throw std::runtime_error("Failed to open script file for reading.");
-    }
-
-    QSettings cfg("config.ini", QSettings::IniFormat);
-    QString pluginsPath = cfg.value("avisynthpluginspath").toString();
-    bool saveScripts = cfg.value("savescripts").toBool();
-
-    if(saveScripts)
-        setSavePath(path);
-    else
-        setSavePath("temp.avs");
-
-
-    QTextStream in(&inFile);
-    QString parsedScript = in.readAll().arg(path).arg(pluginsPath);
-
-    ui->plainTextEdit->clear();
-    ui->plainTextEdit->appendPlainText(parsedScript);
-}
-
-void ScriptEditor::load(QString path)
-{
-    try
-    {
-        QFileInfo file(path);
-        if(file.suffix() == "avs")
-        {
-            loadScript(path);
-        }
-        else
-        {
-            loadVideo(path);
-        }
-    }
-    catch(std::exception& ex)
-    {
-        throw;
-    }
+    ui->plainTextEdit->setPlainText(in.readAll());
 }
 
 void ScriptEditor::on_updateButton_clicked()
@@ -95,13 +45,5 @@ void ScriptEditor::on_updateButton_clicked()
     QTextStream out(&outFile);
     out << ui->plainTextEdit->toPlainText();
 
-    outFile.close();
-
     emit scriptUpdated(savePath);
-}
-
-void ScriptEditor::setSavePath(QString path)
-{
-    QFileInfo fi(path);
-    savePath = tr("%1/%2.avs").arg(fi.dir().path()).arg(fi.completeBaseName());
 }

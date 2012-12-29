@@ -18,14 +18,7 @@ namespace vfg
         explicit ScriptEditor(QWidget *parent = 0);
         ~ScriptEditor();
 
-        // Load video using the default Avisynth script template
-        void loadVideo(QString path);
-
-        // Load Avisynth script
-        void loadScript(QString path);
-
-        // Generalized method that calls either loadVideo()
-        // or loadScript() depending on the file suffix
+        // Loads contents of script file
         void load(QString path);
     private slots:
         void on_updateButton_clicked();
@@ -34,9 +27,6 @@ namespace vfg
         Ui::ScriptEditor *ui;
 
         QString savePath;
-
-        void setSavePath(QString path);
-
     signals:
         // Emits name of the temporary script path
         // with our modified script
