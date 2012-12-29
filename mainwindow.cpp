@@ -122,8 +122,19 @@ void MainWindow::resetState()
     ui->savedWidget->clearThumbnails();
     framesToSave.clear();
 
-    ui->seekSlider->setValue(vfg::FirstFrame);
     ui->unsavedProgressBar->setValue(0);
+
+    ui->currentFrameLabel->setText("0");
+    ui->totalFramesLabel->setText("0");
+
+    ui->seekSlider->setValue(ui->seekSlider->minimum());
+
+    // Disable buttons
+    ui->seekSlider->setEnabled(false);
+    ui->previousButton->setEnabled(false);
+    ui->nextButton->setEnabled(false);
+    ui->grabButton->setEnabled(false);
+    ui->generateButton->setEnabled(false);
 }
 
 void MainWindow::loadFile(QString path)
@@ -141,16 +152,19 @@ void MainWindow::loadFile(QString path)
             saveScript(savedPath, parsedScript);
         }
 
+        // Reset all states back to zero
+        lastRequestedFrame = vfg::FirstFrame;
+        resetState();
+
+        setWindowTitle(tr("ScreenPicker - %1").arg(info.fileName()));
+
+        // Load the (parsed) Avisynth script to script editor
+        scriptEditor->load(savedPath);
+
+        // Create Avisynth video source and attempt to load the (parsed) Avisynth script
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
         frameGrabber->setVideoSource(videoSource);
         frameGrabber->load(savedPath);
-        // Reset this variable: assume that this route
-        // loads a new file
-        lastRequestedFrame = vfg::FirstFrame;
-        scriptEditor->load(savedPath);
-
-        resetState();
-        setWindowTitle(tr("ScreenPicker - %1").arg(path));
 
         // Load config
         QSettings cfg("config.ini", QSettings::IniFormat);
