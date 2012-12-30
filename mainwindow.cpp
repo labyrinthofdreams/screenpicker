@@ -612,3 +612,8 @@ void MainWindow::on_frameStepSpinBox_valueChanged(int arg1)
     QSettings cfg("config.ini", QSettings::IniFormat);
     cfg.setValue("framestep", arg1);
 }
+
+void MainWindow::on_actionAbout_triggered()
+{
+    QMessageBox::information(this, tr("About"), tr("ScreenPicker 1.0b1"));
+}

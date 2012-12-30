@@ -79,6 +79,8 @@ private slots:
 
     void on_frameStepSpinBox_valueChanged(int arg1);
 
+    void on_actionAbout_triggered();
+
 private:
     Ui::MainWindow *ui;
 
