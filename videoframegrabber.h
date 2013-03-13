@@ -8,13 +8,16 @@
 
 // TODO: Replace getVideoSource() return type with QWeakPointer
 
+// Forward declarations
+namespace vfg {
+    class AbstractVideoSource;
+}
+
 namespace vfg
 {
     enum {
         FirstFrame = 1
     };
-
-    class AbstractVideoSource;
 
     // Class declaration
     class VideoFrameGrabber : public QObject
