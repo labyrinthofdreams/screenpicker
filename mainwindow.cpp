@@ -9,6 +9,12 @@
 #include "scripteditor.h"
 #include "configdialog.h"
 
+// TODO: When loading new video, the widgets inside scroll areas
+// do not get resized to fit the scroll area (they remain large)
+// TODO: Project files to save progress?
+// TODO: When generating screenshots, let user skip around the video, grab, ...
+// can be done by queueing the frames in a stack where you can push_front new frames on the fly
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -22,11 +28,9 @@ MainWindow::MainWindow(QWidget *parent) :
     try
     {
          QSharedPointer<vfg::AvisynthVideoSource> avs (new vfg::AvisynthVideoSource);
-         frameGrabber.reset(new vfg::VideoFrameGrabber(avs, this));
+         frameGrabber.reset(new vfg::VideoFrameGrabber(avs));
 
          scriptEditor.reset(new vfg::ScriptEditor);
-         connect(scriptEditor.data(), SIGNAL(scriptUpdated(QString)),
-                 this, SLOT(scriptEditorUpdated(QString)));
 
          createAvisynthScriptFile();
          createConfig();
@@ -56,6 +60,9 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         throw;
     }
+
+    connect(scriptEditor.data(), SIGNAL(scriptUpdated(QString)),
+            this, SLOT(scriptEditorUpdated(QString)));
 
     connect(frameGrabber.data(), SIGNAL(videoReady()),
             this, SLOT(videoLoaded()));
@@ -129,12 +136,16 @@ void MainWindow::resetState()
 
     ui->seekSlider->setValue(ui->seekSlider->minimum());
 
+    // Select first tab
+    ui->tabWidget->setCurrentIndex(0);
+
     // Disable buttons
     ui->seekSlider->setEnabled(false);
     ui->previousButton->setEnabled(false);
     ui->nextButton->setEnabled(false);
     ui->grabButton->setEnabled(false);
     ui->generateButton->setEnabled(false);
+    ui->saveSingleButton->setEnabled(false);
 }
 
 void MainWindow::loadFile(QString path)
@@ -232,7 +243,10 @@ void MainWindow::scriptEditorUpdated(QString path)
 {
     try
     {
-        frameGrabber->load(path);        
+        // Create Avisynth video source and attempt to load the (parsed) Avisynth script
+        QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
+        frameGrabber->setVideoSource(videoSource);
+        frameGrabber->load(path);
     }
     catch(std::exception& ex)
     {
@@ -271,6 +285,7 @@ void MainWindow::videoLoaded()
     ui->nextButton->setEnabled(true);
     ui->grabButton->setEnabled(true);
     ui->generateButton->setEnabled(true);
+    ui->saveSingleButton->setEnabled(true);
 }
 
 void MainWindow::videoError(QString msg)
@@ -615,5 +630,28 @@ void MainWindow::on_frameStepSpinBox_valueChanged(int arg1)
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::information(this, tr("About"), tr("ScreenPicker 1.0b1"));
+    QMessageBox::information(this, tr("About"), tr("ScreenPicker 1.0b2 20130122"));
+}
+
+void MainWindow::on_saveSingleButton_clicked()
+{
+    const unsigned selected = ui->seekSlider->value();
+    QImage frame = frameGrabber->getFrame(selected);
+
+    QString outFilename = QFileDialog::getSaveFileName(this, tr("Save as..."), "", tr("PNG (*.png)"));
+    if(QFile::exists(outFilename))
+    {
+        QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Overwrite?"),
+                                                                    tr("File %1 exists. Overwrite?").arg(outFilename),
+                                                                    QMessageBox::Yes | QMessageBox::No,
+                                                                    QMessageBox::No);
+        if(clicked == QMessageBox::Yes)
+        {
+            frame.save(outFilename);
+        }
+    }
+    else
+    {
+        frame.save(outFilename);
+    }
 }

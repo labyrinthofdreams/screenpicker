@@ -81,6 +81,8 @@ private slots:
 
     void on_actionAbout_triggered();
 
+    void on_saveSingleButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
