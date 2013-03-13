@@ -64,7 +64,7 @@ void vfg::ThumbnailContainer::clearThumbnails()
     activeWidget = NULL;
 }
 
-void vfg::ThumbnailContainer::resizeThumbnails(unsigned width)
+void vfg::ThumbnailContainer::resizeThumbnails(const unsigned width)
 {
     for(int i = 0; i < layout->count(); ++i)
     {
@@ -121,7 +121,7 @@ int vfg::ThumbnailContainer::numThumbnails() const
     return layout->count();
 }
 
-void vfg::ThumbnailContainer::setMaxThumbnails(unsigned max)
+void vfg::ThumbnailContainer::setMaxThumbnails(const unsigned max)
 {
     maxThumbnails = max;
 }

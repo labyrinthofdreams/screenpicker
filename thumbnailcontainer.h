@@ -24,10 +24,10 @@ namespace vfg
 
         void addThumbnail(vfg::VideoFrameThumbnail* thumbnail);
         void clearThumbnails();
-        void resizeThumbnails(unsigned width);
+        void resizeThumbnails(const unsigned width);
         vfg::VideoFrameThumbnail* takeSelected();
         int numThumbnails() const;
-        void setMaxThumbnails(unsigned max);
+        void setMaxThumbnails(const unsigned max);
 
     protected:
         void mousePressEvent(QMouseEvent *ev);
