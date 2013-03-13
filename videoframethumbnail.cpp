@@ -2,14 +2,14 @@
 #include <QDebug>
 #include "videoframethumbnail.h"
 
-vfg::VideoFrameThumbnail::VideoFrameThumbnail(unsigned frame, QPixmap thumbnail, QWidget *parent) :
-    QWidget(parent)
+vfg::VideoFrameThumbnail::VideoFrameThumbnail(const unsigned frame, QPixmap thumbnail, QWidget *parent) :
+    QWidget(parent),
+    frameNumber(frame),
+    thumb(thumbnail),
+    pixmapLabel(new QLabel),
+    layout(new QVBoxLayout)
 {
-    frameNumber = frame;
-    thumb = thumbnail;
-    pixmapLabel = new QLabel;
     pixmapLabel->setPixmap(thumb);
-    layout = new QVBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(pixmapLabel);
     setLayout(layout);
