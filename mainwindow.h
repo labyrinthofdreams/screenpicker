@@ -87,9 +87,9 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    QThread* frameGrabberThread;
+    QThread frameGrabberThread;
 
-    vfg::VideoFrameGrabber* frameGrabber;
+    QScopedPointer<vfg::VideoFrameGrabber> frameGrabber;
     QScopedPointer<vfg::ScriptEditor> scriptEditor;
 
     QSet<unsigned> framesToSave;

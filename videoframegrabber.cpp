@@ -11,6 +11,12 @@ vfg::VideoFrameGrabber::VideoFrameGrabber(QSharedPointer<vfg::AbstractVideoSourc
     currentFrame(0)
 {
 }
+
+vfg::VideoFrameGrabber::~VideoFrameGrabber()
+{
+    qDebug() << "VFG destructed from thread " << thread()->currentThreadId();
+}
+
 void vfg::VideoFrameGrabber::load(QString filename)
 {
     try
@@ -18,13 +24,13 @@ void vfg::VideoFrameGrabber::load(QString filename)
         avs->load(filename);
         numFrames = avs->getNumFrames();
         currentFrame = 0;
+
+        emit videoReady();
     }
     catch(std::exception& ex)
     {
-        throw;
+        emit errorOccurred(ex.what());
     }
-
-    emit videoReady();
 }
 
 bool vfg::VideoFrameGrabber::hasVideo() const

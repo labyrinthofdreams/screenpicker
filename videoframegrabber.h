@@ -33,8 +33,7 @@ namespace vfg
         unsigned currentFrame;
     public:
         explicit VideoFrameGrabber(QSharedPointer<vfg::AbstractVideoSource> avs, QObject *parent = 0);
-        // Load video file
-        void load(QString filename);
+        ~VideoFrameGrabber();
         bool hasVideo() const;
         void setVideoSource(QSharedPointer<vfg::AbstractVideoSource> newAvs);
         const vfg::AbstractVideoSource* getVideoSource() const;
@@ -45,6 +44,8 @@ namespace vfg
         unsigned lastFrame() const;
         unsigned totalFrames() const;
     public slots:
+        // Load video file
+        void load(QString filename);
         void requestNextFrame();
         void requestPreviousFrame();
         // Captures the exact frame between range 1 - n

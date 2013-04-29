@@ -18,8 +18,8 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    frameGrabber(),
     frameGrabberThread(),
+    frameGrabber(),
     scriptEditor(),
     framesToSave(),
     lastRequestedFrame(vfg::FirstFrame)
@@ -29,11 +29,10 @@ MainWindow::MainWindow(QWidget *parent) :
     try
     {
          QSharedPointer<vfg::AvisynthVideoSource> avs (new vfg::AvisynthVideoSource);
-         frameGrabber = new vfg::VideoFrameGrabber(avs);
+         frameGrabber.reset(new vfg::VideoFrameGrabber(avs));
 
-         frameGrabberThread = new QThread;
-         frameGrabber->moveToThread(frameGrabberThread);
-         frameGrabberThread->start();
+         frameGrabber->moveToThread(&frameGrabberThread);
+         frameGrabberThread.start();
 
          scriptEditor.reset(new vfg::ScriptEditor);
 
@@ -69,13 +68,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(scriptEditor.data(), SIGNAL(scriptUpdated(QString)),
             this, SLOT(scriptEditorUpdated(QString)));
 
-    connect(frameGrabber, SIGNAL(videoReady()),
+    connect(frameGrabber.data(), SIGNAL(videoReady()),
             this, SLOT(videoLoaded()));
-    connect(frameGrabber, SIGNAL(errorOccurred(QString)),
+    connect(frameGrabber.data(), SIGNAL(errorOccurred(QString)),
             this, SLOT(videoError(QString)));
 
     // Connect grabber to the widget
-    connect(frameGrabber, SIGNAL(frameGrabbed(QImage)),
+    connect(frameGrabber.data(), SIGNAL(frameGrabbed(QImage)),
             ui->videoFrameWidget, SLOT(setFrame(QImage)));
 
     connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)),
@@ -87,8 +86,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    frameGrabberThread->quit();
-    delete frameGrabber;
+    qDebug() << "-- Main thread is " << thread()->currentThreadId();
+    frameGrabberThread.quit();
     delete ui;
 }
 
@@ -182,7 +181,9 @@ void MainWindow::loadFile(QString path)
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
         frameGrabber->setVideoSource(videoSource);
-        frameGrabber->load(savedPath);
+
+        QMetaObject::invokeMethod(frameGrabber.data(), "load", Q_ARG(QString, savedPath));
+        //frameGrabber->load(savedPath);
 
         // Load config
         QSettings cfg("config.ini", QSettings::IniFormat);
@@ -253,7 +254,9 @@ void MainWindow::scriptEditorUpdated(QString path)
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
         frameGrabber->setVideoSource(videoSource);
-        frameGrabber->load(path);
+
+        QMetaObject::invokeMethod(frameGrabber.data(), "load", Q_ARG(QString, path));
+        //frameGrabber->load(path);
     }
     catch(std::exception& ex)
     {
@@ -310,7 +313,7 @@ void MainWindow::thumbnailDoubleClicked(vfg::VideoFrameThumbnail *thumbnail)
 void MainWindow::on_nextButton_clicked()
 {
     qDebug() << "Start Main Thread " << qApp->thread()->currentThreadId();
-    QMetaObject::invokeMethod(frameGrabber, "requestNextFrame");
+    QMetaObject::invokeMethod(frameGrabber.data(), "requestNextFrame");
     lastRequestedFrame = frameGrabber->lastFrame();
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
@@ -320,7 +323,7 @@ void MainWindow::on_nextButton_clicked()
 void MainWindow::on_previousButton_clicked()
 {
     qDebug() << "Main Thread " << qApp->thread()->currentThreadId();
-    QMetaObject::invokeMethod(frameGrabber, "requestPreviousFrame");
+    QMetaObject::invokeMethod(frameGrabber.data(), "requestPreviousFrame");
     lastRequestedFrame = frameGrabber->lastFrame();
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
