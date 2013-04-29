@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     frameGrabber(),
+    frameGrabberThread(),
     scriptEditor(),
     framesToSave(),
     lastRequestedFrame(vfg::FirstFrame)
@@ -28,7 +29,11 @@ MainWindow::MainWindow(QWidget *parent) :
     try
     {
          QSharedPointer<vfg::AvisynthVideoSource> avs (new vfg::AvisynthVideoSource);
-         frameGrabber.reset(new vfg::VideoFrameGrabber(avs));
+         frameGrabber = new vfg::VideoFrameGrabber(avs);
+
+         frameGrabberThread = new QThread;
+         frameGrabber->moveToThread(frameGrabberThread);
+         frameGrabberThread->start();
 
          scriptEditor.reset(new vfg::ScriptEditor);
 
@@ -64,13 +69,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(scriptEditor.data(), SIGNAL(scriptUpdated(QString)),
             this, SLOT(scriptEditorUpdated(QString)));
 
-    connect(frameGrabber.data(), SIGNAL(videoReady()),
+    connect(frameGrabber, SIGNAL(videoReady()),
             this, SLOT(videoLoaded()));
-    connect(frameGrabber.data(), SIGNAL(errorOccurred(QString)),
+    connect(frameGrabber, SIGNAL(errorOccurred(QString)),
             this, SLOT(videoError(QString)));
 
     // Connect grabber to the widget
-    connect(frameGrabber.data(), SIGNAL(frameGrabbed(QImage)),
+    connect(frameGrabber, SIGNAL(frameGrabbed(QImage)),
             ui->videoFrameWidget, SLOT(setFrame(QImage)));
 
     connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)),
@@ -82,6 +87,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    frameGrabberThread->quit();
+    delete frameGrabber;
     delete ui;
 }
 
@@ -302,15 +309,18 @@ void MainWindow::thumbnailDoubleClicked(vfg::VideoFrameThumbnail *thumbnail)
 
 void MainWindow::on_nextButton_clicked()
 {
-    frameGrabber->requestNextFrame();
+    qDebug() << "Start Main Thread " << qApp->thread()->currentThreadId();
+    QMetaObject::invokeMethod(frameGrabber, "requestNextFrame");
     lastRequestedFrame = frameGrabber->lastFrame();
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
+    qDebug() << "End Main Thread " << qApp->thread()->currentThreadId();
 }
 
 void MainWindow::on_previousButton_clicked()
 {
-    frameGrabber->requestPreviousFrame();
+    qDebug() << "Main Thread " << qApp->thread()->currentThreadId();
+    QMetaObject::invokeMethod(frameGrabber, "requestPreviousFrame");
     lastRequestedFrame = frameGrabber->lastFrame();
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);

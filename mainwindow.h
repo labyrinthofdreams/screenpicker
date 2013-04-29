@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QSet>
 #include <QScopedPointer>
+#include <QThread>
 
 // Forward declarations
 class QPoint;
@@ -86,7 +87,9 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    QScopedPointer<vfg::VideoFrameGrabber> frameGrabber;
+    QThread* frameGrabberThread;
+
+    vfg::VideoFrameGrabber* frameGrabber;
     QScopedPointer<vfg::ScriptEditor> scriptEditor;
 
     QSet<unsigned> framesToSave;

@@ -38,14 +38,17 @@ namespace vfg
         bool hasVideo() const;
         void setVideoSource(QSharedPointer<vfg::AbstractVideoSource> newAvs);
         const vfg::AbstractVideoSource* getVideoSource() const;
-        // Captures the exact frame between range 1 - n
-        void requestFrame(unsigned frameNum);
-        void requestNextFrame();
-        void requestPreviousFrame();
+
+
         QImage getFrame(unsigned frameNum);
         // Returns last captured frame number + 1
         unsigned lastFrame() const;
         unsigned totalFrames() const;
+    public slots:
+        void requestNextFrame();
+        void requestPreviousFrame();
+        // Captures the exact frame between range 1 - n
+        void requestFrame(unsigned frameNum);
     signals:
         // Fired when video has been loaded
         // Video properties are passed in the signal

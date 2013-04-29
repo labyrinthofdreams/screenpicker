@@ -1,5 +1,7 @@
 #include "videoframegrabber.h"
 #include "abstractvideosource.h"
+#include <QDebug>
+#include <QThread>
 
 vfg::VideoFrameGrabber::VideoFrameGrabber(QSharedPointer<vfg::AbstractVideoSource> avs,
                                           QObject *parent) :
@@ -58,6 +60,7 @@ void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
 
 void vfg::VideoFrameGrabber::requestNextFrame()
 {
+    qDebug() << "Start VFG Thread " << thread()->currentThreadId();
     bool frameIsLast = (currentFrame + 1) == numFrames;
     if(frameIsLast)
     {
@@ -69,10 +72,12 @@ void vfg::VideoFrameGrabber::requestNextFrame()
     QImage frame = avs->getFrame(currentFrame);
 
     emit frameGrabbed(frame);
+    qDebug() << "End VFG Thread " << thread()->currentThreadId();
 }
 
 void vfg::VideoFrameGrabber::requestPreviousFrame()
 {
+    qDebug() << "Thread " << thread()->currentThreadId();
     if(currentFrame == 0)
     {
         emit errorOccurred(tr("Reached first frame"));
