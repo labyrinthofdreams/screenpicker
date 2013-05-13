@@ -300,7 +300,7 @@ void MainWindow::videoLoaded()
 
 void MainWindow::videoError(QString msg)
 {
-    statusBar()->showMessage(msg, 3000);
+    QMessageBox::warning(this, tr("Video error"), msg);
 }
 
 void MainWindow::thumbnailDoubleClicked(vfg::VideoFrameThumbnail *thumbnail)
