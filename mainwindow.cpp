@@ -651,7 +651,9 @@ void MainWindow::on_saveSingleButton_clicked()
     const unsigned selected = ui->seekSlider->value();
     QImage frame = frameGrabber->getFrame(selected);
 
-    QString outFilename = QFileDialog::getSaveFileName(this, tr("Save as..."), "", tr("PNG (*.png)"));
+    QString outFilename = QFileDialog::getSaveFileName(this, tr("Save as..."),
+                                                       QString("%1.png").arg(QString::number(selected)),
+                                                       tr("PNG (*.png)"));
     if(QFile::exists(outFilename))
     {
         QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Overwrite?"),
