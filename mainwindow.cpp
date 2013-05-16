@@ -253,9 +253,11 @@ void MainWindow::scriptEditorUpdated(QString path)
     {
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
+        videoSource->load(path);
+
         frameGrabber->setVideoSource(videoSource);
 
-        QMetaObject::invokeMethod(frameGrabber.data(), "load", Q_ARG(QString, path));
+        //QMetaObject::invokeMethod(frameGrabber.data(), "load", Q_ARG(QString, path));
         //frameGrabber->load(path);
     }
     catch(std::exception& ex)
