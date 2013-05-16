@@ -2,13 +2,16 @@
 #include "abstractvideosource.h"
 #include <QDebug>
 #include <QThread>
+#include <QMutexLocker>
 
 vfg::VideoFrameGrabber::VideoFrameGrabber(QSharedPointer<vfg::AbstractVideoSource> avs,
                                           QObject *parent) :
     QObject(parent),
     avs(avs),
     numFrames(0),
-    currentFrame(0)
+    currentFrame(0),
+    running(false),
+    ctr(0)
 {
 }
 
@@ -17,21 +20,21 @@ vfg::VideoFrameGrabber::~VideoFrameGrabber()
     qDebug() << "VFG destructed from thread " << thread()->currentThreadId();
 }
 
-void vfg::VideoFrameGrabber::load(QString filename)
-{
-    try
-    {
-        avs->load(filename);
-        numFrames = avs->getNumFrames();
-        currentFrame = 0;
+//void vfg::VideoFrameGrabber::load(QString filename)
+//{
+//    try
+//    {
+//        avs->load(filename);
+//        numFrames = avs->getNumFrames();
+//        currentFrame = 0;
 
-        emit videoReady();
-    }
-    catch(std::exception& ex)
-    {
-        emit errorOccurred(ex.what());
-    }
-}
+//        emit videoReady();
+//    }
+//    catch(std::exception& ex)
+//    {
+//        emit errorOccurred(ex.what());
+//    }
+//}
 
 bool vfg::VideoFrameGrabber::hasVideo() const
 {
@@ -41,6 +44,10 @@ bool vfg::VideoFrameGrabber::hasVideo() const
 void vfg::VideoFrameGrabber::setVideoSource(QSharedPointer<vfg::AbstractVideoSource> newAvs)
 {
     avs = newAvs;
+    numFrames = avs->getNumFrames();
+    currentFrame = 0;
+
+    emit videoReady();
 }
 
 const vfg::AbstractVideoSource* vfg::VideoFrameGrabber::getVideoSource() const
@@ -55,6 +62,8 @@ unsigned vfg::VideoFrameGrabber::lastFrame() const
 
 void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
 {
+    QMutexLocker ml(&mutex);
+    qDebug() << "Start REQUEST_FRAME VFG " << ctr;
     // Because frame requests are between range 1 - n
     --frameNum;
     currentFrame = frameNum;
@@ -62,11 +71,14 @@ void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
     QImage frame = avs->getFrame(frameNum);
 
     emit frameGrabbed(frame);
+    qDebug() << "End REQUEST_FRAME VFG " << ctr;
+    ++ctr;
 }
 
 void vfg::VideoFrameGrabber::requestNextFrame()
 {
-    qDebug() << "Start VFG Thread " << thread()->currentThreadId();
+    QMutexLocker ml(&mutex);
+    qDebug() << "Start NEXT_FRAME VFG " << ctr;
     bool frameIsLast = (currentFrame + 1) == numFrames;
     if(frameIsLast)
     {
@@ -78,12 +90,14 @@ void vfg::VideoFrameGrabber::requestNextFrame()
     QImage frame = avs->getFrame(currentFrame);
 
     emit frameGrabbed(frame);
-    qDebug() << "End VFG Thread " << thread()->currentThreadId();
+    qDebug() << "End NEXT_FRAME VFG " << ctr;
+    ++ctr;
 }
 
 void vfg::VideoFrameGrabber::requestPreviousFrame()
 {
-    qDebug() << "Thread " << thread()->currentThreadId();
+    QMutexLocker ml(&mutex);
+    qDebug() << "Start PREV_FRAME VFG " << ctr;
     if(currentFrame == 0)
     {
         emit errorOccurred(tr("Reached first frame"));
@@ -94,13 +108,19 @@ void vfg::VideoFrameGrabber::requestPreviousFrame()
     QImage frame = avs->getFrame(currentFrame);
 
     emit frameGrabbed(frame);
+    qDebug() << "End PREV_FRAME VFG " << ctr;
+    ++ctr;
 }
 
 QImage vfg::VideoFrameGrabber::getFrame(unsigned frameNum)
 {
+    QMutexLocker ml(&mutex);
+    qDebug() << "Start GET_FRAME VFG " << ctr;
     --frameNum;
 
     QImage frame = avs->getFrame(frameNum);
+    qDebug() << "End GET_FRAME VFG Thread " << ctr;
+    ++ctr;
     return frame;
 }
 
