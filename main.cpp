@@ -1,11 +1,16 @@
 #include <QtGui/QApplication>
 #include <QMessageBox>
 #include <QString>
+#include <QMetaType>
+#include <QPair>
+#include <QImage>
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    qRegisterMetaType<QPair<unsigned, QImage> >("QPair<unsigned, QImage>");
 
     try
     {

@@ -2,6 +2,7 @@
 #define VIDEOFRAMEGRABBER_H
 
 #include <QObject>
+#include <QPair>
 #include <QImage>
 #include <QString>
 #include <QSharedPointer>
@@ -62,7 +63,7 @@ namespace vfg
         // Video properties are passed in the signal
         void videoReady();
         // Fired when frame is available
-        void frameGrabbed(QImage frame);
+        void frameGrabbed(QPair<unsigned, QImage> frame);
         // Fired in the event that an error happens
         void errorOccurred(QString msg);
     public slots:
