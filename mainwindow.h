@@ -4,15 +4,18 @@
 #include <QMainWindow>
 #include <QString>
 #include <QMap>
-#include <QSet>
+#include <QQueue>
 #include <QScopedPointer>
 #include <QThread>
+#include <QMutex>
+#include <QPair>
 
 // Forward declarations
 class QPoint;
 class QDragEvent;
 class QDropEvent;
 class QCloseEvent;
+class QImage;
 
 namespace vfg {
     class VideoFrameGrabber;
@@ -33,6 +36,8 @@ public:
     ~MainWindow();
     
 private slots:
+
+    void onFrameGrabbed(QPair<unsigned, QImage> frame);
 
     void on_actionOpen_triggered();
 
@@ -88,11 +93,12 @@ private:
     Ui::MainWindow *ui;
 
     QThread frameGrabberThread;
+    QMutex frameReceivedMtx;
 
     QScopedPointer<vfg::VideoFrameGrabber> frameGrabber;
     QScopedPointer<vfg::ScriptEditor> scriptEditor;
 
-    QSet<unsigned> framesToSave;
+    QQueue<unsigned> framesToSave;
 
     unsigned lastRequestedFrame;
 

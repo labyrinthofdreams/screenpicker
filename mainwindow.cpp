@@ -1,5 +1,6 @@
 #include <QtGui>
 #include <QtCore>
+#include <QtConcurrentMap>
 #include <stdexcept>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -73,9 +74,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(frameGrabber.data(), SIGNAL(errorOccurred(QString)),
             this, SLOT(videoError(QString)));
 
+    connect(frameGrabber.data(), SIGNAL(frameGrabbed(QPair<unsigned, QImage>)),
+            this, SLOT(onFrameGrabbed(QPair<unsigned, QImage>)));
+
     // Connect grabber to the widget
-    connect(frameGrabber.data(), SIGNAL(frameGrabbed(QImage)),
-            ui->videoFrameWidget, SLOT(setFrame(QImage)));
+//    connect(frameGrabber.data(), SIGNAL(frameGrabbed(QImage)),
+//            ui->videoFrameWidget, SLOT(setFrame(QImage)));
 
     connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)),
             this, SLOT(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)));
@@ -89,6 +93,35 @@ MainWindow::~MainWindow()
     qDebug() << "-- Main thread is " << thread()->currentThreadId();
     frameGrabberThread.quit();
     delete ui;
+}
+
+void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
+{
+    QMutexLocker lock(&frameReceivedMtx);
+
+    const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
+    QPixmap thumbnail = QPixmap::fromImage(frame.second).scaledToWidth(200, Qt::SmoothTransformation);
+    vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(frame.first, thumbnail);
+    thumb->setFixedWidth(thumbnailSize);
+
+    connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+            this, SLOT(handleUnsavedMenu(QPoint)));
+    ui->unsavedWidget->addThumbnail(thumb);
+
+    if(!framesToSave.isEmpty())
+    {
+        const unsigned nextFrame = framesToSave.takeFirst();
+        QMetaObject::invokeMethod(frameGrabber.data(),
+                                  "requestFrame",
+                                  Q_ARG(unsigned, nextFrame));
+        lastRequestedFrame = nextFrame;
+        ui->seekSlider->setValue(lastRequestedFrame);
+        ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
+    }
+    else
+    {
+        // No more frames to process
+    }
 }
 
 void MainWindow::createAvisynthScriptFile()
@@ -354,54 +387,67 @@ void MainWindow::on_seekSlider_sliderMoved(int position)
 
 void MainWindow::on_generateButton_clicked()
 {
-    // Currently selected frame
-    const unsigned selected = ui->seekSlider->value();
-    // Frame step
-    const unsigned step = ui->frameStepSpinBox->value();
-    // Number of screenshots to generate
-    const unsigned num = ui->screenshotsSpinBox->value();
-    // Total number of frames to jump forward
-    const unsigned total = step * num;
-    // Last frame to grab
-    const unsigned lastPos = selected + total;
-    // Number of frames in the video
-    const unsigned totalFrames = frameGrabber->totalFrames();
-    const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
-    // Last processed frame number
-    unsigned lastProcessed = selected;
-    QList<vfg::VideoFrameThumbnail*> frames;
-    QProgressDialog progress("", tr("Cancel"), 0, num, this);
-    progress.setMinimumDuration(0);
-    progress.setWindowModality(Qt::WindowModal);
-    progress.show();
-    for(unsigned currentFrame = selected, frameCtr = 1;
-        currentFrame < lastPos && currentFrame <= totalFrames;
-        currentFrame += step, ++frameCtr, lastProcessed += step)
+    const unsigned selected_frame = ui->seekSlider->value();
+    const unsigned frame_step = ui->frameStepSpinBox->value();
+    const unsigned num_generate = ui->screenshotsSpinBox->value();
+    const unsigned total_video_frames = frameGrabber->totalFrames();
+    const unsigned thumbnail_size = ui->thumbnailSizeSlider->value();
+
+    const unsigned total_frame_range = frame_step * num_generate;
+    const unsigned last_frame = selected_frame + total_frame_range;
+
+    // Compute list of frame numbers to grab
+    //QList<const unsigned> frame_numbers;
+    for(unsigned current_frame = selected_frame; ; current_frame += frame_step)
     {
-        progress.setLabelText(tr("Generating image %1 of %2").arg(frameCtr).arg(num));
-        progress.setValue(frameCtr);
-        if(progress.wasCanceled())
-        {
+        const bool reached_last_frame = current_frame > last_frame;
+        const bool reached_video_end = current_frame > total_video_frames;
+        if(reached_last_frame || reached_video_end)
             break;
-        }
 
-        QImage frame = frameGrabber->getFrame(currentFrame);
-        QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
+        //frame_numbers.append(current_frame);
+        framesToSave.append(current_frame);
+    }
 
-        vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(currentFrame, thumbnail);
-        thumb->setFixedWidth(thumbnailSize);
-        connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
-                this, SLOT(handleUnsavedMenu(QPoint)));
-        frames.append(thumb);
-    }
-    while(!frames.isEmpty())
-    {
-        ui->unsavedWidget->addThumbnail(frames.takeFirst());
-    }
-    progress.setValue(num);
-    lastRequestedFrame = lastProcessed;
-    ui->seekSlider->setValue(lastRequestedFrame);
-    ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
+    QMetaObject::invokeMethod(frameGrabber.data(),
+                              "requestFrame",
+                              Q_ARG(unsigned, framesToSave.takeFirst()));
+
+    // Last processed frame number
+//    unsigned lastProcessed = selected;
+//    QList<vfg::VideoFrameThumbnail*> frames;
+//    QProgressDialog progress("", tr("Cancel"), 0, num, this);
+//    progress.setMinimumDuration(0);
+//    progress.setWindowModality(Qt::WindowModal);
+//    progress.show();
+//    for(unsigned currentFrame = selected, frameCtr = 1;
+//        currentFrame < lastPos && currentFrame <= totalFrames;
+//        currentFrame += step, ++frameCtr, lastProcessed += step)
+//    {
+//        progress.setLabelText(tr("Generating image %1 of %2").arg(frameCtr).arg(num));
+//        progress.setValue(frameCtr);
+//        if(progress.wasCanceled())
+//        {
+//            break;
+//        }
+
+//        QImage frame = frameGrabber->getFrame(currentFrame);
+//        QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
+
+//        vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(currentFrame, thumbnail);
+//        thumb->setFixedWidth(thumbnailSize);
+//        connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+//                this, SLOT(handleUnsavedMenu(QPoint)));
+//        frames.append(thumb);
+//    }
+//    while(!frames.isEmpty())
+//    {
+//        ui->unsavedWidget->addThumbnail(frames.takeFirst());
+//    }
+//    progress.setValue(num);
+//    lastRequestedFrame = lastProcessed;
+//    ui->seekSlider->setValue(lastRequestedFrame);
+//    ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 }
 
 void MainWindow::on_grabButton_clicked()
@@ -416,7 +462,7 @@ void MainWindow::on_grabButton_clicked()
     connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handleSavedMenu(QPoint)));
     ui->savedWidget->addThumbnail(thumb);
-    framesToSave.insert(thumb->frameNum());
+    framesToSave.append(thumb->frameNum());
 
     statusBar()->showMessage(tr("Grabbed frame #%1").arg(selected), 3000);
 }
@@ -438,7 +484,7 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleSavedMenu(QPoint)));
 
-        framesToSave.insert(thumb->frameNum());
+        framesToSave.append(thumb->frameNum());
 
         ui->savedWidget->addThumbnail(thumb);
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
@@ -462,7 +508,7 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleUnsavedMenu(QPoint)));
 
-        framesToSave.remove(thumb->frameNum());
+        framesToSave.removeOne(thumb->frameNum());
 
         ui->unsavedWidget->addThumbnail(thumb);
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
@@ -523,7 +569,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
     prog.setCancelButton(0);
     prog.setMinimumDuration(0);
     QDir saveDir(dir);
-    QSetIterator<unsigned> iter(framesToSave);
+    QListIterator<unsigned> iter(framesToSave);
     while(iter.hasNext())
     {
         const unsigned frameNumber = iter.next();
