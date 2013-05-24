@@ -44,8 +44,8 @@ namespace vfg
         void paintEvent(QPaintEvent *event);
 
     signals:
-        void selected(vfg::VideoFrameThumbnail* const thumbnail);
-        void doubleClicked(vfg::VideoFrameThumbnail* const thumbnail);
+        void selected(vfg::VideoFrameThumbnail* thumbnail);
+        void doubleClicked(vfg::VideoFrameThumbnail* thumbnail);
 
     public slots:
 

@@ -4,6 +4,7 @@
 #include <QThread>
 #include <QMutexLocker>
 #include <QPair>
+#include <QApplication>
 
 vfg::VideoFrameGrabber::VideoFrameGrabber(QSharedPointer<vfg::AbstractVideoSource> avs,
                                           QObject *parent) :
@@ -64,16 +65,19 @@ unsigned vfg::VideoFrameGrabber::lastFrame() const
 void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
 {
     QMutexLocker ml(&mutex);
-    qDebug() << "Start REQUEST_FRAME VFG " << ctr;
+    //qDebug() << "Start REQUEST_FRAME VFG" << ctr << "in thread" << thread()->currentThreadId();
+    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
     // Because frame requests are between range 1 - n
     --frameNum;
     currentFrame = frameNum;
 
     QImage frame = avs->getFrame(frameNum);
 
-    emit frameGrabbed(QPair<unsigned, QImage>(frameNum, frame));
     qDebug() << "End REQUEST_FRAME VFG " << ctr;
     ++ctr;
+
+    ml.unlock();
+    emit frameGrabbed(QPair<unsigned, QImage>(frameNum, frame));
 }
 
 void vfg::VideoFrameGrabber::requestNextFrame()

@@ -75,7 +75,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(videoError(QString)));
 
     connect(frameGrabber.data(), SIGNAL(frameGrabbed(QPair<unsigned, QImage>)),
-            this, SLOT(onFrameGrabbed(QPair<unsigned, QImage>)));
+            this, SLOT(onFrameGrabbed(QPair<unsigned, QImage>)),
+            Qt::QueuedConnection);
 
     // Connect grabber to the widget
 //    connect(frameGrabber.data(), SIGNAL(frameGrabbed(QImage)),
@@ -97,8 +98,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
 {
-    QMutexLocker lock(&frameReceivedMtx);
-
+    QMutexLocker mtx(&frameReceivedMtx);
+    qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
     const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
     QPixmap thumbnail = QPixmap::fromImage(frame.second).scaledToWidth(200, Qt::SmoothTransformation);
     vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(frame.first, thumbnail);
@@ -111,17 +112,22 @@ void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
     if(!framesToSave.isEmpty())
     {
         const unsigned nextFrame = framesToSave.takeFirst();
+        qDebug() << qApp->thread()->currentThreadId() << framesToSave.size();
+        lastRequestedFrame = nextFrame;
+        ui->seekSlider->setValue(nextFrame);
+        ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
+        mtx.unlock();
+        qDebug() << "From main, framegrabber thread is" << frameGrabber.data()->thread()->currentThreadId();
         QMetaObject::invokeMethod(frameGrabber.data(),
                                   "requestFrame",
+                                  Qt::QueuedConnection,
                                   Q_ARG(unsigned, nextFrame));
-        lastRequestedFrame = nextFrame;
-        ui->seekSlider->setValue(lastRequestedFrame);
-        ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
     }
     else
     {
         // No more frames to process
     }
+    qDebug() << "END FRAME_RECEIVED";
 }
 
 void MainWindow::createAvisynthScriptFile()
@@ -350,8 +356,8 @@ void MainWindow::thumbnailDoubleClicked(vfg::VideoFrameThumbnail *thumbnail)
 void MainWindow::on_nextButton_clicked()
 {
     qDebug() << "Start Main Thread " << qApp->thread()->currentThreadId();
+    lastRequestedFrame = 1 + frameGrabber->lastFrame();
     QMetaObject::invokeMethod(frameGrabber.data(), "requestNextFrame");
-    lastRequestedFrame = frameGrabber->lastFrame();
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
     qDebug() << "End Main Thread " << qApp->thread()->currentThreadId();
@@ -400,7 +406,7 @@ void MainWindow::on_generateButton_clicked()
     //QList<const unsigned> frame_numbers;
     for(unsigned current_frame = selected_frame; ; current_frame += frame_step)
     {
-        const bool reached_last_frame = current_frame > last_frame;
+        const bool reached_last_frame = current_frame >= last_frame;
         const bool reached_video_end = current_frame > total_video_frames;
         if(reached_last_frame || reached_video_end)
             break;
@@ -409,9 +415,11 @@ void MainWindow::on_generateButton_clicked()
         framesToSave.append(current_frame);
     }
 
+    const unsigned next_frame = framesToSave.takeFirst();
     QMetaObject::invokeMethod(frameGrabber.data(),
                               "requestFrame",
-                              Q_ARG(unsigned, framesToSave.takeFirst()));
+                              Qt::QueuedConnection,
+                              Q_ARG(unsigned, next_frame));
 
     // Last processed frame number
 //    unsigned lastProcessed = selected;
