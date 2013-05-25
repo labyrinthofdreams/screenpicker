@@ -6,7 +6,6 @@
 #include <QMap>
 #include <QQueue>
 #include <QScopedPointer>
-#include <QThread>
 #include <QMutex>
 #include <QPair>
 
@@ -16,6 +15,7 @@ class QDragEvent;
 class QDropEvent;
 class QCloseEvent;
 class QImage;
+class QThread;
 
 namespace vfg {
     class VideoFrameGrabber;
@@ -24,7 +24,7 @@ namespace vfg {
 }
 
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow
@@ -38,7 +38,6 @@ public:
 private slots:
 
     void onFrameGrabbed(QPair<unsigned, QImage> frame);
-    void on_actionOpen_triggered();
     void scriptEditorUpdated(QString path);
     void videoLoaded();
     void videoError(QString msg);
@@ -46,6 +45,7 @@ private slots:
     void handleUnsavedMenu(const QPoint& pos);
     void handleSavedMenu(const QPoint& pos);
 
+    void on_actionOpen_triggered();
     void on_nextButton_clicked();
     void on_previousButton_clicked();
     void on_generateButton_clicked();
@@ -68,11 +68,13 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    QThread frameGrabberThread;
+    QThread *frameGrabberThread;
     QMutex frameReceivedMtx;
 
     QScopedPointer<vfg::VideoFrameGrabber> frameGrabber;
     QScopedPointer<vfg::ScriptEditor> scriptEditor;
+
+    bool shutdown;
 
     QQueue<unsigned> framesToSave;
 

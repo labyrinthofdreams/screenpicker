@@ -19,9 +19,9 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    frameGrabberThread(),
     frameGrabber(),
     scriptEditor(),
+    shutdown(false),
     framesToSave(),
     lastRequestedFrame(vfg::FirstFrame)
 {
@@ -32,8 +32,10 @@ MainWindow::MainWindow(QWidget *parent) :
          QSharedPointer<vfg::AvisynthVideoSource> avs (new vfg::AvisynthVideoSource);
          frameGrabber.reset(new vfg::VideoFrameGrabber(avs));
 
-         frameGrabber->moveToThread(&frameGrabberThread);
-         frameGrabberThread.start();
+         frameGrabberThread = new QThread(this);
+
+         frameGrabber->moveToThread(frameGrabberThread);
+         frameGrabberThread->start();
 
          scriptEditor.reset(new vfg::ScriptEditor);
 
@@ -70,9 +72,11 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(scriptEditorUpdated(QString)));
 
     connect(frameGrabber.data(), SIGNAL(videoReady()),
-            this, SLOT(videoLoaded()));
+            this, SLOT(videoLoaded()),
+            Qt::QueuedConnection);
     connect(frameGrabber.data(), SIGNAL(errorOccurred(QString)),
-            this, SLOT(videoError(QString)));
+            this, SLOT(videoError(QString)),
+            Qt::QueuedConnection);
 
     connect(frameGrabber.data(), SIGNAL(frameGrabbed(QPair<unsigned, QImage>)),
             this, SLOT(onFrameGrabbed(QPair<unsigned, QImage>)),
@@ -91,13 +95,37 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    qDebug() << "-- Main thread is " << thread()->currentThreadId();
-    frameGrabberThread.quit();
     delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent *ev)
+{
+    const QMessageBox::StandardButton response =
+            QMessageBox::question(this, tr("Quit?"), tr("Are you sure?"),
+                                  QMessageBox::Yes | QMessageBox::No,
+                                  QMessageBox::No);
+    if(response == QMessageBox::Yes)
+    {
+        if(frameGrabberThread->isRunning())
+        {
+            shutdown = true;
+            frameGrabberThread->quit();
+            frameGrabberThread->wait();
+        }
+
+        // Close script editor if it's open
+        scriptEditor->close();
+
+        ev->accept();
+    }
 }
 
 void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
 {
+    if(shutdown)
+    {
+        return;
+    }
     QMutexLocker mtx(&frameReceivedMtx);
     qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
     const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
@@ -636,24 +664,6 @@ void MainWindow::dropEvent(QDropEvent *ev)
 
     QString filename = urls.at(0).toLocalFile();
     loadFile(filename);
-}
-
-
-void MainWindow::closeEvent(QCloseEvent *ev)
-{
-    ev->ignore();
-
-    const QMessageBox::StandardButton response =
-            QMessageBox::question(this, tr("Quit?"), tr("Are you sure?"),
-                                  QMessageBox::Yes | QMessageBox::No,
-                                  QMessageBox::No);
-    if(response == QMessageBox::Yes)
-    {
-        ev->accept();
-
-        // Close script editor if it's open
-        scriptEditor->close();
-    }
 }
 
 void MainWindow::on_actionOptions_triggered()
