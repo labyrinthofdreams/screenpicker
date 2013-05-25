@@ -71,8 +71,8 @@ private:
     QThread *frameGrabberThread;
     QMutex frameReceivedMtx;
 
-    QScopedPointer<vfg::VideoFrameGrabber> frameGrabber;
-    QScopedPointer<vfg::ScriptEditor> scriptEditor;
+    vfg::VideoFrameGrabber* frameGrabber;
+    vfg::ScriptEditor* scriptEditor;
 
     bool shutdown;
 

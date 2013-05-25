@@ -19,8 +19,6 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    frameGrabber(),
-    scriptEditor(),
     shutdown(false),
     framesToSave(),
     lastRequestedFrame(vfg::FirstFrame)
@@ -30,14 +28,14 @@ MainWindow::MainWindow(QWidget *parent) :
     try
     {
          QSharedPointer<vfg::AvisynthVideoSource> avs (new vfg::AvisynthVideoSource);
-         frameGrabber.reset(new vfg::VideoFrameGrabber(avs));
+         frameGrabber = new vfg::VideoFrameGrabber(avs);
 
          frameGrabberThread = new QThread(this);
 
          frameGrabber->moveToThread(frameGrabberThread);
          frameGrabberThread->start();
 
-         scriptEditor.reset(new vfg::ScriptEditor);
+         scriptEditor = new vfg::ScriptEditor;
 
          createAvisynthScriptFile();
          createConfig();
@@ -68,17 +66,17 @@ MainWindow::MainWindow(QWidget *parent) :
         throw;
     }
 
-    connect(scriptEditor.data(), SIGNAL(scriptUpdated(QString)),
+    connect(scriptEditor, SIGNAL(scriptUpdated(QString)),
             this, SLOT(scriptEditorUpdated(QString)));
 
-    connect(frameGrabber.data(), SIGNAL(videoReady()),
+    connect(frameGrabber, SIGNAL(videoReady()),
             this, SLOT(videoLoaded()),
             Qt::QueuedConnection);
-    connect(frameGrabber.data(), SIGNAL(errorOccurred(QString)),
+    connect(frameGrabber, SIGNAL(errorOccurred(QString)),
             this, SLOT(videoError(QString)),
             Qt::QueuedConnection);
 
-    connect(frameGrabber.data(), SIGNAL(frameGrabbed(QPair<unsigned, QImage>)),
+    connect(frameGrabber, SIGNAL(frameGrabbed(QPair<unsigned, QImage>)),
             this, SLOT(onFrameGrabbed(QPair<unsigned, QImage>)),
             Qt::QueuedConnection);
 
@@ -95,11 +93,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    delete scriptEditor;
+    delete frameGrabber;
     delete ui;
 }
 
 void MainWindow::closeEvent(QCloseEvent *ev)
 {
+    // TODO: Change it to only ask if there's unsaved screenshots,
+    // or if the generation is still running (in which case pause it)
     const QMessageBox::StandardButton response =
             QMessageBox::question(this, tr("Quit?"), tr("Are you sure?"),
                                   QMessageBox::Yes | QMessageBox::No,
@@ -126,6 +128,7 @@ void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
     {
         return;
     }
+
     QMutexLocker mtx(&frameReceivedMtx);
     qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
     const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
@@ -145,8 +148,8 @@ void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
         ui->seekSlider->setValue(nextFrame);
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
         mtx.unlock();
-        qDebug() << "From main, framegrabber thread is" << frameGrabber.data()->thread()->currentThreadId();
-        QMetaObject::invokeMethod(frameGrabber.data(),
+        qDebug() << "From main, framegrabber thread is" << frameGrabber->thread()->currentThreadId();
+        QMetaObject::invokeMethod(frameGrabber,
                                   "requestFrame",
                                   Qt::QueuedConnection,
                                   Q_ARG(unsigned, nextFrame));
@@ -249,6 +252,7 @@ void MainWindow::loadFile(QString path)
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
         videoSource->load(savedPath);
 
+        // TODO: Stop screenshot generation if that's happening...
         frameGrabber->setVideoSource(videoSource);
 
         //QMetaObject::invokeMethod(frameGrabber.data(), "load", Q_ARG(QString, savedPath));
@@ -359,7 +363,8 @@ void MainWindow::videoLoaded()
     // Move slider back to first frame
     ui->seekSlider->setValue(lastRequestedFrame);
     // Show first frame
-    frameGrabber->requestFrame(lastRequestedFrame);
+    //frameGrabber->requestFrame(lastRequestedFrame);
+
 
     // Enable buttons
     ui->previousButton->setEnabled(true);
@@ -385,7 +390,7 @@ void MainWindow::on_nextButton_clicked()
 {
     qDebug() << "Start Main Thread " << qApp->thread()->currentThreadId();
     lastRequestedFrame = 1 + frameGrabber->lastFrame();
-    QMetaObject::invokeMethod(frameGrabber.data(), "requestNextFrame");
+    QMetaObject::invokeMethod(frameGrabber, "requestNextFrame");
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
     qDebug() << "End Main Thread " << qApp->thread()->currentThreadId();
@@ -394,7 +399,7 @@ void MainWindow::on_nextButton_clicked()
 void MainWindow::on_previousButton_clicked()
 {
     qDebug() << "Main Thread " << qApp->thread()->currentThreadId();
-    QMetaObject::invokeMethod(frameGrabber.data(), "requestPreviousFrame");
+    QMetaObject::invokeMethod(frameGrabber, "requestPreviousFrame");
     lastRequestedFrame = frameGrabber->lastFrame();
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
@@ -444,7 +449,7 @@ void MainWindow::on_generateButton_clicked()
     }
 
     const unsigned next_frame = framesToSave.takeFirst();
-    QMetaObject::invokeMethod(frameGrabber.data(),
+    QMetaObject::invokeMethod(frameGrabber,
                               "requestFrame",
                               Qt::QueuedConnection,
                               Q_ARG(unsigned, next_frame));
