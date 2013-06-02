@@ -74,14 +74,12 @@ private:
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::ScriptEditor* scriptEditor;
 
-    bool shutdown;
+    bool haltFrameGrabberThread;
 
     QQueue<unsigned> framesToSave;
 
     unsigned lastRequestedFrame;
 
-    void createAvisynthScriptFile();
-    void createConfig();
     void resetState();
     void loadFile(QString path);
     QString parseScript(QString filepath);

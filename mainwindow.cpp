@@ -13,13 +13,13 @@
 // TODO: When loading new video, the widgets inside scroll areas
 // do not get resized to fit the scroll area (they remain large)
 // TODO: Project files to save progress?
-// TODO: When generating screenshots, let user skip around the video, grab, ...
-// can be done by queueing the frames in a stack where you can push_front new frames on the fly
+// TODO: Pausing and resuming screenshot generation + progress display
+// TODO: Add parsers (loading automation) for common video formats to reduce scripting
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    shutdown(false),
+    haltFrameGrabberThread(false),
     framesToSave(),
     lastRequestedFrame(vfg::FirstFrame)
 {
@@ -27,39 +27,27 @@ MainWindow::MainWindow(QWidget *parent) :
 
     try
     {
-         QSharedPointer<vfg::AvisynthVideoSource> avs (new vfg::AvisynthVideoSource);
-         frameGrabber = new vfg::VideoFrameGrabber(avs);
+        frameGrabber = new vfg::VideoFrameGrabber;
 
-         frameGrabberThread = new QThread(this);
+        frameGrabberThread = new QThread(this);
+        frameGrabber->moveToThread(frameGrabberThread);
+        frameGrabberThread->start();
 
-         frameGrabber->moveToThread(frameGrabberThread);
-         frameGrabberThread->start();
+        scriptEditor = new vfg::ScriptEditor;
 
-         scriptEditor = new vfg::ScriptEditor;
+        // Set progress bar max
+        QSettings cfg("config.ini", QSettings::IniFormat);
+        const unsigned maxThumbnails = cfg.value("maxthumbnails").toInt();
+        ui->unsavedProgressBar->setMaximum(maxThumbnails);
 
-         createAvisynthScriptFile();
-         createConfig();
+        // Set max thumbnails for the Unsaved screenshots
+        ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
 
-         // Set progress bar max
-         QSettings cfg("config.ini", QSettings::IniFormat);
-         const unsigned maxThumbnails = cfg.value("maxthumbnails").toInt();
-         ui->unsavedProgressBar->setMaximum(maxThumbnails);
+        const unsigned numScreenshots = cfg.value("numscreenshots").toInt();
+        ui->screenshotsSpinBox->setValue(numScreenshots);
 
-         // Set max thumbnails for the Unsaved screenshots
-         ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
-
-         const unsigned numScreenshots = cfg.value("numscreenshots").toInt();
-         ui->screenshotsSpinBox->setValue(numScreenshots);
-
-         const unsigned frameStep = cfg.value("framestep").toInt();
-         ui->frameStepSpinBox->setValue(frameStep);        
-
-         if(numScreenshots > maxThumbnails)
-         {
-             QMessageBox::warning(this, tr("Invalid screenshot value"),
-                                  tr("Number of screenshots exceeds max limit. Setting value to max."));
-             ui->screenshotsSpinBox->setValue(maxThumbnails);
-         }
+        const unsigned frameStep = cfg.value("framestep").toInt();
+        ui->frameStepSpinBox->setValue(frameStep);
     }
     catch(std::exception& ex)
     {
@@ -72,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(frameGrabber, SIGNAL(videoReady()),
             this, SLOT(videoLoaded()),
             Qt::QueuedConnection);
+
     connect(frameGrabber, SIGNAL(errorOccurred(QString)),
             this, SLOT(videoError(QString)),
             Qt::QueuedConnection);
@@ -110,7 +99,7 @@ void MainWindow::closeEvent(QCloseEvent *ev)
     {
         if(frameGrabberThread->isRunning())
         {
-            shutdown = true;
+            haltFrameGrabberThread = true;
             frameGrabberThread->quit();
             frameGrabberThread->wait();
         }
@@ -120,15 +109,14 @@ void MainWindow::closeEvent(QCloseEvent *ev)
 
         ev->accept();
     }
+    else
+    {
+        ev->ignore();
+    }
 }
 
 void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
 {
-    if(shutdown)
-    {
-        return;
-    }
-
     QMutexLocker mtx(&frameReceivedMtx);
     qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
     const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
@@ -139,16 +127,20 @@ void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
     connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handleUnsavedMenu(QPoint)));
     ui->unsavedWidget->addThumbnail(thumb);
+    ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
+
+    if(haltFrameGrabberThread)
+    {
+        return;
+    }
 
     if(!framesToSave.isEmpty())
     {
         const unsigned nextFrame = framesToSave.takeFirst();
         qDebug() << qApp->thread()->currentThreadId() << framesToSave.size();
-        lastRequestedFrame = nextFrame;
-        ui->seekSlider->setValue(nextFrame);
-        ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
+
         mtx.unlock();
-        qDebug() << "From main, framegrabber thread is" << frameGrabber->thread()->currentThreadId();
+        //qDebug() << "From main, framegrabber thread is" << frameGrabber->thread()->currentThreadId();
         QMetaObject::invokeMethod(frameGrabber,
                                   "requestFrame",
                                   Qt::QueuedConnection,
@@ -157,46 +149,9 @@ void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
     else
     {
         // No more frames to process
+        // TODO: Add an option for user to jump to last grabbed frame
     }
-    qDebug() << "END FRAME_RECEIVED";
-}
-
-void MainWindow::createAvisynthScriptFile()
-{
-    QDir appDir(QDir::currentPath());
-    QString avisynthScriptFile = appDir.absoluteFilePath("default.avs");
-
-    // Only create the default Avisynth script template file
-    // if it doesn't exist to allow the user to change it
-    if(QFile::exists(avisynthScriptFile))
-        return;
-
-    QFile inFile(":/scripts/default.avs");
-    QFile outFile(avisynthScriptFile);
-
-    if(!inFile.open(QFile::ReadOnly | QFile::Text))
-        return;
-
-    if(!outFile.open(QFile::WriteOnly | QFile::Truncate))
-        return;
-
-    QTextStream in(&inFile);
-    QTextStream out(&outFile);
-    out << in.readAll();
-}
-
-void MainWindow::createConfig()
-{
-    if(!QFile::exists("config.ini"))
-    {
-        QSettings cfg("config.ini", QSettings::IniFormat);
-        cfg.setValue("avisynthpluginspath", QDir::currentPath().append("/avisynth"));
-        cfg.setValue("savescripts", false);
-        cfg.setValue("showscripteditor", true);
-        cfg.setValue("maxthumbnails", 100);
-        cfg.setValue("numscreenshots", 100);
-        cfg.setValue("framestep", 100);
-    }
+    //qDebug() << "END FRAME_RECEIVED";
 }
 
 void MainWindow::resetState()
@@ -363,8 +318,11 @@ void MainWindow::videoLoaded()
     // Move slider back to first frame
     ui->seekSlider->setValue(lastRequestedFrame);
     // Show first frame
-    //frameGrabber->requestFrame(lastRequestedFrame);
-
+    QImage frame = frameGrabber->getFrame(lastRequestedFrame);
+    if(!frame.isNull())
+    {
+        ui->videoFrameWidget->setFrame(frame);
+    }
 
     // Enable buttons
     ui->previousButton->setEnabled(true);
@@ -381,26 +339,42 @@ void MainWindow::videoError(QString msg)
 
 void MainWindow::thumbnailDoubleClicked(vfg::VideoFrameThumbnail *thumbnail)
 {
-    ui->seekSlider->setValue(thumbnail->frameNum());
-    frameGrabber->requestFrame(thumbnail->frameNum());
-    lastRequestedFrame = frameGrabber->lastFrame();
+    const unsigned frameNumber = thumbnail->frameNum();
+    QImage frame = frameGrabber->getFrame(frameNumber);
+    if(frame.isNull())
+    {
+        return;
+    }
+    lastRequestedFrame = frameNumber;
+    ui->videoFrameWidget->setFrame(frame);
+    ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
+    ui->seekSlider->setValue(lastRequestedFrame);
 }
 
 void MainWindow::on_nextButton_clicked()
 {
     qDebug() << "Start Main Thread " << qApp->thread()->currentThreadId();
-    lastRequestedFrame = 1 + frameGrabber->lastFrame();
-    QMetaObject::invokeMethod(frameGrabber, "requestNextFrame");
+    QImage frame = frameGrabber->getFrame(lastRequestedFrame + 1);
+    if(frame.isNull())
+    {
+        return;
+    }
+    lastRequestedFrame++;
+    ui->videoFrameWidget->setFrame(frame);
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
-    qDebug() << "End Main Thread " << qApp->thread()->currentThreadId();
 }
 
 void MainWindow::on_previousButton_clicked()
 {
     qDebug() << "Main Thread " << qApp->thread()->currentThreadId();
-    QMetaObject::invokeMethod(frameGrabber, "requestPreviousFrame");
-    lastRequestedFrame = frameGrabber->lastFrame();
+    QImage frame = frameGrabber->getFrame(lastRequestedFrame - 1);
+    if(frame.isNull())
+    {
+        return;
+    }
+    lastRequestedFrame--;
+    ui->videoFrameWidget->setFrame(frame);
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
 }
@@ -413,15 +387,23 @@ void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
 
 void MainWindow::on_seekSlider_valueChanged(int value)
 {
-    frameGrabber->requestFrame(value);
+    //qDebug() << frameGrabber->lastFrame() << value << lastRequestedFrame;
+    if(lastRequestedFrame == value)
+    {
+        return;
+    }
+
+    QImage frame = frameGrabber->getFrame(value);
+    ui->videoFrameWidget->setFrame(frame);
+
     lastRequestedFrame = value;
-    ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
+    ui->currentFrameLabel->setText(QString::number(value));
 }
 
 void MainWindow::on_seekSlider_sliderMoved(int position)
 {
-    lastRequestedFrame = position;
-    ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
+    //lastRequestedFrame = position;
+    ui->currentFrameLabel->setText(QString::number(position));
 }
 
 void MainWindow::on_generateButton_clicked()
@@ -430,7 +412,6 @@ void MainWindow::on_generateButton_clicked()
     const unsigned frame_step = ui->frameStepSpinBox->value();
     const unsigned num_generate = ui->screenshotsSpinBox->value();
     const unsigned total_video_frames = frameGrabber->totalFrames();
-    const unsigned thumbnail_size = ui->thumbnailSizeSlider->value();
 
     const unsigned total_frame_range = frame_step * num_generate;
     const unsigned last_frame = selected_frame + total_frame_range;
@@ -503,7 +484,8 @@ void MainWindow::on_grabButton_clicked()
     connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handleSavedMenu(QPoint)));
     ui->savedWidget->addThumbnail(thumb);
-    framesToSave.append(thumb->frameNum());
+    //framesToSave.append(thumb->frameNum());
+
 
     statusBar()->showMessage(tr("Grabbed frame #%1").arg(selected), 3000);
 }
@@ -525,7 +507,7 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleSavedMenu(QPoint)));
 
-        framesToSave.append(thumb->frameNum());
+        //framesToSave.append(thumb->frameNum());
 
         ui->savedWidget->addThumbnail(thumb);
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
@@ -549,7 +531,7 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleUnsavedMenu(QPoint)));
 
-        framesToSave.removeOne(thumb->frameNum());
+        //framesToSave.removeOne(thumb->frameNum());
 
         ui->unsavedWidget->addThumbnail(thumb);
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
@@ -682,30 +664,16 @@ void MainWindow::on_actionOptions_triggered()
         const int maxThumbnails = cfg.value("maxthumbnails").toInt();
         ui->unsavedProgressBar->setMaximum(maxThumbnails);
         ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
-
-        if(ui->screenshotsSpinBox->value() > maxThumbnails)
-        {
-            QMessageBox::warning(this, tr(""), tr("Number of generated screenshots exceeds max limit. Setting number to max."));
-            ui->screenshotsSpinBox->setValue(maxThumbnails);
-        }
+        ui->screenshotsSpinBox->setValue(maxThumbnails);
     }
 }
 
 void MainWindow::on_screenshotsSpinBox_valueChanged(int arg1)
 {
     QSettings cfg("config.ini", QSettings::IniFormat);
-    const int maxThumbnails = cfg.value("maxthumbnails").toInt();
+    cfg.setValue("numscreenshots", arg1);
 
-    if(arg1 > maxThumbnails)
-    {
-        QMessageBox::warning(this, tr(""), tr("Number exceeds maximum thumbnails"));
-        ui->screenshotsSpinBox->setValue(maxThumbnails);
-        cfg.setValue("numscreenshots", maxThumbnails);
-    }
-    else
-    {
-        cfg.setValue("numscreenshots", arg1);
-    }
+    ui->screenshotsSpinBox->setValue(arg1);
 }
 
 void MainWindow::on_frameStepSpinBox_valueChanged(int arg1)

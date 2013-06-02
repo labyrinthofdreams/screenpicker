@@ -1,16 +1,20 @@
 #include <QtGui/QApplication>
 #include <QMessageBox>
 #include <QString>
-#include <QMetaType>
-#include <QPair>
-#include <QImage>
 #include "mainwindow.h"
+#include "init.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    {
+        using namespace vfg::init;
 
-    qRegisterMetaType<QPair<unsigned, QImage> >("QPair<unsigned, QImage>");
+        registerMetatypes();
+        createAvisynthScriptFile();
+        createConfig();
+    }
+
+    QApplication a(argc, argv);
 
     try
     {

@@ -29,7 +29,8 @@ HEADERS  += mainwindow.h \
     abstractvideosource.h \
     avisynthvideosource.h \
     scripteditor.h \
-    configdialog.h
+    configdialog.h \
+    init.h
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \

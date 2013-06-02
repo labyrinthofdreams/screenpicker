@@ -66,6 +66,7 @@ void vfg::ThumbnailContainer::clearThumbnails()
 
 void vfg::ThumbnailContainer::resizeThumbnails(const unsigned width)
 {
+    // TODO: Parallelize
     for(int i = 0; i < layout->count(); ++i)
     {
         QLayoutItem* item = layout->itemAt(i);

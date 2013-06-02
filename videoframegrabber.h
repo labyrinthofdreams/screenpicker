@@ -17,10 +17,7 @@ namespace vfg {
 
 namespace vfg
 {
-    // TODO: make static const unsigned
-    enum {
-        FirstFrame = 1
-    };
+    static const unsigned FirstFrame = 1;
 
     // Class declaration
     class VideoFrameGrabber : public QObject
@@ -36,20 +33,21 @@ namespace vfg
         unsigned currentFrame;
 
         QMutex mutex;
-        bool running;
-        int ctr;
+
+        bool frameOutOfRange(unsigned frameNum) const;
     public:
+        explicit VideoFrameGrabber(QObject *parent = 0);
         explicit VideoFrameGrabber(QSharedPointer<vfg::AbstractVideoSource> avs, QObject *parent = 0);
         ~VideoFrameGrabber();
+
         bool hasVideo() const;
         void setVideoSource(QSharedPointer<vfg::AbstractVideoSource> newAvs);
-        const vfg::AbstractVideoSource* getVideoSource() const;
-
-
 
         // Returns last captured frame number + 1
         unsigned lastFrame() const;
         unsigned totalFrames() const;
+
+        QImage getFrame(unsigned frameNum);
     public slots:
         // Load video file
         //void load(QString filename);
@@ -57,7 +55,6 @@ namespace vfg
         void requestPreviousFrame();
         // Captures the exact frame between range 1 - n
         void requestFrame(unsigned frameNum);
-        QImage getFrame(unsigned frameNum);
     signals:
         // Fired when video has been loaded
         // Video properties are passed in the signal
