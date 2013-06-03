@@ -3,6 +3,8 @@
 #include "thumbnailcontainer.h"
 #include "flowlayout.h"
 
+// TODO: This implementation is a fucking mess. Fix it.
+
 vfg::ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
     QWidget(parent),
     activeWidget(0),
@@ -17,8 +19,8 @@ void vfg::ThumbnailContainer::addThumbnail(vfg::VideoFrameThumbnail *thumbnail)
     connect(thumbnail, SIGNAL(selected(vfg::VideoFrameThumbnail*)),
             this, SLOT(handleThumbnailSelection(vfg::VideoFrameThumbnail*)));
 
-    connect(thumbnail, SIGNAL(doubleClicked(vfg::VideoFrameThumbnail*)),
-            this, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)));
+    connect(thumbnail, SIGNAL(doubleClicked(unsigned)),
+            this, SIGNAL(thumbnailDoubleClicked(unsigned)));
 
 //    QSettings cfg("config.ini", QSettings::IniFormat);
 //    const int maxThumbnails = cfg.value("maxthumbnails").toInt();

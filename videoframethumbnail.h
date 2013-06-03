@@ -45,7 +45,7 @@ namespace vfg
 
     signals:
         void selected(vfg::VideoFrameThumbnail* thumbnail);
-        void doubleClicked(vfg::VideoFrameThumbnail* thumbnail);
+        void doubleClicked(unsigned frameNumber);
 
     public slots:
 

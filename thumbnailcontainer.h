@@ -33,7 +33,7 @@ namespace vfg
         void mousePressEvent(QMouseEvent *ev);
 
     signals:
-        void thumbnailDoubleClicked(vfg::VideoFrameThumbnail* thumbnail);
+        void thumbnailDoubleClicked(unsigned frameNumber);
 
     public slots:
 

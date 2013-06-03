@@ -41,7 +41,7 @@ private slots:
     void scriptEditorUpdated(QString path);
     void videoLoaded();
     void videoError(QString msg);
-    void thumbnailDoubleClicked(vfg::VideoFrameThumbnail* thumbnail);
+    void thumbnailDoubleClicked(unsigned frameNumber);
     void handleUnsavedMenu(const QPoint& pos);
     void handleSavedMenu(const QPoint& pos);
 

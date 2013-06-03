@@ -43,7 +43,7 @@ void vfg::VideoFrameThumbnail::mouseDoubleClickEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
 
-    emit doubleClicked(this);
+    emit doubleClicked(frameNumber);
 }
 
 void vfg::VideoFrameThumbnail::resizeEvent(QResizeEvent *event)

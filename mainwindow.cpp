@@ -15,6 +15,7 @@
 // TODO: Project files to save progress?
 // TODO: Pausing and resuming screenshot generation + progress display
 // TODO: Add parsers (loading automation) for common video formats to reduce scripting
+// TODO: Configuration options for screen generation (unlimited, generate until hit limit, generate max)
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -73,11 +74,11 @@ MainWindow::MainWindow(QWidget *parent) :
 //    connect(frameGrabber.data(), SIGNAL(frameGrabbed(QImage)),
 //            ui->videoFrameWidget, SLOT(setFrame(QImage)));
 
-    connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)),
-            this, SLOT(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)));
+    connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(unsigned)),
+            this, SLOT(thumbnailDoubleClicked(unsigned)));
 
-    connect(ui->savedWidget, SIGNAL(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)),
-            this, SLOT(thumbnailDoubleClicked(vfg::VideoFrameThumbnail*)));
+    connect(ui->savedWidget, SIGNAL(thumbnailDoubleClicked(unsigned)),
+            this, SLOT(thumbnailDoubleClicked(unsigned)));
 }
 
 MainWindow::~MainWindow()
@@ -337,9 +338,8 @@ void MainWindow::videoError(QString msg)
     QMessageBox::warning(this, tr("Video error"), msg);
 }
 
-void MainWindow::thumbnailDoubleClicked(vfg::VideoFrameThumbnail *thumbnail)
+void MainWindow::thumbnailDoubleClicked(unsigned frameNumber)
 {
-    const unsigned frameNumber = thumbnail->frameNum();
     QImage frame = frameGrabber->getFrame(frameNumber);
     if(frame.isNull())
     {
