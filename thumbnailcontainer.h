@@ -26,6 +26,7 @@ namespace vfg
         void clearThumbnails();
         void resizeThumbnails(const unsigned width);
         vfg::VideoFrameThumbnail* takeSelected();
+        vfg::VideoFrameThumbnail* selected();
         int numThumbnails() const;
         void setMaxThumbnails(const unsigned max);
 

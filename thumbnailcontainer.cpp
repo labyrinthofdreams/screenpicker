@@ -119,6 +119,11 @@ vfg::VideoFrameThumbnail* vfg::ThumbnailContainer::takeSelected()
     return ret;
 }
 
+vfg::VideoFrameThumbnail* vfg::ThumbnailContainer::selected()
+{
+    return activeWidget;
+}
+
 int vfg::ThumbnailContainer::numThumbnails() const
 {
     return layout->count();
