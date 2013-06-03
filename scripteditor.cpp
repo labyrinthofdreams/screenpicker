@@ -3,6 +3,8 @@
 #include "scripteditor.h"
 #include "ui_scripteditor.h"
 
+// TODO: QWidget window flag to force create a Window, then construct with new ScriptEditor(this)
+
 using namespace vfg;
 
 ScriptEditor::ScriptEditor(QWidget *parent) :
