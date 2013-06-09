@@ -36,12 +36,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
         scriptEditor = new vfg::ScriptEditor;
 
-        // Set progress bar max
+        connect(ui->unsavedWidget, SIGNAL(maximumChanged(int)),
+                ui->unsavedProgressBar, SLOT(setMaximum(int)));
+
         QSettings cfg("config.ini", QSettings::IniFormat);
         const unsigned maxThumbnails = cfg.value("maxthumbnails").toInt();
-        ui->unsavedProgressBar->setMaximum(maxThumbnails);
-
-        // Set max thumbnails for the Unsaved screenshots
         ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
 
         const unsigned numScreenshots = cfg.value("numscreenshots").toInt();
@@ -662,7 +661,6 @@ void MainWindow::on_actionOptions_triggered()
     {
         QSettings cfg("config.ini", QSettings::IniFormat);
         const int maxThumbnails = cfg.value("maxthumbnails").toInt();
-        ui->unsavedProgressBar->setMaximum(maxThumbnails);
         ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
         ui->screenshotsSpinBox->setValue(maxThumbnails);
     }
