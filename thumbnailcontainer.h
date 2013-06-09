@@ -35,6 +35,7 @@ namespace vfg
 
     signals:
         void thumbnailDoubleClicked(unsigned frameNumber);
+        void maximumChanged(int newMaximum);
 
     public slots:
 

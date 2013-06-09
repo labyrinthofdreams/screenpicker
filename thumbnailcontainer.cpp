@@ -132,6 +132,8 @@ int vfg::ThumbnailContainer::numThumbnails() const
 void vfg::ThumbnailContainer::setMaxThumbnails(const unsigned max)
 {
     maxThumbnails = max;
+
+    emit maximumChanged(max);
 }
 
 void vfg::ThumbnailContainer::mousePressEvent(QMouseEvent *ev)
