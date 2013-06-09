@@ -190,8 +190,8 @@ void MainWindow::loadFile(QString path)
             savedPath = "temp.avs";
 
             // Parse and save Avisynth script
-            QString parsedScript = parseScript(path);
-            saveScript(savedPath, parsedScript);
+            QString parsedScript = vfg::script::parse(path);
+            vfg::script::save(savedPath, parsedScript);
         }
 
         // Reset all states back to zero
@@ -230,39 +230,6 @@ void MainWindow::loadFile(QString path)
         scriptEditor->show();
         scriptEditor->setWindowState(Qt::WindowActive);
     }
-}
-
-QString MainWindow::parseScript(QString filepath)
-{
-    QFile scriptfile("default.avs");
-    if(!scriptfile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        throw std::runtime_error("Failed to open script");
-    }
-
-    QTextStream in(&scriptfile);
-
-    // Load config
-    QSettings cfg("config.ini", QSettings::IniFormat);
-    QString pluginsPath = cfg.value("avisynthpluginspath").toString();
-
-    // Parse avisynth script
-    QString parsedScript = in.readAll();
-    parsedScript = parsedScript.arg(filepath).arg(pluginsPath);
-
-    return parsedScript;
-}
-
-void MainWindow::saveScript(QString path, QString script)
-{
-    QFile outFile(path);
-    if(!outFile.open(QFile::WriteOnly | QFile::Truncate))
-    {
-        throw std::runtime_error("Failed to open file for writing.");
-    }
-
-    QTextStream out(&outFile);
-    out << script;
 }
 
 void MainWindow::on_actionOpen_triggered()

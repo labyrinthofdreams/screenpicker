@@ -82,8 +82,6 @@ private:
 
     void resetState();
     void loadFile(QString path);
-    QString parseScript(QString filepath);
-    void saveScript(QString path, QString script);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *ev);
