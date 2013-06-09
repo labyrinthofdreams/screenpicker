@@ -12,8 +12,8 @@ namespace vfg
 {
     namespace script
     {
-        static QString parse(QString filepath);
-        static void save(QString path, QString script);
+        QString parse(QString filepath);
+        void save(QString path, QString script);
     }
 
     class ScriptEditor : public QWidget
