@@ -73,8 +73,6 @@ private:
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::ScriptEditor* scriptEditor;
 
-    bool haltFrameGrabberThread;
-
     QQueue<unsigned> framesToSave;
 
     unsigned lastRequestedFrame;

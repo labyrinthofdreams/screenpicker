@@ -20,7 +20,6 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    haltFrameGrabberThread(false),
     framesToSave(),
     lastRequestedFrame(vfg::FirstFrame)
 {
@@ -128,7 +127,7 @@ void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
     ui->unsavedWidget->addThumbnail(thumb);
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
-    if(haltFrameGrabberThread)
+    if(!frameGrabberThread->isRunning())
     {
         return;
     }
