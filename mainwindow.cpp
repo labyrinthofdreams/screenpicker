@@ -117,7 +117,6 @@ void MainWindow::closeEvent(QCloseEvent *ev)
 
 void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
 {
-    QMutexLocker mtx(&frameReceivedMtx);
     qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
     const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
     QPixmap thumbnail = QPixmap::fromImage(frame.second).scaledToWidth(200, Qt::SmoothTransformation);
@@ -139,7 +138,6 @@ void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
         const unsigned nextFrame = framesToSave.takeFirst();
         qDebug() << qApp->thread()->currentThreadId() << framesToSave.size();
 
-        mtx.unlock();
         //qDebug() << "From main, framegrabber thread is" << frameGrabber->thread()->currentThreadId();
         QMetaObject::invokeMethod(frameGrabber,
                                   "requestFrame",

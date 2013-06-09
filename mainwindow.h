@@ -69,7 +69,6 @@ private:
     Ui::MainWindow *ui;
 
     QThread *frameGrabberThread;
-    QMutex frameReceivedMtx;
 
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::ScriptEditor* scriptEditor;
