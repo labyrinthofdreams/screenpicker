@@ -629,7 +629,6 @@ void MainWindow::on_actionOptions_triggered()
         QSettings cfg("config.ini", QSettings::IniFormat);
         const int maxThumbnails = cfg.value("maxthumbnails").toInt();
         ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
-        ui->screenshotsSpinBox->setValue(maxThumbnails);
     }
 }
 
