@@ -73,7 +73,9 @@ private:
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::ScriptEditor* scriptEditor;
 
-    QQueue<unsigned> framesToSave;
+    QQueue<unsigned> framesQueue;
+    // TODO: Rename above name and add another container for truly to-be-saved frames
+    // that are in the saved thumbnails container
 
     unsigned lastRequestedFrame;
 

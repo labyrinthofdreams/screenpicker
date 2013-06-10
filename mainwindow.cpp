@@ -20,7 +20,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    framesToSave(),
+    framesQueue(),
     lastRequestedFrame(vfg::FirstFrame)
 {
     ui->setupUi(this);
@@ -132,10 +132,10 @@ void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
         return;
     }
 
-    if(!framesToSave.isEmpty())
+    if(!framesQueue.isEmpty())
     {
-        const unsigned nextFrame = framesToSave.takeFirst();
-        qDebug() << qApp->thread()->currentThreadId() << framesToSave.size();
+        const unsigned nextFrame = framesQueue.takeFirst();
+        qDebug() << qApp->thread()->currentThreadId() << framesQueue.size();
 
         //qDebug() << "From main, framegrabber thread is" << frameGrabber->thread()->currentThreadId();
         QMetaObject::invokeMethod(frameGrabber,
@@ -155,7 +155,7 @@ void MainWindow::resetState()
 {
     ui->unsavedWidget->clearThumbnails();
     ui->savedWidget->clearThumbnails();
-    framesToSave.clear();
+    framesQueue.clear();
 
     ui->unsavedProgressBar->setValue(0);
 
@@ -389,10 +389,10 @@ void MainWindow::on_generateButton_clicked()
             break;
 
         //frame_numbers.append(current_frame);
-        framesToSave.append(current_frame);
+        framesQueue.append(current_frame);
     }
 
-    const unsigned next_frame = framesToSave.takeFirst();
+    const unsigned next_frame = framesQueue.takeFirst();
     QMetaObject::invokeMethod(frameGrabber,
                               "requestFrame",
                               Qt::QueuedConnection,
@@ -522,7 +522,7 @@ void MainWindow::on_thumbnailSizeSlider_valueChanged(int value)
 void MainWindow::on_saveThumbnailsButton_clicked()
 {
     // Save saved images to disk
-    if(framesToSave.isEmpty())
+    if(framesQueue.isEmpty())
     {
         QMessageBox::information(this, tr("Save screenshots"),
                                  tr("Nothing to save. Add one or more screenshots to save."));
@@ -549,13 +549,13 @@ void MainWindow::on_saveThumbnailsButton_clicked()
                                            resizeTo, 100, frameSize.width(), 10, &resizeOk);
     }
 
-    const int numSaved = framesToSave.count();
+    const int numSaved = framesQueue.count();
     QProgressDialog prog("", "Cancel", 0, numSaved, this);
     prog.setWindowModality(Qt::WindowModal);
     prog.setCancelButton(0);
     prog.setMinimumDuration(0);
     QDir saveDir(dir);
-    QListIterator<unsigned> iter(framesToSave);
+    QListIterator<unsigned> iter(framesQueue);
     while(iter.hasNext())
     {
         const unsigned frameNumber = iter.next();
