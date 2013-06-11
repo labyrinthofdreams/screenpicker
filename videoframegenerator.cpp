@@ -82,4 +82,10 @@ unsigned VideoFrameGenerator::remaining() const
     return frames.count();
 }
 
+void VideoFrameGenerator::clear()
+{
+    QMutexLocker lock(&mutex);
+    frames.clear();
+}
+
 } // namespace vfg

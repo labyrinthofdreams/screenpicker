@@ -23,6 +23,7 @@ public:
     bool isRunning() const;
     void enqueue(const unsigned frame);
     unsigned remaining() const;
+    void clear();
     
 signals:
     void frameReady(QPair<unsigned, QImage> frame);
