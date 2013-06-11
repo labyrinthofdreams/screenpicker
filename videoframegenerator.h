@@ -22,7 +22,6 @@ public:
     void start();
     void pause();
     void resume();
-    void reset();
     bool isRunning() const;
     void enqueue(unsigned frame);
     
@@ -35,6 +34,8 @@ private:
     vfg::VideoFrameGrabber *frameGrabber;
     QList<unsigned> frames;
     QMutex mutex;
+    bool halt;
+    bool active;
 };
 
 } // namespace vfg
