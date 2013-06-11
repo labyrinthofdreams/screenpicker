@@ -39,7 +39,12 @@ bool VideoFrameGenerator::isRunning() const
 
 void VideoFrameGenerator::enqueue(unsigned frame)
 {
-
+    QMutexLocker lock(&mutex);
+    bool exists = frames.contains(frame);
+    if(!exists)
+    {
+        frames.prepend(frame);
+    }
 }
 
 } // namespace vfg
