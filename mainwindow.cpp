@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
         frameGenerator = new vfg::VideoFrameGenerator(frameGrabber);
         frameGeneratorThread = new QThread(this);
         frameGenerator->moveToThread(frameGeneratorThread);
+        frameGeneratorThread->start();
 
         frameGrabberThread = new QThread(this);
         frameGrabber->moveToThread(frameGrabberThread);
@@ -69,7 +70,10 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(videoError(QString)),
             Qt::QueuedConnection);
 
-    connect(frameGrabber, SIGNAL(frameGrabbed(QPair<unsigned, QImage>)),
+//    connect(frameGrabber, SIGNAL(frameGrabbed(QPair<unsigned, QImage>)),
+//            this, SLOT(onFrameGrabbed(QPair<unsigned, QImage>)),
+//            Qt::QueuedConnection);
+    connect(frameGenerator, SIGNAL(frameReady(QPair<unsigned, QImage>)),
             this, SLOT(onFrameGrabbed(QPair<unsigned, QImage>)),
             Qt::QueuedConnection);
 
@@ -108,6 +112,13 @@ void MainWindow::closeEvent(QCloseEvent *ev)
             frameGrabberThread->wait();
         }
 
+        if(frameGeneratorThread->isRunning())
+        {
+            frameGenerator->pause();
+            frameGeneratorThread->quit();
+            frameGeneratorThread->wait();
+        }
+
         // Close script editor if it's open
         scriptEditor->close();
 
@@ -132,27 +143,27 @@ void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
     ui->unsavedWidget->addThumbnail(thumb);
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
-    if(!frameGrabberThread->isRunning())
-    {
-        return;
-    }
+//    if(!frameGrabberThread->isRunning())
+//    {
+//        return;
+//    }
 
-    if(!framesQueue.isEmpty())
-    {
-        const unsigned nextFrame = framesQueue.takeFirst();
-        qDebug() << qApp->thread()->currentThreadId() << framesQueue.size();
+//    if(!framesQueue.isEmpty())
+//    {
+//        const unsigned nextFrame = framesQueue.takeFirst();
+//        qDebug() << qApp->thread()->currentThreadId() << framesQueue.size();
 
-        //qDebug() << "From main, framegrabber thread is" << frameGrabber->thread()->currentThreadId();
-        QMetaObject::invokeMethod(frameGrabber,
-                                  "requestFrame",
-                                  Qt::QueuedConnection,
-                                  Q_ARG(unsigned, nextFrame));
-    }
-    else
-    {
-        // No more frames to process
-        // TODO: Add an option for user to jump to last grabbed frame
-    }
+//        //qDebug() << "From main, framegrabber thread is" << frameGrabber->thread()->currentThreadId();
+//        QMetaObject::invokeMethod(frameGrabber,
+//                                  "requestFrame",
+//                                  Qt::QueuedConnection,
+//                                  Q_ARG(unsigned, nextFrame));
+//    }
+//    else
+//    {
+//        // No more frames to process
+//        // TODO: Add an option for user to jump to last grabbed frame
+//    }
     //qDebug() << "END FRAME_RECEIVED";
 }
 
@@ -394,14 +405,17 @@ void MainWindow::on_generateButton_clicked()
             break;
 
         //frame_numbers.append(current_frame);
-        framesQueue.append(current_frame);
+        //framesQueue.append(current_frame);
+        frameGenerator->enqueue(current_frame);
     }
 
-    const unsigned next_frame = framesQueue.takeFirst();
-    QMetaObject::invokeMethod(frameGrabber,
-                              "requestFrame",
-                              Qt::QueuedConnection,
-                              Q_ARG(unsigned, next_frame));
+    QMetaObject::invokeMethod(frameGenerator, "start", Qt::QueuedConnection);
+
+//    const unsigned next_frame = framesQueue.takeFirst();
+//    QMetaObject::invokeMethod(frameGrabber,
+//                              "requestFrame",
+//                              Qt::QueuedConnection,
+//                              Q_ARG(unsigned, next_frame));
 
     // Last processed frame number
 //    unsigned lastProcessed = selected;
