@@ -23,7 +23,7 @@ public:
     void pause();
     void resume();
     bool isRunning() const;
-    void enqueue(unsigned frame);
+    void enqueue(const unsigned frame);
     
 signals:
     void frameReady(QImage frame);
@@ -32,7 +32,7 @@ public slots:
     
 private:
     vfg::VideoFrameGrabber *frameGrabber;
-    QList<unsigned> frames;
+    QList<const unsigned> frames;
     QMutex mutex;
     bool halt;
     bool active;

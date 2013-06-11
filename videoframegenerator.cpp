@@ -19,7 +19,7 @@ VideoFrameGenerator::VideoFrameGenerator(vfg::VideoFrameGrabber *frameGrabber,
 void VideoFrameGenerator::start()
 {
     QMutexLocker lock(&mutex);
-    QListIterator<unsigned> iter(&frames);
+    QListIterator<const unsigned> iter(frames);
     while(iter.hasNext())
     {
         active = true;
@@ -61,7 +61,7 @@ bool VideoFrameGenerator::isRunning() const
     return active;
 }
 
-void VideoFrameGenerator::enqueue(unsigned frame)
+void VideoFrameGenerator::enqueue(const unsigned frame)
 {
     QMutexLocker lock(&mutex);
     bool exists = frames.contains(frame);
