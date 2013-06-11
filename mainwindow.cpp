@@ -329,15 +329,16 @@ void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
 
 void MainWindow::on_seekSlider_valueChanged(int value)
 {
-    if(lastRequestedFrame == value)
+    const unsigned frameNumber = static_cast<unsigned>(value);
+    if(lastRequestedFrame == frameNumber)
     {
         return;
     }
 
     QMetaObject::invokeMethod(frameGrabber, "requestFrame",
-                              Qt::QueuedConnection, Q_ARG(unsigned, value));
-    lastRequestedFrame = value;
-    ui->currentFrameLabel->setText(QString::number(value));
+                              Qt::QueuedConnection, Q_ARG(unsigned, frameNumber));
+    lastRequestedFrame = frameNumber;
+    ui->currentFrameLabel->setText(QString::number(frameNumber));
 }
 
 void MainWindow::on_seekSlider_sliderMoved(int position)
