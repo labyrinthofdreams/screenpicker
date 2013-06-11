@@ -77,8 +77,6 @@ private:
     vfg::ScriptEditor* scriptEditor;
 
     QList<unsigned> framesToSave;
-    // TODO: Rename above name and add another container for truly to-be-saved frames
-    // that are in the saved thumbnails container
 
     unsigned lastRequestedFrame;
 
