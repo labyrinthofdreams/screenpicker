@@ -24,7 +24,7 @@ public:
     void resume();
     void reset();
     bool isRunning() const;
-    bool enqueue(unsigned frame);
+    void enqueue(unsigned frame);
     
 signals:
     void frameReady(QImage frame);
