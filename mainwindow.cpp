@@ -98,7 +98,6 @@ void MainWindow::closeEvent(QCloseEvent *ev)
     {
         if(frameGrabberThread->isRunning())
         {
-            haltFrameGrabberThread = true;
             frameGrabberThread->quit();
             frameGrabberThread->wait();
         }

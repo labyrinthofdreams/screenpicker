@@ -3,13 +3,12 @@
 
 #include <QObject>
 #include <QList>
+#include <QImage>
 
 // Forward declarations
 namespace vfg {
     class VideoFrameGrabber;
 }
-
-class QImage;
 
 namespace vfg {
 

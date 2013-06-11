@@ -32,14 +32,12 @@ void VideoFrameGenerator::reset()
 
 bool VideoFrameGenerator::isRunning() const
 {
-
+    return false;
 }
 
 void VideoFrameGenerator::enqueue(unsigned frame)
 {
 
 }
-
-
 
 } // namespace vfg
