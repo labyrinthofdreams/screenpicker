@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QList>
 #include <QImage>
+#include <QMutex>
 
 // Forward declarations
 namespace vfg {
@@ -33,6 +34,7 @@ public slots:
 private:
     vfg::VideoFrameGrabber *frameGrabber;
     QList<unsigned> frames;
+    QMutex mutex;
 };
 
 } // namespace vfg
