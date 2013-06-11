@@ -10,4 +10,36 @@ VideoFrameGenerator::VideoFrameGenerator(vfg::VideoFrameGrabber *frameGrabber,
 {
 }
 
+void VideoFrameGenerator::start()
+{
+
+}
+
+void VideoFrameGenerator::pause()
+{
+
+}
+
+void VideoFrameGenerator::resume()
+{
+
+}
+
+void VideoFrameGenerator::reset()
+{
+
+}
+
+bool VideoFrameGenerator::isRunning() const
+{
+
+}
+
+void VideoFrameGenerator::enqueue(unsigned frame)
+{
+
+}
+
+
+
 } // namespace vfg
