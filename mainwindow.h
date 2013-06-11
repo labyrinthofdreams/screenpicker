@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QString>
 #include <QMap>
-#include <QQueue>
+#include <QList>
 #include <QScopedPointer>
 #include <QMutex>
 #include <QPair>
@@ -76,7 +76,7 @@ private:
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::ScriptEditor* scriptEditor;
 
-    QQueue<unsigned> framesQueue;
+    QList<unsigned> framesToSave;
     // TODO: Rename above name and add another container for truly to-be-saved frames
     // that are in the saved thumbnails container
 

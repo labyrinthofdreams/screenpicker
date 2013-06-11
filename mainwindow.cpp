@@ -21,7 +21,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    framesQueue(),
+    framesToSave(),
     lastRequestedFrame(vfg::FirstFrame)
 {
     ui->setupUi(this);
@@ -145,7 +145,7 @@ void MainWindow::resetState()
 {
     ui->unsavedWidget->clearThumbnails();
     ui->savedWidget->clearThumbnails();
-    framesQueue.clear();
+    framesToSave.clear();
 
     ui->unsavedProgressBar->setValue(0);
 
@@ -398,7 +398,7 @@ void MainWindow::on_grabButton_clicked()
     connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handleSavedMenu(QPoint)));
     ui->savedWidget->addThumbnail(thumb);
-    //framesToSave.append(thumb->frameNum());
+    framesToSave.append(thumb->frameNum());
 
 
     statusBar()->showMessage(tr("Grabbed frame #%1").arg(selected), 3000);
@@ -421,7 +421,7 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleSavedMenu(QPoint)));
 
-        //framesToSave.append(thumb->frameNum());
+        framesToSave.append(thumb->frameNum());
 
         ui->savedWidget->addThumbnail(thumb);
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
@@ -445,7 +445,7 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleUnsavedMenu(QPoint)));
 
-        //framesToSave.removeOne(thumb->frameNum());
+        framesToSave.removeOne(thumb->frameNum());
 
         ui->unsavedWidget->addThumbnail(thumb);
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
@@ -473,7 +473,7 @@ void MainWindow::on_thumbnailSizeSlider_valueChanged(int value)
 void MainWindow::on_saveThumbnailsButton_clicked()
 {
     // Save saved images to disk
-    if(framesQueue.isEmpty())
+    if(framesToSave.isEmpty())
     {
         QMessageBox::information(this, tr("Save screenshots"),
                                  tr("Nothing to save. Add one or more screenshots to save."));
@@ -500,13 +500,13 @@ void MainWindow::on_saveThumbnailsButton_clicked()
                                            resizeTo, 100, frameSize.width(), 10, &resizeOk);
     }
 
-    const int numSaved = framesQueue.count();
+    const int numSaved = framesToSave.count();
     QProgressDialog prog("", "Cancel", 0, numSaved, this);
     prog.setWindowModality(Qt::WindowModal);
     prog.setCancelButton(0);
     prog.setMinimumDuration(0);
     QDir saveDir(dir);
-    QListIterator<unsigned> iter(framesQueue);
+    QListIterator<unsigned> iter(framesToSave);
     while(iter.hasNext())
     {
         const unsigned frameNumber = iter.next();
