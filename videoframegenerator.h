@@ -20,9 +20,6 @@ class VideoFrameGenerator : public QObject
 public:
     explicit VideoFrameGenerator(vfg::VideoFrameGrabber *frameGrabber, QObject *parent = 0);
 
-    void start();
-    void pause();
-    void resume();
     bool isRunning() const;
     void enqueue(const unsigned frame);
     
@@ -30,6 +27,9 @@ signals:
     void frameReady(QPair<unsigned, QImage> frame);
     
 public slots:
+    void start();
+    void pause();
+    void resume();
     
 private:
     vfg::VideoFrameGrabber *frameGrabber;
