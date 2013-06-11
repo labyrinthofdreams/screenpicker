@@ -20,11 +20,10 @@ VideoFrameGenerator::VideoFrameGenerator(vfg::VideoFrameGrabber *frameGrabber,
 void VideoFrameGenerator::start()
 {
     QMutexLocker lock(&mutex);
-    QListIterator<const unsigned> iter(frames);
-    while(iter.hasNext())
+    while(!frames.empty())
     {
         active = true;
-        const unsigned current = iter.next();
+        const unsigned current = frames.takeFirst();
         lock.unlock();
         if(!frameGrabber) {
             break;
