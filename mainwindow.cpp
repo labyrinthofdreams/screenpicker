@@ -349,15 +349,14 @@ void MainWindow::on_seekSlider_sliderMoved(int position)
 
 void MainWindow::on_generateButton_clicked()
 {
+    // Compute list of frame numbers to grab
     const unsigned selected_frame = ui->seekSlider->value();
     const unsigned frame_step = ui->frameStepSpinBox->value();
     const unsigned num_generate = ui->screenshotsSpinBox->value();
     const unsigned total_video_frames = frameGrabber->totalFrames();
-
     const unsigned total_frame_range = frame_step * num_generate;
     const unsigned last_frame = selected_frame + total_frame_range;
 
-    // Compute list of frame numbers to grab
     for(unsigned current_frame = selected_frame; ; current_frame += frame_step)
     {
         const bool reached_last_frame = current_frame >= last_frame;
