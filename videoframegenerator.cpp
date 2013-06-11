@@ -1,6 +1,7 @@
 #include <QMutexLocker>
 #include <QListIterator>
 #include <QImage>
+#include <QPair>
 #include "videoframegrabber.h"
 #include "videoframegenerator.h"
 
@@ -29,7 +30,7 @@ void VideoFrameGenerator::start()
             break;
         }
         QImage frame = frameGrabber->getFrame(current);
-        emit frameReady(frame);
+        emit frameReady(QPair<unsigned, QImage>(current, frame));
         lock.relock();
         if(halt) {
             break;

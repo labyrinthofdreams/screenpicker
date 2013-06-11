@@ -5,6 +5,7 @@
 #include <QList>
 #include <QImage>
 #include <QMutex>
+#include <QPair>
 
 // Forward declarations
 namespace vfg {
@@ -26,7 +27,7 @@ public:
     void enqueue(const unsigned frame);
     
 signals:
-    void frameReady(QImage frame);
+    void frameReady(QPair<unsigned, QImage> frame);
     
 public slots:
     
