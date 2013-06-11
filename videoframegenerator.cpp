@@ -52,9 +52,12 @@ void VideoFrameGenerator::pause()
 void VideoFrameGenerator::resume()
 {
     QMutexLocker lock(&mutex);
-    halt = false;
-    lock.unlock();
-    start();
+    if(!active)
+    {
+        halt = false;
+        lock.unlock();
+        start();
+    }
 }
 
 bool VideoFrameGenerator::isRunning() const
