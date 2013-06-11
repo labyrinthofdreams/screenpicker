@@ -35,7 +35,7 @@ public slots:
 private:
     vfg::VideoFrameGrabber *frameGrabber;
     QList<const unsigned> frames;
-    QMutex mutex;
+    mutable QMutex mutex;
     bool halt;
     bool active;
 };
