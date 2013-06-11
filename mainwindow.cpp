@@ -139,29 +139,6 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
             this, SLOT(handleUnsavedMenu(QPoint)));
     ui->unsavedWidget->addThumbnail(thumb);
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
-
-//    if(!frameGrabberThread->isRunning())
-//    {
-//        return;
-//    }
-
-//    if(!framesQueue.isEmpty())
-//    {
-//        const unsigned nextFrame = framesQueue.takeFirst();
-//        qDebug() << qApp->thread()->currentThreadId() << framesQueue.size();
-
-//        //qDebug() << "From main, framegrabber thread is" << frameGrabber->thread()->currentThreadId();
-//        QMetaObject::invokeMethod(frameGrabber,
-//                                  "requestFrame",
-//                                  Qt::QueuedConnection,
-//                                  Q_ARG(unsigned, nextFrame));
-//    }
-//    else
-//    {
-//        // No more frames to process
-//        // TODO: Add an option for user to jump to last grabbed frame
-//    }
-    //qDebug() << "END FRAME_RECEIVED";
 }
 
 void MainWindow::resetState()
@@ -407,48 +384,6 @@ void MainWindow::on_generateButton_clicked()
     }
 
     QMetaObject::invokeMethod(frameGenerator, "start", Qt::QueuedConnection);
-
-//    const unsigned next_frame = framesQueue.takeFirst();
-//    QMetaObject::invokeMethod(frameGrabber,
-//                              "requestFrame",
-//                              Qt::QueuedConnection,
-//                              Q_ARG(unsigned, next_frame));
-
-    // Last processed frame number
-//    unsigned lastProcessed = selected;
-//    QList<vfg::VideoFrameThumbnail*> frames;
-//    QProgressDialog progress("", tr("Cancel"), 0, num, this);
-//    progress.setMinimumDuration(0);
-//    progress.setWindowModality(Qt::WindowModal);
-//    progress.show();
-//    for(unsigned currentFrame = selected, frameCtr = 1;
-//        currentFrame < lastPos && currentFrame <= totalFrames;
-//        currentFrame += step, ++frameCtr, lastProcessed += step)
-//    {
-//        progress.setLabelText(tr("Generating image %1 of %2").arg(frameCtr).arg(num));
-//        progress.setValue(frameCtr);
-//        if(progress.wasCanceled())
-//        {
-//            break;
-//        }
-
-//        QImage frame = frameGrabber->getFrame(currentFrame);
-//        QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
-
-//        vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(currentFrame, thumbnail);
-//        thumb->setFixedWidth(thumbnailSize);
-//        connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
-//                this, SLOT(handleUnsavedMenu(QPoint)));
-//        frames.append(thumb);
-//    }
-//    while(!frames.isEmpty())
-//    {
-//        ui->unsavedWidget->addThumbnail(frames.takeFirst());
-//    }
-//    progress.setValue(num);
-//    lastRequestedFrame = lastProcessed;
-//    ui->seekSlider->setValue(lastRequestedFrame);
-//    ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 }
 
 void MainWindow::on_grabButton_clicked()
