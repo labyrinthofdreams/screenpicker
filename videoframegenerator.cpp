@@ -22,6 +22,9 @@ void VideoFrameGenerator::start()
     {
         const unsigned current = iter.next();
         lock.unlock();
+        if(!frameGrabber) {
+            return;
+        }
         QImage frame = frameGrabber->getFrame(current);
         emit frameReady(frame);
         lock.relock();
