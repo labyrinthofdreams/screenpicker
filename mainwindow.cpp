@@ -70,13 +70,12 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(videoError(QString)),
             Qt::QueuedConnection);
 
+    connect(frameGrabber, SIGNAL(frameGrabbed(QPair<uint,QImage>)),
+            ui->videoFrameWidget, SLOT(setFrame(QPair<uint,QImage>)));
+
     connect(frameGenerator, SIGNAL(frameReady(QPair<unsigned, QImage>)),
             this, SLOT(frameReceived(QPair<unsigned, QImage>)),
             Qt::QueuedConnection);
-
-    // Connect grabber to the widget
-//    connect(frameGrabber.data(), SIGNAL(frameGrabbed(QImage)),
-//            ui->videoFrameWidget, SLOT(setFrame(QImage)));
 
     connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(unsigned)),
             this, SLOT(thumbnailDoubleClicked(unsigned)));
@@ -307,13 +306,8 @@ void MainWindow::thumbnailDoubleClicked(unsigned frameNumber)
 void MainWindow::on_nextButton_clicked()
 {
     qDebug() << "Start Main Thread " << qApp->thread()->currentThreadId();
-    QImage frame = frameGrabber->getFrame(lastRequestedFrame + 1);
-    if(frame.isNull())
-    {
-        return;
-    }
+    QMetaObject::invokeMethod(frameGrabber, "requestNextFrame", Qt::QueuedConnection);
     lastRequestedFrame++;
-    ui->videoFrameWidget->setFrame(frame);
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
 }
@@ -321,13 +315,8 @@ void MainWindow::on_nextButton_clicked()
 void MainWindow::on_previousButton_clicked()
 {
     qDebug() << "Main Thread " << qApp->thread()->currentThreadId();
-    QImage frame = frameGrabber->getFrame(lastRequestedFrame - 1);
-    if(frame.isNull())
-    {
-        return;
-    }
+    QMetaObject::invokeMethod(frameGrabber, "requestPreviousFrame", Qt::QueuedConnection);
     lastRequestedFrame--;
-    ui->videoFrameWidget->setFrame(frame);
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
 }
@@ -340,15 +329,13 @@ void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
 
 void MainWindow::on_seekSlider_valueChanged(int value)
 {
-    //qDebug() << frameGrabber->lastFrame() << value << lastRequestedFrame;
     if(lastRequestedFrame == value)
     {
         return;
     }
 
-    QImage frame = frameGrabber->getFrame(value);
-    ui->videoFrameWidget->setFrame(frame);
-
+    QMetaObject::invokeMethod(frameGrabber, "requestFrame",
+                              Qt::QueuedConnection, Q_ARG(unsigned, value));
     lastRequestedFrame = value;
     ui->currentFrameLabel->setText(QString::number(value));
 }
@@ -370,7 +357,6 @@ void MainWindow::on_generateButton_clicked()
     const unsigned last_frame = selected_frame + total_frame_range;
 
     // Compute list of frame numbers to grab
-    //QList<const unsigned> frame_numbers;
     for(unsigned current_frame = selected_frame; ; current_frame += frame_step)
     {
         const bool reached_last_frame = current_frame >= last_frame;
@@ -378,8 +364,6 @@ void MainWindow::on_generateButton_clicked()
         if(reached_last_frame || reached_video_end)
             break;
 
-        //frame_numbers.append(current_frame);
-        //framesQueue.append(current_frame);
         frameGenerator->enqueue(current_frame);
     }
 
