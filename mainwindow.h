@@ -38,7 +38,7 @@ public:
     
 private slots:
 
-    void onFrameGrabbed(QPair<unsigned, QImage> frame);
+    void frameReceived(QPair<unsigned, QImage> frame);
     void scriptEditorUpdated(QString path);
     void videoLoaded();
     void videoError(QString msg);

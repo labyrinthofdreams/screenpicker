@@ -70,11 +70,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(videoError(QString)),
             Qt::QueuedConnection);
 
-//    connect(frameGrabber, SIGNAL(frameGrabbed(QPair<unsigned, QImage>)),
-//            this, SLOT(onFrameGrabbed(QPair<unsigned, QImage>)),
-//            Qt::QueuedConnection);
     connect(frameGenerator, SIGNAL(frameReady(QPair<unsigned, QImage>)),
-            this, SLOT(onFrameGrabbed(QPair<unsigned, QImage>)),
+            this, SLOT(frameReceived(QPair<unsigned, QImage>)),
             Qt::QueuedConnection);
 
     // Connect grabber to the widget
@@ -130,7 +127,7 @@ void MainWindow::closeEvent(QCloseEvent *ev)
     }
 }
 
-void MainWindow::onFrameGrabbed(QPair<unsigned, QImage> frame)
+void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
 {
     qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
     const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
