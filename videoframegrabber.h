@@ -2,13 +2,11 @@
 #define VIDEOFRAMEGRABBER_H
 
 #include <QObject>
-#include <QPair>
 #include <QImage>
 #include <QString>
 #include <QSharedPointer>
 #include <QMutex>
-
-// TODO: Replace getVideoSource() return type with QWeakPointer
+#include <QPair>
 
 // Forward declarations
 namespace vfg {
@@ -17,6 +15,7 @@ namespace vfg {
 
 namespace vfg
 {
+    // TODO: This is not clever
     static const unsigned FirstFrame = 1;
 
     // Class declaration
