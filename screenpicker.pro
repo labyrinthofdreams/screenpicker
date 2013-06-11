@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     thumbnailcontainer.cpp \
     avisynthvideosource.cpp \
     scripteditor.cpp \
-    configdialog.cpp
+    configdialog.cpp \
+    videoframegenerator.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -30,7 +31,8 @@ HEADERS  += mainwindow.h \
     avisynthvideosource.h \
     scripteditor.h \
     configdialog.h \
-    init.h
+    init.h \
+    videoframegenerator.h
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
