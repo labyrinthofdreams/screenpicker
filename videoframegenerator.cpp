@@ -1,4 +1,6 @@
 #include <QMutexLocker>
+#include <QListIterator>
+#include <QImage>
 #include "videoframegrabber.h"
 #include "videoframegenerator.h"
 
@@ -14,7 +16,16 @@ VideoFrameGenerator::VideoFrameGenerator(vfg::VideoFrameGrabber *frameGrabber,
 
 void VideoFrameGenerator::start()
 {
-
+    QMutexLocker lock(&mutex);
+    QListIterator<unsigned> iter(&frames);
+    while(iter.hasNext())
+    {
+        const unsigned current = iter.next();
+        lock.unlock();
+        QImage frame = frameGrabber->getFrame(current);
+        emit frameReady(frame);
+        lock.relock();
+    }
 }
 
 void VideoFrameGenerator::pause()
