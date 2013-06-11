@@ -4,17 +4,23 @@
 #include <QObject>
 
 namespace vfg {
+    class VideoFrameGrabber;
+}
+
+namespace vfg {
 
 class VideoFrameGenerator : public QObject
 {
     Q_OBJECT
 public:
-    explicit VideoFrameGenerator(QObject *parent = 0);
+    explicit VideoFrameGenerator(vfg::VideoFrameGrabber *frameGrabber, QObject *parent = 0);
     
 signals:
     
 public slots:
     
+private:
+    vfg::VideoFrameGrabber *frameGrabber;
 };
 
 } // namespace vfg

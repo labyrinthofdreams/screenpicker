@@ -1,9 +1,12 @@
+#include "videoframegrabber.h"
 #include "videoframegenerator.h"
 
 namespace vfg {
 
-VideoFrameGenerator::VideoFrameGenerator(QObject *parent) :
-    QObject(parent)
+VideoFrameGenerator::VideoFrameGenerator(vfg::VideoFrameGrabber *frameGrabber,
+                                         QObject *parent) :
+    QObject(parent),
+    frameGrabber(frameGrabber)
 {
 }
 
