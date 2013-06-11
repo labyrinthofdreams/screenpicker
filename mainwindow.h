@@ -70,6 +70,7 @@ private:
     Ui::MainWindow *ui;
 
     QThread *frameGrabberThread;
+    QThread *frameGeneratorThread;
 
     vfg::VideoFrameGenerator* frameGenerator;
     vfg::VideoFrameGrabber* frameGrabber;
