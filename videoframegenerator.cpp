@@ -68,7 +68,7 @@ void VideoFrameGenerator::enqueue(const unsigned frame)
     bool exists = frames.contains(frame);
     if(!exists)
     {
-        frames.prepend(frame);
+        frames.append(frame);
     }
 }
 
