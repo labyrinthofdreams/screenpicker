@@ -1,4 +1,5 @@
 #include <QtGui>
+#include <QPair>
 #include "videoframewidget.h"
 
 vfg::VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
@@ -40,6 +41,12 @@ void vfg::VideoFrameWidget::resizeEvent(QResizeEvent *event)
 void vfg::VideoFrameWidget::setFrame(QImage img)
 {
     framePixmap = QPixmap::fromImage(img);
+    updateFrameSize();
+}
+
+void vfg::VideoFrameWidget::setFrame(QPair<unsigned, QImage> img)
+{
+    framePixmap = QPixmap::fromImage(img.second);
     updateFrameSize();
 }
 

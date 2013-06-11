@@ -4,6 +4,7 @@
 #include <QScrollArea>
 #include <QImage>
 #include <QPixmap>
+#include <QPair>
 
 // Forward declarations
 class QVBoxLayout;
@@ -38,6 +39,7 @@ namespace vfg
 
     public slots:
         void setFrame(QImage img);
+        void setFrame(QPair<unsigned, QImage> img);
     };
 }
 
