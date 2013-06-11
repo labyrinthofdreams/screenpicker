@@ -71,4 +71,10 @@ void VideoFrameGenerator::enqueue(const unsigned frame)
     }
 }
 
+unsigned VideoFrameGenerator::remaining() const
+{
+    QMutexLocker lock(&mutex);
+    return frames.count();
+}
+
 } // namespace vfg

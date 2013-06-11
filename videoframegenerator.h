@@ -22,6 +22,7 @@ public:
 
     bool isRunning() const;
     void enqueue(const unsigned frame);
+    unsigned remaining() const;
     
 signals:
     void frameReady(QPair<unsigned, QImage> frame);
