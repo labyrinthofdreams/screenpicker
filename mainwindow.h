@@ -21,6 +21,7 @@ namespace vfg {
     class VideoFrameGrabber;
     class VideoFrameThumbnail;
     class ScriptEditor;
+    class VideoFrameGenerator;
 }
 
 namespace Ui {
@@ -70,6 +71,7 @@ private:
 
     QThread *frameGrabberThread;
 
+    vfg::VideoFrameGenerator* frameGenerator;
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::ScriptEditor* scriptEditor;
 

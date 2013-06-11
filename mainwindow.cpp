@@ -9,6 +9,7 @@
 #include "avisynthvideosource.h"
 #include "scripteditor.h"
 #include "configdialog.h"
+#include "videoframegenerator.h"
 
 // TODO: When loading new video, the widgets inside scroll areas
 // do not get resized to fit the scroll area (they remain large)
@@ -28,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
     try
     {
         frameGrabber = new vfg::VideoFrameGrabber;
+
+        frameGenerator = new vfg::VideoFrameGenerator(frameGrabber);
 
         frameGrabberThread = new QThread(this);
         frameGrabber->moveToThread(frameGrabberThread);
@@ -82,6 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete scriptEditor;
+    delete frameGenerator;
     delete frameGrabber;
     delete ui;
 }
