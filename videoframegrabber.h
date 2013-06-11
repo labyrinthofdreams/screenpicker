@@ -31,7 +31,7 @@ namespace vfg
         // Between range 0 - (last frame - 1)
         unsigned currentFrame;
 
-        QMutex mutex;
+        mutable QMutex mutex;
 
         bool frameOutOfRange(unsigned frameNum) const;
     public:
