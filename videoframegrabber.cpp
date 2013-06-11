@@ -48,6 +48,7 @@ vfg::VideoFrameGrabber::~VideoFrameGrabber()
 
 bool vfg::VideoFrameGrabber::hasVideo() const
 {
+    QMutexLocker lock(&mutex);
     return avs->hasVideo();
 }
 
@@ -64,11 +65,13 @@ void vfg::VideoFrameGrabber::setVideoSource(QSharedPointer<vfg::AbstractVideoSou
 
 unsigned vfg::VideoFrameGrabber::lastFrame() const
 {
+    QMutexLocker lock(&mutex);
     return currentFrame + 1;
 }
 
 bool vfg::VideoFrameGrabber::frameOutOfRange(unsigned frameNum) const
 {
+    QMutexLocker lock(&mutex);
     return (frameNum + 1) == numFrames;
 }
 
@@ -144,5 +147,6 @@ QImage vfg::VideoFrameGrabber::getFrame(unsigned frameNum)
 
 unsigned vfg::VideoFrameGrabber::totalFrames() const
 {
+    QMutexLocker lock(&mutex);
     return numFrames;
 }
