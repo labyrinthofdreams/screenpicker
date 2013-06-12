@@ -136,8 +136,12 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
 
     connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handleUnsavedMenu(QPoint)));
+
+    // Update widgets
     ui->unsavedWidget->addThumbnail(thumb);
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
+    const unsigned generated = ui->generatorProgressBar->value() + 1;
+    ui->generatorProgressBar->setValue(generated);
 }
 
 void MainWindow::resetState()
@@ -271,11 +275,13 @@ void MainWindow::videoLoaded()
     // Move slider back to first frame
     ui->seekSlider->setValue(lastRequestedFrame);
     // Show first frame
-    QImage frame = frameGrabber->getFrame(lastRequestedFrame);
-    if(!frame.isNull())
-    {
-        ui->videoFrameWidget->setFrame(frame);
-    }
+//    QImage frame = frameGrabber->getFrame(lastRequestedFrame);
+//    if(!frame.isNull())
+//    {
+//        ui->videoFrameWidget->setFrame(frame);
+//    }
+    QMetaObject::invokeMethod(frameGrabber, "requestFrame",
+                              Qt::QueuedConnection, Q_ARG(unsigned, lastRequestedFrame));
 
     // Enable buttons
     ui->previousButton->setEnabled(true);
@@ -367,7 +373,15 @@ void MainWindow::on_generateButton_clicked()
         frameGenerator->enqueue(current_frame);
     }
 
+    const unsigned remaining = frameGenerator->remaining();
+
     QMetaObject::invokeMethod(frameGenerator, "start", Qt::QueuedConnection);
+
+    // Update generator widgets
+    ui->btnPauseGenerator->setEnabled(true);
+    ui->btnStopGenerator->setEnabled(true);
+    ui->generatorProgressBar->setMaximum(remaining);
+
 }
 
 void MainWindow::on_grabButton_clicked()
