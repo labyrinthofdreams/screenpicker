@@ -16,11 +16,13 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     const bool saveScripts = cfg.value("savescripts").toBool();
     const bool showEditor = cfg.value("showscripteditor").toBool();
     const int maxThumbnails = cfg.value("maxthumbnails").toInt();
+    const int afterMaxLimit = cfg.value("aftermaxlimit").toInt();
 
     ui->avisynthPluginsPathLineEdit->setText(avisynthPath);
     ui->saveAvisynthScriptsCheckBox->setChecked(saveScripts);
     ui->showScriptEditorCheckBox->setChecked(showEditor);
     ui->maxThumbnailsSpinBox->setValue(maxThumbnails);
+    ui->buttonGroup->button(afterMaxLimit)->setChecked(true);
 }
 
 ConfigDialog::~ConfigDialog()
@@ -40,4 +42,7 @@ void vfg::ConfigDialog::on_buttonBox_accepted()
     cfg.setValue("savescripts", ui->saveAvisynthScriptsCheckBox->isChecked());
     cfg.setValue("showscripteditor", ui->showScriptEditorCheckBox->isChecked());
     cfg.setValue("maxthumbnails", ui->maxThumbnailsSpinBox->value());
+    cfg.setValue("aftermaxlimit", ui->buttonGroup->checkedId());
+    cfg.setValue("pauseafterlimit", ui->radioPauseAfterLimit->isChecked());
+    cfg.setValue("removeoldestafterlimit", ui->radioRemoveOldestAfterLimit->isChecked());
 }
