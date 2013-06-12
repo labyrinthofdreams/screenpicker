@@ -666,6 +666,16 @@ void MainWindow::on_btnPauseGenerator_clicked()
     }
     else
     {
+        QSettings cfg("config.ini", QSettings::IniFormat);
+        const bool pauseAfterLimit = cfg.value("pauseafterlimit").toBool();
+        if(pauseAfterLimit && ui->unsavedWidget->isFull()) {
+            // If user has chosen to pause the generator after reaching
+            // maximum limit and has clicked resume (this path) while
+            // the container is still full we can't resume
+            QMessageBox::information(this, tr(""), tr("Can't resume generator while the container has reached max limit.\n"
+                                                      "Click 'Clear' or raise the max thumbnail limit to continue."));
+            return;
+        }
         ui->btnPauseGenerator->setText(tr("Pause"));
         QMetaObject::invokeMethod(frameGenerator, "resume", Qt::QueuedConnection);
     }
