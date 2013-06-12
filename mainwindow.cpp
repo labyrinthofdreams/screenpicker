@@ -140,8 +140,22 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
     // Update widgets
     ui->unsavedWidget->addThumbnail(thumb);
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
-    const unsigned generated = ui->generatorProgressBar->value() + 1;
-    ui->generatorProgressBar->setValue(generated);
+
+    // If true, implies that generator has been explicitly stopped,
+    // otherwise is still running or has finished
+    const bool generatorStopped = ui->generatorProgressBar->value() == 0 && !frameGenerator->isRunning();
+    if(!generatorStopped) {
+        const unsigned generated = ui->generatorProgressBar->value() + 1;
+        ui->generatorProgressBar->setValue(generated);
+
+        const bool generatorFinished = frameGenerator->remaining() == 0;
+        if(generatorFinished)
+        {
+            // Generator has finished without explicit stopping
+            ui->btnPauseGenerator->setEnabled(false);
+            ui->btnStopGenerator->setEnabled(false);
+        }
+    }
 }
 
 void MainWindow::resetState()
@@ -367,6 +381,7 @@ void MainWindow::on_generateButton_clicked()
     const unsigned total_video_frames = frameGrabber->totalFrames();
     const unsigned total_frame_range = frame_step * num_generate;
     const unsigned last_frame = selected_frame + total_frame_range;
+    frameGenerator->stop();
 
     for(unsigned current_frame = selected_frame; ; current_frame += frame_step)
     {
@@ -392,6 +407,7 @@ void MainWindow::on_generateButton_clicked()
 
     // Update generator widgets
     ui->btnPauseGenerator->setEnabled(true);
+    ui->btnPauseGenerator->setText(tr("Pause"));
     ui->btnStopGenerator->setEnabled(true);
     ui->generatorProgressBar->setValue(0);
     ui->generatorProgressBar->setMaximum(remaining);
@@ -643,7 +659,17 @@ void MainWindow::on_cbUnlimitedScreens_clicked(bool checked)
 
 void MainWindow::on_btnPauseGenerator_clicked()
 {
-    frameGenerator->pause();
+    if(!frameGenerator->isPaused())
+    {
+        frameGenerator->pause();
+        ui->btnPauseGenerator->setText(tr("Resume"));
+    }
+    else
+    {
+        ui->btnPauseGenerator->setText(tr("Pause"));
+        QMetaObject::invokeMethod(frameGenerator, "start", Qt::QueuedConnection);
+    }
+}
 
 void MainWindow::on_btnStopGenerator_clicked()
 {
