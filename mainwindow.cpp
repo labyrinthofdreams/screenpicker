@@ -141,6 +141,21 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
     ui->unsavedWidget->addThumbnail(thumb);
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
+    if(ui->unsavedWidget->isFull())
+    {
+        QSettings cfg("config.ini", QSettings::IniFormat);
+        const bool pauseAfterLimit = cfg.value("pauseafterlimit").toBool();
+        if(pauseAfterLimit)
+        {
+            frameGenerator->pause();
+            ui->btnPauseGenerator->setText(tr("Resume"));
+        }
+        else
+        {
+            // No action. Oldest will be removed automatically when adding new thumbnail
+        }
+    }
+
     // If true, implies that generator has been explicitly stopped,
     // otherwise is still running or has finished
     const bool generatorStopped = ui->generatorProgressBar->value() == 0 && !frameGenerator->isRunning();
