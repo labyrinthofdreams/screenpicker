@@ -630,3 +630,7 @@ void MainWindow::on_cbUnlimitedScreens_clicked(bool checked)
 {
     ui->screenshotsSpinBox->setEnabled(!checked);
 }
+void MainWindow::on_btnPauseGenerator_clicked()
+{
+    frameGenerator->pause();
+}
