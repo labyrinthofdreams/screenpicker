@@ -667,7 +667,7 @@ void MainWindow::on_btnPauseGenerator_clicked()
     else
     {
         ui->btnPauseGenerator->setText(tr("Pause"));
-        QMetaObject::invokeMethod(frameGenerator, "start", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(frameGenerator, "resume", Qt::QueuedConnection);
     }
 }
 
