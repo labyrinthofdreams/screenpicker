@@ -32,8 +32,6 @@ namespace vfg
         unsigned currentFrame;
 
         mutable QMutex mutex;
-
-        bool frameOutOfRange(unsigned frameNum) const;
     public:
         explicit VideoFrameGrabber(QObject *parent = 0);
         explicit VideoFrameGrabber(QSharedPointer<vfg::AbstractVideoSource> avs, QObject *parent = 0);

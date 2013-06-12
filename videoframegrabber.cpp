@@ -69,12 +69,6 @@ unsigned vfg::VideoFrameGrabber::lastFrame() const
     return currentFrame + 1;
 }
 
-bool vfg::VideoFrameGrabber::frameOutOfRange(unsigned frameNum) const
-{
-    QMutexLocker lock(&mutex);
-    return (frameNum + 1) == numFrames;
-}
-
 void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
 {
     QMutexLocker ml(&mutex);
@@ -128,18 +122,16 @@ void vfg::VideoFrameGrabber::requestPreviousFrame()
 QImage vfg::VideoFrameGrabber::getFrame(unsigned frameNum)
 {
     QMutexLocker ml(&mutex);
-    qDebug() << "Start GET_FRAME VFG ";
+    qDebug() << "Start GET_FRAME VFG " << frameNum;
     --frameNum;
 
-    if(frameOutOfRange(frameNum))
+    const bool outOfRange = (frameNum + 1) == numFrames;
+    if(outOfRange)
     {
         emit errorOccurred(tr("Out of range"));
         return QImage();
     }
 
-    // TODO: current frame was used only for the request methods
-    // check if it can break anything...
-    //currentFrame = frameNum;
     QImage frame = avs->getFrame(frameNum);
     qDebug() << "End GET_FRAME VFG Thread ";
     return frame;
