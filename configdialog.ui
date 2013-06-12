@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>559</width>
-    <height>231</height>
+    <width>700</width>
+    <height>444</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,68 +19,181 @@
   <property name="windowTitle">
    <string>Options</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <layout class="QFormLayout" name="formLayout">
-     <property name="labelAlignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-     <property name="verticalSpacing">
-      <number>12</number>
-     </property>
-     <item row="0" column="0">
-      <widget class="QLabel" name="avisynthPluginsPathLabel">
-       <property name="text">
-        <string>Avisynth plugins path</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="avisynthPluginsPathLineEdit">
-       <property name="toolTip">
-        <string>Absolute path to Avisynth plugins directory</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
+  <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>412</y>
+     <width>156</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string/>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>9</y>
+     <width>682</width>
+     <height>128</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Avisynth</string>
+   </property>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>62</y>
+      <width>124</width>
+      <height>15</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
       <widget class="QLabel" name="saveAvisynthScriptsLabel">
        <property name="text">
-        <string>Save Avisynth scripts</string>
+        <string>Save scripts</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
+     <item>
       <widget class="QCheckBox" name="saveAvisynthScriptsCheckBox">
        <property name="toolTip">
         <string>If checked, saves the used Avisynth script to the opened file's directory</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="showScriptEditorLabel">
+    </layout>
+   </widget>
+   <widget class="QLineEdit" name="avisynthPluginsPathLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>85</x>
+      <y>31</y>
+      <width>411</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="toolTip">
+     <string>Absolute path to Avisynth plugins directory</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="avisynthPluginsPathLabel">
+    <property name="geometry">
+     <rect>
+      <x>21</x>
+      <y>31</y>
+      <width>58</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Plugins path</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>143</y>
+     <width>682</width>
+     <height>129</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Thumbnail Generation</string>
+   </property>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>30</y>
+      <width>382</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QLabel" name="label">
        <property name="text">
-        <string>Show Script Editor automatically</string>
+        <string>Jump to last generated frame after:</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QCheckBox" name="showScriptEditorCheckBox">
-       <property name="toolTip">
-        <string>If checked, opens the script editor when loading a file</string>
+     <item>
+      <widget class="QCheckBox" name="cbJumpAfterFinish">
+       <property name="text">
+        <string>Finishing</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item>
+      <widget class="QCheckBox" name="cbJumpAfterPause">
+       <property name="text">
+        <string>Pausing</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="cbJumpAfterStop">
+       <property name="text">
+        <string>Stopping</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>60</y>
+      <width>408</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
       <widget class="QLabel" name="maxThumbnailsLabel">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="text">
         <string>Max. thumbnails</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item>
       <widget class="QSpinBox" name="maxThumbnailsSpinBox">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -102,22 +215,78 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>After reaching max limit</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton_2">
+       <property name="text">
+        <string>Pause</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radioButton">
+       <property name="text">
+        <string>Remove oldest</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">buttonGroup</string>
+       </attribute>
+      </widget>
+     </item>
     </layout>
-   </item>
-   <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-  </layout>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_3">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>278</y>
+     <width>682</width>
+     <height>128</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>General</string>
+   </property>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>201</width>
+      <height>15</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
+      <widget class="QLabel" name="showScriptEditorLabel">
+       <property name="text">
+        <string>Show Script Editor after loading video</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="showScriptEditorCheckBox">
+       <property name="toolTip">
+        <string>If checked, opens the script editor when loading a file</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
  </widget>
  <resources/>
  <connections>
@@ -154,4 +323,7 @@
    </hints>
   </connection>
  </connections>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>

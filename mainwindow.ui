@@ -260,6 +260,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="cbUnlimitedScreens">
+            <property name="text">
+             <string>Unlimited</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="originalResolutionCheckBox">
             <property name="toolTip">
              <string>Lock video size to original resolution</string>
@@ -491,8 +498,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>98</width>
-                   <height>28</height>
+                   <width>850</width>
+                   <height>200</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
