@@ -65,9 +65,9 @@ private slots:
     void on_frameStepSpinBox_valueChanged(int arg1);
     void on_actionAbout_triggered();
     void on_saveSingleButton_clicked();
-
     void on_cbUnlimitedScreens_clicked(bool checked);
     void on_btnPauseGenerator_clicked();
+
 private:
     Ui::MainWindow *ui;
 
