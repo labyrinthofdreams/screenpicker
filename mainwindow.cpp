@@ -644,4 +644,13 @@ void MainWindow::on_cbUnlimitedScreens_clicked(bool checked)
 void MainWindow::on_btnPauseGenerator_clicked()
 {
     frameGenerator->pause();
+
+void MainWindow::on_btnStopGenerator_clicked()
+{
+    frameGenerator->stop();
+    ui->generatorProgressBar->setValue(0);
+    ui->generatorProgressBar->setTextVisible(false);
+    ui->btnPauseGenerator->setEnabled(false);
+    ui->btnPauseGenerator->setText(tr("Pause"));
+    ui->btnStopGenerator->setEnabled(false);
 }

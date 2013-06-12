@@ -68,6 +68,8 @@ private slots:
     void on_cbUnlimitedScreens_clicked(bool checked);
     void on_btnPauseGenerator_clicked();
 
+    void on_btnStopGenerator_clicked();
+
 private:
     Ui::MainWindow *ui;
 
