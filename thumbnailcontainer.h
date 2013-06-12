@@ -29,6 +29,7 @@ namespace vfg
         vfg::VideoFrameThumbnail* selected();
         int numThumbnails() const;
         void setMaxThumbnails(const unsigned max);
+        bool isFull() const;
 
     protected:
         void mousePressEvent(QMouseEvent *ev);

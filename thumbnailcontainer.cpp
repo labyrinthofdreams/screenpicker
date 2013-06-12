@@ -136,6 +136,11 @@ void vfg::ThumbnailContainer::setMaxThumbnails(const unsigned max)
     emit maximumChanged(max);
 }
 
+bool vfg::ThumbnailContainer::isFull() const
+{
+    return numThumbnails() == maxThumbnails;
+}
+
 void vfg::ThumbnailContainer::mousePressEvent(QMouseEvent *ev)
 {
     Q_UNUSED(ev);
