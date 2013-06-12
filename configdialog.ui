@@ -223,7 +223,10 @@
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton_2">
+      <widget class="QRadioButton" name="radioPauseAfterLimit">
+       <property name="toolTip">
+        <string>Pause frame generation when thumbnail container has reached max thumbnails</string>
+       </property>
        <property name="text">
         <string>Pause</string>
        </property>
@@ -236,7 +239,10 @@
       </widget>
      </item>
      <item>
-      <widget class="QRadioButton" name="radioButton">
+      <widget class="QRadioButton" name="radioRemoveOldestAfterLimit">
+       <property name="toolTip">
+        <string>Remove oldest thumbnail from thumbnail container after reaching max thumbnails limit</string>
+       </property>
        <property name="text">
         <string>Remove oldest</string>
        </property>
