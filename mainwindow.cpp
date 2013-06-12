@@ -626,3 +626,7 @@ void MainWindow::on_saveSingleButton_clicked()
         frame.save(outFilename);
     }
 }
+void MainWindow::on_cbUnlimitedScreens_clicked(bool checked)
+{
+    ui->screenshotsSpinBox->setEnabled(!checked);
+}

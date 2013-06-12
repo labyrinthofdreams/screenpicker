@@ -66,6 +66,7 @@ private slots:
     void on_actionAbout_triggered();
     void on_saveSingleButton_clicked();
 
+    void on_cbUnlimitedScreens_clicked(bool checked);
 private:
     Ui::MainWindow *ui;
 
