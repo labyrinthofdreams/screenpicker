@@ -261,6 +261,12 @@
           </item>
           <item>
            <widget class="QCheckBox" name="cbUnlimitedScreens">
+            <property name="toolTip">
+             <string>Generate unlimited screenshots</string>
+            </property>
+            <property name="statusTip">
+             <string/>
+            </property>
             <property name="text">
              <string>Unlimited</string>
             </property>
