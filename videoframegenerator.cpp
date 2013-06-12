@@ -13,13 +13,15 @@ VideoFrameGenerator::VideoFrameGenerator(vfg::VideoFrameGrabber *frameGrabber,
     frameGrabber(frameGrabber),
     mutex(),
     halt(false),
-    active(false)
+    active(false),
+    paused(false)
 {
 }
 
 void VideoFrameGenerator::start()
 {
     QMutexLocker lock(&mutex);
+    paused = false;
     while(!frames.empty())
     {
         active = true;
@@ -46,6 +48,7 @@ void VideoFrameGenerator::pause()
     QMutexLocker lock(&mutex);
     if(active) {
         halt = true;
+        paused = true;
     }
 }
 
@@ -60,10 +63,26 @@ void VideoFrameGenerator::resume()
     }
 }
 
+void VideoFrameGenerator::stop()
+{
+    QMutexLocker lock(&mutex);
+    if(active) {
+        halt = true;
+    }
+    lock.unlock();
+    clear();
+}
+
 bool VideoFrameGenerator::isRunning() const
 {
     QMutexLocker lock(&mutex);
     return active;
+}
+
+bool VideoFrameGenerator::isPaused() const
+{
+    QMutexLocker lock(&mutex);
+    return paused;
 }
 
 void VideoFrameGenerator::enqueue(const unsigned frame)

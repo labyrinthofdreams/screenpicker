@@ -21,6 +21,7 @@ public:
     explicit VideoFrameGenerator(vfg::VideoFrameGrabber *frameGrabber, QObject *parent = 0);
 
     bool isRunning() const;
+    bool isPaused() const;
     void enqueue(const unsigned frame);
     unsigned remaining() const;
     void clear();
@@ -32,6 +33,7 @@ public slots:
     void start();
     void pause();
     void resume();
+    void stop();
     
 private:
     vfg::VideoFrameGrabber *frameGrabber;
@@ -39,6 +41,7 @@ private:
     mutable QMutex mutex;
     bool halt;
     bool active;
+    bool paused;
 };
 
 } // namespace vfg
