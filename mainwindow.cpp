@@ -167,6 +167,10 @@ void MainWindow::resetState()
     ui->grabButton->setEnabled(false);
     ui->generateButton->setEnabled(false);
     ui->saveSingleButton->setEnabled(false);
+    ui->btnPauseGenerator->setEnabled(false);
+    ui->btnStopGenerator->setEnabled(false);
+    ui->generatorProgressBar->setValue(0);
+    ui->generatorProgressBar->setTextVisible(false);
 }
 
 void MainWindow::loadFile(QString path)
@@ -380,8 +384,9 @@ void MainWindow::on_generateButton_clicked()
     // Update generator widgets
     ui->btnPauseGenerator->setEnabled(true);
     ui->btnStopGenerator->setEnabled(true);
+    ui->generatorProgressBar->setValue(0);
     ui->generatorProgressBar->setMaximum(remaining);
-
+    ui->generatorProgressBar->setTextVisible(true);
 }
 
 void MainWindow::on_grabButton_clicked()
