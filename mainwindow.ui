@@ -388,7 +388,7 @@
                    <set>Qt::AlignCenter</set>
                   </property>
                   <property name="textVisible">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
                   <property name="format">
                    <string>%v of %m</string>
@@ -491,8 +491,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>850</width>
-                   <height>200</height>
+                   <width>98</width>
+                   <height>28</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
