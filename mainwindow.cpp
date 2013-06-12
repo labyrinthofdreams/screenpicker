@@ -363,15 +363,24 @@ void MainWindow::on_generateButton_clicked()
     const unsigned selected_frame = ui->seekSlider->value();
     const unsigned frame_step = ui->frameStepSpinBox->value();
     const unsigned num_generate = ui->screenshotsSpinBox->value();
+    const unsigned unlimited_screens = ui->cbUnlimitedScreens->isChecked();
     const unsigned total_video_frames = frameGrabber->totalFrames();
     const unsigned total_frame_range = frame_step * num_generate;
     const unsigned last_frame = selected_frame + total_frame_range;
 
     for(unsigned current_frame = selected_frame; ; current_frame += frame_step)
     {
-        const bool reached_last_frame = current_frame >= last_frame;
+        if(!unlimited_screens) {
+            const bool reached_last_frame = current_frame >= last_frame;
+            // Only check for reaching last generated frame
+            // IF generating limited number of screenshots
+            if(reached_last_frame)
+                break;
+        }
+
         const bool reached_video_end = current_frame > total_video_frames;
-        if(reached_last_frame || reached_video_end)
+        // Always check for reaching last frame of the video
+        if(reached_video_end)
             break;
 
         frameGenerator->enqueue(current_frame);
@@ -626,10 +635,12 @@ void MainWindow::on_saveSingleButton_clicked()
         frame.save(outFilename);
     }
 }
+
 void MainWindow::on_cbUnlimitedScreens_clicked(bool checked)
 {
     ui->screenshotsSpinBox->setEnabled(!checked);
 }
+
 void MainWindow::on_btnPauseGenerator_clicked()
 {
     frameGenerator->pause();
