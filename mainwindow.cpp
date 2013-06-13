@@ -414,6 +414,17 @@ void MainWindow::on_seekSlider_sliderMoved(int position)
 void MainWindow::on_generateButton_clicked()
 {
     // TODO: container isFull() check
+    QSettings cfg("config.ini", QSettings::IniFormat);
+    const bool pauseAfterLimit = cfg.value("pauseafterlimit").toBool();
+    if(pauseAfterLimit && ui->unsavedWidget->isFull()) {
+        // If user has chosen to pause the generator after reaching
+        // maximum limit and has clicked resume (this path) while
+        // the container is still full we can't resume
+        QMessageBox::information(this, tr(""), tr("Can't start generator while the container has reached max limit.\n"
+                                                  "Click 'Clear' or raise the max thumbnail limit to continue."));
+        return;
+    }
+
     // Compute list of frame numbers to grab
     const unsigned selected_frame = ui->seekSlider->value();
     const unsigned frame_step = ui->frameStepSpinBox->value();
