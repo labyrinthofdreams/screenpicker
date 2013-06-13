@@ -12,6 +12,7 @@ VideoFrameGenerator::VideoFrameGenerator(vfg::VideoFrameGrabber *frameGrabber,
     QObject(parent),
     frameGrabber(frameGrabber),
     mutex(),
+    waitToContinue(),
     halt(false),
     active(false),
     paused(false)
@@ -33,6 +34,11 @@ void VideoFrameGenerator::start()
         QImage frame = frameGrabber->getFrame(current);
         emit frameReady(QPair<unsigned, QImage>(current, frame));
         lock.relock();
+        // Without the wait condition all the frames may be processed
+        // faster in the loop than they can be processed in the connected slot for
+        // the signal frameReady (due to e.g. caching in frameGrabber)
+        // causing potentially unexpected behavior
+        waitToContinue.wait(&mutex);
         if(halt) {
             break;
         }
@@ -41,6 +47,11 @@ void VideoFrameGenerator::start()
     lock.relock();
     active = false;
     halt = false;
+}
+
+void VideoFrameGenerator::fetchNext()
+{
+    waitToContinue.wakeOne();
 }
 
 void VideoFrameGenerator::pause()

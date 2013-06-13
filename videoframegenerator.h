@@ -6,6 +6,7 @@
 #include <QImage>
 #include <QMutex>
 #include <QPair>
+#include <QWaitCondition>
 
 // Forward declarations
 namespace vfg {
@@ -34,11 +35,13 @@ public slots:
     void pause();
     void resume();
     void stop();
+    void fetchNext();
     
 private:
     vfg::VideoFrameGrabber *frameGrabber;
     QList<const unsigned> frames;
     mutable QMutex mutex;
+    QWaitCondition waitToContinue;
     bool halt;
     bool active;
     bool paused;
