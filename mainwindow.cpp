@@ -421,7 +421,10 @@ void MainWindow::on_generateButton_clicked()
     const unsigned total_video_frames = frameGrabber->totalFrames();
     const unsigned total_frame_range = frame_step * num_generate;
     const unsigned last_frame = selected_frame + total_frame_range;
-    frameGenerator->stop();
+
+    if(frameGenerator->isRunning() || frameGenerator->isPaused()) {
+        frameGenerator->stop();
+    }
 
     for(unsigned current_frame = selected_frame; ; current_frame += frame_step)
     {
