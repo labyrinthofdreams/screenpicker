@@ -110,7 +110,7 @@ void MainWindow::closeEvent(QCloseEvent *ev)
 
         if(frameGeneratorThread->isRunning())
         {
-            frameGenerator->pause();
+            frameGenerator->stop();
             frameGeneratorThread->quit();
             frameGeneratorThread->wait();
         }
