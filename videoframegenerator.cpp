@@ -23,9 +23,9 @@ void VideoFrameGenerator::start()
 {
     QMutexLocker lock(&mutex);
     paused = false;
+    active = true;
     while(!frames.empty())
     {
-        active = true;
         const unsigned current = frames.takeFirst();
         lock.unlock();
         if(!frameGrabber) {
@@ -33,12 +33,12 @@ void VideoFrameGenerator::start()
         }
         QImage frame = frameGrabber->getFrame(current);
         emit frameReady(QPair<unsigned, QImage>(current, frame));
-        lock.relock();
         // Without the wait condition all the frames may be processed
         // faster in the loop than they can be processed in the connected slot for
         // the signal frameReady (due to e.g. caching in frameGrabber)
         // causing potentially unexpected behavior
         waitToContinue.wait(&mutex);
+        lock.relock();
         if(halt) {
             break;
         }
@@ -79,6 +79,7 @@ void VideoFrameGenerator::stop()
     QMutexLocker lock(&mutex);
     if(active) {
         halt = true;
+        active = false;
     }
     lock.unlock();
     clear();
