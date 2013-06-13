@@ -525,6 +525,9 @@ void MainWindow::on_clearThumbsButton_clicked()
     ui->unsavedWidget->clearThumbnails();
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
+    const bool generatorHasMore = frameGenerator->remaining() > 0;
+    const bool generatorNotExplicitlyPaused = !frameGenerator->isPaused();
+    if(generatorHasMore && generatorNotExplicitlyPaused) {
     if(frameGenerator->remaining() > 0 && !frameGenerator->isPaused()) {
         frameGenerator->fetchNext();
     }
