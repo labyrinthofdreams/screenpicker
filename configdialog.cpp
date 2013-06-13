@@ -17,12 +17,18 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     const bool showEditor = cfg.value("showscripteditor").toBool();
     const int maxThumbnails = cfg.value("maxthumbnails").toInt();
     const int afterMaxLimit = cfg.value("aftermaxlimit").toInt();
+    const bool jumpToLastOnFinish = cfg.value("jumptolastonfinish").toBool();
+    const bool jumpToLastOnPause = cfg.value("jumptolastonpause").toBool();
+    const bool jumpToLastOnStop = cfg.value("jumptolastonstop").toBool();
 
     ui->avisynthPluginsPathLineEdit->setText(avisynthPath);
     ui->saveAvisynthScriptsCheckBox->setChecked(saveScripts);
     ui->showScriptEditorCheckBox->setChecked(showEditor);
     ui->maxThumbnailsSpinBox->setValue(maxThumbnails);
     ui->buttonGroup->button(afterMaxLimit)->setChecked(true);
+    ui->cbJumpAfterFinish->setChecked(jumpToLastOnFinish);
+    ui->cbJumpAfterPause->setChecked(jumpToLastOnPause);
+    ui->cbJumpAfterStop->setChecked(jumpToLastOnStop);
 }
 
 ConfigDialog::~ConfigDialog()
@@ -45,4 +51,7 @@ void vfg::ConfigDialog::on_buttonBox_accepted()
     cfg.setValue("aftermaxlimit", ui->buttonGroup->checkedId());
     cfg.setValue("pauseafterlimit", ui->radioPauseAfterLimit->isChecked());
     cfg.setValue("removeoldestafterlimit", ui->radioRemoveOldestAfterLimit->isChecked());
+    cfg.setValue("jumptolastonfinish", ui->cbJumpAfterFinish->isChecked());
+    cfg.setValue("jumptolastonpause", ui->cbJumpAfterPause->isChecked());
+    cfg.setValue("jumptolastonstop", ui->cbJumpAfterStop->isChecked());
 }
