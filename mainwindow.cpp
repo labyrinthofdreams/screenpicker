@@ -141,9 +141,9 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
     ui->unsavedWidget->addThumbnail(thumb);
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
+    QSettings cfg("config.ini", QSettings::IniFormat);
     if(ui->unsavedWidget->isFull())
     {
-        QSettings cfg("config.ini", QSettings::IniFormat);
         const bool pauseAfterLimit = cfg.value("pauseafterlimit").toBool();
         if(pauseAfterLimit)
         {
@@ -156,10 +156,26 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
         }
     }
 
+    if(frameGenerator->isPaused())
+    {
+        // Jump to last generated frame
+        const bool jumpAfterPaused = cfg.value("jumptolastonpause").toBool();
+        if(jumpAfterPaused) {
+            ui->seekSlider->setValue(frame.first);
+        }
+    }
+
     // If true, implies that generator has been explicitly stopped,
     // otherwise is still running or has finished
     const bool generatorStopped = ui->generatorProgressBar->value() == 0 && !frameGenerator->isRunning();
-    if(!generatorStopped) {
+    if(generatorStopped) {
+        // Jump to last generated frame
+        const bool jumpAfterStopped = cfg.value("jumptolastonstop").toBool();
+        if(jumpAfterStopped) {
+            ui->seekSlider->setValue(frame.first);
+        }
+    }
+    else {
         const unsigned generated = ui->generatorProgressBar->value() + 1;
         ui->generatorProgressBar->setValue(generated);
 
@@ -169,6 +185,12 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
             // Generator has finished without explicit stopping
             ui->btnPauseGenerator->setEnabled(false);
             ui->btnStopGenerator->setEnabled(false);
+
+            // Jump to last generated frame
+            const bool jumpAfterFinished = cfg.value("jumptolastonfinish").toBool();
+            if(jumpAfterFinished) {
+                ui->seekSlider->setValue(frame.first);
+            }
         }
     }
 
