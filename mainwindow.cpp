@@ -142,20 +142,6 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
     QSettings cfg("config.ini", QSettings::IniFormat);
-    if(ui->unsavedWidget->isFull())
-    {
-        const bool pauseAfterLimit = cfg.value("pauseafterlimit").toBool();
-        if(pauseAfterLimit)
-        {
-            frameGenerator->pause();
-            ui->btnPauseGenerator->setText(tr("Resume"));
-        }
-        else
-        {
-            // No action. Oldest will be removed automatically when adding new thumbnail
-        }
-    }
-
     if(frameGenerator->isPaused())
     {
         // Jump to last generated frame
@@ -194,7 +180,22 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
         }
     }
 
-    frameGenerator->fetchNext();
+    if(ui->unsavedWidget->isFull())
+    {
+        const bool pauseAfterLimit = cfg.value("pauseafterlimit").toBool();
+        if(pauseAfterLimit)
+        {
+            //frameGenerator->pause();
+            //ui->btnPauseGenerator->setText(tr("Resume"));
+        }
+        else
+        {
+            frameGenerator->fetchNext();
+        }
+    }
+    else {
+        frameGenerator->fetchNext();
+    }
 }
 
 void MainWindow::resetState()
@@ -523,6 +524,10 @@ void MainWindow::on_clearThumbsButton_clicked()
 {
     ui->unsavedWidget->clearThumbnails();
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
+
+    if(frameGenerator->remaining() > 0 && !frameGenerator->isPaused()) {
+        frameGenerator->fetchNext();
+    }
 }
 
 void MainWindow::on_thumbnailSizeSlider_sliderMoved(int position)
