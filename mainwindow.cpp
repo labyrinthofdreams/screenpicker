@@ -171,6 +171,8 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
             ui->btnStopGenerator->setEnabled(false);
         }
     }
+
+    frameGenerator->fetchNext();
 }
 
 void MainWindow::resetState()
