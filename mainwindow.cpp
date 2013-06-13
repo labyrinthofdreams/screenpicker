@@ -413,6 +413,7 @@ void MainWindow::on_seekSlider_sliderMoved(int position)
 
 void MainWindow::on_generateButton_clicked()
 {
+    // TODO: container isFull() check
     // Compute list of frame numbers to grab
     const unsigned selected_frame = ui->seekSlider->value();
     const unsigned frame_step = ui->frameStepSpinBox->value();
@@ -726,7 +727,7 @@ void MainWindow::on_btnPauseGenerator_clicked()
             return;
         }
         ui->btnPauseGenerator->setText(tr("Pause"));
-        // TODO: If generator is waiting, this will fail
+        // TODO: If generator is waiting, this will fail (should be fixed)
         if(frameGenerator->isPaused()) {
             QMetaObject::invokeMethod(frameGenerator, "resume", Qt::QueuedConnection);
         }
