@@ -80,6 +80,7 @@ void VideoFrameGenerator::stop()
     if(active) {
         halt = true;
         active = false;
+        waitToContinue.wakeOne();
     }
     lock.unlock();
     clear();
