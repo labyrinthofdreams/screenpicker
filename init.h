@@ -56,7 +56,7 @@ bool isValid()
 {
     QSettings cfg("config.ini", QSettings::IniFormat);
     QStringList keys;
-    keys << "avisynthplugin" << "savescript" << "showscripteditor"
+    keys << "avisynthpluginspath" << "savescripts" << "showscripteditor"
          << "maxthumbnails" << "numscreenshots" << "framestep"
          << "pauseafterlimit" << "removeoldestafterlimit"
          << "jumptolastonfinish" << "jumptolastonpause"
