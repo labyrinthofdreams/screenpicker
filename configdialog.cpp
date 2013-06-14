@@ -16,7 +16,9 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     const bool saveScripts = cfg.value("savescripts").toBool();
     const bool showEditor = cfg.value("showscripteditor").toBool();
     const int maxThumbnails = cfg.value("maxthumbnails").toInt();
-    const int afterMaxLimit = cfg.value("aftermaxlimit").toInt();
+    //const int afterMaxLimit = cfg.value("aftermaxlimit").toInt();
+    const bool pauseAfterLimit = cfg.value("pauseafterlimit").toBool();
+    const bool removeOldestAfterLimit = cfg.value("removeoldestafterlimit").toBool();
     const bool jumpToLastOnFinish = cfg.value("jumptolastonfinish").toBool();
     const bool jumpToLastOnPause = cfg.value("jumptolastonpause").toBool();
     const bool jumpToLastOnStop = cfg.value("jumptolastonstop").toBool();
@@ -25,7 +27,9 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->saveAvisynthScriptsCheckBox->setChecked(saveScripts);
     ui->showScriptEditorCheckBox->setChecked(showEditor);
     ui->maxThumbnailsSpinBox->setValue(maxThumbnails);
-    ui->buttonGroup->button(afterMaxLimit)->setChecked(true);
+    //ui->buttonGroup->button(afterMaxLimit)->setChecked(true);
+    ui->radioPauseAfterLimit->setChecked(pauseAfterLimit);
+    ui->radioRemoveOldestAfterLimit->setChecked(removeOldestAfterLimit);
     ui->cbJumpAfterFinish->setChecked(jumpToLastOnFinish);
     ui->cbJumpAfterPause->setChecked(jumpToLastOnPause);
     ui->cbJumpAfterStop->setChecked(jumpToLastOnStop);
@@ -48,7 +52,7 @@ void vfg::ConfigDialog::on_buttonBox_accepted()
     cfg.setValue("savescripts", ui->saveAvisynthScriptsCheckBox->isChecked());
     cfg.setValue("showscripteditor", ui->showScriptEditorCheckBox->isChecked());
     cfg.setValue("maxthumbnails", ui->maxThumbnailsSpinBox->value());
-    cfg.setValue("aftermaxlimit", ui->buttonGroup->checkedId());
+    //cfg.setValue("aftermaxlimit", ui->buttonGroup->checkedId());
     cfg.setValue("pauseafterlimit", ui->radioPauseAfterLimit->isChecked());
     cfg.setValue("removeoldestafterlimit", ui->radioRemoveOldestAfterLimit->isChecked());
     cfg.setValue("jumptolastonfinish", ui->cbJumpAfterFinish->isChecked());
