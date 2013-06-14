@@ -15,8 +15,9 @@ int main(int argc, char *argv[])
         {
             using namespace vfg::init;
 
-            registerMetatypes();
-            createAvisynthScriptTemplateFile();
+            meta::registerTypes();
+
+            script::createAvisynthTemplate();
 
             if(QFile::exists("config.ini")) {
                 if(!config::isValid()) {

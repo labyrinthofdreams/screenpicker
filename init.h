@@ -11,38 +11,44 @@
 #include <QImage>
 #include <QStringList>
 
-namespace vfg
+namespace vfg {
+namespace init {
+namespace meta {
+
+void registerTypes()
 {
-namespace init
+    qRegisterMetaType<QPair<unsigned, QImage> >("QPair<unsigned, QImage>");
+}
+
+} // namespace meta
+
+namespace script {
+
+void createAvisynthTemplate()
 {
-    void registerMetatypes()
-    {
-        qRegisterMetaType<QPair<unsigned, QImage> >("QPair<unsigned, QImage>");
-    }
+    QDir appDir(QDir::currentPath());
+    QString avisynthScriptFile = appDir.absoluteFilePath("default.avs");
 
-    void createAvisynthScriptTemplateFile()
-    {
-        QDir appDir(QDir::currentPath());
-        QString avisynthScriptFile = appDir.absoluteFilePath("default.avs");
+    // Only create the default Avisynth script template file
+    // if it doesn't exist to allow the user to change it
+    if(QFile::exists(avisynthScriptFile))
+        return;
 
-        // Only create the default Avisynth script template file
-        // if it doesn't exist to allow the user to change it
-        if(QFile::exists(avisynthScriptFile))
-            return;
+    QFile inFile(":/scripts/default.avs");
+    QFile outFile(avisynthScriptFile);
 
-        QFile inFile(":/scripts/default.avs");
-        QFile outFile(avisynthScriptFile);
+    if(!inFile.open(QFile::ReadOnly | QFile::Text))
+        return;
 
-        if(!inFile.open(QFile::ReadOnly | QFile::Text))
-            return;
+    if(!outFile.open(QFile::WriteOnly | QFile::Truncate))
+        return;
 
-        if(!outFile.open(QFile::WriteOnly | QFile::Truncate))
-            return;
+    QTextStream in(&inFile);
+    QTextStream out(&outFile);
+    out << in.readAll();
+}
 
-        QTextStream in(&inFile);
-        QTextStream out(&outFile);
-        out << in.readAll();
-    }
+} // namespace script
 
 namespace config {
 
