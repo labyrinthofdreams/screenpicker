@@ -50,7 +50,7 @@
    <property name="title">
     <string>Avisynth</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -124,7 +124,7 @@
    <property name="title">
     <string>Thumbnail Generation</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -164,7 +164,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -266,7 +266,7 @@
    <property name="title">
     <string>General</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -287,6 +287,45 @@
       <widget class="QCheckBox" name="showScriptEditorCheckBox">
        <property name="toolTip">
         <string>If checked, opens the script editor when loading a file</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>21</x>
+      <y>51</y>
+      <width>551</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>DGIndex path:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="dgindexExecPath">
+       <property name="minimumSize">
+        <size>
+         <width>391</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Path to DGIndex executable</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnDgindexPath">
+       <property name="text">
+        <string>Browse...</string>
        </property>
       </widget>
      </item>
