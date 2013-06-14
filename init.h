@@ -19,7 +19,7 @@ namespace init
         qRegisterMetaType<QPair<unsigned, QImage> >("QPair<unsigned, QImage>");
     }
 
-    void createAvisynthScriptFile()
+    void createAvisynthScriptTemplateFile()
     {
         QDir appDir(QDir::currentPath());
         QString avisynthScriptFile = appDir.absoluteFilePath("default.avs");
@@ -43,7 +43,7 @@ namespace init
         out << in.readAll();
     }
 
-    void createConfig()
+    void createDefaultConfigFile()
     {
         if(QFile::exists("config.ini"))
             return;

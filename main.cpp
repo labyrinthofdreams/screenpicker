@@ -10,8 +10,8 @@ int main(int argc, char *argv[])
         using namespace vfg::init;
 
         registerMetatypes();
-        createAvisynthScriptFile();
-        createConfig();
+        createAvisynthScriptTemplateFile();
+        createDefaultConfigFile();
     }
 
     QApplication a(argc, argv);
