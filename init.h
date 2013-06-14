@@ -55,6 +55,11 @@ namespace init
         cfg.setValue("maxthumbnails", 100);
         cfg.setValue("numscreenshots", 100);
         cfg.setValue("framestep", 100);
+        cfg.setValue("pauseafterlimit", true);
+        cfg.setValue("removeoldestafterlimit", false);
+        cfg.setValue("jumptolastonfinish", true);
+        cfg.setValue("jumptolastonpause", true);
+        cfg.setValue("jumptolastonstop", true);
     }
 } // namespace init
 } // namespace vfg
