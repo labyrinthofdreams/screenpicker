@@ -1,23 +1,33 @@
 #include <QtGui/QApplication>
 #include <QMessageBox>
 #include <QString>
+#include <QFile>
+#include <stdexcept>
 #include "mainwindow.h"
 #include "init.h"
 
 int main(int argc, char *argv[])
 {
-    {
-        using namespace vfg::init;
-
-        registerMetatypes();
-        createAvisynthScriptTemplateFile();
-        createDefaultConfigFile();
-    }
-
     QApplication a(argc, argv);
 
     try
     {
+        {
+            using namespace vfg::init;
+
+            registerMetatypes();
+            createAvisynthScriptTemplateFile();
+
+            if(QFile::exists("config.ini")) {
+                if(!config::isValid()) {
+                    throw std::runtime_error("Invalid configuration file. Please remove config.ini and restart");
+                }
+            }
+            else {
+                config::create();
+            }
+        }
+
         MainWindow w;
         w.show();
 

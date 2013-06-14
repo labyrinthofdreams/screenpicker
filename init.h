@@ -9,6 +9,7 @@
 #include <QMetaType>
 #include <QPair>
 #include <QImage>
+#include <QStringList>
 
 namespace vfg
 {
@@ -43,24 +44,46 @@ namespace init
         out << in.readAll();
     }
 
-    void createDefaultConfigFile()
-    {
-        if(QFile::exists("config.ini"))
-            return;
+namespace config {
 
-        QSettings cfg("config.ini", QSettings::IniFormat);
-        cfg.setValue("avisynthpluginspath", QDir::currentPath().append("/avisynth"));
-        cfg.setValue("savescripts", false);
-        cfg.setValue("showscripteditor", true);
-        cfg.setValue("maxthumbnails", 100);
-        cfg.setValue("numscreenshots", 100);
-        cfg.setValue("framestep", 100);
-        cfg.setValue("pauseafterlimit", true);
-        cfg.setValue("removeoldestafterlimit", false);
-        cfg.setValue("jumptolastonfinish", true);
-        cfg.setValue("jumptolastonpause", true);
-        cfg.setValue("jumptolastonstop", true);
+bool isValid()
+{
+    QSettings cfg("config.ini", QSettings::IniFormat);
+    QStringList keys;
+    keys << "avisynthplugin" << "savescript" << "showscripteditor"
+         << "maxthumbnails" << "numscreenshots" << "framestep"
+         << "pauseafterlimit" << "removeoldestafterlimit"
+         << "jumptolastonfinish" << "jumptolastonpause"
+         << "jumptolastonstop";
+    QStringListIterator iter(keys);
+    while(iter.hasNext())
+    {
+        const QString key = iter.next();
+        if(!cfg.contains(key)) {
+            return false;
+        }
     }
+
+    return true;
+}
+
+void create()
+{
+    QSettings cfg("config.ini", QSettings::IniFormat);
+    cfg.setValue("avisynthpluginspath", QDir::currentPath().append("/avisynth"));
+    cfg.setValue("savescripts", false);
+    cfg.setValue("showscripteditor", true);
+    cfg.setValue("maxthumbnails", 100);
+    cfg.setValue("numscreenshots", 100);
+    cfg.setValue("framestep", 100);
+    cfg.setValue("pauseafterlimit", true);
+    cfg.setValue("removeoldestafterlimit", false);
+    cfg.setValue("jumptolastonfinish", true);
+    cfg.setValue("jumptolastonpause", true);
+    cfg.setValue("jumptolastonstop", true);
+}
+
+} // namespace config
 } // namespace init
 } // namespace vfg
 
