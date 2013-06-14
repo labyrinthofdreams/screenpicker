@@ -60,7 +60,7 @@ bool isValid()
          << "maxthumbnails" << "numscreenshots" << "framestep"
          << "pauseafterlimit" << "removeoldestafterlimit"
          << "jumptolastonfinish" << "jumptolastonpause"
-         << "jumptolastonstop";
+         << "jumptolastonstop" << "dgindexexecpath";
     QStringListIterator iter(keys);
     while(iter.hasNext())
     {
@@ -77,6 +77,7 @@ void create()
 {
     QSettings cfg("config.ini", QSettings::IniFormat);
     cfg.setValue("avisynthpluginspath", QDir::currentPath().append("/avisynth"));
+    cfg.setValue("dgindexexecpath", "");
     cfg.setValue("savescripts", false);
     cfg.setValue("showscripteditor", true);
     cfg.setValue("maxthumbnails", 100);
