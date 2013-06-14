@@ -1,4 +1,6 @@
 #include <QSettings>
+#include <QFileDialog>
+#include <QString>
 #include "configdialog.h"
 #include "ui_configdialog.h"
 
@@ -13,6 +15,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     // Load settings
     QSettings cfg("config.ini", QSettings::IniFormat);
     QString avisynthPath = cfg.value("avisynthpluginspath").toString();
+    QString dgindexExecPath = cfg.value("dgindexexecpath").toString();
     const bool saveScripts = cfg.value("savescripts").toBool();
     const bool showEditor = cfg.value("showscripteditor").toBool();
     const int maxThumbnails = cfg.value("maxthumbnails").toInt();
@@ -24,6 +27,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     const bool jumpToLastOnStop = cfg.value("jumptolastonstop").toBool();
 
     ui->avisynthPluginsPathLineEdit->setText(avisynthPath);
+    ui->dgindexExecPath->setText(dgindexExecPath);
     ui->saveAvisynthScriptsCheckBox->setChecked(saveScripts);
     ui->showScriptEditorCheckBox->setChecked(showEditor);
     ui->maxThumbnailsSpinBox->setValue(maxThumbnails);
@@ -49,6 +53,7 @@ void vfg::ConfigDialog::on_buttonBox_accepted()
 {
     QSettings cfg("config.ini", QSettings::IniFormat);
     cfg.setValue("avisynthpluginspath", ui->avisynthPluginsPathLineEdit->text());
+    cfg.setValue("dgindexexecpath", ui->dgindexExecPath->text());
     cfg.setValue("savescripts", ui->saveAvisynthScriptsCheckBox->isChecked());
     cfg.setValue("showscripteditor", ui->showScriptEditorCheckBox->isChecked());
     cfg.setValue("maxthumbnails", ui->maxThumbnailsSpinBox->value());
@@ -58,4 +63,10 @@ void vfg::ConfigDialog::on_buttonBox_accepted()
     cfg.setValue("jumptolastonfinish", ui->cbJumpAfterFinish->isChecked());
     cfg.setValue("jumptolastonpause", ui->cbJumpAfterPause->isChecked());
     cfg.setValue("jumptolastonstop", ui->cbJumpAfterStop->isChecked());
+}
+
+void vfg::ConfigDialog::on_btnDgindexPath_clicked()
+{
+    QString path = QFileDialog::getOpenFileName(this, tr("DGIndex Executable Path"), "/", "dgindex.exe");
+    ui->dgindexExecPath->setText(path);
 }

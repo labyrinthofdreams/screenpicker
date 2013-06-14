@@ -22,6 +22,8 @@ namespace vfg
 
         void on_buttonBox_accepted();
 
+        void on_btnDgindexPath_clicked();
+
     private:
         Ui::ConfigDialog *ui;
     };
