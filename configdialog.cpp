@@ -70,3 +70,9 @@ void vfg::ConfigDialog::on_btnDgindexPath_clicked()
     QString path = QFileDialog::getOpenFileName(this, tr("DGIndex Executable Path"), "/", "dgindex.exe");
     ui->dgindexExecPath->setText(path);
 }
+
+void vfg::ConfigDialog::on_btnAvisynthPluginsPath_clicked()
+{
+    QString path = QFileDialog::getExistingDirectory(this, tr("Avisynth Plugins Directory"), "/");
+    ui->avisynthPluginsPathLineEdit->setText(path);
+}

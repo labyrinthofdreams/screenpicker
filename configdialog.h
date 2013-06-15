@@ -24,6 +24,8 @@ namespace vfg
 
         void on_btnDgindexPath_clicked();
 
+        void on_btnAvisynthPluginsPath_clicked();
+
     private:
         Ui::ConfigDialog *ui;
     };

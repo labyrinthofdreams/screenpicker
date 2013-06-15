@@ -76,40 +76,53 @@
      </item>
     </layout>
    </widget>
-   <widget class="QLineEdit" name="avisynthPluginsPathLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>85</x>
-      <y>31</y>
-      <width>411</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="toolTip">
-     <string>Absolute path to Avisynth plugins directory</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="avisynthPluginsPathLabel">
+   <widget class="QWidget" name="">
     <property name="geometry">
      <rect>
       <x>21</x>
-      <y>31</y>
-      <width>58</width>
-      <height>16</height>
+      <y>30</y>
+      <width>558</width>
+      <height>25</height>
      </rect>
     </property>
-    <property name="text">
-     <string>Plugins path</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QLabel" name="avisynthPluginsPathLabel">
+       <property name="text">
+        <string>Plugins path</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="avisynthPluginsPathLineEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>411</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Absolute path to Avisynth plugins directory</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnAvisynthPluginsPath">
+       <property name="text">
+        <string>Browse...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QGroupBox" name="groupBox_2">
