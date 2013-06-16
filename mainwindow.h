@@ -45,6 +45,7 @@ private slots:
     void thumbnailDoubleClicked(unsigned frameNumber);
     void handleUnsavedMenu(const QPoint& pos);
     void handleSavedMenu(const QPoint& pos);
+    void loadFile(QString path);
 
     void on_actionOpen_triggered();
     void on_nextButton_clicked();
@@ -87,7 +88,6 @@ private:
     unsigned lastRequestedFrame;
 
     void resetState();
-    void loadFile(QString path);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *ev);
