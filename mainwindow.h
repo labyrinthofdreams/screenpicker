@@ -70,6 +70,8 @@ private slots:
 
     void on_btnStopGenerator_clicked();
 
+    void on_actionOpen_DVD_triggered();
+
 private:
     Ui::MainWindow *ui;
 

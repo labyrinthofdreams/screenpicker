@@ -757,3 +757,35 @@ void MainWindow::on_btnStopGenerator_clicked()
     ui->btnPauseGenerator->setText(tr("Pause"));
     ui->btnStopGenerator->setEnabled(false);
 }
+
+void MainWindow::on_actionOpen_DVD_triggered()
+{
+    QStringList vobFiles = QFileDialog::getOpenFileNames(this, tr("Select all DVD VOB files"), "", "DVD VOB (*.vob)");
+    if(vobFiles.empty())
+    {
+        return;
+    }
+
+    QSettings cfg("config.ini", QSettings::IniFormat);
+    QString dgIndexPath = cfg.value("dgindexexecpath").toString();
+    if(!QFile::exists(dgIndexPath))
+    {
+        QMessageBox::critical(this, tr("DGIndex invalid path"), tr("Please set a valid path to DGIndex"));
+        ui->actionOptions->trigger();
+        return;
+    }
+
+    // TODO: Give user power to change the arguments
+    QString dgIndexOutPath = QDir::currentPath().append("/dgindex_tmp");
+    QStringList fullArgs;
+    fullArgs << "-ia" << "5" << "-fo" << "0" << "-yr" << "1" << "-om" << "0" << "-hide" << "-exit"
+             << "-o" << dgIndexOutPath << "-i" << vobFiles;
+
+    QProcess proc;
+    proc.start(QString("%1").arg(dgIndexPath), fullArgs);
+    proc.waitForFinished();
+
+    qDebug() << proc.readAll();
+
+    loadFile(dgIndexOutPath.append(".d2v"));
+}
