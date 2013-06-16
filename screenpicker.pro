@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     avisynthvideosource.cpp \
     scripteditor.cpp \
     configdialog.cpp \
-    videoframegenerator.cpp
+    videoframegenerator.cpp \
+    dvdprocessor.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -32,7 +33,8 @@ HEADERS  += mainwindow.h \
     scripteditor.h \
     configdialog.h \
     init.h \
-    videoframegenerator.h
+    videoframegenerator.h \
+    dvdprocessor.h
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
