@@ -10,6 +10,7 @@
 #include "scripteditor.h"
 #include "configdialog.h"
 #include "videoframegenerator.h"
+#include "dvdprocessor.h"
 
 // TODO: When loading new video, the widgets inside scroll areas
 // do not get resized to fit the scroll area (they remain large)
@@ -41,10 +42,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
         scriptEditor = new vfg::ScriptEditor;
 
-        connect(ui->unsavedWidget, SIGNAL(maximumChanged(int)),
-                ui->unsavedProgressBar, SLOT(setMaximum(int)));
-
         QSettings cfg("config.ini", QSettings::IniFormat);
+
+        QString dgIndexPath = cfg.value("dgindexexecpath").toString();
+        dvdProcessor = new vfg::DvdProcessor(dgIndexPath, this);
+
         const unsigned maxThumbnails = cfg.value("maxthumbnails").toInt();
         ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
 
@@ -58,6 +60,15 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         throw;
     }
+
+    connect(dvdProcessor, SIGNAL(finished(QString)),
+            this, SLOT(loadFile(QString)));
+
+    connect(dvdProcessor, SIGNAL(error(QString)),
+            this, SLOT(videoError(QString)));
+
+    connect(ui->unsavedWidget, SIGNAL(maximumChanged(int)),
+            ui->unsavedProgressBar, SLOT(setMaximum(int)));
 
     connect(scriptEditor, SIGNAL(scriptUpdated(QString)),
             this, SLOT(scriptEditorUpdated(QString)));
@@ -288,6 +299,28 @@ void MainWindow::on_actionOpen_triggered()
         return;
 
     loadFile(filename);
+}
+
+void MainWindow::on_actionOpen_DVD_triggered()
+{
+    QStringList vobFiles = QFileDialog::getOpenFileNames(this, tr("Select all DVD VOB files"), "", "DVD VOB (*.vob)");
+    if(vobFiles.empty())
+    {
+        return;
+    }
+
+    QSettings cfg("config.ini", QSettings::IniFormat);
+    QString dgIndexPath = cfg.value("dgindexexecpath").toString();
+    if(!QFile::exists(dgIndexPath))
+    {
+        QMessageBox::critical(this, tr("DGIndex invalid path"), tr("Please set a valid path to DGIndex"));
+        ui->actionOptions->trigger();
+        return;
+    }
+
+    QString dgIndexOutPath = QDir::currentPath().append("/dgindex_tmp");
+
+    dvdProcessor->process(vobFiles, dgIndexOutPath);
 }
 
 void MainWindow::scriptEditorUpdated(QString path)
@@ -664,8 +697,8 @@ void MainWindow::on_actionOptions_triggered()
     if(saved)
     {
         QSettings cfg("config.ini", QSettings::IniFormat);
-        const int maxThumbnails = cfg.value("maxthumbnails").toInt();
-        ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
+        ui->unsavedWidget->setMaxThumbnails(cfg.value("maxthumbnails").toInt());
+        dvdProcessor->setProcessor(cfg.value("dgindexexecpath").toString());
     }
 }
 
@@ -756,36 +789,4 @@ void MainWindow::on_btnStopGenerator_clicked()
     ui->btnPauseGenerator->setEnabled(false);
     ui->btnPauseGenerator->setText(tr("Pause"));
     ui->btnStopGenerator->setEnabled(false);
-}
-
-void MainWindow::on_actionOpen_DVD_triggered()
-{
-    QStringList vobFiles = QFileDialog::getOpenFileNames(this, tr("Select all DVD VOB files"), "", "DVD VOB (*.vob)");
-    if(vobFiles.empty())
-    {
-        return;
-    }
-
-    QSettings cfg("config.ini", QSettings::IniFormat);
-    QString dgIndexPath = cfg.value("dgindexexecpath").toString();
-    if(!QFile::exists(dgIndexPath))
-    {
-        QMessageBox::critical(this, tr("DGIndex invalid path"), tr("Please set a valid path to DGIndex"));
-        ui->actionOptions->trigger();
-        return;
-    }
-
-    // TODO: Give user power to change the arguments
-    QString dgIndexOutPath = QDir::currentPath().append("/dgindex_tmp");
-    QStringList fullArgs;
-    fullArgs << "-ia" << "5" << "-fo" << "0" << "-yr" << "1" << "-om" << "0" << "-hide" << "-exit"
-             << "-o" << dgIndexOutPath << "-i" << vobFiles;
-
-    QProcess proc;
-    proc.start(QString("%1").arg(dgIndexPath), fullArgs);
-    proc.waitForFinished();
-
-    qDebug() << proc.readAll();
-
-    loadFile(dgIndexOutPath.append(".d2v"));
 }
