@@ -65,7 +65,11 @@ void DvdProcessor::updateDialog()
 
     qDebug() << rawOutput << " = " << parsedOutput;
 
-    progress.setValue(parsedOutput.toInt());
+    // DGIndex.exe can sometimes output false values
+    const int nextValue = parsedOutput.toInt();
+    if(nextValue > progress.value()) {
+        progress.setValue(nextValue);
+    }
 }
 
 void DvdProcessor::handleProcessFinish(int exitCode)
