@@ -75,7 +75,10 @@ void DvdProcessor::updateDialog()
 void DvdProcessor::handleProcessFinish(int exitCode)
 {
     progress.setValue(100);
-    emit finished(outputPath.append(".d2v"));
+    // Non-zero exit code implies crash / abort
+    if(exitCode == 0) {
+        emit finished(outputPath.append(".d2v"));
+    }
 }
 
 void DvdProcessor::handleAbortProcess()
