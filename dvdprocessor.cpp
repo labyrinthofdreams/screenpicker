@@ -38,6 +38,7 @@ void DvdProcessor::process(QStringList files, QString outfile)
              << "-o" << outfile << "-i" << files;
 
     progress.setValue(0);
+    progress.setVisible(true);
     proc->start(processor, args);
 }
 
