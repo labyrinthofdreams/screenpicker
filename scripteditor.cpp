@@ -5,28 +5,7 @@
 
 // TODO: QWidget window flag to force create a Window, then construct with new ScriptEditor(this)
 
-using namespace vfg;
-
-QString script::parse(QString filepath)
-{
-    QFile scriptfile("default.avs");
-    if(!scriptfile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        throw std::runtime_error("Failed to open script");
-    }
-
-    QTextStream in(&scriptfile);
-
-    // Load config
-    QSettings cfg("config.ini", QSettings::IniFormat);
-    QString pluginsPath = cfg.value("avisynthpluginspath").toString();
-
-    // Parse avisynth script
-    QString parsedScript = in.readAll();
-    parsedScript = parsedScript.arg(filepath).arg(pluginsPath);
-
-    return parsedScript;
-}
+namespace vfg {
 
 void script::save(QString path, QString script)
 {
@@ -84,3 +63,5 @@ void ScriptEditor::on_updateButton_clicked()
 
     emit scriptUpdated(savePath);
 }
+
+} // namespace vfg

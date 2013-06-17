@@ -12,7 +12,6 @@ namespace vfg
 {
     namespace script
     {
-        QString parse(QString filepath);
         void save(QString path, QString script);
     }
 
