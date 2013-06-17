@@ -6,6 +6,8 @@
 #include <QDebug>
 #include "dvdprocessor.h"
 
+// TODO: Processing DVD or Blu-ray...
+
 namespace vfg {
 
 DvdProcessor::DvdProcessor(QString processorPath, QObject *parent) :
