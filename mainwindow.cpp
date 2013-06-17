@@ -385,16 +385,12 @@ void MainWindow::videoError(QString msg)
 }
 
 void MainWindow::thumbnailDoubleClicked(unsigned frameNumber)
-{
-    QImage frame = frameGrabber->getFrame(frameNumber);
-    if(frame.isNull())
-    {
-        return;
-    }
+{    
+    QMetaObject::invokeMethod(frameGrabber, "requestFrame",
+                              Qt::QueuedConnection, Q_ARG(unsigned, frameNumber));
     lastRequestedFrame = frameNumber;
-    ui->videoFrameWidget->setFrame(frame);
-    ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
-    ui->seekSlider->setValue(lastRequestedFrame);
+    ui->currentFrameLabel->setText(QString::number(frameNumber));
+    ui->seekSlider->setValue(frameNumber);
 }
 
 void MainWindow::on_nextButton_clicked()
