@@ -11,6 +11,7 @@
 #include "configdialog.h"
 #include "videoframegenerator.h"
 #include "dvdprocessor.h"
+#include "scriptparserfactory.h"
 
 // TODO: When loading new video, the widgets inside scroll areas
 // do not get resized to fit the scroll area (they remain large)
@@ -244,6 +245,14 @@ void MainWindow::loadFile(QString path)
     {
         QString savedPath = path;
         QFileInfo info(path);
+
+        vfg::ScriptParserFactory parserFactory;
+        QSharedPointer<vfg::ScriptParser> parser = parserFactory.parser(path);
+
+        QString parsedScript = parser->parse();
+
+
+
         if(info.suffix() != "avs" && info.suffix() != "avsi")
         {
             savedPath = "temp.avs";
