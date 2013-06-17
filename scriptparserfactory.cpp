@@ -3,6 +3,9 @@
 #include <QSharedPointer>
 #include "scriptparserfactory.h"
 #include "scriptparser.h"
+#include "dgindexscriptparser.h"
+#include "avisynthscriptparser.h"
+#include "defaultscriptparser.h"
 
 namespace vfg {
 
@@ -15,19 +18,12 @@ QSharedPointer<vfg::ScriptParser> ScriptParserFactory::parser(QString script)
     vfg::ScriptParser *scriptParser;
     QFileInfo info(script);
     QString suffix = info.suffix();
-    switch(suffix)
-    {
-    case "avs":
-    case "avsi":
+    if(suffix == "avs" || suffix == "avsi")
         scriptParser = new vfg::AvisynthScriptParser(script);
-        break;
-    case "d2v":
+    else if(suffix == "d2v")
         scriptParser = new vfg::DgindexScriptParser(script);
-        break;
-    default:
+    else
         scriptParser = new vfg::DefaultScriptParser(script);
-        break;
-    }
 
     return QSharedPointer<vfg::ScriptParser>(scriptParser);
 }
