@@ -23,6 +23,7 @@ SOURCES += main.cpp\
     dvdprocessor.cpp \
     scriptparserfactory.cpp \
     dgindexscriptparser.cpp
+    defaultscriptparser.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -40,6 +41,7 @@ HEADERS  += mainwindow.h \
     scriptparserfactory.h \
     scriptparser.h \
     dgindexscriptparser.h
+    defaultscriptparser.h
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
