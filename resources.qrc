@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/scripts">
         <file>default.avs</file>
+        <file>d2v_template.avs</file>
     </qresource>
 </RCC>
