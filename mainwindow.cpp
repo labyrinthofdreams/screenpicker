@@ -260,7 +260,7 @@ void MainWindow::loadFile(QString path)
         setWindowTitle(tr("ScreenPicker - %1").arg(info.fileName()));
 
         // Load the (parsed) Avisynth script to script editor
-        scriptEditor->load(savedPath);
+        scriptEditor->setContent(savedPath);
 
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);

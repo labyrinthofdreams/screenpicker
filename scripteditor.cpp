@@ -54,7 +54,7 @@ ScriptEditor::~ScriptEditor()
     delete ui;
 }
 
-void ScriptEditor::load(QString path)
+void ScriptEditor::setContent(QString path)
 {
     QFile scriptfile(path);
     if(!scriptfile.open(QIODevice::ReadOnly | QIODevice::Text))

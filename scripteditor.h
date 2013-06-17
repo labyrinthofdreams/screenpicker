@@ -25,7 +25,7 @@ namespace vfg
         ~ScriptEditor();
 
         // Loads contents of script file
-        void load(QString path);
+        void setContent(QString path);
     private slots:
         void on_updateButton_clicked();
 
