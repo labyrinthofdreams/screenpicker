@@ -24,6 +24,7 @@ SOURCES += main.cpp\
     scriptparserfactory.cpp \
     dgindexscriptparser.cpp
     avisynthscriptparser.cpp \
+    scriptparser.cpp \
     defaultscriptparser.cpp
 
 HEADERS  += mainwindow.h \
