@@ -11,6 +11,9 @@ public:
     explicit ScriptParser(QString script) {}
     virtual ~ScriptParser() {}
     virtual QString parse() = 0;
+
+protected:
+    QString readTemplate(QString path);
 };
 
 } // namespace vfg
