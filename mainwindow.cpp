@@ -303,7 +303,8 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionOpen_DVD_triggered()
 {
-    QStringList vobFiles = QFileDialog::getOpenFileNames(this, tr("Select all DVD VOB files"), "", "DVD VOB (*.vob)");
+    QStringList vobFiles = QFileDialog::getOpenFileNames(this, tr("Select DVD VOB/Blu-ray M2TS files"),
+                                                         "", "DVD VOB (*.vob);;Blu-ray M2TS (*.m2ts)");
     if(vobFiles.empty())
     {
         return;
