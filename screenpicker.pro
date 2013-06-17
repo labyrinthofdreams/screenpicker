@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     scripteditor.cpp \
     configdialog.cpp \
     videoframegenerator.cpp \
-    dvdprocessor.cpp
+    dvdprocessor.cpp \
+    scriptparserfactory.cpp \
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -34,7 +35,8 @@ HEADERS  += mainwindow.h \
     configdialog.h \
     init.h \
     videoframegenerator.h \
-    dvdprocessor.h
+    dvdprocessor.h \
+    scriptparserfactory.h \
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
