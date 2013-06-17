@@ -2,8 +2,8 @@
 # http://avisynth.org/mediawiki/Internal_functions/Control_functions
 SetMemoryMax(128)
 
-PathToVideo = "%1"
-AvisynthPluginsDir = "%2"
+PathToVideo = "[SOURCE_PATH]"
+AvisynthPluginsDir = "[AVISYNTH_PLUGINS]"
 LoadPlugin(AvisynthPluginsDir + "/DGDecode.dll")
 LoadPlugin(AvisynthPluginsDir + "/ffms2.dll")
 LoadPlugin(AvisynthPluginsDir + "/TIVTC.dll")

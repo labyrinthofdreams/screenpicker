@@ -54,8 +54,8 @@ QMAKE_CXXFLAGS += -fpermissive
 DEFINES -= UNICODE
 
 OTHER_FILES += \
-    default.avs \
-    d2v_template.avs
+    d2v_template.avs \
+    default_template.avs
 
 RESOURCES += \
     resources.qrc
