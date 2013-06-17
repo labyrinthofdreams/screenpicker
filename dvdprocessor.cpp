@@ -12,7 +12,8 @@ DvdProcessor::DvdProcessor(QString processorPath, QObject *parent) :
     QObject(parent),
     processor(processorPath),
     outputPath(),
-    progress(tr("Processing DVD..."), tr("Abort"), 0, 100)
+    progress(tr("Processing DVD..."), tr("Abort"), 0, 100),
+    aborted(false)
 {
     proc = new QProcess(this);
 
@@ -83,26 +84,32 @@ void DvdProcessor::handleProcessFinish(int exitCode)
 
 void DvdProcessor::handleAbortProcess()
 {
+    aborted = true;
     proc->close();
     progress.cancel();
 }
 
 void DvdProcessor::handleProcessError(QProcess::ProcessError errorCode)
 {
+    proc->close();
+    progress.cancel();
+
     switch(errorCode)
     {
     case QProcess::FailedToStart:
         emit error(tr("DGIndex.exe failed to start. Please check that the program filepath is correct and that you have sufficient permissions."));
-        return;
+        break;
     case QProcess::Crashed:
-        emit error(tr("DGIndex.exe crashed. Please try again."));
-        return;
+        if(!aborted) {
+            emit error(tr("DGIndex.exe crashed. Please try again."));
+        }
+        else {
+            aborted = false;
+        }
+        break;
     default:
         emit error(tr("Error occurred while running DGIndex.exe. Error code: %1").arg(errorCode));
     }
-
-    proc->close();
-    progress.cancel();
 }
 
 } // namespace vfg

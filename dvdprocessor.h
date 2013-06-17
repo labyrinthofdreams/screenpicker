@@ -35,6 +35,7 @@ private:
     QString outputPath;
     QProcess *proc;
     QProgressDialog progress;
+    bool aborted;
 
 private slots:
     void updateDialog();
