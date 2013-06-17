@@ -8,24 +8,29 @@
 namespace vfg {
 
 DgindexScriptParser::DgindexScriptParser(QString path) :
-    vfg::ScriptParser(),
+    vfg::ScriptParser(path),
     scriptPath(path)
+{
+}
+
+DgindexScriptParser::~DgindexScriptParser()
 {
 }
 
 QString DgindexScriptParser::parse()
 {
-    QFile tpl(":/scripts/d2v_template.avs");
-    if(!tpl.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        throw std::runtime_error("Failed to open script template.");
+    try
+    {
+        QString script = readTemplate(":/scripts/d2v_template.avs");
+
+        script.replace("[SOURCE_PATH]", scriptPath);
+
+        return script;
     }
-
-    QTextStream stream(&tpl);
-    QString script = stream.readAll();
-
-    script.replace("[SOURCE_PATH]", scriptPath);
-
-    return script;
+    catch(std::exception &ex)
+    {
+        throw;
+    }
 }
 
 } // namespace vfg
