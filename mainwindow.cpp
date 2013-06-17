@@ -12,6 +12,7 @@
 #include "videoframegenerator.h"
 #include "dvdprocessor.h"
 #include "scriptparserfactory.h"
+#include "scriptparser.h"
 
 // TODO: When loading new video, the widgets inside scroll areas
 // do not get resized to fit the scroll area (they remain large)
@@ -243,43 +244,32 @@ void MainWindow::loadFile(QString path)
 {
     try
     {
-        QString savedPath = path;
-        QFileInfo info(path);
-
         vfg::ScriptParserFactory parserFactory;
         QSharedPointer<vfg::ScriptParser> parser = parserFactory.parser(path);
 
         QString parsedScript = parser->parse();
 
 
-
-        if(info.suffix() != "avs" && info.suffix() != "avsi")
-        {
-            savedPath = "temp.avs";
-
-            // Parse and save Avisynth script
-            QString parsedScript = vfg::script::parse(path);
-            vfg::script::save(savedPath, parsedScript);
-        }
+        // TODO: Save to filepath if user wants
+        QString saveTo = "temp.avs";
+        vfg::script::save(saveTo, parsedScript);
 
         // Reset all states back to zero
         lastRequestedFrame = vfg::FirstFrame;
         resetState();
 
+        QFileInfo info(path);
         setWindowTitle(tr("ScreenPicker - %1").arg(info.fileName()));
 
         // Load the (parsed) Avisynth script to script editor
-        scriptEditor->setContent(savedPath);
+        scriptEditor->setContent(saveTo);
 
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
-        videoSource->load(savedPath);
+        videoSource->load(saveTo);
 
         // TODO: Stop screenshot generation if that's happening...
         frameGrabber->setVideoSource(videoSource);
-
-        //QMetaObject::invokeMethod(frameGrabber.data(), "load", Q_ARG(QString, savedPath));
-        //frameGrabber->load(savedPath);
 
         // Load config
         QSettings cfg("config.ini", QSettings::IniFormat);
@@ -342,9 +332,6 @@ void MainWindow::scriptEditorUpdated(QString path)
         videoSource->load(path);
 
         frameGrabber->setVideoSource(videoSource);
-
-        //QMetaObject::invokeMethod(frameGrabber.data(), "load", Q_ARG(QString, path));
-        //frameGrabber->load(path);
     }
     catch(std::exception& ex)
     {
