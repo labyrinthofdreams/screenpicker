@@ -38,6 +38,7 @@ HEADERS  += mainwindow.h \
     videoframegenerator.h \
     dvdprocessor.h \
     scriptparserfactory.h \
+    scriptparser.h \
     dgindexscriptparser.h
 
 FORMS    += mainwindow.ui \
