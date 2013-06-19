@@ -375,11 +375,6 @@ void MainWindow::videoLoaded()
     // Move slider back to first frame
     ui->seekSlider->setValue(lastRequestedFrame);
     // Show first frame
-//    QImage frame = frameGrabber->getFrame(lastRequestedFrame);
-//    if(!frame.isNull())
-//    {
-//        ui->videoFrameWidget->setFrame(frame);
-//    }
     QMetaObject::invokeMethod(frameGrabber, "requestFrame",
                               Qt::QueuedConnection, Q_ARG(unsigned, lastRequestedFrame));
 
