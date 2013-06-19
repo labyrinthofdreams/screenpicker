@@ -64,6 +64,9 @@ void vfg::ThumbnailContainer::clearThumbnails()
     }
 
     activeWidget = NULL;
+
+    // This will force the layout to resize back to normal size
+    layout->invalidate();
 }
 
 void vfg::ThumbnailContainer::resizeThumbnails(const unsigned width)
