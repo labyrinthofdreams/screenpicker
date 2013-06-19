@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 #include <QPair>
 #include "videoframewidget.h"
 

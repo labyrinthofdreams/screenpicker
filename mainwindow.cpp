@@ -1,6 +1,5 @@
-#include <QtGui>
+#include <QtWidgets>
 #include <QtCore>
-#include <QtConcurrentMap>
 #include <stdexcept>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"

@@ -1,5 +1,5 @@
 #include <stdexcept>
-#include <QtGui>
+#include <QtWidgets>
 #include "scripteditor.h"
 #include "ui_scripteditor.h"
 

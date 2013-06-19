@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui widgets concurrent
 
 TARGET = screenpicker
 TEMPLATE = app
@@ -53,7 +53,7 @@ FORMS    += mainwindow.ui \
 INCLUDEPATH += C:\cpplibs\avs2yuv-0.24bm2\avs2yuv\src
 
 # These are needed for Avisynth compilation
-QMAKE_CXXFLAGS += -fpermissive
+QMAKE_CXXFLAGS += -fpermissive -std=c++11
 DEFINES -= UNICODE
 
 OTHER_FILES += \
