@@ -154,6 +154,8 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
     ui->unsavedWidget->addThumbnail(thumb);
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
+    // TODO: See if it's possible to implement signals to the generator
+    // and get rid of all this code here
     QSettings cfg("config.ini", QSettings::IniFormat);
     if(frameGenerator->isPaused())
     {
@@ -249,14 +251,9 @@ void MainWindow::loadFile(QString path)
 
         QString parsedScript = parser->parse();
 
-
         // TODO: Save to filepath if user wants
         QString saveTo = "temp.avs";
         vfg::script::save(saveTo, parsedScript);
-
-        // Reset all states back to zero
-        lastRequestedFrame = vfg::FirstFrame;
-        resetState();
 
         QFileInfo info(path);
         setWindowTitle(tr("ScreenPicker - %1").arg(info.fileName()));
@@ -270,6 +267,10 @@ void MainWindow::loadFile(QString path)
 
         // TODO: Stop screenshot generation if that's happening...
         frameGrabber->setVideoSource(videoSource);
+
+        // Reset all states back to zero
+        lastRequestedFrame = vfg::FirstFrame;
+        resetState();
 
         // Load config
         QSettings cfg("config.ini", QSettings::IniFormat);
