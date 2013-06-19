@@ -357,13 +357,13 @@ void MainWindow::scriptEditorUpdated(QString path)
 void MainWindow::videoLoaded()
 {
     const unsigned numFrames = frameGrabber->totalFrames();
-    if(lastRequestedFrame > vfg::FirstFrame && numFrames < lastRequestedFrame)
+
+    const bool invalidRange = !frameGrabber->validRange(lastRequestedFrame);
+    if(invalidRange)
     {
-        // If last requested frame is not FirstFrame, it means
-        // that we have reloaded our Avisynth script via the editor.
-        // If our reloaded Avisynth script modifies the video
-        // in a way that it outputs less frames than where we
-        // last were, then go back to first frame
+        // lastRequestFrame may be out of range when the script
+        // is reloaded via the editor and when the script produces
+        // video with fewer frames than the last request frame
         lastRequestedFrame = vfg::FirstFrame;
     }
     // Update frame numbers on the labels
