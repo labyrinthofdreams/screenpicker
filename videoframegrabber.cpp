@@ -63,6 +63,11 @@ void vfg::VideoFrameGrabber::setVideoSource(QSharedPointer<vfg::AbstractVideoSou
     emit videoReady();
 }
 
+bool vfg::VideoFrameGrabber::validRange(const unsigned frameNumber) const
+{
+    return (frameNumber - vfg::FirstFrame) < totalFrames();
+}
+
 unsigned vfg::VideoFrameGrabber::lastFrame() const
 {
     QMutexLocker lock(&mutex);

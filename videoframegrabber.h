@@ -44,6 +44,7 @@ namespace vfg
         unsigned lastFrame() const;
         unsigned totalFrames() const;
 
+        bool validRange(const unsigned frameNumber) const;
 
         QImage getFrame(unsigned frameNum);
     public slots:
