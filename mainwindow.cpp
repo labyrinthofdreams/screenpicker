@@ -20,6 +20,7 @@
 // TODO: Pausing and resuming screenshot generation + progress display
 // TODO: Add parsers (loading automation) for common video formats to reduce scripting
 // TODO: Configuration options for screen generation (unlimited, generate until hit limit, generate max)
+// TODO: The way scripts are tied to scripteditor is bad design probably...
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
