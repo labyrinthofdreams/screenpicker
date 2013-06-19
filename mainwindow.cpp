@@ -292,6 +292,11 @@ void MainWindow::loadFile(QString path)
 
 void MainWindow::on_actionOpen_triggered()
 {
+    if(frameGenerator->isRunning()) {
+        frameGenerator->pause();
+        ui->btnPauseGenerator->setText(tr("Resume"));
+    }
+
     QString filename = QFileDialog::getOpenFileName(this, tr("Open video"),
                                                     "", "All (*.*);;Avisynth (*.avs, *.avsi);;DGIndex (*.d2v)");
     if(filename.isEmpty())
@@ -302,6 +307,11 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionOpen_DVD_triggered()
 {
+    if(frameGenerator->isRunning()) {
+        frameGenerator->pause();
+        ui->btnPauseGenerator->setText(tr("Resume"));
+    }
+
     QStringList vobFiles = QFileDialog::getOpenFileNames(this, tr("Select DVD VOB/Blu-ray M2TS files"),
                                                          "", "DVD VOB (*.vob);;Blu-ray M2TS (*.m2ts)");
     if(vobFiles.empty())
