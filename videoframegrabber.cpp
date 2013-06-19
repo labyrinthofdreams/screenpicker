@@ -66,7 +66,7 @@ void vfg::VideoFrameGrabber::setVideoSource(QSharedPointer<vfg::AbstractVideoSou
 unsigned vfg::VideoFrameGrabber::lastFrame() const
 {
     QMutexLocker lock(&mutex);
-    return currentFrame + 1;
+    return currentFrame + vfg::FirstFrame;
 }
 
 void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
@@ -75,7 +75,7 @@ void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
 
     qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
     // Because frame requests are between range 1 - n
-    --frameNum;
+    frameNum -= vfg::FirstFrame;
     currentFrame = frameNum;
 
     QImage frame = avs->getFrame(frameNum);
@@ -88,7 +88,7 @@ void vfg::VideoFrameGrabber::requestNextFrame()
 {
     QMutexLocker ml(&mutex);
     qDebug() << "Start NEXT_FRAME VFG ";
-    bool frameIsLast = (currentFrame + 1) == numFrames;
+    bool frameIsLast = (currentFrame + vfg::FirstFrame) == numFrames;
     if(frameIsLast)
     {
         emit errorOccurred(tr("Reached last frame"));
@@ -123,10 +123,9 @@ QImage vfg::VideoFrameGrabber::getFrame(unsigned frameNum)
 {
     QMutexLocker ml(&mutex);
     qDebug() << "Start GET_FRAME VFG " << frameNum;
-    --frameNum;
+    frameNum -= vfg::FirstFrame;
 
-    const bool outOfRange = (frameNum + 1) == numFrames;
-    if(outOfRange)
+    if(!validRange(frameNum))
     {
         emit errorOccurred(tr("Out of range"));
         return QImage();

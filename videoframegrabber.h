@@ -25,10 +25,10 @@ namespace vfg
     private:
         QSharedPointer<vfg::AbstractVideoSource> avs;
 
-        // Last frame - 1
+        // Last frame - FirstFrame
         unsigned numFrames;
 
-        // Between range 0 - (last frame - 1)
+        // Between range 0 - (last frame - FirstFrame)
         unsigned currentFrame;
 
         mutable QMutex mutex;
@@ -40,9 +40,10 @@ namespace vfg
         bool hasVideo() const;
         void setVideoSource(QSharedPointer<vfg::AbstractVideoSource> newAvs);
 
-        // Returns last captured frame number + 1
+        // Returns last captured frame number + FirstFrame
         unsigned lastFrame() const;
         unsigned totalFrames() const;
+
 
         QImage getFrame(unsigned frameNum);
     public slots:
@@ -50,7 +51,7 @@ namespace vfg
         //void load(QString filename);
         void requestNextFrame();
         void requestPreviousFrame();
-        // Captures the exact frame between range 1 - n
+        // Captures the exact frame between range FirstFrame - totalFrames()
         void requestFrame(unsigned frameNum);
     signals:
         // Fired when video has been loaded
