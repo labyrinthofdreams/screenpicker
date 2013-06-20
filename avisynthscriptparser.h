@@ -10,12 +10,9 @@ namespace vfg {
 class AvisynthScriptParser : public vfg::ScriptParser
 {
 public:
-    explicit AvisynthScriptParser(QString path);
+    explicit AvisynthScriptParser(QString scriptPath);
     ~AvisynthScriptParser();
     QString parse();
-
-private:
-    QString scriptPath;
 };
 
 } // namespace vfg

@@ -23,7 +23,7 @@ QSharedPointer<vfg::ScriptParser> ScriptParserFactory::parser(QString script)
     else if(suffix == "d2v")
         scriptParser = new vfg::DgindexScriptParser(script);
     else
-        scriptParser = new vfg::DefaultScriptParser(script);
+        scriptParser = new vfg::ScriptParser(script);
 
     return QSharedPointer<vfg::ScriptParser>(scriptParser);
 }

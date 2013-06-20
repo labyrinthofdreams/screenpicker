@@ -10,12 +10,8 @@ namespace vfg {
 class DgindexScriptParser : public vfg::ScriptParser
 {
 public:
-    explicit DgindexScriptParser(QString script);
+    explicit DgindexScriptParser(QString scriptPath);
     ~DgindexScriptParser();
-    QString parse();
-
-private:
-    QString scriptPath;
 };
 
 } // namespace vfg

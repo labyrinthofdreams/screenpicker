@@ -3,9 +3,8 @@
 
 namespace vfg {
 
-AvisynthScriptParser::AvisynthScriptParser(QString path) :
-    vfg::ScriptParser(path),
-    scriptPath(path)
+AvisynthScriptParser::AvisynthScriptParser(QString scriptPath) :
+    vfg::ScriptParser(scriptPath)
 {
 }
 
@@ -17,7 +16,7 @@ QString AvisynthScriptParser::parse()
 {
     try
     {
-        QString script = readTemplate(scriptPath);
+        QString script = readTemplate(path);
 
         return script;
     }

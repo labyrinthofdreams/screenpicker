@@ -8,12 +8,16 @@ namespace vfg {
 class ScriptParser
 {
 public:
-    explicit ScriptParser(QString script) {}
-    virtual ~ScriptParser() {}
-    virtual QString parse() = 0;
+    explicit ScriptParser(QString scriptPath);
+    virtual ~ScriptParser();
+    virtual QString parse();
 
 protected:
     QString readTemplate(QString path);
+    void setTemplate(QString path);
+
+    QString path;
+    QString tplPath;
 };
 
 } // namespace vfg
