@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     dgindexscriptparser.cpp \
     avisynthscriptparser.cpp \
     scriptparser.cpp \
-    defaultscriptparser.cpp
+    defaultscriptparser.cpp \
+    C:\cpplibs\cpptempl\cpptempl.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -50,7 +51,7 @@ FORMS    += mainwindow.ui \
     scripteditor.ui \
     configdialog.ui
 
-INCLUDEPATH += C:\cpplibs\avs2yuv-0.24bm2\avs2yuv\src
+INCLUDEPATH += C:\cpplibs\avs2yuv-0.24bm2\avs2yuv\src C:\cpplibs\cpptempl C:\cpplibs\boost_1_51_0
 
 # These are needed for Avisynth compilation
 QMAKE_CXXFLAGS += -fpermissive -std=c++11
