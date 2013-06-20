@@ -34,7 +34,7 @@ void createAvisynthTemplate()
     if(QFile::exists(avisynthScriptFile))
         return;
 
-    QFile inFile(":/scripts/default.avs");
+    QFile inFile(":/scripts/default_template.avs");
     QFile outFile(avisynthScriptFile);
 
     if(!inFile.open(QFile::ReadOnly | QFile::Text))
