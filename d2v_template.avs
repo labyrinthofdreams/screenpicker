@@ -3,14 +3,16 @@ SetMemoryMax(128)
 PathToVideo = "{$SOURCE_PATH}"
 AvisynthPluginsDir = "{$AVS_PLUGINS}"
 LoadPlugin(AvisynthPluginsDir + "/DGDecode.dll")
-LoadPlugin(AvisynthPluginsDir + "/ffms2.dll")
-LoadPlugin(AvisynthPluginsDir + "/TIVTC.dll")
-Import(AvisynthPluginsDir + "/FFMS2.avsi")
+LoadPlugin(AvisynthPluginsDir + "/yadifmod.dll")
+LoadPlugin(AvisynthPluginsDir + "/nnedi3.dll")
 
 MPEG2Source(PathToVideo)
 
 {% if IVTC %}
 TFM().TDecimate()
+{% endif %}
+{% if deinterlace %}
+YadifMod(edeint=nnedi3())
 {% endif %}
 
 #Spline36Resize([RESIZE_WIDTH],[RESIZE_HEIGHT])
