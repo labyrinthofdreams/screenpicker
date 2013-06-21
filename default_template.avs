@@ -2,8 +2,8 @@
 # http://avisynth.org/mediawiki/Internal_functions/Control_functions
 SetMemoryMax(128)
 
-PathToVideo = "{$SOURCE_PATH}"
-AvisynthPluginsDir = "{$AVS_PLUGINS}"
+PathToVideo = "{$source_path}"
+AvisynthPluginsDir = "{$avs_plugins}"
 LoadPlugin(AvisynthPluginsDir + "/ffms2.dll")
 LoadPlugin(AvisynthPluginsDir + "/TIVTC.dll")
 LoadPlugin(AvisynthPluginsDir + "/yadifmod.dll")
@@ -20,12 +20,12 @@ YadifMod(edeint=nnedi3())
 
 {% if resize %}
 # Resize
-Spline36Resize({$resize.W},{$resize.H})
+Spline36Resize({$resize.width},{$resize.height})
 {% endif %}
 
 {% if crop %}
 # Crop
-Crop({$crop.LEFT},{$crop.TOP},-{$crop.RIGHT},-{$crop.BOTTOM})
+Crop({$crop.left},{$crop.top},-{$crop.right},-{$crop.bottom})
 {% endif %}
 
 ConvertToRGB32(matrix="Rec601")
