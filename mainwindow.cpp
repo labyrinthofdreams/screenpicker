@@ -13,13 +13,10 @@
 #include "scriptparserfactory.h"
 #include "scriptparser.h"
 
-// TODO: When loading new video, the widgets inside scroll areas
-// do not get resized to fit the scroll area (they remain large)
 // TODO: Project files to save progress?
-// TODO: Pausing and resuming screenshot generation + progress display
 // TODO: Add parsers (loading automation) for common video formats to reduce scripting
-// TODO: Configuration options for screen generation (unlimited, generate until hit limit, generate max)
 // TODO: The way scripts are tied to scripteditor is bad design probably...
+// TODO: Make script templates modifiable
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
