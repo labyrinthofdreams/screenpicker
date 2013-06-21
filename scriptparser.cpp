@@ -46,6 +46,9 @@ QString ScriptParser::parse()
         data[L"SOURCE_PATH"] = cpptempl::make_data(path.toStdWString());
         data[L"AVS_PLUGINS"] = cpptempl::make_data(cfg.value("avisynthpluginspath").toString().toStdWString());
         data[L"IVTC"] = cpptempl::make_data(L"");
+        data[L"deinterlace"] = cpptempl::make_data(L"");
+        data[L"resize"] = cpptempl::make_data(L"");
+        data[L"crop"] = cpptempl::make_data(L"");
 
         std::wstring result = cpptempl::parse(str, data);
 
