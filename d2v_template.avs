@@ -3,6 +3,7 @@ SetMemoryMax(128)
 PathToVideo = "{$source_path}"
 AvisynthPluginsDir = "{$avs_plugins}"
 LoadPlugin(AvisynthPluginsDir + "/DGDecode.dll")
+LoadPlugin(AvisynthPluginsDir + "/TIVTC.dll")
 LoadPlugin(AvisynthPluginsDir + "/yadifmod.dll")
 LoadPlugin(AvisynthPluginsDir + "/nnedi3.dll")
 
