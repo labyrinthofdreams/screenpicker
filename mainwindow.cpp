@@ -262,15 +262,21 @@ void MainWindow::loadFile(QString path)
         QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
         QString parsedScript = parser->parse(videoSettings);
 
-        // TODO: Save to filepath if user wants
-        QString saveTo = scriptEditor->getPath();
-        vfg::script::save(saveTo, parsedScript);
-
         QFileInfo info(path);
         setWindowTitle(tr("ScreenPicker - %1").arg(info.fileName()));
 
-        // Load the (parsed) Avisynth script to script editor
-        scriptEditor->setContent(saveTo);
+        QSettings cfg("config.ini", QSettings::IniFormat);
+        const bool saveScript = cfg.value("savescripts").toBool();
+        if(saveScript)
+        {
+            QDir dir = info.absoluteDir();
+            QString saveAs = dir.absoluteFilePath("script.avs");
+            scriptEditor->setPath(saveAs);
+        }
+
+        scriptEditor->setContent(parsedScript);
+        scriptEditor->save();
+        QString saveTo = scriptEditor->getPath();
 
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
@@ -284,7 +290,6 @@ void MainWindow::loadFile(QString path)
         resetState();
 
         // Load config
-        QSettings cfg("config.ini", QSettings::IniFormat);
         const bool showEditor = cfg.value("showscripteditor").toBool();
         if(showEditor)
         {
@@ -361,11 +366,19 @@ void MainWindow::scriptEditorUpdated()
         QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
         QString parsedScript = parser->parse(videoSettings);
 
-        // TODO: Save to filepath if user wants
-        QString saveTo = scriptEditor->getPath();
-        vfg::script::save(saveTo, parsedScript);
+        QSettings cfg("config.ini", QSettings::IniFormat);
+        const bool saveScript = cfg.value("savescripts").toBool();
+        if(saveScript)
+        {
+            QFileInfo fileInfo(lastLoadedFile);
+            QDir dir = fileInfo.absoluteDir();
+            QString saveAs = dir.absoluteFilePath("script.avs");
+            scriptEditor->setPath(saveAs);
+        }
 
-        scriptEditor->setContent(saveTo);
+        scriptEditor->setContent(parsedScript);
+        scriptEditor->save();
+        QString saveTo = scriptEditor->getPath();
 
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
