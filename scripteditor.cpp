@@ -43,6 +43,10 @@ void ScriptEditor::setContent(QString path)
 
     QTextStream in(&scriptfile);
     ui->plainTextEdit->setPlainText(in.readAll());
+
+QString ScriptEditor::getPath() const
+{
+    return QDir(QDir::currentPath()).absoluteFilePath(savePath);
 }
 
 void ScriptEditor::on_updateButton_clicked()

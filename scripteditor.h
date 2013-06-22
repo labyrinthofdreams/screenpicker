@@ -25,6 +25,7 @@ namespace vfg
 
         // Loads contents of script file
         void setContent(QString path);
+        QString getPath() const;
     private slots:
         void on_updateButton_clicked();
 
