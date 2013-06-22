@@ -43,7 +43,7 @@
    <property name="title">
     <string>Crop</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>130</x>
@@ -78,7 +78,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -113,7 +113,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>130</x>
@@ -148,7 +148,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>180</x>
@@ -196,7 +196,7 @@
    <property name="title">
     <string>Resize</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -328,7 +328,7 @@
    <property name="title">
     <string>Deinterlace</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -384,7 +384,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Update</string>
+    <string>Apply</string>
    </property>
   </widget>
  </widget>
