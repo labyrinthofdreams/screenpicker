@@ -18,6 +18,10 @@
 // TODO: Add parsers (loading automation) for common video formats to reduce scripting
 // TODO: The way scripts are tied to scripteditor is bad design probably...
 // TODO: Make script templates modifiable
+// TODO: Remove duplicate code from loadFile/scriptEditorUpdated
+// TODO: Rename scriptEditorUpdated
+// TODO: Should scripteditor emit path with its scriptUpdated signal?
+// Also look into loadFile/sccriptEditorUpdated refactoring
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
