@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <QtWidgets>
+#include <QDir>
 #include "scripteditor.h"
 #include "ui_scripteditor.h"
 
@@ -67,7 +68,7 @@ void ScriptEditor::on_updateButton_clicked()
 
     outFile.close();
 
-    emit scriptUpdated(savePath);
+    emit scriptUpdated();
 }
 
 } // namespace vfg

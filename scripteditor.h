@@ -36,7 +36,7 @@ namespace vfg
     signals:
         // Emits name of the temporary script path
         // with our modified script
-        void scriptUpdated(QString tmpScriptPath);
+        void scriptUpdated();
     };
 }
 
