@@ -17,8 +17,6 @@ int main(int argc, char *argv[])
 
             meta::registerTypes();
 
-            script::createAvisynthTemplate();
-
             if(QFile::exists("config.ini")) {
                 if(!config::isValid()) {
                     throw std::runtime_error("Invalid configuration file. Please remove config.ini and restart");
