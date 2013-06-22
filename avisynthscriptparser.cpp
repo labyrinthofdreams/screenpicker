@@ -6,6 +6,7 @@ namespace vfg {
 AvisynthScriptParser::AvisynthScriptParser(QString scriptPath) :
     vfg::ScriptParser(scriptPath)
 {
+    setTemplate(scriptPath);
 }
 
 AvisynthScriptParser::~AvisynthScriptParser()
