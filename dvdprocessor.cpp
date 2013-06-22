@@ -3,7 +3,7 @@
 #include <QStringList>
 #include <QProcess>
 #include <QProgressDialog>
-#include <QDebug>
+#include <QFileInfo>
 #include "dvdprocessor.h"
 
 // TODO: Processing DVD or Blu-ray...
@@ -35,6 +35,17 @@ DvdProcessor::~DvdProcessor()
 
 void DvdProcessor::process(QStringList files, QString outfile)
 {
+    if(files.empty()) {
+        emit error(tr("Nothing to process."));
+        return;
+    }
+    QFileInfo info(files.at(0));
+    if(info.suffix() == "m2ts") {
+        progress.setLabelText(tr("Processing Blu-ray..."));
+    }
+    else {
+        progress.setLabelText(tr("Processing DVD..."));
+    }
     outputPath = outfile;
     QStringList args;
     args << "-ia" << "5" << "-fo" << "0" << "-yr" << "1" << "-om" << "0" << "-hide" << "-exit"
@@ -65,8 +76,6 @@ void DvdProcessor::updateDialog()
             break;
         }
     }
-
-    qDebug() << rawOutput << " = " << parsedOutput;
 
     // DGIndex.exe can sometimes output false values
     const int nextValue = parsedOutput.toInt();
