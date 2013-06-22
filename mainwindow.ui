@@ -232,7 +232,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Number of frames between each generated screenshot</string>
+             <string>Number of frames to skip between screenshots (max=99999)</string>
             </property>
             <property name="minimum">
              <number>1</number>
@@ -261,7 +261,7 @@
              </size>
             </property>
             <property name="toolTip">
-             <string>Number of screenshots to generate</string>
+             <string>Number of screenshots to generate (max=9999)</string>
             </property>
             <property name="prefix">
              <string/>
