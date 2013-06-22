@@ -259,10 +259,11 @@ void MainWindow::loadFile(QString path)
         vfg::ScriptParserFactory parserFactory;
         QSharedPointer<vfg::ScriptParser> parser = parserFactory.parser(path);
 
-        QString parsedScript = parser->parse();
+        QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
+        QString parsedScript = parser->parse(videoSettings);
 
         // TODO: Save to filepath if user wants
-        QString saveTo = "temp.avs";
+        QString saveTo = scriptEditor->getPath();
         vfg::script::save(saveTo, parsedScript);
 
         QFileInfo info(path);
@@ -348,9 +349,27 @@ void MainWindow::scriptEditorUpdated()
 {
     try
     {
+        if(lastLoadedFile.isEmpty() || !frameGrabber->hasVideo())
+        {
+            QMessageBox::critical(this, tr("No video"), tr("This operation requires a video"));
+            return;
+        }
+
+        vfg::ScriptParserFactory parserFactory;
+        QSharedPointer<vfg::ScriptParser> parser = parserFactory.parser(lastLoadedFile);
+
+        QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
+        QString parsedScript = parser->parse(videoSettings);
+
+        // TODO: Save to filepath if user wants
+        QString saveTo = scriptEditor->getPath();
+        vfg::script::save(saveTo, parsedScript);
+
+        scriptEditor->setContent(saveTo);
+
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
-        videoSource->load(path);
+        videoSource->load(saveTo);
 
         frameGrabber->setVideoSource(videoSource);
     }
