@@ -23,6 +23,7 @@ namespace vfg {
     class ScriptEditor;
     class VideoFrameGenerator;
     class DvdProcessor;
+    class VideoSettingsWidget;
 }
 
 namespace Ui {
@@ -84,6 +85,7 @@ private:
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::ScriptEditor* scriptEditor;
     vfg::DvdProcessor* dvdProcessor;
+    vfg::VideoSettingsWidget *videoSettingsWindow;
 
     QList<unsigned> framesToSave;
 

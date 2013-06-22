@@ -12,6 +12,7 @@
 #include "dvdprocessor.h"
 #include "scriptparserfactory.h"
 #include "scriptparser.h"
+#include "videosettingswidget.h"
 
 // TODO: Project files to save progress?
 // TODO: Add parsers (loading automation) for common video formats to reduce scripting
@@ -41,6 +42,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
         scriptEditor = new vfg::ScriptEditor;
 
+        videoSettingsWindow = new vfg::VideoSettingsWidget;
+
         QSettings cfg("config.ini", QSettings::IniFormat);
 
         QString dgIndexPath = cfg.value("dgindexexecpath").toString();
@@ -59,6 +62,9 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         throw;
     }
+
+    connect(videoSettingsWindow, SIGNAL(settingsChanged()),
+            this, SLOT(scriptEditorUpdated()));
 
     connect(dvdProcessor, SIGNAL(finished(QString)),
             this, SLOT(loadFile(QString)));
@@ -96,6 +102,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    delete videoSettingsWindow;
     delete scriptEditor;
     delete frameGenerator;
     delete frameGrabber;
@@ -127,6 +134,7 @@ void MainWindow::closeEvent(QCloseEvent *ev)
 
         // Close script editor if it's open
         scriptEditor->close();
+        videoSettingsWindow->close();
 
         ev->accept();
     }
