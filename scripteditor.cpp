@@ -11,36 +11,22 @@ namespace vfg {
 ScriptEditor::ScriptEditor(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ScriptEditor),
-    savePath("temp.avs")
+    savePath()
 {
-    ui->setupUi(this);        
+    ui->setupUi(this);
+
+    QDir localDir(QDir::currentPath());
+    setPath(localDir.absoluteFilePath("temp_script.avs"));
 }
 
 ScriptEditor::~ScriptEditor()
 {
-    QFile::remove("temp.avs");
+    // TODO: Remove only local temp file in same dir
+    QFile::remove("temp_script.avs");
     delete ui;
 }
 
-void ScriptEditor::setContent(QString path)
-{
-    QFile scriptfile(path);
-    if(!scriptfile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        throw std::runtime_error("Failed to open file for reading.");
-    }
-
-    QTextStream in(&scriptfile);
-    ui->plainTextEdit->setPlainText(in.readAll());
-    scriptfile.close();
-}
-
-QString ScriptEditor::getPath() const
-{
-    return QDir(QDir::currentPath()).absoluteFilePath(savePath);
-}
-
-void ScriptEditor::on_updateButton_clicked()
+void ScriptEditor::save()
 {
     // Write updated script
     QFile outFile(savePath);
@@ -53,8 +39,26 @@ void ScriptEditor::on_updateButton_clicked()
 
     QTextStream out(&outFile);
     out << ui->plainTextEdit->toPlainText();
+}
 
-    outFile.close();
+void ScriptEditor::setContent(QString content)
+{
+    ui->plainTextEdit->setPlainText(content);
+}
+
+void ScriptEditor::setPath(QString path)
+{
+    savePath = path;
+}
+
+QString ScriptEditor::getPath() const
+{
+    return savePath;
+}
+
+void ScriptEditor::on_updateButton_clicked()
+{
+    save();
 
     emit scriptUpdated();
 }

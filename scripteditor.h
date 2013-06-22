@@ -19,7 +19,9 @@ namespace vfg
         ~ScriptEditor();
 
         // Loads contents of script file
-        void setContent(QString path);
+        void setContent(QString content);
+        void save();
+        void setPath(QString path);
         QString getPath() const;
     private slots:
         void on_updateButton_clicked();
