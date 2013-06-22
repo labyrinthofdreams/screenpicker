@@ -563,6 +563,7 @@ void MainWindow::on_grabButton_clicked()
 
 void MainWindow::handleUnsavedMenu(const QPoint &pos)
 {
+    Q_UNUSED(pos);
     QMenu menu;
     QAction *saveAction = new QAction(tr("Save"), this);
     saveAction->setData(1);
@@ -587,6 +588,7 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
 
 void MainWindow::handleSavedMenu(const QPoint &pos)
 {
+    Q_UNUSED(pos);
     QMenu menu;
     QAction *unsaveAction = new QAction(tr("Unsave"), this);
     unsaveAction->setData(1);
