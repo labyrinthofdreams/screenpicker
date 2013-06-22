@@ -263,7 +263,7 @@ void MainWindow::loadFile(QString path)
         QString parsedScript = parser->parse(videoSettings);
 
         QFileInfo info(path);
-        setWindowTitle(tr("ScreenPicker - %1").arg(info.fileName()));
+        setWindowTitle(info.fileName());
 
         QSettings cfg("config.ini", QSettings::IniFormat);
         const bool saveScript = cfg.value("savescripts").toBool();
