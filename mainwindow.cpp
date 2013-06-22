@@ -795,3 +795,10 @@ void MainWindow::on_btnStopGenerator_clicked()
     ui->btnPauseGenerator->setText(tr("Pause"));
     ui->btnStopGenerator->setEnabled(false);
 }
+
+void MainWindow::on_actionVideo_Settings_triggered()
+{
+    videoSettingsWindow->hide();
+    videoSettingsWindow->show();
+    videoSettingsWindow->setWindowState(Qt::WindowActive);
+}

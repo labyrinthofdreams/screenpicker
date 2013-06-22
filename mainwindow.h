@@ -75,6 +75,8 @@ private slots:
 
     void on_actionOpen_DVD_triggered();
 
+    void on_actionVideo_Settings_triggered();
+
 private:
     Ui::MainWindow *ui;
 
