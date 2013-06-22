@@ -37,8 +37,8 @@ void VideoFrameGenerator::start()
         // faster in the loop than they can be processed in the connected slot for
         // the signal frameReady (due to e.g. caching in frameGrabber)
         // causing potentially unexpected behavior
-        waitToContinue.wait(&mutex);
         lock.relock();
+        waitToContinue.wait(&mutex);
         if(halt) {
             break;
         }
