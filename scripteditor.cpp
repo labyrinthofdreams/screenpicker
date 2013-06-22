@@ -43,6 +43,8 @@ void ScriptEditor::setContent(QString path)
 
     QTextStream in(&scriptfile);
     ui->plainTextEdit->setPlainText(in.readAll());
+    scriptfile.close();
+}
 
 QString ScriptEditor::getPath() const
 {
