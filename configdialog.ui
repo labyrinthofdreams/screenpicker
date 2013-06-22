@@ -82,7 +82,7 @@
      <item>
       <widget class="QCheckBox" name="saveAvisynthScriptsCheckBox">
        <property name="toolTip">
-        <string>If checked, saves the used Avisynth script to the opened file's directory</string>
+        <string>Save Avisynth script in opened file directory. To save the current script you must reload the script.</string>
        </property>
       </widget>
      </item>
