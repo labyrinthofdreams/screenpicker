@@ -1,6 +1,7 @@
 #ifndef VFG_DEFAULTSCRIPTPARSER_H
 #define VFG_DEFAULTSCRIPTPARSER_H
 
+#include <QMap>
 #include "scriptparser.h"
 
 class QString;
@@ -12,10 +13,6 @@ class DefaultScriptParser : public vfg::ScriptParser
 public:
     explicit DefaultScriptParser(QString path);
     ~DefaultScriptParser();
-    QString parse();
-
-private:
-    QString scriptPath;
 };
 
 } // namespace vfg
