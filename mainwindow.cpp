@@ -645,6 +645,11 @@ void MainWindow::on_saveThumbnailsButton_clicked()
         return;
     }
 
+    // Pause frame generator
+    if(frameGenerator->isRunning()) {
+        frameGenerator->pause();
+    }
+
     QString dir = QFileDialog::getExistingDirectory(this, tr("Select save directory"));
     if(dir.isEmpty())
     {
