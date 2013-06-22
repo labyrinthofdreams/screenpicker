@@ -504,8 +504,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>98</width>
-                   <height>28</height>
+                   <width>850</width>
+                   <height>200</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -586,6 +586,7 @@
      <string>View</string>
     </property>
     <addaction name="actionAvisynth_Script_Editor"/>
+    <addaction name="actionVideo_Settings"/>
     <addaction name="separator"/>
     <addaction name="actionOptions"/>
    </widget>
@@ -638,6 +639,17 @@
   <action name="actionOpen_DVD">
    <property name="text">
     <string>Open DVD/Blu-ray</string>
+   </property>
+   <property name="shortcut">
+    <string>D</string>
+   </property>
+  </action>
+  <action name="actionVideo_Settings">
+   <property name="text">
+    <string>Video Settings</string>
+   </property>
+   <property name="shortcut">
+    <string>V</string>
    </property>
   </action>
  </widget>
