@@ -69,8 +69,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->unsavedWidget, SIGNAL(maximumChanged(int)),
             ui->unsavedProgressBar, SLOT(setMaximum(int)));
 
-    connect(scriptEditor, SIGNAL(scriptUpdated(QString)),
-            this, SLOT(scriptEditorUpdated(QString)));
+    connect(scriptEditor, SIGNAL(scriptUpdated()),
+            this, SLOT(scriptEditorUpdated()));
 
     connect(frameGrabber, SIGNAL(videoReady()),
             this, SLOT(videoLoaded()),
@@ -331,7 +331,7 @@ void MainWindow::on_actionOpen_DVD_triggered()
     dvdProcessor->process(vobFiles, dgIndexOutPath);
 }
 
-void MainWindow::scriptEditorUpdated(QString path)
+void MainWindow::scriptEditorUpdated()
 {
     try
     {

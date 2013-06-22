@@ -40,7 +40,7 @@ public:
 private slots:
 
     void frameReceived(QPair<unsigned, QImage> frame);
-    void scriptEditorUpdated(QString path);
+    void scriptEditorUpdated();
     void videoLoaded();
     void videoError(QString msg);
     void thumbnailDoubleClicked(unsigned frameNumber);
