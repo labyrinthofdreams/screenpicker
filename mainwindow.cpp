@@ -766,7 +766,7 @@ void MainWindow::on_frameStepSpinBox_valueChanged(int arg1)
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::information(this, tr("About"), tr("ScreenPicker 1.0b2 20130122"));
+    QMessageBox::information(this, tr("About"), qApp->applicationVersion());
 }
 
 void MainWindow::on_saveSingleButton_clicked()
