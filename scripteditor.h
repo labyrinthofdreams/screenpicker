@@ -10,11 +10,6 @@ class ScriptEditor;
 
 namespace vfg
 {
-    namespace script
-    {
-        void save(QString path, QString script);
-    }
-
     class ScriptEditor : public QWidget
     {
         Q_OBJECT

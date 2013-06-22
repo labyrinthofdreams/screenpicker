@@ -8,18 +8,6 @@
 
 namespace vfg {
 
-void script::save(QString path, QString script)
-{
-    QFile outFile(path);
-    if(!outFile.open(QFile::WriteOnly | QFile::Truncate))
-    {
-        throw std::runtime_error("Failed to open file for writing.");
-    }
-
-    QTextStream out(&outFile);
-    out << script;
-}
-
 ScriptEditor::ScriptEditor(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ScriptEditor),
