@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     avisynthscriptparser.cpp \
     scriptparser.cpp \
     defaultscriptparser.cpp \
-    C:\cpplibs\cpptempl\cpptempl.cpp
+    C:\cpplibs\cpptempl\cpptempl.cpp \
+    videosettingswidget.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -45,11 +46,13 @@ HEADERS  += mainwindow.h \
     scriptparser.h \
     dgindexscriptparser.h \
     avisynthscriptparser.h \
-    defaultscriptparser.h
+    defaultscriptparser.h \
+    videosettingswidget.h
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
-    configdialog.ui
+    configdialog.ui \
+    videosettingswidget.ui
 
 INCLUDEPATH += C:\cpplibs\avs2yuv-0.24bm2\avs2yuv\src C:\cpplibs\cpptempl C:\cpplibs\boost_1_51_0
 
