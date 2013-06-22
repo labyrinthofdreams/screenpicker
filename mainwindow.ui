@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>797</width>
+    <width>812</width>
     <height>521</height>
    </rect>
   </property>
@@ -47,7 +47,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>775</width>
+             <width>790</width>
              <height>114</height>
             </rect>
            </property>
@@ -219,6 +219,18 @@
           </item>
           <item>
            <widget class="QSpinBox" name="frameStepSpinBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>55</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="toolTip">
              <string>Number of frames between each generated screenshot</string>
             </property>
@@ -226,7 +238,7 @@
              <number>1</number>
             </property>
             <property name="maximum">
-             <number>1000</number>
+             <number>99999</number>
             </property>
             <property name="value">
              <number>100</number>
@@ -242,6 +254,12 @@
           </item>
           <item>
            <widget class="QSpinBox" name="screenshotsSpinBox">
+            <property name="minimumSize">
+             <size>
+              <width>50</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="toolTip">
              <string>Number of screenshots to generate</string>
             </property>
@@ -252,7 +270,7 @@
              <number>2</number>
             </property>
             <property name="maximum">
-             <number>1000</number>
+             <number>9999</number>
             </property>
             <property name="value">
              <number>100</number>
@@ -319,7 +337,7 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>749</width>
+                   <width>764</width>
                    <height>200</height>
                   </rect>
                  </property>
@@ -513,8 +531,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>98</width>
-                   <height>28</height>
+                   <width>764</width>
+                   <height>200</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -572,7 +590,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>797</width>
+     <width>812</width>
      <height>21</height>
     </rect>
    </property>
