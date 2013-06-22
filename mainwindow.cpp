@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     connect(videoSettingsWindow, SIGNAL(settingsChanged()),
-            this, SLOT(scriptEditorUpdated()));
+            this, SLOT(videoSettingsUpdated()));
 
     connect(dvdProcessor, SIGNAL(finished(QString)),
             this, SLOT(loadFile(QString)));
@@ -350,7 +350,7 @@ void MainWindow::on_actionOpen_DVD_triggered()
     dvdProcessor->process(vobFiles, dgIndexOutPath);
 }
 
-void MainWindow::scriptEditorUpdated()
+void MainWindow::videoSettingsUpdated()
 {
     try
     {
@@ -383,6 +383,49 @@ void MainWindow::scriptEditorUpdated()
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
         videoSource->load(saveTo);
+
+        frameGrabber->setVideoSource(videoSource);
+    }
+    catch(std::exception& ex)
+    {
+        QMessageBox::warning(this, tr("Error while loading script"),
+                             QString(ex.what()));
+        scriptEditor->show();
+        scriptEditor->setWindowState(Qt::WindowActive);
+    }
+}
+
+void MainWindow::scriptEditorUpdated()
+{
+    try
+    {
+        if(lastLoadedFile.isEmpty() || !frameGrabber->hasVideo())
+        {
+            QMessageBox::critical(this, tr("No video"), tr("This operation requires a video"));
+            return;
+        }
+
+        // If the Avisynth has been modified (and it's assumed it has)
+        // we need to set the script editor to load the modified script
+        // and not load the template file
+
+        QSettings cfg("config.ini", QSettings::IniFormat);
+        const bool saveScript = cfg.value("savescripts").toBool();
+        if(saveScript)
+        {
+            QFileInfo fileInfo(lastLoadedFile);
+            QDir dir = fileInfo.absoluteDir();
+            QString saveAs = dir.absoluteFilePath("script.avs");
+            scriptEditor->setPath(saveAs);
+        }
+
+        scriptEditor->save();
+        QString saveTo = scriptEditor->getPath();
+
+        // Create Avisynth video source and attempt to load the (parsed) Avisynth script
+        QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
+        videoSource->load(saveTo);
+        lastLoadedFile = saveTo;
 
         frameGrabber->setVideoSource(videoSource);
     }
