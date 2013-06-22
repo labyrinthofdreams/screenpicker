@@ -18,6 +18,11 @@ namespace vfg
     // TODO: This is not clever
     static const unsigned FirstFrame = 1;
 
+    inline static bool validRange(const unsigned value, const int rangeMax)
+    {
+        return (value - vfg::FirstFrame) < rangeMax;
+    }
+
     // Class declaration
     class VideoFrameGrabber : public QObject
     {
@@ -43,8 +48,6 @@ namespace vfg
         // Returns last captured frame number + FirstFrame
         unsigned lastFrame() const;
         unsigned totalFrames() const;
-
-        bool validRange(const unsigned frameNumber) const;
 
         QImage getFrame(unsigned frameNum);
     public slots:

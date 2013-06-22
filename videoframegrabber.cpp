@@ -63,11 +63,6 @@ void vfg::VideoFrameGrabber::setVideoSource(QSharedPointer<vfg::AbstractVideoSou
     emit videoReady();
 }
 
-bool vfg::VideoFrameGrabber::validRange(const unsigned frameNumber) const
-{
-    return (frameNumber - vfg::FirstFrame) < totalFrames();
-}
-
 unsigned vfg::VideoFrameGrabber::lastFrame() const
 {
     QMutexLocker lock(&mutex);
@@ -130,7 +125,8 @@ QImage vfg::VideoFrameGrabber::getFrame(unsigned frameNum)
     qDebug() << "Start GET_FRAME VFG " << frameNum;
     frameNum -= vfg::FirstFrame;
 
-    if(!validRange(frameNum))
+    const bool invalidRange = frameNum >= numFrames;
+    if(invalidRange)
     {
         emit errorOccurred(tr("Out of range"));
         return QImage();
