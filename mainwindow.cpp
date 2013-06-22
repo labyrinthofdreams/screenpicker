@@ -243,6 +243,7 @@ void MainWindow::loadFile(QString path)
 {
     try
     {
+        lastLoadedFile = path;
         vfg::ScriptParserFactory parserFactory;
         QSharedPointer<vfg::ScriptParser> parser = parserFactory.parser(path);
 
