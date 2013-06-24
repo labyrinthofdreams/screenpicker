@@ -25,6 +25,8 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     const bool jumpToLastOnFinish = cfg.value("jumptolastonfinish").toBool();
     const bool jumpToLastOnPause = cfg.value("jumptolastonpause").toBool();
     const bool jumpToLastOnStop = cfg.value("jumptolastonstop").toBool();
+    const bool jumpToLastOnReachingMax = cfg.value("jumptolastonreachingmax").toBool();
+    const bool saveDgIndexFiles = cfg.value("savedgindexfiles").toBool();
 
     ui->avisynthPluginsPathLineEdit->setText(avisynthPath);
     ui->dgindexExecPath->setText(dgindexExecPath);
@@ -37,6 +39,9 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->cbJumpAfterFinish->setChecked(jumpToLastOnFinish);
     ui->cbJumpAfterPause->setChecked(jumpToLastOnPause);
     ui->cbJumpAfterStop->setChecked(jumpToLastOnStop);
+    ui->cbStopAfterReachingMax->setChecked(jumpToLastOnReachingMax);
+    ui->cbSaveDgindexFiles->setChecked(saveDgIndexFiles);
+    ui->cbShowVideoSettings->setChecked(cfg.value("showvideosettings").toBool());
 }
 
 ConfigDialog::~ConfigDialog()
@@ -63,6 +68,9 @@ void vfg::ConfigDialog::on_buttonBox_accepted()
     cfg.setValue("jumptolastonfinish", ui->cbJumpAfterFinish->isChecked());
     cfg.setValue("jumptolastonpause", ui->cbJumpAfterPause->isChecked());
     cfg.setValue("jumptolastonstop", ui->cbJumpAfterStop->isChecked());
+    cfg.setValue("jumptolastonreachingmax", ui->cbStopAfterReachingMax->isChecked());
+    cfg.setValue("savedgindexfiles", ui->cbSaveDgindexFiles->isChecked());
+    cfg.setValue("showvideosettings", ui->cbShowVideoSettings->isChecked());
 }
 
 void vfg::ConfigDialog::on_btnDgindexPath_clicked()

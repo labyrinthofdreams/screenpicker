@@ -21,7 +21,7 @@ class DvdProcessor : public QObject
 public:
     explicit DvdProcessor(QString processorPath, QObject *parent = 0);
     ~DvdProcessor();
-    void process(QStringList files, QString outfile);
+    void process(QStringList files);
     void setProcessor(QString executablePath);
     
 signals:

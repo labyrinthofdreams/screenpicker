@@ -22,7 +22,18 @@ int main(int argc, char *argv[])
 
             if(QFile::exists("config.ini")) {
                 if(!config::isValid()) {
-                    throw std::runtime_error("Invalid configuration file. Please remove config.ini and restart");
+                    QMessageBox::StandardButton clicked =
+                            QMessageBox::question(0, a.tr("Configuration error"),
+                                                  a.tr("Outdated configuration file. Do you want to remove old settings?"),
+                                                  QMessageBox::Yes | QMessageBox::No,
+                                                  QMessageBox::Yes);
+                    if(clicked == QMessageBox::Yes) {
+                        QFile::remove("config.ini");
+                        config::create();
+                    }
+                    else {
+                        throw std::runtime_error("Can't proceed with outdated configuration file");
+                    }
                 }
             }
             else {
@@ -37,7 +48,7 @@ int main(int argc, char *argv[])
     }
     catch(std::exception& ex)
     {
-        QMessageBox::critical(0, "Critical error",
+        QMessageBox::critical(0, a.tr("Critical error"),
                               QString(ex.what()));
         a.exit(1);
     }

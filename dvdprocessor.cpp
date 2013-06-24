@@ -4,6 +4,10 @@
 #include <QProcess>
 #include <QProgressDialog>
 #include <QFileInfo>
+#include <QFile>
+#include <QSettings>
+#include <QDir>
+#include <QFileDialog>
 #include "dvdprocessor.h"
 
 // TODO: Processing DVD or Blu-ray...
@@ -13,7 +17,7 @@ namespace vfg {
 DvdProcessor::DvdProcessor(QString processorPath, QObject *parent) :
     QObject(parent),
     processor(processorPath),
-    outputPath(),
+    outputPath("dgindex_tmp"),
     progress(tr("Processing DVD..."), tr("Abort"), 0, 100),
     aborted(false)
 {
@@ -31,14 +35,19 @@ DvdProcessor::DvdProcessor(QString processorPath, QObject *parent) :
 
 DvdProcessor::~DvdProcessor()
 {
+    if(QFile::exists("dgindex_tmp.d2v"))
+    {
+        QFile::remove("dgindex_tmp.d2v");
+    }
 }
 
-void DvdProcessor::process(QStringList files, QString outfile)
+void DvdProcessor::process(QStringList files)
 {
     if(files.empty()) {
         emit error(tr("Nothing to process."));
         return;
     }
+
     QFileInfo info(files.at(0));
     if(info.suffix() == "m2ts") {
         progress.setLabelText(tr("Processing Blu-ray..."));
@@ -46,10 +55,20 @@ void DvdProcessor::process(QStringList files, QString outfile)
     else {
         progress.setLabelText(tr("Processing DVD..."));
     }
-    outputPath = outfile;
+
+    QSettings cfg("config.ini", QSettings::IniFormat);
+    if(cfg.value("savedgindexfiles").toBool()) {
+        QString out = QFileDialog::getSaveFileName(0, tr("Select DGIndex project output path"),
+                                     info.absoluteDir().absoluteFilePath("dgindex_project"));
+        if(out.isEmpty()) {
+            return;
+        }
+        outputPath = out;
+    }
+
     QStringList args;
     args << "-ia" << "5" << "-fo" << "0" << "-yr" << "1" << "-om" << "0" << "-hide" << "-exit"
-             << "-o" << outfile << "-i" << files;
+             << "-o" << outputPath << "-i" << files;
 
     progress.setValue(0);
     progress.setVisible(true);

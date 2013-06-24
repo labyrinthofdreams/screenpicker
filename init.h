@@ -32,7 +32,8 @@ bool isValid()
          << "maxthumbnails" << "numscreenshots" << "framestep"
          << "pauseafterlimit" << "removeoldestafterlimit"
          << "jumptolastonfinish" << "jumptolastonpause"
-         << "jumptolastonstop" << "dgindexexecpath";
+         << "jumptolastonstop" << "dgindexexecpath" << "jumptolastonreachingmax"
+         << "savedgindexfiles" << "showvideosettings";
     QStringListIterator iter(keys);
     while(iter.hasNext())
     {
@@ -51,7 +52,7 @@ void create()
     cfg.setValue("avisynthpluginspath", QDir::currentPath().append("/avisynth"));
     cfg.setValue("dgindexexecpath", "");
     cfg.setValue("savescripts", false);
-    cfg.setValue("showscripteditor", true);
+    cfg.setValue("showscripteditor", false);
     cfg.setValue("maxthumbnails", 100);
     cfg.setValue("numscreenshots", 100);
     cfg.setValue("framestep", 100);
@@ -60,6 +61,9 @@ void create()
     cfg.setValue("jumptolastonfinish", true);
     cfg.setValue("jumptolastonpause", true);
     cfg.setValue("jumptolastonstop", true);
+    cfg.setValue("jumptolastonreachingmax", true);
+    cfg.setValue("savedgindexfiles", false);
+    cfg.setValue("showvideosettings", false);
 }
 
 } // namespace config

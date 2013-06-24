@@ -22,6 +22,10 @@
 // TODO: Rename scriptEditorUpdated
 // TODO: Should scripteditor emit path with its scriptUpdated signal?
 // Also look into loadFile/sccriptEditorUpdated refactoring
+// TODO: Remove "show editor on startup"
+// TODO: Better naming scheme for saved scripts/dgindex projects to prevent
+// conflicts when saving multiple scripts in same directory
+// possibly prompt user to choose a name for the files
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -206,15 +210,26 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
 
     if(ui->unsavedWidget->isFull())
     {
-        const bool pauseAfterLimit = cfg.value("pauseafterlimit").toBool();
-        if(pauseAfterLimit)
+        const bool removeOldestAfterMax = cfg.value("removeoldestafterlimit").toBool();
+        if(removeOldestAfterMax)
         {
-            //frameGenerator->pause();
-            //ui->btnPauseGenerator->setText(tr("Resume"));
+            // When unsaved screenshots container becomes full and the setting
+            // "remove oldest after reaching max" is checked, we simply get another frame...
+            frameGenerator->fetchNext();
         }
         else
         {
-            frameGenerator->fetchNext();
+            // ...If the user has NOT checked that option and chooses to pause instead...
+
+            // ...In case the user has checked they want to jump to last generated frame
+            // after filling the container, then jump...
+            const bool jumpToLastAfterReachingMax = cfg.value("jumptolastonreachingmax").toBool();
+            if(jumpToLastAfterReachingMax)
+            {
+                ui->seekSlider->setValue(frame.first);
+            }
+
+            // ...and wait for the user to click Clear, Generate, or open another file
         }
     }
     else {
@@ -263,15 +278,17 @@ void MainWindow::loadFile(QString path)
         QString parsedScript = parser->parse(videoSettings);
 
         QFileInfo info(path);
-        setWindowTitle(info.fileName());
 
         QSettings cfg("config.ini", QSettings::IniFormat);
         const bool saveScript = cfg.value("savescripts").toBool();
         if(saveScript)
         {
-            QDir dir = info.absoluteDir();
-            QString saveAs = dir.absoluteFilePath("script.avs");
-            scriptEditor->setPath(saveAs);
+            QString out = QFileDialog::getSaveFileName(0, tr("Select Avisynth script output path"),
+                                         info.absoluteDir().absoluteFilePath("script.avs"));
+            if(out.isEmpty()) {
+                return;
+            }
+            scriptEditor->setPath(out);
         }
 
         scriptEditor->setContent(parsedScript);
@@ -289,12 +306,20 @@ void MainWindow::loadFile(QString path)
         lastRequestedFrame = vfg::FirstFrame;
         resetState();
 
+        setWindowTitle(info.fileName());
+
         // Load config
         const bool showEditor = cfg.value("showscripteditor").toBool();
         if(showEditor)
         {
             scriptEditor->show();
             scriptEditor->setWindowState(Qt::WindowActive);
+        }
+        const bool showVideoSettings = cfg.value("showvideosettings").toBool();
+        if(showVideoSettings)
+        {
+            videoSettingsWindow->hide();
+            videoSettingsWindow->show();
         }
     }
     catch(std::exception& ex)
@@ -345,9 +370,7 @@ void MainWindow::on_actionOpen_DVD_triggered()
         return;
     }
 
-    QString dgIndexOutPath = QDir::currentPath().append("/dgindex_tmp");
-
-    dvdProcessor->process(vobFiles, dgIndexOutPath);
+    dvdProcessor->process(vobFiles);
 }
 
 void MainWindow::videoSettingsUpdated()
@@ -370,10 +393,13 @@ void MainWindow::videoSettingsUpdated()
         const bool saveScript = cfg.value("savescripts").toBool();
         if(saveScript)
         {
-            QFileInfo fileInfo(lastLoadedFile);
-            QDir dir = fileInfo.absoluteDir();
-            QString saveAs = dir.absoluteFilePath("script.avs");
-            scriptEditor->setPath(saveAs);
+            QFileInfo info(lastLoadedFile);
+            QString out = QFileDialog::getSaveFileName(0, tr("Select Avisynth script output path"),
+                                         info.absoluteDir().absoluteFilePath("script.avs"));
+            if(out.isEmpty()) {
+                return;
+            }
+            scriptEditor->setPath(out);
         }
 
         scriptEditor->setContent(parsedScript);
@@ -413,10 +439,13 @@ void MainWindow::scriptEditorUpdated()
         const bool saveScript = cfg.value("savescripts").toBool();
         if(saveScript)
         {
-            QFileInfo fileInfo(lastLoadedFile);
-            QDir dir = fileInfo.absoluteDir();
-            QString saveAs = dir.absoluteFilePath("script.avs");
-            scriptEditor->setPath(saveAs);
+            QFileInfo info(lastLoadedFile);
+            QString out = QFileDialog::getSaveFileName(0, tr("Select Avisynth script output path"),
+                                         info.absoluteDir().absoluteFilePath("script.avs"));
+            if(out.isEmpty()) {
+                return;
+            }
+            scriptEditor->setPath(out);
         }
 
         scriptEditor->save();
