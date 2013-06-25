@@ -301,7 +301,7 @@ void MainWindow::loadFile(QString path)
         resetState();
 
         QFileInfo info(path);
-        setWindowTitle(path);
+        setWindowTitle(info.absoluteFilePath());
 
         // Load config
         QSettings cfg("config.ini", QSettings::IniFormat);
