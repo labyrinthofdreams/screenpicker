@@ -277,23 +277,11 @@ void MainWindow::loadFile(QString path)
         QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
         QString parsedScript = parser->parse(videoSettings);
 
-        QFileInfo info(path);
-
-        QSettings cfg("config.ini", QSettings::IniFormat);
-        const bool saveScript = cfg.value("savescripts").toBool();
-        if(saveScript)
-        {
-            QString out = QFileDialog::getSaveFileName(0, tr("Select Avisynth script output path"),
-                                         info.absoluteDir().absoluteFilePath("script.avs"));
-            if(out.isEmpty()) {
-                return;
-            }
-            scriptEditor->setPath(out);
-        }
-
+        // Remember to reset script editor internal state
+        scriptEditor->reset();
         scriptEditor->setContent(parsedScript);
         scriptEditor->save();
-        QString saveTo = scriptEditor->getPath();
+        QString saveTo = scriptEditor->path();
 
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
@@ -306,9 +294,11 @@ void MainWindow::loadFile(QString path)
         lastRequestedFrame = vfg::FirstFrame;
         resetState();
 
-        setWindowTitle(info.fileName());
+        QFileInfo info(path);
+        setWindowTitle(path);
 
         // Load config
+        QSettings cfg("config.ini", QSettings::IniFormat);
         const bool showEditor = cfg.value("showscripteditor").toBool();
         if(showEditor)
         {
@@ -389,22 +379,9 @@ void MainWindow::videoSettingsUpdated()
         QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
         QString parsedScript = parser->parse(videoSettings);
 
-        QSettings cfg("config.ini", QSettings::IniFormat);
-        const bool saveScript = cfg.value("savescripts").toBool();
-        if(saveScript)
-        {
-            QFileInfo info(lastLoadedFile);
-            QString out = QFileDialog::getSaveFileName(0, tr("Select Avisynth script output path"),
-                                         info.absoluteDir().absoluteFilePath("script.avs"));
-            if(out.isEmpty()) {
-                return;
-            }
-            scriptEditor->setPath(out);
-        }
-
         scriptEditor->setContent(parsedScript);
         scriptEditor->save();
-        QString saveTo = scriptEditor->getPath();
+        QString saveTo = scriptEditor->path();
 
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
@@ -434,22 +411,7 @@ void MainWindow::scriptEditorUpdated()
         // If the Avisynth has been modified (and it's assumed it has)
         // we need to set the script editor to load the modified script
         // and not load the template file
-
-        QSettings cfg("config.ini", QSettings::IniFormat);
-        const bool saveScript = cfg.value("savescripts").toBool();
-        if(saveScript)
-        {
-            QFileInfo info(lastLoadedFile);
-            QString out = QFileDialog::getSaveFileName(0, tr("Select Avisynth script output path"),
-                                         info.absoluteDir().absoluteFilePath("script.avs"));
-            if(out.isEmpty()) {
-                return;
-            }
-            scriptEditor->setPath(out);
-        }
-
-        scriptEditor->save();
-        QString saveTo = scriptEditor->getPath();
+        QString saveTo = scriptEditor->path();
 
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
         QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);

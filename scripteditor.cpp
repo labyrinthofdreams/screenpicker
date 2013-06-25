@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <QtWidgets>
 #include <QDir>
+#include <QFileDialog>
 #include "scripteditor.h"
 #include "ui_scripteditor.h"
 
@@ -8,21 +9,26 @@
 
 namespace vfg {
 
+QString ScriptEditor::defaultPath()
+{
+    static QString path = QDir::current().absoluteFilePath("temp_script.avs");
+    return path;
+}
+
 ScriptEditor::ScriptEditor(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::ScriptEditor),
-    savePath()
+    ui(new Ui::ScriptEditor)
 {
     ui->setupUi(this);
 
-    QDir localDir(QDir::currentPath());
-    setPath(localDir.absoluteFilePath("temp_script.avs"));
+    setSavePath(defaultPath());
 }
 
 ScriptEditor::~ScriptEditor()
 {
-    // TODO: Remove only local temp file in same dir
-    QFile::remove("temp_script.avs");
+    if(QFile::exists(defaultPath())) {
+        QFile::remove(defaultPath());
+    }
     delete ui;
 }
 
@@ -46,14 +52,15 @@ void ScriptEditor::setContent(QString content)
     ui->plainTextEdit->setPlainText(content);
 }
 
-void ScriptEditor::setPath(QString path)
-{
-    savePath = path;
-}
-
-QString ScriptEditor::getPath() const
+QString ScriptEditor::path() const
 {
     return savePath;
+}
+
+void ScriptEditor::setSavePath(QString path)
+{
+    savePath = path;
+    setWindowTitle(path);
 }
 
 void ScriptEditor::on_updateButton_clicked()
@@ -62,5 +69,24 @@ void ScriptEditor::on_updateButton_clicked()
 
     emit scriptUpdated();
 }
+
+void ScriptEditor::on_btnSaveAs_clicked()
+{
+    QString outPath = QFileDialog::getSaveFileName(0, tr("Select Avisynth script output path"),
+                                                      defaultPath());
+    if(outPath.isEmpty()) {
+        return;
+    }
+
+    setSavePath(outPath);
+    save();
+}
+
+void ScriptEditor::reset()
+{
+    ui->plainTextEdit->clear();
+    setSavePath(defaultPath());
+}
+
 
 } // namespace vfg
