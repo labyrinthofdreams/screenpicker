@@ -16,7 +16,6 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     QSettings cfg("config.ini", QSettings::IniFormat);
     QString avisynthPath = cfg.value("avisynthpluginspath").toString();
     QString dgindexExecPath = cfg.value("dgindexexecpath").toString();
-    const bool saveScripts = cfg.value("savescripts").toBool();
     const bool showEditor = cfg.value("showscripteditor").toBool();
     const int maxThumbnails = cfg.value("maxthumbnails").toInt();
     //const int afterMaxLimit = cfg.value("aftermaxlimit").toInt();
@@ -30,7 +29,6 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 
     ui->avisynthPluginsPathLineEdit->setText(avisynthPath);
     ui->dgindexExecPath->setText(dgindexExecPath);
-    ui->saveAvisynthScriptsCheckBox->setChecked(saveScripts);
     ui->showScriptEditorCheckBox->setChecked(showEditor);
     ui->maxThumbnailsSpinBox->setValue(maxThumbnails);
     //ui->buttonGroup->button(afterMaxLimit)->setChecked(true);
@@ -59,7 +57,6 @@ void vfg::ConfigDialog::on_buttonBox_accepted()
     QSettings cfg("config.ini", QSettings::IniFormat);
     cfg.setValue("avisynthpluginspath", ui->avisynthPluginsPathLineEdit->text());
     cfg.setValue("dgindexexecpath", ui->dgindexExecPath->text());
-    cfg.setValue("savescripts", ui->saveAvisynthScriptsCheckBox->isChecked());
     cfg.setValue("showscripteditor", ui->showScriptEditorCheckBox->isChecked());
     cfg.setValue("maxthumbnails", ui->maxThumbnailsSpinBox->value());
     //cfg.setValue("aftermaxlimit", ui->buttonGroup->checkedId());
