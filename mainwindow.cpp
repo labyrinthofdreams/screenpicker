@@ -26,6 +26,12 @@
 // TODO: Better naming scheme for saved scripts/dgindex projects to prevent
 // conflicts when saving multiple scripts in same directory
 // possibly prompt user to choose a name for the files
+// TODO: Load last script
+// TODO: If reached max limit and raised the max thumbnails limit, continue generating
+// TODO: If loading a custom avisynth script OR modifying the current script,
+// disable video settings window apply button
+// BUG: Loading DVD/BR after successfully loading DVD/BR will create a new
+// .d2v file like temp.d2v.d2v.d2v etc
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
