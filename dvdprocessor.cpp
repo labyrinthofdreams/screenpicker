@@ -65,6 +65,17 @@ void DvdProcessor::process(QStringList files)
         }
         outputPath = out;
     }
+    else {
+        // Remove existing output file to prevent DGIndex from creating
+        // lots of different .d2v files
+        if(QFile::exists("dgindex_tmp.d2v")) {
+            QFile::remove("dgindex_tmp.d2v");
+        }
+
+        // If user changes the output path by saving the file to another
+        // location we must remember to reset it if the user changes it back to not save
+        outputPath = "dgindex_tmp";
+    }
 
     QStringList args;
     args << "-ia" << "5" << "-fo" << "0" << "-yr" << "1" << "-om" << "0" << "-hide" << "-exit"
