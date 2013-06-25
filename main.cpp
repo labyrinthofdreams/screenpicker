@@ -9,9 +9,9 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    a.setApplicationName("ScreenPicker");
-    a.setApplicationDisplayName("ScreenPicker");
-    a.setApplicationVersion("2.0b r20130623.01");
+    a.setApplicationName("ScreenPicker 2.0");
+    a.setApplicationDisplayName("ScreenPicker 2.0");
+    a.setApplicationVersion("2.0 BETA r20130625.1606");
 
     try
     {
