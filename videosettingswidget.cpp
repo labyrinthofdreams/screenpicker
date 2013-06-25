@@ -37,6 +37,9 @@ void VideoSettingsWidget::on_cboxDvdResolution_activated(int index)
         ui->sboxResizeWidth->setValue(768);
         ui->sboxResizeHeight->setValue(576);
         break;
+    default:
+        ui->sboxResizeWidth->setValue(0);
+        ui->sboxResizeHeight->setValue(0);
     }
 }
 
