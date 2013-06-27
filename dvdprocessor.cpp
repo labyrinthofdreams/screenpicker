@@ -59,11 +59,15 @@ void DvdProcessor::process(QStringList files)
     QSettings cfg("config.ini", QSettings::IniFormat);
     if(cfg.value("savedgindexfiles").toBool()) {
         QString out = QFileDialog::getSaveFileName(0, tr("Select DGIndex project output path"),
-                                     info.absoluteDir().absoluteFilePath("dgindex_project"));
+                                     info.absoluteDir().absoluteFilePath("dgindex_project.d2v"),
+                                     tr("DGIndex project (*.d2v)"));
         if(out.isEmpty()) {
             return;
         }
-        outputPath = out;
+
+        QFileInfo outInfo(out);
+        QString pathWithoutSuffix = outInfo.absoluteDir().absoluteFilePath(outInfo.completeBaseName());
+        outputPath = pathWithoutSuffix;
     }
     else {
         // Remove existing output file to prevent DGIndex from creating
