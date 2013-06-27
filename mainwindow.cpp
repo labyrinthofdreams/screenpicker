@@ -19,19 +19,13 @@
 // TODO: The way scripts are tied to scripteditor is bad design probably...
 // TODO: Make script templates modifiable
 // TODO: Remove duplicate code from loadFile/scriptEditorUpdated
-// TODO: Rename scriptEditorUpdated
-// TODO: Should scripteditor emit path with its scriptUpdated signal?
-// Also look into loadFile/sccriptEditorUpdated refactoring
-// TODO: Remove "show editor on startup"
-// TODO: Better naming scheme for saved scripts/dgindex projects to prevent
-// conflicts when saving multiple scripts in same directory
-// possibly prompt user to choose a name for the files
+// Look into loadFile/sccriptEditorUpdated refactoring
 // TODO: Load last script
 // TODO: If reached max limit and raised the max thumbnails limit, continue generating
 // TODO: If loading a custom avisynth script OR modifying the current script,
 // disable video settings window apply button
-// BUG: Loading DVD/BR after successfully loading DVD/BR will create a new
-// .d2v file like temp.d2v.d2v.d2v etc
+// TODO: Merge old config with new config
+// TODO: Ask to overwrite avisynth scripts and dgindex project files
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
