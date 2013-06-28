@@ -25,7 +25,6 @@
 // TODO: If loading a custom avisynth script OR modifying the current script,
 // disable video settings window apply button
 // TODO: Merge old config with new config
-// TODO: Ask to overwrite avisynth scripts and dgindex project files
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -74,17 +73,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(videoSettingsWindow, SIGNAL(settingsChanged()),
             this, SLOT(videoSettingsUpdated()));
 
+    connect(scriptEditor, SIGNAL(scriptUpdated()),
+            this, SLOT(scriptEditorUpdated()));
+
     connect(dvdProcessor, SIGNAL(finished(QString)),
             this, SLOT(loadFile(QString)));
 
     connect(dvdProcessor, SIGNAL(error(QString)),
             this, SLOT(videoError(QString)));
-
-    connect(ui->unsavedWidget, SIGNAL(maximumChanged(int)),
-            ui->unsavedProgressBar, SLOT(setMaximum(int)));
-
-    connect(scriptEditor, SIGNAL(scriptUpdated()),
-            this, SLOT(scriptEditorUpdated()));
 
     connect(frameGrabber, SIGNAL(videoReady()),
             this, SLOT(videoLoaded()),
@@ -95,11 +91,15 @@ MainWindow::MainWindow(QWidget *parent) :
             Qt::QueuedConnection);
 
     connect(frameGrabber, SIGNAL(frameGrabbed(QPair<uint,QImage>)),
-            ui->videoFrameWidget, SLOT(setFrame(QPair<uint,QImage>)));
+            ui->videoFrameWidget, SLOT(setFrame(QPair<uint,QImage>)),
+            Qt::QueuedConnection);
 
     connect(frameGenerator, SIGNAL(frameReady(QPair<unsigned, QImage>)),
             this, SLOT(frameReceived(QPair<unsigned, QImage>)),
             Qt::QueuedConnection);
+
+    connect(ui->unsavedWidget, SIGNAL(maximumChanged(int)),
+            ui->unsavedProgressBar, SLOT(setMaximum(int)));
 
     connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(unsigned)),
             this, SLOT(thumbnailDoubleClicked(unsigned)));
@@ -408,9 +408,6 @@ void MainWindow::scriptEditorUpdated()
             return;
         }
 
-        // If the Avisynth has been modified (and it's assumed it has)
-        // we need to set the script editor to load the modified script
-        // and not load the template file
         QString saveTo = scriptEditor->path();
 
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
@@ -779,6 +776,7 @@ void MainWindow::on_actionOptions_triggered()
     if(saved)
     {
         QSettings cfg("config.ini", QSettings::IniFormat);
+
         ui->unsavedWidget->setMaxThumbnails(cfg.value("maxthumbnails").toInt());
         dvdProcessor->setProcessor(cfg.value("dgindexexecpath").toString());
     }
