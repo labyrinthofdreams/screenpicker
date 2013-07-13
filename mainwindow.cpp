@@ -778,7 +778,7 @@ void MainWindow::on_actionOptions_triggered()
         QSettings cfg("config.ini", QSettings::IniFormat);
 
         ui->unsavedWidget->setMaxThumbnails(cfg.value("maxthumbnails").toInt());
-        dvdProcessor->setProcessor(cfg.value("dgindexexecpath").toString());
+        dvdProcessor->setProcessor(cfg.value("dgindexexecpath").toString());       
     }
 }
 
