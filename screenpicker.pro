@@ -54,7 +54,10 @@ FORMS    += mainwindow.ui \
     configdialog.ui \
     videosettingswidget.ui
 
-INCLUDEPATH += C:\cpplibs\avs2yuv-0.24bm2\avs2yuv\src C:\cpplibs\cpptempl C:\cpplibs\boost_1_51_0
+INCLUDEPATH += C:\cpplibs\avs2yuv-0.24bm2\avs2yuv\src \
+    C:\cpplibs\cpptempl \
+    C:\cpplibs\boost_1_51_0 \
+    C:\cpplibs\avinfo-1.0a15\src
 
 # These are needed for Avisynth compilation
 QMAKE_CXXFLAGS += -fpermissive -std=c++11
