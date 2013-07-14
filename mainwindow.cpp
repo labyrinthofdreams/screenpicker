@@ -23,8 +23,9 @@
 // TODO: Load last script
 // TODO: If reached max limit and raised the max thumbnails limit, continue generating
 // TODO: If loading a custom avisynth script OR modifying the current script,
-// disable video settings window apply button
+// disable video settings window apply button and display notification msg to user about it
 // TODO: Merge old config with new config
+// TODO: If loading new files while generating it will generate an extra after loading
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
