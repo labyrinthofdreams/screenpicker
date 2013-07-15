@@ -123,7 +123,7 @@ void DvdProcessor::handleProcessFinish(int exitCode)
     progress.setValue(100);
     // Non-zero exit code implies crash / abort
     if(exitCode == 0) {
-        emit finished(outputPath.append(".d2v"));
+        emit finished(savedPath());
     }
 }
 
@@ -155,6 +155,11 @@ void DvdProcessor::handleProcessError(QProcess::ProcessError errorCode)
     default:
         emit error(tr("Error occurred while running DGIndex.exe. Error code: %1").arg(errorCode));
     }
+}
+
+QString DvdProcessor::savedPath() const
+{
+    return QString("%1.d2v").arg(outputPath);
 }
 
 } // namespace vfg
