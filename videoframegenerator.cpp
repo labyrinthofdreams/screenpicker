@@ -1,5 +1,4 @@
 #include <QMutexLocker>
-#include <QListIterator>
 #include <QImage>
 #include <QPair>
 #include "videoframegrabber.h"
