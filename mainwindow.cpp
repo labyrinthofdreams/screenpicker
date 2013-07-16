@@ -241,6 +241,8 @@ void MainWindow::resetState()
 {
     scriptEditor->reset();
 
+    lastRequestedFrame = vfg::FirstFrame;
+
     ui->unsavedWidget->clearThumbnails();
     ui->savedWidget->clearThumbnails();
     framesToSave.clear();
@@ -342,7 +344,6 @@ void MainWindow::on_actionOpen_triggered()
         return;
 
     // Reset all states back to zero
-    lastRequestedFrame = vfg::FirstFrame;
     resetState();
 
     loadFile(filename);
@@ -375,7 +376,6 @@ void MainWindow::on_actionOpen_DVD_triggered()
     }
 
     // Reset all states back to zero
-    lastRequestedFrame = vfg::FirstFrame;
     resetState();
 
     dvdProcessor->process(vobFiles);
