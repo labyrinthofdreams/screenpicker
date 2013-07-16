@@ -312,6 +312,21 @@ void MainWindow::loadFile(QString path)
             videoSettingsWindow->show();
         }
     }
+    catch(vfg::ScriptParserTemplateException& ex)
+    {
+        if(!frameGrabber->hasVideo())
+        {
+            QMessageBox::warning(this, tr("No video"), tr("This operation requires a video"));
+        }
+        else
+        {
+            QMessageBox::warning(this, tr("Script template error"), QString(ex.what()));
+        }
+    }
+    catch(vfg::VideoSourceException& ex)
+    {
+        QMessageBox::warning(this, tr("Error while processing script"), QString(ex.what()));
+    }
     catch(std::exception& ex)
     {
         QMessageBox::warning(this, tr("Error while loading file"),
