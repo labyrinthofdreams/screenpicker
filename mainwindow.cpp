@@ -397,32 +397,11 @@ void MainWindow::dvdProcessorFinished(QString path)
 
 void MainWindow::scriptEditorUpdated()
 {
-    try
-    {
-        if(lastLoadedFile.isEmpty() || !frameGrabber->hasVideo())
-        {
-            QMessageBox::critical(this, tr("No video"), tr("This operation requires a video"));
-            return;
-        }
-
-        QString saveTo = scriptEditor->path();
-
-        // Create Avisynth video source and attempt to load the (parsed) Avisynth script
-        QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
-        videoSource->load(saveTo);
-        lastLoadedFile = saveTo;
+    const QString path = scriptEditor->path();
+    loadFile(path);
 
     QFileInfo info(path);
     setWindowTitle(info.absoluteFilePath());
-        frameGrabber->setVideoSource(videoSource);
-    }
-    catch(std::exception& ex)
-    {
-        QMessageBox::warning(this, tr("Error while loading script"),
-                             QString(ex.what()));
-        scriptEditor->show();
-        scriptEditor->setWindowState(Qt::WindowActive);
-    }
 }
 
 void MainWindow::videoLoaded()
