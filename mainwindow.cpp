@@ -345,6 +345,9 @@ void MainWindow::on_actionOpen_triggered()
         return;
 
     loadFile(filename);
+
+    QFileInfo info(filename);
+    setWindowTitle(info.absoluteFilePath());
 }
 
 void MainWindow::on_actionOpen_DVD_triggered()
@@ -409,6 +412,8 @@ void MainWindow::scriptEditorUpdated()
         videoSource->load(saveTo);
         lastLoadedFile = saveTo;
 
+    QFileInfo info(path);
+    setWindowTitle(info.absoluteFilePath());
         frameGrabber->setVideoSource(videoSource);
     }
     catch(std::exception& ex)
