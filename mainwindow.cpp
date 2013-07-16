@@ -292,10 +292,6 @@ void MainWindow::loadFile(QString path)
         // Reset all states back to zero
         lastRequestedFrame = vfg::FirstFrame;
         resetState();
-
-        QFileInfo info(path);
-        setWindowTitle(info.absoluteFilePath());
-
         // Load config
         QSettings cfg("config.ini", QSettings::IniFormat);
         const bool showEditor = cfg.value("showscripteditor").toBool();
