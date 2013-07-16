@@ -243,6 +243,7 @@ void MainWindow::resetState()
     scriptEditor->reset();
 
     lastRequestedFrame = vfg::FirstFrame;
+    lastOpenedFile.clear();
 
     ui->unsavedWidget->clearThumbnails();
     ui->savedWidget->clearThumbnails();
@@ -336,6 +337,8 @@ void MainWindow::on_actionOpen_triggered()
 
     QFileInfo info(filename);
     setWindowTitle(info.absoluteFilePath());
+
+    lastOpenedFile = filename;
 }
 
 void MainWindow::on_actionOpen_DVD_triggered()
@@ -377,7 +380,7 @@ void MainWindow::dvdProcessorFinished(QString path)
 
 void MainWindow::videoSettingsUpdated()
 {    
-    loadFile(scriptEditor->path());
+    loadFile(lastOpenedFile);
 }
 
 void MainWindow::scriptEditorUpdated()
