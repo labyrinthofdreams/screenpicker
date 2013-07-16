@@ -384,15 +384,6 @@ void MainWindow::dvdProcessorFinished(QString path)
     setWindowTitle(info.absoluteFilePath());
 }
 
-        frameGrabber->setVideoSource(videoSource);
-    }
-    catch(std::exception& ex)
-    {
-        QMessageBox::warning(this, tr("Error while loading script"),
-                             QString(ex.what()));
-        scriptEditor->show();
-        scriptEditor->setWindowState(Qt::WindowActive);
-    }
 }
 
 void MainWindow::scriptEditorUpdated()
