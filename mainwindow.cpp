@@ -376,6 +376,8 @@ void MainWindow::dvdProcessorFinished(QString path)
 
     QFileInfo info(path);
     setWindowTitle(info.absoluteFilePath());
+
+    lastOpenedFile = path;
 }
 
 void MainWindow::videoSettingsUpdated()
@@ -390,6 +392,8 @@ void MainWindow::scriptEditorUpdated()
 
     QFileInfo info(path);
     setWindowTitle(info.absoluteFilePath());
+
+    lastOpenedFile = path;
 }
 
 void MainWindow::videoLoaded()
