@@ -373,6 +373,11 @@ void MainWindow::on_actionOpen_DVD_triggered()
         return;
     }
 
+    // Reset all states back to zero
+    lastRequestedFrame = vfg::FirstFrame;
+    resetState();
+    scriptEditor->reset();
+
     dvdProcessor->process(vobFiles);
 }
 
