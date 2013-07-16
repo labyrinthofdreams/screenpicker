@@ -295,14 +295,7 @@ void MainWindow::loadFile(QString path)
     }
     catch(vfg::ScriptParserTemplateException& ex)
     {
-        if(!frameGrabber->hasVideo())
-        {
-            QMessageBox::warning(this, tr("No video"), tr("This operation requires a video"));
-        }
-        else
-        {
-            QMessageBox::warning(this, tr("Script template error"), QString(ex.what()));
-        }
+        QMessageBox::warning(this, tr("Script template error"), QString(ex.what()));
     }
     catch(vfg::VideoSourceException& ex)
     {
@@ -382,6 +375,12 @@ void MainWindow::dvdProcessorFinished(QString path)
 
 void MainWindow::videoSettingsUpdated()
 {    
+    if(!frameGrabber->hasVideo())
+    {
+        QMessageBox::warning(this, tr("No video"), tr("This operation requires a video"));
+        return;
+    }
+
     loadFile(lastOpenedFile);
 }
 
