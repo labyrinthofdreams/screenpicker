@@ -276,8 +276,6 @@ void MainWindow::loadFile(QString path)
         QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
         QString parsedScript = parser->parse(videoSettings);
 
-        // Remember to reset script editor internal state
-        scriptEditor->reset();
         scriptEditor->setContent(parsedScript);
         scriptEditor->save();
         QString saveTo = scriptEditor->path();
@@ -289,9 +287,6 @@ void MainWindow::loadFile(QString path)
         // TODO: Stop screenshot generation if that's happening...
         frameGrabber->setVideoSource(videoSource);
 
-        // Reset all states back to zero
-        lastRequestedFrame = vfg::FirstFrame;
-        resetState();
         // Load config
         QSettings cfg("config.ini", QSettings::IniFormat);
         const bool showEditor = cfg.value("showscripteditor").toBool();
