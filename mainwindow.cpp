@@ -384,6 +384,9 @@ void MainWindow::dvdProcessorFinished(QString path)
     setWindowTitle(info.absoluteFilePath());
 }
 
+void MainWindow::videoSettingsUpdated()
+{    
+    loadFile(scriptEditor->path());
 }
 
 void MainWindow::scriptEditorUpdated()
