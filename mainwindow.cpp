@@ -239,6 +239,8 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
 
 void MainWindow::resetState()
 {
+    scriptEditor->reset();
+
     ui->unsavedWidget->clearThumbnails();
     ui->savedWidget->clearThumbnails();
     framesToSave.clear();
@@ -342,7 +344,6 @@ void MainWindow::on_actionOpen_triggered()
     // Reset all states back to zero
     lastRequestedFrame = vfg::FirstFrame;
     resetState();
-    scriptEditor->reset();
 
     loadFile(filename);
 
@@ -376,7 +377,6 @@ void MainWindow::on_actionOpen_DVD_triggered()
     // Reset all states back to zero
     lastRequestedFrame = vfg::FirstFrame;
     resetState();
-    scriptEditor->reset();
 
     dvdProcessor->process(vobFiles);
 }
