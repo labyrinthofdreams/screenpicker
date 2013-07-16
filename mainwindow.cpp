@@ -339,6 +339,11 @@ void MainWindow::on_actionOpen_triggered()
     if(filename.isEmpty())
         return;
 
+    // Reset all states back to zero
+    lastRequestedFrame = vfg::FirstFrame;
+    resetState();
+    scriptEditor->reset();
+
     loadFile(filename);
 
     QFileInfo info(filename);
