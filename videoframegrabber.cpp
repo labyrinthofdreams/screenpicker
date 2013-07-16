@@ -49,7 +49,7 @@ vfg::VideoFrameGrabber::~VideoFrameGrabber()
 bool vfg::VideoFrameGrabber::hasVideo() const
 {
     QMutexLocker lock(&mutex);
-    return avs->hasVideo();
+    return !avs.isNull() && avs->hasVideo();
 }
 
 void vfg::VideoFrameGrabber::setVideoSource(QSharedPointer<vfg::AbstractVideoSource> newAvs)

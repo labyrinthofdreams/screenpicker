@@ -23,6 +23,7 @@ public:
     ~DvdProcessor();
     void process(QStringList files);
     void setProcessor(QString executablePath);
+    QString savedPath() const;
     
 signals:
     void finished(QString filename);

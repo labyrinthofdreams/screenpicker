@@ -29,7 +29,7 @@ QString ScriptParser::readTemplate(QString path)
 {
     QFile tpl(path);
     if(!tpl.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        throw std::runtime_error("Script template error. File missing? Insufficient permissions?");
+        throw ScriptParserTemplateException(QString("Unable to open %1").arg(path).toStdString());
     }
 
     QTextStream stream(&tpl);
@@ -95,6 +95,10 @@ QString ScriptParser::parse(QMap<QString, int> settings)
         std::wstring result = cpptempl::parse(str, data);
 
         return QString::fromStdWString(result);
+    }
+    catch(ScriptParserTemplateException& ex)
+    {
+        throw;
     }
     catch(std::exception &ex)
     {

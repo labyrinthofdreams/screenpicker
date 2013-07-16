@@ -39,7 +39,7 @@ public slots:
     
 private:
     vfg::VideoFrameGrabber *frameGrabber;
-    QList<const unsigned> frames;
+    QList<unsigned> frames;
     mutable QMutex mutex;
     QWaitCondition waitToContinue;
     bool halt;

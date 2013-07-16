@@ -78,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(scriptEditorUpdated()));
 
     connect(dvdProcessor, SIGNAL(finished(QString)),
-            this, SLOT(loadFile(QString)));
+            this, SLOT(dvdProcessorFinished(QString)));
 
     connect(dvdProcessor, SIGNAL(error(QString)),
             this, SLOT(videoError(QString)));
@@ -240,6 +240,10 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
 
 void MainWindow::resetState()
 {
+    scriptEditor->reset();
+
+    lastRequestedFrame = vfg::FirstFrame;
+
     ui->unsavedWidget->clearThumbnails();
     ui->savedWidget->clearThumbnails();
     framesToSave.clear();
@@ -271,15 +275,12 @@ void MainWindow::loadFile(QString path)
 {
     try
     {
-        lastLoadedFile = path;
         vfg::ScriptParserFactory parserFactory;
         QSharedPointer<vfg::ScriptParser> parser = parserFactory.parser(path);
 
         QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
         QString parsedScript = parser->parse(videoSettings);
 
-        // Remember to reset script editor internal state
-        scriptEditor->reset();
         scriptEditor->setContent(parsedScript);
         scriptEditor->save();
         QString saveTo = scriptEditor->path();
@@ -290,13 +291,6 @@ void MainWindow::loadFile(QString path)
 
         // TODO: Stop screenshot generation if that's happening...
         frameGrabber->setVideoSource(videoSource);
-
-        // Reset all states back to zero
-        lastRequestedFrame = vfg::FirstFrame;
-        resetState();
-
-        QFileInfo info(path);
-        setWindowTitle(info.absoluteFilePath());
 
         // Load config
         QSettings cfg("config.ini", QSettings::IniFormat);
@@ -312,6 +306,21 @@ void MainWindow::loadFile(QString path)
             videoSettingsWindow->hide();
             videoSettingsWindow->show();
         }
+    }
+    catch(vfg::ScriptParserTemplateException& ex)
+    {
+        if(!frameGrabber->hasVideo())
+        {
+            QMessageBox::warning(this, tr("No video"), tr("This operation requires a video"));
+        }
+        else
+        {
+            QMessageBox::warning(this, tr("Script template error"), QString(ex.what()));
+        }
+    }
+    catch(vfg::VideoSourceException& ex)
+    {
+        QMessageBox::warning(this, tr("Error while processing script"), QString(ex.what()));
     }
     catch(std::exception& ex)
     {
@@ -335,7 +344,13 @@ void MainWindow::on_actionOpen_triggered()
     if(filename.isEmpty())
         return;
 
+    // Reset all states back to zero
+    resetState();
+
     loadFile(filename);
+
+    QFileInfo info(filename);
+    setWindowTitle(info.absoluteFilePath());
 }
 
 void MainWindow::on_actionOpen_DVD_triggered()
@@ -361,70 +376,32 @@ void MainWindow::on_actionOpen_DVD_triggered()
         return;
     }
 
+    // Reset all states back to zero
+    resetState();
+
     dvdProcessor->process(vobFiles);
 }
 
-void MainWindow::videoSettingsUpdated()
+void MainWindow::dvdProcessorFinished(QString path)
 {
-    try
-    {
-        if(lastLoadedFile.isEmpty() || !frameGrabber->hasVideo())
-        {
-            QMessageBox::critical(this, tr("No video"), tr("This operation requires a video"));
-            return;
-        }
+    loadFile(path);
 
-        vfg::ScriptParserFactory parserFactory;
-        QSharedPointer<vfg::ScriptParser> parser = parserFactory.parser(lastLoadedFile);
+    QFileInfo info(path);
+    setWindowTitle(info.absoluteFilePath());
+}
 
-        QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
-        QString parsedScript = parser->parse(videoSettings);
-
-        scriptEditor->setContent(parsedScript);
-        scriptEditor->save();
-        QString saveTo = scriptEditor->path();
-
-        // Create Avisynth video source and attempt to load the (parsed) Avisynth script
-        QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
-        videoSource->load(saveTo);
-
-        frameGrabber->setVideoSource(videoSource);
-    }
-    catch(std::exception& ex)
-    {
-        QMessageBox::warning(this, tr("Error while loading script"),
-                             QString(ex.what()));
-        scriptEditor->show();
-        scriptEditor->setWindowState(Qt::WindowActive);
-    }
+void MainWindow::videoSettingsUpdated()
+{    
+    loadFile(scriptEditor->path());
 }
 
 void MainWindow::scriptEditorUpdated()
 {
-    try
-    {
-        if(lastLoadedFile.isEmpty() || !frameGrabber->hasVideo())
-        {
-            QMessageBox::critical(this, tr("No video"), tr("This operation requires a video"));
-            return;
-        }
+    const QString path = scriptEditor->path();
+    loadFile(path);
 
-        QString saveTo = scriptEditor->path();
-
-        // Create Avisynth video source and attempt to load the (parsed) Avisynth script
-        QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
-        videoSource->load(saveTo);
-        lastLoadedFile = saveTo;
-
-        frameGrabber->setVideoSource(videoSource);
-    }
-    catch(std::exception& ex)
-    {
-        QMessageBox::warning(this, tr("Error while loading script"),
-                             QString(ex.what()));
-        scriptEditor->show();
-        scriptEditor->setWindowState(Qt::WindowActive);
-    }
+    QFileInfo info(path);
+    setWindowTitle(info.absoluteFilePath());
 }
 
 void MainWindow::videoLoaded()

@@ -43,6 +43,7 @@ private slots:
     void frameReceived(QPair<unsigned, QImage> frame);
     void scriptEditorUpdated();
     void videoSettingsUpdated();
+    void dvdProcessorFinished(QString path);
     void videoLoaded();
     void videoError(QString msg);
     void thumbnailDoubleClicked(unsigned frameNumber);
@@ -91,8 +92,6 @@ private:
     vfg::VideoSettingsWidget *videoSettingsWindow;
 
     QList<unsigned> framesToSave;
-
-    QString lastLoadedFile;
 
     // Keeps track of the last requested frame which is used to
     // return to that frame after reloading the script via editor

@@ -37,8 +37,6 @@ namespace vfg
         QString savePath;
         void setSavePath(QString path);
     signals:
-        // Emits name of the temporary script path
-        // with our modified script
         void scriptUpdated();
     };
 }
