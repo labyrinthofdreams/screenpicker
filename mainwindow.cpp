@@ -77,7 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(scriptEditorUpdated()));
 
     connect(dvdProcessor, SIGNAL(finished(QString)),
-            this, SLOT(loadFile(QString)));
+            this, SLOT(dvdProcessorFinished(QString)));
 
     connect(dvdProcessor, SIGNAL(error(QString)),
             this, SLOT(videoError(QString)));
@@ -377,29 +377,13 @@ void MainWindow::on_actionOpen_DVD_triggered()
     dvdProcessor->process(vobFiles);
 }
 
-void MainWindow::videoSettingsUpdated()
+void MainWindow::dvdProcessorFinished(QString path)
 {
-    try
-    {
-        if(lastLoadedFile.isEmpty() || !frameGrabber->hasVideo())
-        {
-            QMessageBox::critical(this, tr("No video"), tr("This operation requires a video"));
-            return;
-        }
+    loadFile(path);
 
-        vfg::ScriptParserFactory parserFactory;
-        QSharedPointer<vfg::ScriptParser> parser = parserFactory.parser(lastLoadedFile);
-
-        QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
-        QString parsedScript = parser->parse(videoSettings);
-
-        scriptEditor->setContent(parsedScript);
-        scriptEditor->save();
-        QString saveTo = scriptEditor->path();
-
-        // Create Avisynth video source and attempt to load the (parsed) Avisynth script
-        QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
-        videoSource->load(saveTo);
+    QFileInfo info(path);
+    setWindowTitle(info.absoluteFilePath());
+}
 
         frameGrabber->setVideoSource(videoSource);
     }
