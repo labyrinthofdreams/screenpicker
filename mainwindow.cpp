@@ -291,21 +291,6 @@ void MainWindow::loadFile(QString path)
 
         // TODO: Stop screenshot generation if that's happening...
         frameGrabber->setVideoSource(videoSource);
-
-        // Load config
-        QSettings cfg("config.ini", QSettings::IniFormat);
-        const bool showEditor = cfg.value("showscripteditor").toBool();
-        if(showEditor)
-        {
-            scriptEditor->show();
-            scriptEditor->setWindowState(Qt::WindowActive);
-        }
-        const bool showVideoSettings = cfg.value("showvideosettings").toBool();
-        if(showVideoSettings)
-        {
-            videoSettingsWindow->hide();
-            videoSettingsWindow->show();
-        }
     }
     catch(vfg::ScriptParserTemplateException& ex)
     {
@@ -434,6 +419,21 @@ void MainWindow::videoLoaded()
     ui->grabButton->setEnabled(true);
     ui->generateButton->setEnabled(true);
     ui->saveSingleButton->setEnabled(true);
+
+    // Load config
+    QSettings cfg("config.ini", QSettings::IniFormat);
+    const bool showEditor = cfg.value("showscripteditor").toBool();
+    if(showEditor)
+    {
+        scriptEditor->hide();
+        scriptEditor->show();
+    }
+    const bool showVideoSettings = cfg.value("showvideosettings").toBool();
+    if(showVideoSettings)
+    {
+        videoSettingsWindow->hide();
+        videoSettingsWindow->show();
+    }
 }
 
 void MainWindow::videoError(QString msg)
