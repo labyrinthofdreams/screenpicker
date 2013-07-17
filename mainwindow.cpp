@@ -27,6 +27,30 @@
 // TODO: Merge old config with new config
 // TODO: If loading new files while generating it will generate an extra after loading
 
+QMap<QString, QString> avinfoParseVideoHeader(QString path)
+{
+    QMap<QString, QString> videoHeader;
+    QProcess proc;
+    proc.start(QDir::current().absoluteFilePath("avinfo.exe"), QStringList() << path << "--raw");
+    bool ok = proc.waitForFinished();
+    if(ok)
+    {
+        QList<QByteArray> output = proc.readAllStandardOutput().split('\n');
+        for(int i = 0; i < output.size(); ++i)
+        {
+            QString line(output.at(i).trimmed());
+            QStringList kv = line.split("=");
+            if(kv.size() < 2)
+            {
+                break;
+            }
+            videoHeader.insert(kv.at(0), kv.at(1));
+        }
+    }
+
+    return videoHeader;
+}
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -276,10 +300,22 @@ void MainWindow::loadFile(QString path)
 {
     try
     {
+        QMap<QString, QString> videoHeader = avinfoParseVideoHeader(path);
+
         vfg::ScriptParserFactory parserFactory;
         QSharedPointer<vfg::ScriptParser> parser = parserFactory.parser(path);
 
         QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
+        unsigned resizeWidth = videoHeader.value("v1.x", "0").toInt();
+        if(resizeWidth % 2 != 0) {
+            resizeWidth++;
+        }
+        unsigned resizeHeight = videoHeader.value("v1.y", "0").toInt();
+        if(resizeHeight % 2 != 0) {
+            resizeHeight++;
+        }
+        videoSettings.insert("resizewidth", resizeWidth);
+        videoSettings.insert("resizeheight", resizeHeight);
         QString parsedScript = parser->parse(videoSettings);
 
         scriptEditor->setContent(parsedScript);
