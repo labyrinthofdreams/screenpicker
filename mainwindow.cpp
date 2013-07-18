@@ -301,23 +301,38 @@ void MainWindow::loadFile(QString path)
 {
     try
     {
-        QMap<QString, QString> videoHeader = avinfoParseVideoHeader(path);
-
         vfg::ScriptParserFactory parserFactory;
         QSharedPointer<vfg::ScriptParser> parser = parserFactory.parser(path);
 
         QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
-        // TODO: This is bad
-        unsigned resizeWidth = videoHeader.value("v1.x", "0").toInt();
-        if(resizeWidth % 2 != 0) {
-            resizeWidth++;
+
+        // Only overwrite values in video settings if
+        // they've not been set explicitly by the user
+        const bool overrideWidth = (videoSettings.value("resizewidth") == 0);
+        const bool overrideHeight = (videoSettings.value("resizeheight") == 0);
+        const bool overrideSize = (overrideWidth || overrideHeight);
+        if(overrideSize)
+        {
+            QMap<QString, QString> videoHeader = avinfoParseVideoHeader(path);
+
+            if(overrideWidth)
+            {
+                unsigned resizeWidth = videoHeader.value("v1.x", "0").toInt();
+                if(resizeWidth % 2 != 0) {
+                    resizeWidth++;
+                }
+                videoSettings.insert("resizewidth", resizeWidth);
+            }
+            if(overrideHeight)
+            {
+                unsigned resizeHeight = videoHeader.value("v1.y", "0").toInt();
+                if(resizeHeight % 2 != 0) {
+                    resizeHeight++;
+                }
+                videoSettings.insert("resizeheight", resizeHeight);
+            }
         }
-        unsigned resizeHeight = videoHeader.value("v1.y", "0").toInt();
-        if(resizeHeight % 2 != 0) {
-            resizeHeight++;
-        }
-        videoSettings.insert("resizewidth", resizeWidth);
-        videoSettings.insert("resizeheight", resizeHeight);
+
         QString parsedScript = parser->parse(videoSettings);
 
         scriptEditor->setContent(parsedScript);
