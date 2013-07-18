@@ -32,7 +32,8 @@ QMap<QString, QString> avinfoParseVideoHeader(QString path)
     QMap<QString, QString> videoHeader;
     QProcess proc;
     proc.start(QDir::current().absoluteFilePath("avinfo.exe"), QStringList() << path << "--raw");
-    bool ok = proc.waitForFinished();
+    // Wait for 3 seconds max
+    bool ok = proc.waitForFinished(3000);
     if(ok)
     {
         QList<QByteArray> output = proc.readAllStandardOutput().split('\n');
@@ -306,6 +307,7 @@ void MainWindow::loadFile(QString path)
         QSharedPointer<vfg::ScriptParser> parser = parserFactory.parser(path);
 
         QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
+        // TODO: This is bad
         unsigned resizeWidth = videoHeader.value("v1.x", "0").toInt();
         if(resizeWidth % 2 != 0) {
             resizeWidth++;
