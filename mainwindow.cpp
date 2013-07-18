@@ -15,17 +15,13 @@
 #include "videosettingswidget.h"
 
 // TODO: Project files to save progress?
-// TODO: Add parsers (loading automation) for common video formats to reduce scripting
 // TODO: The way scripts are tied to scripteditor is bad design probably...
 // TODO: Make script templates modifiable
-// TODO: Remove duplicate code from loadFile/scriptEditorUpdated
-// Look into loadFile/sccriptEditorUpdated refactoring
 // TODO: Load last script
 // TODO: If reached max limit and raised the max thumbnails limit, continue generating
 // TODO: If loading a custom avisynth script OR modifying the current script,
 // disable video settings window apply button and display notification msg to user about it
 // TODO: Merge old config with new config
-// TODO: If loading new files while generating it will generate an extra after loading
 
 QMap<QString, QString> avinfoParseVideoHeader(QString path)
 {
