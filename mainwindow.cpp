@@ -14,15 +14,6 @@
 #include "scriptparser.h"
 #include "videosettingswidget.h"
 
-// TODO: Project files to save progress?
-// TODO: The way scripts are tied to scripteditor is bad design probably...
-// TODO: Make script templates modifiable
-// TODO: Load last script
-// TODO: If reached max limit and raised the max thumbnails limit, continue generating
-// TODO: If loading a custom avisynth script OR modifying the current script,
-// disable video settings window apply button and display notification msg to user about it
-// TODO: Merge old config with new config
-
 QMap<QString, QString> avinfoParseVideoHeader(QString path)
 {
     QMap<QString, QString> videoHeader;
@@ -189,8 +180,6 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
     ui->unsavedWidget->addThumbnail(thumb);
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
-    // TODO: See if it's possible to implement signals to the generator
-    // and get rid of all this code here
     QSettings cfg("config.ini", QSettings::IniFormat);
     if(frameGenerator->isPaused())
     {
@@ -551,7 +540,6 @@ void MainWindow::on_seekSlider_sliderMoved(int position)
 
 void MainWindow::on_generateButton_clicked()
 {
-    // TODO: container isFull() check
     QSettings cfg("config.ini", QSettings::IniFormat);
     const bool pauseAfterLimit = cfg.value("pauseafterlimit").toBool();
     if(pauseAfterLimit && ui->unsavedWidget->isFull()) {
