@@ -798,7 +798,20 @@ void MainWindow::on_actionOptions_triggered()
     {
         QSettings cfg("config.ini", QSettings::IniFormat);
 
-        ui->unsavedWidget->setMaxThumbnails(cfg.value("maxthumbnails").toInt());
+        const unsigned newMaxThumbnails = cfg.value("maxthumbnails").toUInt();
+        const bool containerFull = ui->unsavedWidget->isFull();
+        const bool containerHasRoom = (newMaxThumbnails > ui->unsavedWidget->numThumbnails());
+        const bool generatorHasQueue = (frameGenerator->remaining() > 0);
+        const bool generatorWaiting = (frameGenerator->isRunning() && !frameGenerator->isPaused());
+        const bool continueGenerator = (containerFull && containerHasRoom
+                                        && generatorHasQueue && generatorWaiting);
+
+        if(continueGenerator)
+        {
+            frameGenerator->fetchNext();
+        }
+
+        ui->unsavedWidget->setMaxThumbnails(newMaxThumbnails);
         dvdProcessor->setProcessor(cfg.value("dgindexexecpath").toString());       
     }
 }
