@@ -140,17 +140,17 @@ void MainWindow::closeEvent(QCloseEvent *ev)
                                   QMessageBox::No);
     if(response == QMessageBox::Yes)
     {
-        if(frameGrabberThread->isRunning())
-        {
-            frameGrabberThread->quit();
-            frameGrabberThread->wait();
-        }
-
         if(frameGeneratorThread->isRunning())
         {
             frameGenerator->stop();
             frameGeneratorThread->quit();
             frameGeneratorThread->wait();
+        }
+
+        if(frameGrabberThread->isRunning())
+        {
+            frameGrabberThread->quit();
+            frameGrabberThread->wait();
         }
 
         // Close script editor if it's open
