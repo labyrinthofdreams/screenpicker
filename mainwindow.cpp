@@ -71,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         const unsigned maxThumbnails = cfg.value("maxthumbnails").toInt();
         ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
+        ui->unsavedProgressBar->setMaximum(maxThumbnails);
 
         const unsigned numScreenshots = cfg.value("numscreenshots").toInt();
         ui->screenshotsSpinBox->setValue(numScreenshots);
