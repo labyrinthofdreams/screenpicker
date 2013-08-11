@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     a.setApplicationName("ScreenPicker 2.0");
     a.setApplicationDisplayName("ScreenPicker 2.0");
-    a.setApplicationVersion("2.0 BETA r20130718.2131");
+    a.setApplicationVersion("2.0 BETA r20130811.2037");
 
     try
     {
