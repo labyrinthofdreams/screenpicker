@@ -251,6 +251,8 @@ void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
 
 void MainWindow::resetState()
 {
+    videoSettingsWindow->resetSettings();
+
     scriptEditor->reset();
 
     lastRequestedFrame = vfg::FirstFrame;
