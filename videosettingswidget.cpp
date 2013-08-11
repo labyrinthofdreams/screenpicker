@@ -63,4 +63,15 @@ QMap<QString, int> VideoSettingsWidget::getSettings() const
     return settings;
 }
 
+void VideoSettingsWidget::resetSettings()
+{
+    ui->sboxCropBottom->setValue(0);
+    ui->sboxCropLeft->setValue(0);
+    ui->sboxCropRight->setValue(0);
+    ui->sboxCropTop->setValue(0);
+    ui->sboxResizeHeight->setValue(0);
+    ui->sboxResizeWidth->setValue(0);
+    ui->radioButton->setChecked(true);
+}
+
 } // namespace vfg

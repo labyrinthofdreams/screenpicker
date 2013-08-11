@@ -34,6 +34,7 @@ public:
     ~VideoSettingsWidget();
 
     QMap<QString, int> getSettings() const;
+    void resetSettings();
     
 private slots:
     void on_cboxDvdResolution_activated(int index);
