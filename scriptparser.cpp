@@ -64,12 +64,16 @@ QString ScriptParser::parse(QMap<QString, int> settings)
         else
             data[L"deinterlace"] = make_data(L"");
 
+        // lambda function to convert odd numbers to even values
+        // TODO: Probably doesn't belong here (unexpected value modification)
+        auto upconvert_odd = [](const int n){return (n % 2 == 0) ? n : n + 1;};
+
         const int resizeWidth = settings.value("resizewidth", 0);
         const int resizeHeight = settings.value("resizeheight", 0);
         if(resizeWidth || resizeHeight) {
             data_map resize;
-            resize[L"width"] = make_data(to_wstr(resizeWidth));
-            resize[L"height"] = make_data(to_wstr(resizeHeight));
+            resize[L"width"] = make_data(to_wstr(upconvert_odd(resizeWidth)));
+            resize[L"height"] = make_data(to_wstr(upconvert_odd(resizeHeight)));
             data[L"resize"] = make_data(resize);
         }
         else {
@@ -82,10 +86,10 @@ QString ScriptParser::parse(QMap<QString, int> settings)
         const int cropLeft = settings.value("cropleft", 0);
         if(cropTop || cropRight || cropBottom || cropLeft) {
             data_map crop;
-            crop[L"top"] = make_data(to_wstr(cropTop));
-            crop[L"right"] = make_data(to_wstr(cropRight));
-            crop[L"bottom"] = make_data(to_wstr(cropBottom));
-            crop[L"left"] = make_data(to_wstr(cropLeft));
+            crop[L"top"] = make_data(to_wstr(upconvert_odd(cropTop)));
+            crop[L"right"] = make_data(to_wstr(upconvert_odd(cropRight)));
+            crop[L"bottom"] = make_data(to_wstr(upconvert_odd(cropBottom)));
+            crop[L"left"] = make_data(to_wstr(upconvert_odd(cropLeft)));
             data[L"crop"] = make_data(crop);
         }
         else {
