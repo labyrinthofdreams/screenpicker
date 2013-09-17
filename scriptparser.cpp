@@ -10,7 +10,7 @@
 
 namespace vfg {
 
-inline std::wstring to_wstr(unsigned n)
+inline std::wstring to_wstr(const int n)
 {
     return QString::number(n).toStdWString();
 }
@@ -64,8 +64,8 @@ QString ScriptParser::parse(QMap<QString, int> settings)
         else
             data[L"deinterlace"] = make_data(L"");
 
-        const unsigned resizeWidth = settings.value("resizewidth", 0);
-        const unsigned resizeHeight = settings.value("resizeheight", 0);
+        const int resizeWidth = settings.value("resizewidth", 0);
+        const int resizeHeight = settings.value("resizeheight", 0);
         if(resizeWidth || resizeHeight) {
             data_map resize;
             resize[L"width"] = make_data(to_wstr(resizeWidth));
@@ -76,10 +76,10 @@ QString ScriptParser::parse(QMap<QString, int> settings)
             data[L"resize"] = make_data(L"");
         }
 
-        const unsigned cropTop = settings.value("croptop", 0);
-        const unsigned cropRight = settings.value("cropright", 0);
-        const unsigned cropBottom = settings.value("cropbottom", 0);
-        const unsigned cropLeft = settings.value("cropleft", 0);
+        const int cropTop = settings.value("croptop", 0);
+        const int cropRight = settings.value("cropright", 0);
+        const int cropBottom = settings.value("cropbottom", 0);
+        const int cropLeft = settings.value("cropleft", 0);
         if(cropTop || cropRight || cropBottom || cropLeft) {
             data_map crop;
             crop[L"top"] = make_data(to_wstr(cropTop));
