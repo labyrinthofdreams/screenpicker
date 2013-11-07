@@ -854,6 +854,14 @@ void MainWindow::on_saveSingleButton_clicked()
     const unsigned selected = ui->seekSlider->value();
     QImage frame = frameGrabber->getFrame(selected);
 
+    QDir saveDir(lastSaveDirectory);
+    QString defaultSavePath = saveDir.absoluteFilePath(QString("%1.png").arg(QString::number(selected)));
+    QString outFilename = QFileDialog::getSaveFileName(this, tr("Save as..."),
+                                                       defaultSavePath,
+                                                       tr("PNG (*.png)"));
+    QFileInfo info(outFilename);
+    lastSaveDirectory = info.absoluteDir().absolutePath();
+
     bool resizeOk = false;
     int resizeWidth = 0;
     QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Resize thumbnails"),
@@ -868,14 +876,6 @@ void MainWindow::on_saveSingleButton_clicked()
                                            resizeTo, 100, frameSize.width(), 10, &resizeOk);
         frame = frame.scaledToWidth(resizeWidth, Qt::SmoothTransformation);
     }
-
-    QDir saveDir(lastSaveDirectory);
-    QString defaultSavePath = saveDir.absoluteFilePath(QString("%1.png").arg(QString::number(selected)));
-    QString outFilename = QFileDialog::getSaveFileName(this, tr("Save as..."),
-                                                       defaultSavePath,
-                                                       tr("PNG (*.png)"));
-    QFileInfo info(outFilename);
-    lastSaveDirectory = info.absoluteDir().absolutePath();
 
     frame.save(outFilename);
 }
