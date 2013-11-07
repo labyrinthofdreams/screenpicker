@@ -43,7 +43,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     framesToSave(),
-    lastRequestedFrame(vfg::FirstFrame)
+    lastRequestedFrame(vfg::FirstFrame),
+    lastSaveDirectory("/")
 {
     ui->setupUi(this);
 
@@ -705,8 +706,9 @@ void MainWindow::on_saveThumbnailsButton_clicked()
         frameGenerator->pause();
     }
 
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Select save directory"));
-    if(dir.isEmpty())
+    lastSaveDirectory = QFileDialog::getExistingDirectory(this, tr("Select save directory"),
+                                                          lastSaveDirectory);
+    if(lastSaveDirectory.isEmpty())
     {
         return;
     }
@@ -730,7 +732,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
     prog.setWindowModality(Qt::WindowModal);
     prog.setCancelButton(0);
     prog.setMinimumDuration(0);
-    QDir saveDir(dir);
+    QDir saveDir(lastSaveDirectory);
     QListIterator<unsigned> iter(framesToSave);
     while(iter.hasNext())
     {
@@ -867,9 +869,13 @@ void MainWindow::on_saveSingleButton_clicked()
         frame = frame.scaledToWidth(resizeWidth, Qt::SmoothTransformation);
     }
 
+    QDir saveDir(lastSaveDirectory);
+    QString defaultSavePath = saveDir.absoluteFilePath(QString("%1.png").arg(QString::number(selected)));
     QString outFilename = QFileDialog::getSaveFileName(this, tr("Save as..."),
-                                                       QString("%1.png").arg(QString::number(selected)),
+                                                       defaultSavePath,
                                                        tr("PNG (*.png)"));
+    QFileInfo info(outFilename);
+    lastSaveDirectory = info.absoluteDir().absolutePath();
 
     frame.save(outFilename);
 }
