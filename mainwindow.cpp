@@ -789,7 +789,16 @@ void MainWindow::dropEvent(QDropEvent *ev)
     ev->acceptProposedAction();
 
     QString filename = urls.at(0).toLocalFile();
+
+    // Reset all states back to zero
+    resetState();
+
     loadFile(filename);
+
+    QFileInfo info(filename);
+    setWindowTitle(info.absoluteFilePath());
+
+    lastOpenedFile = filename;
 }
 
 void MainWindow::on_actionOptions_triggered()
