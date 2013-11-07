@@ -852,6 +852,21 @@ void MainWindow::on_saveSingleButton_clicked()
     const unsigned selected = ui->seekSlider->value();
     QImage frame = frameGrabber->getFrame(selected);
 
+    bool resizeOk = false;
+    int resizeWidth = 0;
+    QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Resize thumbnails"),
+                                                                tr("Do you want to resize thumbnails?"),
+                                                                QMessageBox::Yes | QMessageBox::No,
+                                                                QMessageBox::No);
+    if(clicked == QMessageBox::Yes)
+    {
+        QSize frameSize = ui->videoFrameWidget->getFrameSize();
+        const int resizeTo = frameSize.width() / 2;
+        resizeWidth = QInputDialog::getInt(this, tr("Resize thumbnails"), tr("Resize to width:"),
+                                           resizeTo, 100, frameSize.width(), 10, &resizeOk);
+        frame = frame.scaledToWidth(resizeWidth, Qt::SmoothTransformation);
+    }
+
     QString outFilename = QFileDialog::getSaveFileName(this, tr("Save as..."),
                                                        QString("%1.png").arg(QString::number(selected)),
                                                        tr("PNG (*.png)"));
