@@ -855,21 +855,8 @@ void MainWindow::on_saveSingleButton_clicked()
     QString outFilename = QFileDialog::getSaveFileName(this, tr("Save as..."),
                                                        QString("%1.png").arg(QString::number(selected)),
                                                        tr("PNG (*.png)"));
-    if(QFile::exists(outFilename))
-    {
-        QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Overwrite?"),
-                                                                    tr("File %1 exists. Overwrite?").arg(outFilename),
-                                                                    QMessageBox::Yes | QMessageBox::No,
-                                                                    QMessageBox::No);
-        if(clicked == QMessageBox::Yes)
-        {
-            frame.save(outFilename);
-        }
-    }
-    else
-    {
-        frame.save(outFilename);
-    }
+
+    frame.save(outFilename);
 }
 
 void MainWindow::on_cbUnlimitedScreens_clicked(bool checked)
