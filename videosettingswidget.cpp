@@ -72,6 +72,7 @@ void VideoSettingsWidget::resetSettings()
     ui->sboxResizeHeight->setValue(0);
     ui->sboxResizeWidth->setValue(0);
     ui->radioButton->setChecked(true);
+    ui->cboxDvdResolution->setCurrentIndex(0);
 }
 
 } // namespace vfg
