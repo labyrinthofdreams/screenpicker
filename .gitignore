@@ -1,0 +1,9 @@
+*.user
+*.5pre1
+*.7pre1
+todo.txt
+*.autosave
+videoheaderparser.h
+*.tsk
+*.lock/
+*.bak
