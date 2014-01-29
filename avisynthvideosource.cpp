@@ -25,13 +25,17 @@ AvisynthVideoSource::AvisynthVideoSource() :
             throw std::runtime_error(error);
         }
     }
-
-    avsHandle.func.avs_set_memory_max(avsHandle.env, 128);
 }
 
 AvisynthVideoSource::~AvisynthVideoSource()
 {
-    internal_avs_close_library(&avsHandle, hasVideo());
+    if(hasVideo()) {
+        avsHandle.func.avs_release_clip(avsHandle.clip);
+    }
+    if(avsHandle.func.avs_delete_script_environment) {
+        avsHandle.func.avs_delete_script_environment(avsHandle.env);
+    }
+    FreeLibrary(avsHandle.library);
 }
 
 void AvisynthVideoSource::load(QString fileName)
