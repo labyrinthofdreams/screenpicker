@@ -8,7 +8,7 @@ Requirements:
 - Qt 5.0 or newer
 - avs2yuv (avs2yuv-0.24bm2) (included)
 - cpptempl (http://ginstrom.com/scribbles/2010/10/30/cpptempl-a-template-language-for-c/) (included)
-- Avisynth + plug-ins (DGDecode.dll, ffms2.dll, nnedi3.dll, TIVTC.dll, yadifmod.dll)
+- Avisynth 2.5.8 + plug-ins (DGDecode.dll, ffms2.dll, nnedi3.dll, TIVTC.dll, yadifmod.dll)
 - avinfo.exe
 
 Installation:
