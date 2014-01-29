@@ -1,5 +1,7 @@
 ScreenPicker - Generate and grab screenshots from video files
 
+<img src="http://i.imgur.com/PAY74rS.png">
+
 Requirements:
 
 - C++11 compiler
