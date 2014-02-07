@@ -7,10 +7,11 @@
 #include <QPair>
 
 // Forward declarations
-class QVBoxLayout;
 class QLabel;
+class QRect;
 class QResizeEvent;
 class QSize;
+class QVBoxLayout;
 
 namespace vfg
 {
@@ -24,6 +25,7 @@ namespace vfg
         QVBoxLayout* layout;
         QLabel* frameLabel;
         QPixmap framePixmap;
+        QPixmap original;
         bool fullsize;
 
         void updateFrameSize();
@@ -40,6 +42,15 @@ namespace vfg
     public slots:
         void setFrame(QImage img);
         void setFrame(QPair<unsigned, QImage> img);
+        /**
+         * @brief setCrop draws the croppable area on the frame
+         * @param area Area to crop
+         */
+        void setCrop(QRect area);
+        /**
+         * @brief resetCrop resets visualized croppable area
+         */
+        void resetCrop();
     };
 }
 

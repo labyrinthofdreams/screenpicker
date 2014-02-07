@@ -5,8 +5,11 @@
 #include <QMap>
 #include <QString>
 
+// Forward declarations
 class QCloseEvent;
 class QShowEvent;
+class QRect;
+
 namespace vfg {
 
 namespace Ui {
@@ -43,6 +46,8 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void handleCropChange();
+
 private:
     Ui::VideoSettingsWidget *ui;
 
@@ -54,6 +59,13 @@ protected:
 
 signals:
     void settingsChanged();
+    /**
+     * @brief cropChanged emits new crop values
+     * @param area Area to crop on the image
+     */
+    void cropChanged(QRect area);
+
+    void closed();
 };
 
 
