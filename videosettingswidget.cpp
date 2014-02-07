@@ -90,6 +90,7 @@ QMap<QString, int> VideoSettingsWidget::getSettings() const
     settings.insert("resizeheight", ui->sboxResizeHeight->value());
     settings.insert("ivtc", static_cast<int>(ui->radioInverseTelecine->isChecked()));
     settings.insert("deinterlace", static_cast<int>(ui->radioDeinterlace->isChecked()));
+    settings.insert("dvdresolutionidx", ui->cboxDvdResolution->currentIndex());
     return settings;
 }
 
