@@ -88,6 +88,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(videoSettingsWindow, SIGNAL(settingsChanged()),
             this, SLOT(videoSettingsUpdated()));
 
+    connect(videoSettingsWindow, SIGNAL(cropChanged(QRect)),
+            ui->videoFrameWidget, SLOT(setCrop(QRect)));
+
+    connect(videoSettingsWindow, SIGNAL(closed()),
+            ui->videoFrameWidget, SLOT(resetCrop()));
+
     connect(scriptEditor, SIGNAL(scriptUpdated()),
             this, SLOT(scriptEditorUpdated()));
 
