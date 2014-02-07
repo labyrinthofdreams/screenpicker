@@ -14,6 +14,15 @@ VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
     prevSettings()
 {
     ui->setupUi(this);
+
+    connect(ui->sboxCropBottom, SIGNAL(valueChanged(int)),
+            this, SLOT(handleCropChange()));
+    connect(ui->sboxCropLeft, SIGNAL(valueChanged(int)),
+            this, SLOT(handleCropChange()));
+    connect(ui->sboxCropTop, SIGNAL(valueChanged(int)),
+            this, SLOT(handleCropChange()));
+    connect(ui->sboxCropRight, SIGNAL(valueChanged(int)),
+            this, SLOT(handleCropChange()));
 }
 
 VideoSettingsWidget::~VideoSettingsWidget()
@@ -54,6 +63,15 @@ void VideoSettingsWidget::on_pushButton_clicked()
     emit settingsChanged();
 }
 
+void VideoSettingsWidget::handleCropChange()
+{
+    QRect area {ui->sboxCropLeft->value(),
+               ui->sboxCropTop->value(),
+               ui->sboxCropRight->value(),
+               ui->sboxCropBottom->value()};
+
+    emit cropChanged(area);
+}
 
 void VideoSettingsWidget::showEvent(QShowEvent *event)
 {
