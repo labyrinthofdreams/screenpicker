@@ -46,6 +46,8 @@ private:
 
 signals:
     void settingsChanged();
+
+    void closed();
 };
 
 
