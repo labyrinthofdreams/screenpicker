@@ -1,4 +1,7 @@
+#include <QCloseEvent>
 #include <QMap>
+#include <QRect>
+#include <QShowEvent>
 #include <QString>
 #include "videosettingswidget.h"
 #include "ui_videosettingswidget.h"
