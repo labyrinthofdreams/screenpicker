@@ -5,6 +5,8 @@
 #include <QMap>
 #include <QString>
 
+class QCloseEvent;
+class QShowEvent;
 namespace vfg {
 
 namespace Ui {
@@ -43,6 +45,12 @@ private slots:
 
 private:
     Ui::VideoSettingsWidget *ui;
+
+    QMap<QString, int> prevSettings;
+
+protected:
+    void showEvent(QShowEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 signals:
     void settingsChanged();
