@@ -44,6 +44,7 @@ private slots:
 private:
     Ui::VideoSettingsWidget *ui;
 
+    QMap<QString, int> prevSettings;
 
 protected:
     void showEvent(QShowEvent *event);

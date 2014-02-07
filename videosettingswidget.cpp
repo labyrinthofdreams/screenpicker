@@ -7,7 +7,8 @@ namespace vfg {
 
 VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::VideoSettingsWidget)
+    ui(new Ui::VideoSettingsWidget),
+    prevSettings()
 {
     ui->setupUi(this);
 }
