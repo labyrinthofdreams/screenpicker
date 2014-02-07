@@ -5,6 +5,11 @@
 #include <QMap>
 #include <QString>
 
+// Forward declarations
+class QCloseEvent;
+class QShowEvent;
+class QRect;
+
 namespace vfg {
 
 namespace Ui {
