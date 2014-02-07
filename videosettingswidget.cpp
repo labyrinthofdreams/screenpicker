@@ -48,6 +48,27 @@ void VideoSettingsWidget::on_pushButton_clicked()
     emit settingsChanged();
 }
 
+
+void VideoSettingsWidget::closeEvent(QCloseEvent *event)
+{
+    emit closed();
+
+    // Restore previous settings that were applied
+    auto& t = prevSettings;
+    ui->sboxCropBottom->setValue(t.value("cropbottom"));
+    ui->sboxCropLeft->setValue(t.value("cropleft"));
+    ui->sboxCropRight->setValue(t.value("cropright"));
+    ui->sboxCropTop->setValue(t.value("croptop"));
+    ui->sboxResizeHeight->setValue(t.value("resizeheight"));
+    ui->sboxResizeWidth->setValue(t.value("resizewidth"));
+    ui->radioButton->setChecked(true);
+    ui->radioDeinterlace->setChecked(static_cast<bool>(t.value("deinterlace")));
+    ui->radioInverseTelecine->setChecked(static_cast<bool>(t.value("ivtc")));
+    ui->cboxDvdResolution->setCurrentIndex(t.value("dvdresolutionidx"));
+
+    event->accept();
+}
+
 QMap<QString, int> VideoSettingsWidget::getSettings() const
 {
     QMap<QString, int> settings;

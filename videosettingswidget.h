@@ -44,6 +44,8 @@ private slots:
 private:
     Ui::VideoSettingsWidget *ui;
 
+    void closeEvent(QCloseEvent *event);
+
 signals:
     void settingsChanged();
     /**
