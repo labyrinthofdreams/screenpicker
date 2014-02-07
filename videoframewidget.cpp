@@ -1,10 +1,12 @@
 #include <QtWidgets>
 #include <QPair>
+#include <QVector>
 #include "videoframewidget.h"
 
 vfg::VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
     QWidget(parent),
     framePixmap(),
+    original(),
     fullsize(false)
 {
     frameLabel = new QLabel;
@@ -40,13 +42,17 @@ void vfg::VideoFrameWidget::resizeEvent(QResizeEvent *event)
 
 void vfg::VideoFrameWidget::setFrame(QImage img)
 {
-    framePixmap = QPixmap::fromImage(img);
+    original = QPixmap::fromImage(img);
+    framePixmap = original.copy();
     updateFrameSize();
 }
 
 void vfg::VideoFrameWidget::setFrame(QPair<unsigned, QImage> img)
 {
-    framePixmap = QPixmap::fromImage(img.second);
+    original = QPixmap::fromImage(img.second);
+    framePixmap = original.copy();
+    updateFrameSize();
+}
 
 void vfg::VideoFrameWidget::setCrop(QRect area)
 {
