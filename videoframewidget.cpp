@@ -47,6 +47,32 @@ void vfg::VideoFrameWidget::setFrame(QImage img)
 void vfg::VideoFrameWidget::setFrame(QPair<unsigned, QImage> img)
 {
     framePixmap = QPixmap::fromImage(img.second);
+
+void vfg::VideoFrameWidget::setCrop(QRect area)
+{
+    QRect left {0, 0, area.left(), framePixmap.height()};
+    QRect top {0, 0, framePixmap.width(), area.top()};
+    QRect right {framePixmap.width() - area.width(), 0,
+                area.width(), framePixmap.height()};
+    QRect bottom {0, framePixmap.height() - area.height(),
+                 framePixmap.width(), area.height()};
+
+    QPixmap copiedFrame = original.copy();
+    QPainter painter {&copiedFrame};
+    painter.setBrush(Qt::cyan);
+    // Performs an inverse operation which works well with cyan
+    painter.setCompositionMode(QPainter::RasterOp_SourceXorDestination);
+    painter.setOpacity(0.6);
+    painter.setPen(Qt::NoPen);
+    painter.drawRects(QVector<QRect>{left, top, right, bottom});
+    framePixmap.swap(copiedFrame);
+
+    updateFrameSize();
+}
+
+void vfg::VideoFrameWidget::resetCrop()
+{
+    framePixmap = original.copy();
     updateFrameSize();
 }
 
