@@ -46,6 +46,8 @@ void VideoSettingsWidget::on_cboxDvdResolution_activated(int index)
 
 void VideoSettingsWidget::on_pushButton_clicked()
 {
+    // Override previous settings when applying new settings
+    prevSettings = getSettings();
     emit settingsChanged();
 }
 
