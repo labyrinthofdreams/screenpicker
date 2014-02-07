@@ -49,6 +49,15 @@ void VideoSettingsWidget::on_pushButton_clicked()
 }
 
 
+void VideoSettingsWidget::showEvent(QShowEvent *event)
+{
+    Q_UNUSED(event);
+    // Temporarily store previous settings that can be restored
+    // when the window is closed
+    prevSettings = getSettings();
+    event->accept();
+}
+
 void VideoSettingsWidget::closeEvent(QCloseEvent *event)
 {
     emit closed();
