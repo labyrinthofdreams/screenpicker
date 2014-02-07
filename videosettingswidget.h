@@ -46,6 +46,11 @@ private:
 
 signals:
     void settingsChanged();
+    /**
+     * @brief cropChanged emits new crop values
+     * @param area Area to crop on the image
+     */
+    void cropChanged(QRect area);
 
     void closed();
 };
