@@ -1,10 +1,11 @@
 #ifndef VIDEOFRAMEWIDGET_H
 #define VIDEOFRAMEWIDGET_H
 
-#include <QScrollArea>
 #include <QImage>
-#include <QPixmap>
 #include <QPair>
+#include <QPixmap>
+#include <QScrollArea>
+#include <QVector>
 
 // Forward declarations
 class QLabel;
@@ -22,6 +23,7 @@ namespace vfg
     {
         Q_OBJECT
     private:
+        QVector<QRect> cropBorders;
         QVBoxLayout* layout;
         QLabel* frameLabel;
         QPixmap framePixmap;

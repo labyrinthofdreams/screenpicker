@@ -5,6 +5,7 @@
 
 vfg::VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
     QWidget(parent),
+    cropBorders(),
     framePixmap(),
     original(),
     fullsize(false)
@@ -63,15 +64,8 @@ void vfg::VideoFrameWidget::setCrop(QRect area)
     QRect bottom {0, framePixmap.height() - area.height(),
                  framePixmap.width(), area.height()};
 
-    QPixmap copiedFrame = original.copy();
-    QPainter painter {&copiedFrame};
-    painter.setBrush(Qt::cyan);
-    // Performs an inverse operation which works well with cyan
-    painter.setCompositionMode(QPainter::RasterOp_SourceXorDestination);
-    painter.setOpacity(0.6);
-    painter.setPen(Qt::NoPen);
-    painter.drawRects(QVector<QRect>{left, top, right, bottom});
-    framePixmap.swap(copiedFrame);
+    QVector<QRect> newBorders{left, top, right, bottom};
+    cropBorders.swap(newBorders);
 
     updateFrameSize();
 }
@@ -79,6 +73,7 @@ void vfg::VideoFrameWidget::setCrop(QRect area)
 void vfg::VideoFrameWidget::resetCrop()
 {
     framePixmap = original.copy();
+    cropBorders.clear();
     updateFrameSize();
 }
 
@@ -87,6 +82,19 @@ void vfg::VideoFrameWidget::updateFrameSize()
     if(framePixmap.isNull())
     {
         return;
+    }
+
+    if(!cropBorders.isEmpty())
+    {
+        QPixmap copiedFrame = original.copy();
+        QPainter painter {&copiedFrame};
+        painter.setBrush(Qt::cyan);
+        // Performs an inverse operation which works well with cyan
+        painter.setCompositionMode(QPainter::RasterOp_SourceXorDestination);
+        painter.setOpacity(0.6);
+        painter.setPen(Qt::NoPen);
+        painter.drawRects(cropBorders);
+        framePixmap.swap(copiedFrame);
     }
 
     if(!fullsize)
