@@ -43,8 +43,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     framesToSave(),
-    lastRequestedFrame(vfg::FirstFrame),
-    lastSaveDirectory("/")
+    lastOpenedFile(),
+    lastSaveDirectory("/"),
+    lastRequestedFrame(vfg::FirstFrame)
 {
     ui->setupUi(this);
 
