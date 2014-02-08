@@ -30,7 +30,7 @@ namespace vfg
         QPixmap original;
         bool fullsize;
 
-        void updateFrameSize();
+        void updateFrame();
     public:
         explicit VideoFrameWidget(QWidget *parent = 0);
 

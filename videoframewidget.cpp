@@ -38,21 +38,21 @@ void vfg::VideoFrameWidget::resizeEvent(QResizeEvent *event)
     if(framePixmap.isNull())
         return;
 
-    updateFrameSize();
+    updateFrame();
 }
 
 void vfg::VideoFrameWidget::setFrame(QImage img)
 {
     original = QPixmap::fromImage(img);
     framePixmap = original.copy();
-    updateFrameSize();
+    updateFrame();
 }
 
 void vfg::VideoFrameWidget::setFrame(QPair<unsigned, QImage> img)
 {
     original = QPixmap::fromImage(img.second);
     framePixmap = original.copy();
-    updateFrameSize();
+    updateFrame();
 }
 
 void vfg::VideoFrameWidget::setCrop(QRect area)
@@ -67,17 +67,17 @@ void vfg::VideoFrameWidget::setCrop(QRect area)
     QVector<QRect> newBorders{left, top, right, bottom};
     cropBorders.swap(newBorders);
 
-    updateFrameSize();
+    updateFrame();
 }
 
 void vfg::VideoFrameWidget::resetCrop()
 {
     framePixmap = original.copy();
     cropBorders.clear();
-    updateFrameSize();
+    updateFrame();
 }
 
-void vfg::VideoFrameWidget::updateFrameSize()
+void vfg::VideoFrameWidget::updateFrame()
 {
     if(framePixmap.isNull())
     {
@@ -117,7 +117,7 @@ void vfg::VideoFrameWidget::setFullsize(bool value)
 {
     fullsize = value;
 
-    updateFrameSize();
+    updateFrame();
 }
 
 QSize vfg::VideoFrameWidget::getFrameSize() const
