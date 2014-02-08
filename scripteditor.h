@@ -8,37 +8,39 @@ namespace Ui {
 class ScriptEditor;
 }
 
-namespace vfg
+namespace vfg {
+namespace ui {
+
+class ScriptEditor : public QWidget
 {
+    Q_OBJECT
 
-    class ScriptEditor : public QWidget
-    {
-        Q_OBJECT
+public:
+    explicit ScriptEditor(QWidget *parent = 0);
+    ~ScriptEditor();
 
-    public:
-        explicit ScriptEditor(QWidget *parent = 0);
-        ~ScriptEditor();
+    // Loads contents of script file
+    void setContent(QString content);
+    void save();
+    void reset();
+    QString path() const;
 
-        // Loads contents of script file
-        void setContent(QString content);
-        void save();
-        void reset();
-        QString path() const;
+    static QString defaultPath();
+private slots:
+    void on_updateButton_clicked();
 
-        static QString defaultPath();
-    private slots:
-        void on_updateButton_clicked();
+    void on_btnSaveAs_clicked();
 
-        void on_btnSaveAs_clicked();
+private:
+    Ui::ScriptEditor *ui;
 
-    private:
-        Ui::ScriptEditor *ui;
+    QString savePath;
+    void setSavePath(QString path);
+signals:
+    void scriptUpdated();
+};
 
-        QString savePath;
-        void setSavePath(QString path);
-    signals:
-        void scriptUpdated();
-    };
-}
+} // namespace ui
+} // namespace vfg
 
 #endif // SCRIPTEDITOR_H

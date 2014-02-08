@@ -61,7 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
         frameGrabber->moveToThread(frameGrabberThread);
         frameGrabberThread->start();
 
-        scriptEditor = new vfg::ScriptEditor;
+        scriptEditor = new vfg::ui::ScriptEditor;
 
         videoSettingsWindow = new vfg::VideoSettingsWidget;
 

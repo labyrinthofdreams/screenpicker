@@ -20,10 +20,12 @@ class QThread;
 namespace vfg {
     class VideoFrameGrabber;
     class VideoFrameThumbnail;
-    class ScriptEditor;
     class VideoFrameGenerator;
     class DvdProcessor;
     class VideoSettingsWidget;
+namespace ui {
+    class ScriptEditor;
+}
 }
 
 namespace Ui {
@@ -87,7 +89,7 @@ private:
 
     vfg::VideoFrameGenerator* frameGenerator;
     vfg::VideoFrameGrabber* frameGrabber;
-    vfg::ScriptEditor* scriptEditor;
+    vfg::ui::ScriptEditor* scriptEditor;
     vfg::DvdProcessor* dvdProcessor;
     vfg::VideoSettingsWidget *videoSettingsWindow;
 

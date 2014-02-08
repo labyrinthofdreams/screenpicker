@@ -15,6 +15,8 @@ QString ScriptEditor::defaultPath()
     return path;
 }
 
+namespace ui {
+
 ScriptEditor::ScriptEditor(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::ScriptEditor)
@@ -88,5 +90,5 @@ void ScriptEditor::reset()
     setSavePath(defaultPath());
 }
 
-
+} // namespace ui
 } // namespace vfg
