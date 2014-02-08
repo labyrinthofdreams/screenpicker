@@ -7,6 +7,7 @@
 #include "ui_videosettingswidget.h"
 
 namespace vfg {
+namespace ui {
 
 /**
  * @brief noneg prevents negative values being used
@@ -164,9 +165,7 @@ void VideoSettingsWidget::resetSettings()
     ui->cboxDvdResolution->setCurrentIndex(0);
 }
 
-} // namespace vfg
-
-void vfg::VideoSettingsWidget::on_btnRevertCrop_clicked()
+void VideoSettingsWidget::on_btnRevertCrop_clicked()
 {
     ui->sboxCropBottom->setValue(crop.bottom);
     ui->sboxCropLeft->setValue(crop.left);
@@ -177,3 +176,6 @@ void vfg::VideoSettingsWidget::on_btnRevertCrop_clicked()
 
     emit settingsChanged();
 }
+
+} // namespace ui
+} // namespace vfg

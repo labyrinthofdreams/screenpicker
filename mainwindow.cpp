@@ -63,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         scriptEditor = new vfg::ui::ScriptEditor;
 
-        videoSettingsWindow = new vfg::VideoSettingsWidget;
+        videoSettingsWindow = new vfg::ui::VideoSettingsWidget;
 
         QSettings cfg("config.ini", QSettings::IniFormat);
 

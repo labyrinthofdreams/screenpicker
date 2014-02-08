@@ -30,6 +30,8 @@ enum class Deinterlace : int {
     DEINTERLACE = 2
 };
 
+namespace ui {
+
 class VideoSettingsWidget : public QWidget
 {
     Q_OBJECT
@@ -74,6 +76,6 @@ signals:
     void closed();
 };
 
-
+} // namespace ui
 } // namespace vfg
 #endif // VFG_VIDEOSETTINGSWIDGET_H
