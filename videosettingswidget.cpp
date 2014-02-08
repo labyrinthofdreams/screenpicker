@@ -60,6 +60,17 @@ void VideoSettingsWidget::on_pushButton_clicked()
 {
     // Override previous settings when applying new settings
     prevSettings = getSettings();
+
+    crop.left += ui->sboxCropLeft->value();
+    crop.top += ui->sboxCropTop->value();
+    crop.right += ui->sboxCropRight->value();
+    crop.bottom += ui->sboxCropBottom->value();
+
+    ui->sboxCropBottom->setValue(0);
+    ui->sboxCropLeft->setValue(0);
+    ui->sboxCropRight->setValue(0);
+    ui->sboxCropTop->setValue(0);
+
     emit settingsChanged();
 }
 
@@ -88,10 +99,10 @@ void VideoSettingsWidget::closeEvent(QCloseEvent *event)
 
     // Restore previous settings that were applied
     auto& t = prevSettings;
-    ui->sboxCropBottom->setValue(t.value("cropbottom"));
-    ui->sboxCropLeft->setValue(t.value("cropleft"));
-    ui->sboxCropRight->setValue(t.value("cropright"));
-    ui->sboxCropTop->setValue(t.value("croptop"));
+    ui->sboxCropBottom->setValue(0);
+    ui->sboxCropLeft->setValue(0);
+    ui->sboxCropRight->setValue(0);
+    ui->sboxCropTop->setValue(0);
     ui->sboxResizeHeight->setValue(t.value("resizeheight"));
     ui->sboxResizeWidth->setValue(t.value("resizewidth"));
     ui->radioButton->setChecked(true);
@@ -106,10 +117,10 @@ QMap<QString, int> VideoSettingsWidget::getSettings() const
 {
     QMap<QString, int> settings;
     settings.clear();
-    settings.insert("croptop", ui->sboxCropTop->value());
-    settings.insert("cropright", ui->sboxCropRight->value());
-    settings.insert("cropbottom", ui->sboxCropBottom->value());
-    settings.insert("cropleft", ui->sboxCropLeft->value());
+    settings.insert("croptop", crop.top);
+    settings.insert("cropright", crop.right);
+    settings.insert("cropbottom", crop.bottom);
+    settings.insert("cropleft", crop.left);
     settings.insert("resizewidth", ui->sboxResizeWidth->value());
     settings.insert("resizeheight", ui->sboxResizeHeight->value());
     settings.insert("ivtc", static_cast<int>(ui->radioInverseTelecine->isChecked()));

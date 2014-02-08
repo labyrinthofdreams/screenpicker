@@ -53,6 +53,10 @@ private:
 
     QMap<QString, int> prevSettings;
 
+    struct {
+        int left, top, right, bottom;
+    } crop = {0, 0, 0, 0};
+
 protected:
     void showEvent(QShowEvent *event);
     void closeEvent(QCloseEvent *event);
