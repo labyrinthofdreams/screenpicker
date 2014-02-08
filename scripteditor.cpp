@@ -8,6 +8,7 @@
 // TODO: QWidget window flag to force create a Window, then construct with new ScriptEditor(this)
 
 namespace vfg {
+namespace ui {
 
 QString ScriptEditor::defaultPath()
 {
@@ -15,7 +16,6 @@ QString ScriptEditor::defaultPath()
     return path;
 }
 
-namespace ui {
 
 ScriptEditor::ScriptEditor(QWidget *parent) :
     QWidget(parent),
