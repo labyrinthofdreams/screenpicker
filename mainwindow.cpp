@@ -366,18 +366,23 @@ void MainWindow::on_actionOpen_triggered()
         ui->btnPauseGenerator->setText(tr("Resume"));
     }
 
+    QSettings cfg {"config.ini", QSettings::IniFormat};
+    QString lastOpened {cfg.value("last_opened", "").toString()};
+
     QString filename = QFileDialog::getOpenFileName(this, tr("Open video"),
-                                                    "", "All (*.*);;Avisynth (*.avs, *.avsi);;DGIndex (*.d2v)");
+                                                    lastOpened,
+                                                    "All (*.*);;Avisynth (*.avs, *.avsi);;DGIndex (*.d2v)");
     if(filename.isEmpty())
         return;
 
     // Reset all states back to zero
     resetState();
 
-    loadFile(filename);
+    loadFile(filename);       
 
-    QFileInfo info(filename);
+    QFileInfo info {filename};
     setWindowTitle(info.absoluteFilePath());
+    cfg.setValue("last_opened", info.absoluteFilePath());
 
     lastOpenedFile = filename;
 }
@@ -389,14 +394,20 @@ void MainWindow::on_actionOpen_DVD_triggered()
         ui->btnPauseGenerator->setText(tr("Resume"));
     }
 
+    QSettings cfg {"config.ini", QSettings::IniFormat};
+    QString lastOpened {cfg.value("last_opened_dvd", "").toString()};
+
     QStringList vobFiles = QFileDialog::getOpenFileNames(this, tr("Select DVD VOB/Blu-ray M2TS files"),
-                                                         "", "DVD VOB (*.vob);;Blu-ray M2TS (*.m2ts)");
+                                                         lastOpened,
+                                                         "DVD VOB (*.vob);;Blu-ray M2TS (*.m2ts)");
     if(vobFiles.empty())
     {
         return;
     }
 
-    QSettings cfg("config.ini", QSettings::IniFormat);
+    QFileInfo openedVobFile {vobFiles.first()};
+    cfg.setValue("last_opened_dvd", openedVobFile.absoluteFilePath());
+
     QString dgIndexPath = cfg.value("dgindexexecpath").toString();
     if(!QFile::exists(dgIndexPath))
     {
@@ -805,6 +816,9 @@ void MainWindow::dropEvent(QDropEvent *ev)
 
     QFileInfo info(filename);
     setWindowTitle(info.absoluteFilePath());
+
+    QSettings cfg {"config.ini", QSettings::IniFormat};
+    cfg.setValue("last_opened", info.absoluteFilePath());
 
     lastOpenedFile = filename;
 }
