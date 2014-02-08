@@ -86,15 +86,7 @@ void vfg::VideoFrameWidget::updateFrame()
 
     if(!cropBorders.isEmpty())
     {
-        QPixmap copiedFrame = original.copy();
-        QPainter painter {&copiedFrame};
-        painter.setBrush(Qt::cyan);
-        // Performs an inverse operation which works well with cyan
-        painter.setCompositionMode(QPainter::RasterOp_SourceXorDestination);
-        painter.setOpacity(0.6);
-        painter.setPen(Qt::NoPen);
-        painter.drawRects(cropBorders);
-        framePixmap.swap(copiedFrame);
+        drawCropArea();
     }
 
     if(!fullsize)
@@ -111,6 +103,19 @@ void vfg::VideoFrameWidget::updateFrame()
         frameLabel->setPixmap(framePixmap);
         setFixedHeight(framePixmap.height());
     }
+}
+
+void vfg::VideoFrameWidget::drawCropArea()
+{
+    QPixmap copiedFrame = original.copy();
+    QPainter painter {&copiedFrame};
+    painter.setBrush(Qt::cyan);
+    // Performs an inverse operation which works well with cyan
+    painter.setCompositionMode(QPainter::RasterOp_SourceXorDestination);
+    painter.setOpacity(0.6);
+    painter.setPen(Qt::NoPen);
+    painter.drawRects(cropBorders);
+    framePixmap.swap(copiedFrame);
 }
 
 void vfg::VideoFrameWidget::setFullsize(bool value)

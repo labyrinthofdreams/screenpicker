@@ -31,6 +31,7 @@ namespace vfg
         bool fullsize;
 
         void updateFrame();
+        void drawCropArea();
     public:
         explicit VideoFrameWidget(QWidget *parent = 0);
 
