@@ -71,6 +71,11 @@ void VideoSettingsWidget::on_pushButton_clicked()
     ui->sboxCropRight->setValue(0);
     ui->sboxCropTop->setValue(0);
 
+    if(crop.left || crop.top || crop.right || crop.bottom)
+    {
+        ui->btnRevertCrop->setEnabled(true);
+    }
+
     emit settingsChanged();
 }
 
@@ -142,3 +147,15 @@ void VideoSettingsWidget::resetSettings()
 }
 
 } // namespace vfg
+
+void vfg::VideoSettingsWidget::on_btnRevertCrop_clicked()
+{
+    ui->sboxCropBottom->setValue(crop.bottom);
+    ui->sboxCropLeft->setValue(crop.left);
+    ui->sboxCropRight->setValue(crop.right);
+    ui->sboxCropTop->setValue(crop.top);
+
+    crop.bottom = crop.left = crop.right = crop.top = 0;
+
+    emit settingsChanged();
+}

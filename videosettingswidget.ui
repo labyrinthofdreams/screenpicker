@@ -183,6 +183,25 @@
      </item>
     </layout>
    </widget>
+   <widget class="QPushButton" name="btnRevertCrop">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>130</y>
+      <width>51</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Revert applied crop</string>
+    </property>
+    <property name="text">
+     <string>Revert</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">

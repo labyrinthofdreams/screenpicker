@@ -48,6 +48,8 @@ private slots:
 
     void handleCropChange();
 
+    void on_btnRevertCrop_clicked();
+
 private:
     Ui::VideoSettingsWidget *ui;
 
