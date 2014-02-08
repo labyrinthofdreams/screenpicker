@@ -406,7 +406,7 @@ void MainWindow::on_actionOpen_DVD_triggered()
     }
 
     QFileInfo openedVobFile {vobFiles.first()};
-    cfg.setValue("last_opened_dvd", openedVobFile.absoluteFilePath());
+    cfg.setValue("last_opened_dvd", openedVobFile.absoluteDir().absolutePath());
 
     QString dgIndexPath = cfg.value("dgindexexecpath").toString();
     if(!QFile::exists(dgIndexPath))
