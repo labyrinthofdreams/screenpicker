@@ -8,6 +8,16 @@
 
 namespace vfg {
 
+/**
+ * @brief noneg prevents negative values being used
+ * @param x variable to check for negative value
+ * @return 0 if x is less than 0, otherwise x
+ */
+constexpr int noneg(const int x)
+{
+    return x < 0 ? 0 : x;
+}
+
 VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::VideoSettingsWidget),
@@ -66,6 +76,14 @@ void VideoSettingsWidget::on_pushButton_clicked()
     crop.right += ui->sboxCropRight->value();
     crop.bottom += ui->sboxCropBottom->value();
 
+    // Negative crop values must be checked only after
+    // the current crop values have been added to existing values,
+    // otherwise it is not possible to use negative values at all
+    crop.left = noneg(crop.left);
+    crop.top = noneg(crop.top);
+    crop.right = noneg(crop.right);
+    crop.bottom = noneg(crop.bottom);
+
     ui->sboxCropBottom->setValue(0);
     ui->sboxCropLeft->setValue(0);
     ui->sboxCropRight->setValue(0);
@@ -81,10 +99,10 @@ void VideoSettingsWidget::on_pushButton_clicked()
 
 void VideoSettingsWidget::handleCropChange()
 {
-    QRect area {ui->sboxCropLeft->value(),
-               ui->sboxCropTop->value(),
-               ui->sboxCropRight->value(),
-               ui->sboxCropBottom->value()};
+    QRect area {noneg(ui->sboxCropLeft->value()),
+               noneg(ui->sboxCropTop->value()),
+               noneg(ui->sboxCropRight->value()),
+               noneg(ui->sboxCropBottom->value())};
 
     emit cropChanged(area);
 }
