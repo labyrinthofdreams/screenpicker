@@ -539,8 +539,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>98</width>
-                   <height>28</height>
+                   <width>764</width>
+                   <height>200</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -621,9 +621,16 @@
     <property name="title">
      <string>Video</string>
     </property>
+    <widget class="QMenu" name="menuPreview">
+     <property name="title">
+      <string>Preview</string>
+     </property>
+     <addaction name="actionFull_Resolution_2"/>
+    </widget>
     <addaction name="actionOpen"/>
     <addaction name="actionOpen_DVD"/>
     <addaction name="separator"/>
+    <addaction name="menuPreview"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -694,6 +701,17 @@
    </property>
    <property name="shortcut">
     <string>V</string>
+   </property>
+  </action>
+  <action name="actionFull_Resolution_2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Original Resolution</string>
+   </property>
+   <property name="toolTip">
+    <string>Show video preview in original resolution</string>
    </property>
   </action>
  </widget>

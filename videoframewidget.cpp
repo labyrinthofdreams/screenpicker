@@ -150,6 +150,8 @@ void vfg::VideoFrameWidget::setFullsize(bool value)
     fsAction->setChecked(value);
 
     updateFrame();
+
+    emit fullsizeChanged(value);
 }
 
 QSize vfg::VideoFrameWidget::getFrameSize() const
@@ -158,4 +160,9 @@ QSize vfg::VideoFrameWidget::getFrameSize() const
         return QSize();
 
     return framePixmap.size();
+}
+
+bool vfg::VideoFrameWidget::isFullsize() const
+{
+    return fullsize;
 }

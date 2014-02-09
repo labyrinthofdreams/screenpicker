@@ -80,6 +80,8 @@ private slots:
 
     void on_actionVideo_Settings_triggered();
 
+    void on_actionFull_Resolution_2_triggered(bool checked);
+
 private:
     Ui::MainWindow *ui;
 

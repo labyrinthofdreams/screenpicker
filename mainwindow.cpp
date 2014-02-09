@@ -80,6 +80,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
         const unsigned frameStep = cfg.value("framestep").toInt();
         ui->frameStepSpinBox->setValue(frameStep);
+
+        ui->actionFull_Resolution_2->setChecked(ui->videoFrameWidget->isFullsize());
+        connect(ui->videoFrameWidget, SIGNAL(fullsizeChanged(bool)),
+                ui->actionFull_Resolution_2, SLOT(setChecked(bool)));
     }
     catch(std::exception& ex)
     {
@@ -945,4 +949,9 @@ void MainWindow::on_actionVideo_Settings_triggered()
     videoSettingsWindow->hide();
     videoSettingsWindow->show();
     videoSettingsWindow->setWindowState(Qt::WindowActive);
+}
+
+void MainWindow::on_actionFull_Resolution_2_triggered(bool checked)
+{
+    ui->videoFrameWidget->setFullsize(checked);
 }

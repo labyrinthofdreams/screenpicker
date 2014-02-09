@@ -41,11 +41,13 @@ namespace vfg
         explicit VideoFrameWidget(QWidget *parent = 0);
 
         QSize getFrameSize() const;
+        bool isFullsize() const;
     protected:
         void resizeEvent(QResizeEvent *event);
         void mousePressEvent(QMouseEvent *event);
 
     signals:
+        void fullsizeChanged(bool);
 
     public slots:
         void setFullsize(bool value);
