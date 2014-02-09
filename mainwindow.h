@@ -57,7 +57,6 @@ private slots:
     void on_nextButton_clicked();
     void on_previousButton_clicked();
     void on_generateButton_clicked();
-    void on_originalResolutionCheckBox_toggled(bool checked);
     void on_seekSlider_valueChanged(int value);
     void on_seekSlider_sliderMoved(int position);
     void on_grabButton_clicked();

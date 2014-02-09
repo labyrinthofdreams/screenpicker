@@ -2,6 +2,7 @@
 #define VIDEOFRAMEWIDGET_H
 
 #include <QImage>
+#include <QMenu>
 #include <QPair>
 #include <QPixmap>
 #include <QScrollArea>
@@ -9,6 +10,7 @@
 
 // Forward declarations
 class QLabel;
+class QMouseEvent;
 class QRect;
 class QResizeEvent;
 class QSize;
@@ -30,19 +32,23 @@ namespace vfg
         QPixmap original;
         bool fullsize;
 
+        QMenu contextMenu;
+        QAction *fsAction;
+
         void updateFrame();
         void drawCropArea();
     public:
         explicit VideoFrameWidget(QWidget *parent = 0);
 
-        void setFullsize(bool value);
         QSize getFrameSize() const;
     protected:
         void resizeEvent(QResizeEvent *event);
+        void mousePressEvent(QMouseEvent *event);
 
     signals:
 
     public slots:
+        void setFullsize(bool value);
         void setFrame(QImage img);
         void setFrame(QPair<unsigned, QImage> img);
         /**

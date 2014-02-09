@@ -1,4 +1,7 @@
 #include <QtWidgets>
+#include <QMenu>
+#include <QAction>
+#include <QMouseEvent>
 #include <QPair>
 #include <QVector>
 #include "videoframewidget.h"
@@ -8,7 +11,8 @@ vfg::VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
     cropBorders(),
     framePixmap(),
     original(),
-    fullsize(false)
+    fullsize(false),
+    contextMenu()
 {
     frameLabel = new QLabel;
     frameLabel->setAlignment(Qt::AlignCenter);
@@ -29,6 +33,16 @@ vfg::VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
     setPalette(plt);
 
     setContentsMargins(0, 0, 0, 0);
+
+    // Enable context menu
+    setContextMenuPolicy(Qt::CustomContextMenu);
+
+    fsAction = new QAction {tr("Full resolution"), this};
+    fsAction->setCheckable(true);
+    fsAction->setChecked(fullsize);
+    connect(fsAction, SIGNAL(triggered(bool)),
+            this, SLOT(setFullsize(bool)));
+    contextMenu.addAction(fsAction);
 }
 
 void vfg::VideoFrameWidget::resizeEvent(QResizeEvent *event)
@@ -39,6 +53,18 @@ void vfg::VideoFrameWidget::resizeEvent(QResizeEvent *event)
         return;
 
     updateFrame();
+}
+
+void vfg::VideoFrameWidget::mousePressEvent(QMouseEvent *event)
+{
+    // Enable context menu only on right-click
+    if(event->button() != Qt::RightButton) {
+        event->ignore();
+        return;
+    }
+
+    event->accept();
+    contextMenu.exec(event->globalPos());
 }
 
 void vfg::VideoFrameWidget::setFrame(QImage img)
@@ -121,6 +147,7 @@ void vfg::VideoFrameWidget::drawCropArea()
 void vfg::VideoFrameWidget::setFullsize(bool value)
 {
     fullsize = value;
+    fsAction->setChecked(value);
 
     updateFrame();
 }

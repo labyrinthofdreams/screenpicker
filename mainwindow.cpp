@@ -534,12 +534,6 @@ void MainWindow::on_previousButton_clicked()
     ui->seekSlider->setValue(lastRequestedFrame);
 }
 
-void MainWindow::on_originalResolutionCheckBox_toggled(bool checked)
-{
-    ui->videoFrameWidget->setFullsize(checked);
-}
-
-
 void MainWindow::on_seekSlider_valueChanged(int value)
 {
     const unsigned frameNumber = static_cast<unsigned>(value);
