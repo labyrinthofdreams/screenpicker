@@ -4,10 +4,10 @@
 
 vfg::VideoFrameThumbnail::VideoFrameThumbnail(const unsigned frame, QPixmap thumbnail, QWidget *parent) :
     QWidget(parent),
-    frameNumber(frame),
-    thumb(thumbnail),
+    layout(new QVBoxLayout),
     pixmapLabel(new QLabel),
-    layout(new QVBoxLayout)
+    thumb(thumbnail),
+    frameNumber(frame)
 {
     pixmapLabel->setPixmap(thumb);
     layout->setContentsMargins(0, 0, 0, 0);
