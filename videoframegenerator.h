@@ -24,7 +24,7 @@ public:
     bool isRunning() const;
     bool isPaused() const;
     void enqueue(int frame);
-    unsigned remaining() const;
+    int remaining() const;
     void clear();
     
 signals:
