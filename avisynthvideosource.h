@@ -13,13 +13,13 @@ namespace vfg
         const AVS_VideoInfo* info;
     public:
         AvisynthVideoSource();
-        ~AvisynthVideoSource();
+        ~AvisynthVideoSource() override;
 
-        void load(QString fileName);
-        bool hasVideo() const;
-        int getNumFrames() const;
-        QImage getFrame(int frameNumber);
-        QString getSupportedFormats();
+        void load(QString fileName) override;
+        bool hasVideo() const override;
+        int getNumFrames() const override;
+        QImage getFrame(int frameNumber) override;
+        QString getSupportedFormats() override;
     };
 }
 

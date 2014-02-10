@@ -7,7 +7,7 @@ using namespace vfg;
 
 AvisynthVideoSource::AvisynthVideoSource() :
     AbstractVideoSource(),
-    info(NULL)
+    info(nullptr)
 {
     if(internal_avs_load_library(&avsHandle) < 0)
     {
@@ -75,31 +75,35 @@ void AvisynthVideoSource::load(QString fileName)
 
 bool AvisynthVideoSource::hasVideo() const
 {
-    return (info != NULL) && avs_has_video(info);
+    return (info != nullptr) && avs_has_video(info);
 }
 
 int AvisynthVideoSource::getNumFrames() const
 {
+    if(info == nullptr) {
+        return 0;
+    }
+
     return info->num_frames;
 }
 
 QImage AvisynthVideoSource::getFrame(int frameNumber)
 {
-    if(info == NULL)
+    if(info == nullptr)
     {
-        return QImage();
+        return {};
     }
 
     if(frameNumber >= info->num_frames)
     {
-        return QImage();
+        return {};
     }
 
     AVS_VideoFrame *frame = avsHandle.func.avs_get_frame(avsHandle.clip, frameNumber);
     const char* error = avsHandle.func.avs_clip_get_error(avsHandle.clip);
     if(error)
     {
-        return QImage();
+        return {};
     }
 
     QImage image(info->width, info->height, QImage::Format_ARGB32);
