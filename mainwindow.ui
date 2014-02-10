@@ -539,8 +539,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>61</width>
-                   <height>16</height>
+                   <width>98</width>
+                   <height>28</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -726,7 +726,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>100% (Default)</string>
+    <string>100%</string>
    </property>
   </action>
   <action name="action25">
