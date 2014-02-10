@@ -10,11 +10,11 @@ class QCloseEvent;
 class QShowEvent;
 class QRect;
 
-namespace vfg {
-
 namespace Ui {
-class VideoSettingsWidget;
+    class VideoSettingsWidget;
 }
+
+namespace vfg {
 
 enum class Resolution : int {
     OTHER = 0,
