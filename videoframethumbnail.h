@@ -19,7 +19,7 @@ namespace vfg
         Q_OBJECT
     public:
         /**
-         * @brief VideoFrameThumbnail Constructor
+         * @brief Constructor
          * @param frame Frame number
          * @param thumbnail Thumbnail image
          * @param parent Owner of the widget
@@ -28,17 +28,17 @@ namespace vfg
                                      QWidget *parent = 0);
 
         /**
-         * @brief markSelected Highlights the thumbnail
+         * @brief Highlights the thumbnail
          */
         void markSelected();
 
         /**
-         * @brief markUnselected Removes highlight from thumbnail
+         * @brief Removes highlight from thumbnail
          */
         void markUnselected();
 
         /**
-         * @brief frameNum
+         * @brief Retrieves frame number
          * @return Frame number
          */
         int frameNum() const;
@@ -51,7 +51,7 @@ namespace vfg
         int frameNumber;
 
         /**
-         * @brief updateFrameSize Scales the thumbnail to the widget size
+         * @brief Scales the thumbnail to the widget size
          */
         void updateFrameSize();
 
@@ -63,13 +63,13 @@ namespace vfg
 
     signals:
         /**
-         * @brief selected Emits the selected widget
+         * @brief Emits the selected widget
          * @param thumbnail
          */
         void selected(vfg::VideoFrameThumbnail* thumbnail);
 
         /**
-         * @brief doubleClicked Emits the frame number of the widget
+         * @brief Emits the frame number of the widget
          * @param frameNumber
          */
         void doubleClicked(int frameNumber);

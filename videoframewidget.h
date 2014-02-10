@@ -52,62 +52,62 @@ namespace vfg
         ZoomMode zoomMode;
 
         /**
-         * @brief updateFrame Applies new changes to the current frame
+         * @brief Applies new changes to the current frame
          */
         void updateFrame();
 
         /**
-         * @brief drawCropArea Paints area to crop on current frame
+         * @brief Paints area to crop on current frame
          */
         void drawCropArea();
 
         /**
-         * @brief getZoomFactor Calculates new size based on zoom mode
+         * @brief Calculates new size based on zoom mode
          * @return New frame size
          */
         const QSize calculateSize() const;
 
     public:
         /**
-         * @brief VideoFrameWidget Constructor
+         * @brief Constructor
          * @param parent Owner of the widget
          */
         explicit VideoFrameWidget(QWidget *parent = 0);
 
     protected:
         /**
-         * @brief resizeEvent Updates the current frame
+         * @brief Updates the current frame
          * @param event
          */
         void resizeEvent(QResizeEvent *event);
 
     public slots:
         /**
-         * @brief setZoom Changes the zoom mode
+         * @brief Changes the zoom mode
          * @param mode New zoom mode
          */
         void setZoom(ZoomMode mode);
 
         /**
-         * @brief setFrame Sets the current frame
+         * @brief Sets the current frame
          * @param img Frame to set
          */
         void setFrame(QImage img);
 
         /**
-         * @brief setFrame Sets the current frame
+         * @brief Sets the current frame
          * @param img Frame to set with a frame number
          */
         void setFrame(QPair<unsigned, QImage> img);
 
         /**
-         * @brief setCrop Sets an area to crop
+         * @brief Sets an area to crop
          * @param area Area to crop
          */
         void setCrop(QRect area);
 
         /**
-         * @brief resetCrop Resets the areas to crop
+         * @brief Resets the areas to crop
          */
         void resetCrop();
     };
