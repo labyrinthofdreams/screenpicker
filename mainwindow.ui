@@ -77,7 +77,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="vfg::VideoFrameWidget" name="videoFrameWidget" native="true"/>
+             <widget class="vfg::ui::VideoFrameWidget" name="videoFrameWidget" native="true"/>
             </item>
            </layout>
           </widget>
@@ -317,7 +317,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="first">
            <attribute name="title">
@@ -354,7 +354,7 @@
                    <number>0</number>
                   </property>
                   <item>
-                   <widget class="vfg::ThumbnailContainer" name="unsavedWidget" native="true"/>
+                   <widget class="vfg::ui::ThumbnailContainer" name="unsavedWidget" native="true"/>
                   </item>
                  </layout>
                 </widget>
@@ -539,8 +539,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>98</width>
-                   <height>28</height>
+                   <width>764</width>
+                   <height>200</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -557,7 +557,7 @@
                    <number>0</number>
                   </property>
                   <item>
-                   <widget class="vfg::ThumbnailContainer" name="savedWidget" native="true"/>
+                   <widget class="vfg::ui::ThumbnailContainer" name="savedWidget" native="true"/>
                   </item>
                  </layout>
                 </widget>
@@ -757,13 +757,13 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>vfg::ThumbnailContainer</class>
+   <class>vfg::ui::ThumbnailContainer</class>
    <extends>QWidget</extends>
    <header>thumbnailcontainer.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>vfg::VideoFrameWidget</class>
+   <class>vfg::ui::VideoFrameWidget</class>
    <extends>QWidget</extends>
    <header>videoframewidget.h</header>
    <container>1</container>

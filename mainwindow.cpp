@@ -200,7 +200,7 @@ void MainWindow::frameReceived(QPair<int, QImage> frame)
     qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
     const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
     QPixmap thumbnail = QPixmap::fromImage(frame.second).scaledToWidth(200, Qt::SmoothTransformation);
-    vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(frame.first, thumbnail);
+    auto thumb = new vfg::ui::VideoFrameThumbnail(frame.first, thumbnail);
     thumb->setFixedWidth(thumbnailSize);
 
     connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
@@ -658,7 +658,7 @@ void MainWindow::on_grabButton_clicked()
     QImage frame = frameGrabber->getFrame(selected);
     QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
 
-    vfg::VideoFrameThumbnail* thumb = new vfg::VideoFrameThumbnail(selected, thumbnail);
+    auto thumb = new vfg::ui::VideoFrameThumbnail(selected, thumbnail);
     thumb->setFixedWidth(thumbnailSize);
     connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handleSavedMenu(QPoint)));
@@ -681,7 +681,7 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
     if(selected && selected->data().toInt() == 1)
     {
         // Move thumbnail from unsaved tab to saved tab
-        vfg::VideoFrameThumbnail* thumb = ui->unsavedWidget->takeSelected();
+        auto thumb = ui->unsavedWidget->takeSelected();
         disconnect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                    this, SLOT(handleUnsavedMenu(QPoint)));
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
@@ -706,7 +706,7 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
     if(selected && selected->data().toInt() == 1)
     {
         // Move thumbnail from saved tab to unsaved tab
-        vfg::VideoFrameThumbnail* thumb = ui->savedWidget->takeSelected();
+        auto thumb = ui->savedWidget->takeSelected();
         disconnect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
                    this, SLOT(handleSavedMenu(QPoint)));
         connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),

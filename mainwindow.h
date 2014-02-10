@@ -21,11 +21,11 @@ class QThread;
 
 namespace vfg {
     class VideoFrameGrabber;
-    class VideoFrameThumbnail;
     class VideoFrameGenerator;
     class DvdProcessor;
 namespace ui {
     class ScriptEditor;
+    class VideoFrameThumbnail;
     class VideoSettingsWidget;
 }
 }
