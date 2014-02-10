@@ -44,7 +44,7 @@ public:
     
 private slots:
 
-    void frameReceived(QPair<unsigned, QImage> frame);
+    void frameReceived(QPair<int, QImage> frame);
     void scriptEditorUpdated();
     void videoSettingsUpdated();
     void dvdProcessorFinished(QString path);

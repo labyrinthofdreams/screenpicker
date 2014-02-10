@@ -28,7 +28,7 @@ public:
     void clear();
     
 signals:
-    void frameReady(QPair<unsigned, QImage> frame);
+    void frameReady(QPair<int, QImage> frame);
     
 public slots:
     void start();

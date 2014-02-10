@@ -98,7 +98,7 @@ namespace vfg
          * @brief Sets the current frame
          * @param img Frame to set with a frame number
          */
-        void setFrame(QPair<unsigned, QImage> img);
+        void setFrame(QPair<int, QImage> img);
 
         /**
          * @brief Sets an area to crop

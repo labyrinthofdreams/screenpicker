@@ -137,8 +137,8 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->videoFrameWidget, SLOT(setFrame(QPair<uint,QImage>)),
             Qt::QueuedConnection);
 
-    connect(frameGenerator, SIGNAL(frameReady(QPair<unsigned, QImage>)),
-            this, SLOT(frameReceived(QPair<unsigned, QImage>)),
+    connect(frameGenerator, SIGNAL(frameReady(QPair<int, QImage>)),
+            this, SLOT(frameReceived(QPair<int, QImage>)),
             Qt::QueuedConnection);
 
     connect(ui->unsavedWidget, SIGNAL(maximumChanged(int)),
@@ -195,7 +195,7 @@ void MainWindow::closeEvent(QCloseEvent *ev)
     }
 }
 
-void MainWindow::frameReceived(QPair<unsigned, QImage> frame)
+void MainWindow::frameReceived(QPair<int, QImage> frame)
 {
     qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
     const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();

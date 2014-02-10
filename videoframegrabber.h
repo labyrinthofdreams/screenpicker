@@ -62,7 +62,7 @@ namespace vfg
         // Video properties are passed in the signal
         void videoReady();
         // Fired when frame is available
-        void frameGrabbed(QPair<unsigned, QImage> frame);
+        void frameGrabbed(QPair<int, QImage> frame);
         // Fired in the event that an error happens
         void errorOccurred(QString msg);
     public slots:

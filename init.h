@@ -17,7 +17,7 @@ namespace meta {
 
 void registerTypes()
 {
-    qRegisterMetaType<QPair<unsigned, QImage> >("QPair<unsigned, QImage>");
+    qRegisterMetaType<QPair<int, QImage> >("QPair<int, QImage>");
 }
 
 } // namespace meta

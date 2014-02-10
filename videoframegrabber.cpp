@@ -81,7 +81,7 @@ void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
     QImage frame = avs->getFrame(frameNum);
 
     //ml.unlock();
-    emit frameGrabbed(QPair<unsigned, QImage>(frameNum, frame));
+    emit frameGrabbed(QPair<int, QImage>(frameNum, frame));
 }
 
 void vfg::VideoFrameGrabber::requestNextFrame()
@@ -98,7 +98,7 @@ void vfg::VideoFrameGrabber::requestNextFrame()
     ++currentFrame;
     QImage frame = avs->getFrame(currentFrame);
 
-    emit frameGrabbed(QPair<unsigned, QImage>(currentFrame, frame));
+    emit frameGrabbed(QPair<int, QImage>(currentFrame, frame));
     qDebug() << "End NEXT_FRAME VFG ";
 }
 
@@ -115,7 +115,7 @@ void vfg::VideoFrameGrabber::requestPreviousFrame()
     --currentFrame;
     QImage frame = avs->getFrame(currentFrame);
 
-    emit frameGrabbed(QPair<unsigned, QImage>(currentFrame, frame));
+    emit frameGrabbed(QPair<int, QImage>(currentFrame, frame));
     qDebug() << "End PREV_FRAME VFG ";
 }
 

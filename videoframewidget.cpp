@@ -53,7 +53,7 @@ void vfg::VideoFrameWidget::setFrame(QImage img)
     updateFrame();
 }
 
-void vfg::VideoFrameWidget::setFrame(QPair<unsigned, QImage> img)
+void vfg::VideoFrameWidget::setFrame(QPair<int, QImage> img)
 {
     original = QPixmap::fromImage(img.second);
     framePixmap = original.copy();

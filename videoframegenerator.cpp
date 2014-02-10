@@ -31,7 +31,7 @@ void VideoFrameGenerator::start()
             break;
         }
         QImage frame = frameGrabber->getFrame(current);
-        emit frameReady(QPair<unsigned, QImage>(current, frame));
+        emit frameReady(QPair<int, QImage>(current, frame));
         // Without the wait condition all the frames may be processed
         // faster in the loop than they can be processed in the connected slot for
         // the signal frameReady (due to e.g. caching in frameGrabber)
