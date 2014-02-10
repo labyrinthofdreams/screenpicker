@@ -7,7 +7,9 @@
 #include <QWidget>
 #include "videoframethumbnail.h"
 
-vfg::VideoFrameThumbnail::VideoFrameThumbnail(
+using vfg::ui::VideoFrameThumbnail;
+
+VideoFrameThumbnail::VideoFrameThumbnail(
         int frame, QPixmap thumbnail, QWidget *parent) :
     QWidget(parent),
     layout(new QVBoxLayout),
@@ -24,49 +26,49 @@ vfg::VideoFrameThumbnail::VideoFrameThumbnail(
     setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
-void vfg::VideoFrameThumbnail::updateFrameSize()
+void VideoFrameThumbnail::updateFrameSize()
 {
     pixmapLabel->setPixmap(thumb.scaledToWidth(pixmapLabel->width(),
                                                Qt::SmoothTransformation));
 }
 
-void vfg::VideoFrameThumbnail::markSelected()
+void VideoFrameThumbnail::markSelected()
 {
     setStyleSheet("background-color: #e0e0e0; border: 1px solid #dd22ff;");
 }
 
-void vfg::VideoFrameThumbnail::markUnselected()
+void VideoFrameThumbnail::markUnselected()
 {
     setStyleSheet("background-color: inherit; border: 0;");
 }
 
-int vfg::VideoFrameThumbnail::frameNum() const
+int VideoFrameThumbnail::frameNum() const
 {
     return frameNumber;
 }
 
-void vfg::VideoFrameThumbnail::mouseDoubleClickEvent(QMouseEvent *event)
+void VideoFrameThumbnail::mouseDoubleClickEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
 
     emit doubleClicked(frameNumber);
 }
 
-void vfg::VideoFrameThumbnail::resizeEvent(QResizeEvent *event)
+void VideoFrameThumbnail::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
 
     updateFrameSize();
 }
 
-void vfg::VideoFrameThumbnail::mousePressEvent(QMouseEvent *event)
+void VideoFrameThumbnail::mousePressEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
 
     emit selected(this);
 }
 
-void vfg::VideoFrameThumbnail::paintEvent(QPaintEvent *event)
+void VideoFrameThumbnail::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
 
