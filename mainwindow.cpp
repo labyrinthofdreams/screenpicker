@@ -765,7 +765,6 @@ void MainWindow::on_saveThumbnailsButton_clicked()
         return;
     }
 
-    bool resizeOk = false;
     int resizeWidth = 0;
     QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Resize thumbnails"),
                                                                 tr("Do you want to resize thumbnails?"),
@@ -773,10 +772,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
                                                                 QMessageBox::No);
     if(clicked == QMessageBox::Yes)
     {
-        QSize frameSize = ui->videoFrameWidget->getFrameSize();
-        const int resizeTo = frameSize.width() / 2;
-        resizeWidth = QInputDialog::getInt(this, tr("Resize thumbnails"), tr("Resize to width:"),
-                                           resizeTo, 100, frameSize.width(), 10, &resizeOk);
+        resizeWidth = QInputDialog::getInt(this, tr("Resize thumbnails"), tr("Resize to width:"));
     }
 
     const int numSaved = framesToSave.count();
@@ -804,7 +800,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
 
         // Get current frame
         QImage frame = frameGrabber->getFrame(frameNumber);
-        if(resizeOk)
+        if(resizeWidth > 0)
         {
             frame = frame.scaledToWidth(resizeWidth, Qt::SmoothTransformation);
         }
@@ -917,7 +913,6 @@ void MainWindow::on_saveSingleButton_clicked()
     QFileInfo info(outFilename);
     lastSaveDirectory = info.absoluteDir().absolutePath();
 
-    bool resizeOk = false;
     int resizeWidth = 0;
     QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Resize thumbnails"),
                                                                 tr("Do you want to resize thumbnails?"),
@@ -925,11 +920,10 @@ void MainWindow::on_saveSingleButton_clicked()
                                                                 QMessageBox::No);
     if(clicked == QMessageBox::Yes)
     {
-        QSize frameSize = ui->videoFrameWidget->getFrameSize();
-        const int resizeTo = frameSize.width() / 2;
-        resizeWidth = QInputDialog::getInt(this, tr("Resize thumbnails"), tr("Resize to width:"),
-                                           resizeTo, 100, frameSize.width(), 10, &resizeOk);
-        frame = frame.scaledToWidth(resizeWidth, Qt::SmoothTransformation);
+        resizeWidth = QInputDialog::getInt(this, tr("Resize thumbnails"), tr("Resize to width:"));
+        if(resizeWidth > 0) {
+            frame = frame.scaledToWidth(resizeWidth, Qt::SmoothTransformation);
+        }
     }
 
     frame.save(outFilename);

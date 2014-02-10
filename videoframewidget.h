@@ -73,7 +73,6 @@ namespace vfg
          */
         explicit VideoFrameWidget(QWidget *parent = 0);
 
-        QSize getFrameSize() const;
     protected:
         /**
          * @brief resizeEvent Updates the current frame

@@ -140,11 +140,3 @@ void vfg::VideoFrameWidget::setZoom(ZoomMode mode)
 
     updateFrame();
 }
-
-QSize vfg::VideoFrameWidget::getFrameSize() const
-{
-    if(framePixmap.isNull())
-        return QSize();
-
-    return framePixmap.size();
-}
