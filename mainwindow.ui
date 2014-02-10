@@ -539,8 +539,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>764</width>
-                   <height>200</height>
+                   <width>61</width>
+                   <height>16</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -621,7 +621,7 @@
     <property name="title">
      <string>Video</string>
     </property>
-    <widget class="QMenu" name="menuPreview">
+    <widget class="QMenu" name="menuZoom">
      <property name="title">
       <string>Zoom</string>
      </property>
@@ -634,7 +634,7 @@
     <addaction name="actionOpen"/>
     <addaction name="actionOpen_DVD"/>
     <addaction name="separator"/>
-    <addaction name="menuPreview"/>
+    <addaction name="menuZoom"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">

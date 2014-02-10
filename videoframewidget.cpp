@@ -46,17 +46,6 @@ void vfg::VideoFrameWidget::resizeEvent(QResizeEvent *event)
     updateFrame();
 }
 
-void vfg::VideoFrameWidget::mousePressEvent(QMouseEvent *event)
-{
-    // Enable context menu only on right-click
-    if(event->button() != Qt::RightButton) {
-        event->ignore();
-        return;
-    }
-
-    event->accept();
-}
-
 void vfg::VideoFrameWidget::setFrame(QImage img)
 {
     original = QPixmap::fromImage(img);

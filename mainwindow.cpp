@@ -98,6 +98,9 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->videoFrameWidget->setZoom(vfg::ZoomMode::Zoom_Scale);
         connect(videoZoomGroup, SIGNAL(triggered(QAction*)),
                 this, SLOT(videoZoomChanged(QAction*)));
+
+        connect(ui->videoFrameWidget, SIGNAL(customContextMenuRequested(QPoint)),
+                this, SLOT(contextMenuOnPreview(QPoint)));
     }
     catch(std::exception& ex)
     {
@@ -390,6 +393,11 @@ void MainWindow::videoZoomChanged(QAction *action)
         {"scale", vfg::ZoomMode::Zoom_Scale}
     };
     ui->videoFrameWidget->setZoom(m[mode]);
+}
+
+void MainWindow::contextMenuOnPreview(const QPoint &pos)
+{
+    ui->menuZoom->exec(ui->videoFrameWidget->mapToGlobal(pos));
 }
 
 void MainWindow::on_actionOpen_triggered()

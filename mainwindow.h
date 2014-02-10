@@ -56,6 +56,7 @@ private slots:
     void loadFile(QString path);
 
     void videoZoomChanged(QAction *action);
+    void contextMenuOnPreview(const QPoint& pos);
 
     void on_actionOpen_triggered();
     void on_nextButton_clicked();

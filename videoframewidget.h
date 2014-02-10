@@ -50,7 +50,6 @@ namespace vfg
         QSize getFrameSize() const;
     protected:
         void resizeEvent(QResizeEvent *event);
-        void mousePressEvent(QMouseEvent *event);
 
     signals:
         void fullsizeChanged(bool);
