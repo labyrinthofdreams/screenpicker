@@ -94,17 +94,7 @@ void vfg::VideoFrameWidget::updateFrame()
         drawCropArea();
     }
 
-    QSize zoomSize {};
-    if(zoomMode == ZoomMode::Zoom_Scale) {
-        zoomSize = frameLabel->size();
-    }
-    else {
-        const auto zoomfactor = getZoomFactor();
-        zoomSize = QSize{static_cast<int>(original.width() * zoomfactor),
-                         static_cast<int>(original.height() * zoomfactor)};
-    }
-
-    frameLabel->setPixmap(framePixmap.scaled(zoomSize,
+    frameLabel->setPixmap(framePixmap.scaled(calculateSize(),
                                              Qt::KeepAspectRatio,
                                              Qt::SmoothTransformation));
 
@@ -123,7 +113,7 @@ void vfg::VideoFrameWidget::drawCropArea()
     framePixmap.swap(copiedFrame);
 }
 
-double vfg::VideoFrameWidget::getZoomFactor() const
+const QSize vfg::VideoFrameWidget::calculateSize() const
 {
     std::map<ZoomMode, double> factors {
         {ZoomMode::Zoom_25, 0.25}, {ZoomMode::Zoom_50, 0.5},
@@ -131,7 +121,13 @@ double vfg::VideoFrameWidget::getZoomFactor() const
         {ZoomMode::Zoom_Scale, static_cast<double>(frameLabel->height()) / original.height()}
     };
 
-    return factors[zoomMode];
+    if(zoomMode == ZoomMode::Zoom_Scale) {
+        return frameLabel->size();
+    }
+
+    const auto zoomfactor = factors[zoomMode];
+    return QSize {static_cast<int>(original.width() * zoomfactor),
+                  static_cast<int>(original.height() * zoomfactor)};
 }
 
 void vfg::VideoFrameWidget::setZoom(ZoomMode mode)

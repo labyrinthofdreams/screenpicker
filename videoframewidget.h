@@ -61,10 +61,10 @@ namespace vfg
         void drawCropArea();
 
         /**
-         * @brief getZoomFactor Calculates new frame height based on zoom mode
-         * @return Zoom factor
+         * @brief getZoomFactor Calculates new size based on zoom mode
+         * @return New frame size
          */
-        double getZoomFactor() const;
+        const QSize calculateSize() const;
 
     public:
         /**
