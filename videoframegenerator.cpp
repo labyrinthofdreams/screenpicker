@@ -25,7 +25,7 @@ void VideoFrameGenerator::start()
     active = true;
     while(!frames.empty())
     {
-        const unsigned current = frames.takeFirst();
+        const auto current = frames.takeFirst();
         lock.unlock();
         if(!frameGrabber) {
             break;
@@ -97,7 +97,7 @@ bool VideoFrameGenerator::isPaused() const
     return paused;
 }
 
-void VideoFrameGenerator::enqueue(const unsigned frame)
+void VideoFrameGenerator::enqueue(int frame)
 {
     QMutexLocker lock(&mutex);
     bool exists = frames.contains(frame);
@@ -107,7 +107,7 @@ void VideoFrameGenerator::enqueue(const unsigned frame)
     }
 }
 
-unsigned VideoFrameGenerator::remaining() const
+int VideoFrameGenerator::remaining() const
 {
     QMutexLocker lock(&mutex);
     return frames.count();

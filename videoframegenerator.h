@@ -23,7 +23,7 @@ public:
 
     bool isRunning() const;
     bool isPaused() const;
-    void enqueue(const unsigned frame);
+    void enqueue(int frame);
     unsigned remaining() const;
     void clear();
     
@@ -39,7 +39,7 @@ public slots:
     
 private:
     vfg::VideoFrameGrabber *frameGrabber;
-    QList<unsigned> frames;
+    QList<int> frames;
     mutable QMutex mutex;
     QWaitCondition waitToContinue;
     bool halt;
