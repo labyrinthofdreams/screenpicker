@@ -5,6 +5,7 @@
 #include <QPair>
 #include <QPixmap>
 #include <QVector>
+#include <QWidget>
 
 // Forward declarations
 class QLabel;
