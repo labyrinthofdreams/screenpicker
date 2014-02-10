@@ -1,5 +1,10 @@
-#include <QtWidgets>
-#include <QDebug>
+#include <QLabel>
+#include <QPainter>
+#include <QPixmap>
+#include <QStyle>
+#include <QStyleOption>
+#include <QVBoxLayout>
+#include <QWidget>
 #include "videoframethumbnail.h"
 
 vfg::VideoFrameThumbnail::VideoFrameThumbnail(
