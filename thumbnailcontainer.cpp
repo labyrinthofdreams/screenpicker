@@ -4,8 +4,10 @@
 #include "flowlayout.h"
 
 // TODO: This implementation is a fucking mess. Fix it.
+using vfg::ui::ThumbnailContainer;
+using vfg::ui::VideoFrameThumbnail;
 
-vfg::ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
+ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
     QWidget(parent),
     activeWidget(0),
     maxThumbnails(0)
@@ -14,10 +16,10 @@ vfg::ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
     setLayout(layout);
 }
 
-void vfg::ThumbnailContainer::addThumbnail(vfg::VideoFrameThumbnail *thumbnail)
+void ThumbnailContainer::addThumbnail(VideoFrameThumbnail *thumbnail)
 {
-    connect(thumbnail, SIGNAL(selected(vfg::VideoFrameThumbnail*)),
-            this, SLOT(handleThumbnailSelection(vfg::VideoFrameThumbnail*)));
+    connect(thumbnail, SIGNAL(selected(VideoFrameThumbnail*)),
+            this, SLOT(handleThumbnailSelection(VideoFrameThumbnail*)));
 
     connect(thumbnail, SIGNAL(doubleClicked(unsigned)),
             this, SIGNAL(thumbnailDoubleClicked(unsigned)));
@@ -54,7 +56,7 @@ void vfg::ThumbnailContainer::addThumbnail(vfg::VideoFrameThumbnail *thumbnail)
     layout->addWidget(thumbnail);
 }
 
-void vfg::ThumbnailContainer::clearThumbnails()
+void ThumbnailContainer::clearThumbnails()
 {
     QLayoutItem *item;
     while((item = layout->takeAt(0)))
@@ -69,7 +71,7 @@ void vfg::ThumbnailContainer::clearThumbnails()
     layout->invalidate();
 }
 
-void vfg::ThumbnailContainer::resizeThumbnails(const unsigned width)
+void ThumbnailContainer::resizeThumbnails(const unsigned width)
 {
     // TODO: Parallelize
     for(int i = 0; i < layout->count(); ++i)
@@ -82,7 +84,7 @@ void vfg::ThumbnailContainer::resizeThumbnails(const unsigned width)
     }
 }
 
-void vfg::ThumbnailContainer::handleThumbnailSelection(vfg::VideoFrameThumbnail *thumbnail)
+void ThumbnailContainer::handleThumbnailSelection(VideoFrameThumbnail *thumbnail)
 {
     // Do nothing if same selection
     if(activeWidget == thumbnail)
@@ -100,7 +102,7 @@ void vfg::ThumbnailContainer::handleThumbnailSelection(vfg::VideoFrameThumbnail 
     activeWidget = thumbnail;
 }
 
-vfg::VideoFrameThumbnail* vfg::ThumbnailContainer::takeSelected()
+VideoFrameThumbnail* ThumbnailContainer::takeSelected()
 {
     // Bugfix: If the widget is not marked unselected before removing it,
     // it won't remove the stylesheet from the container
@@ -112,7 +114,7 @@ vfg::VideoFrameThumbnail* vfg::ThumbnailContainer::takeSelected()
     const int widgetIndex = layout->indexOf(activeWidget);
     QLayoutItem* item = layout->takeAt(widgetIndex);
 
-    vfg::VideoFrameThumbnail* ret = item->widget();
+    VideoFrameThumbnail* ret = item->widget();
 
     // Bugfix: If this item is not deleted, the ownership of the widget will remain
     // in the container
@@ -122,29 +124,29 @@ vfg::VideoFrameThumbnail* vfg::ThumbnailContainer::takeSelected()
     return ret;
 }
 
-vfg::VideoFrameThumbnail* vfg::ThumbnailContainer::selected()
+VideoFrameThumbnail* ThumbnailContainer::selected()
 {
     return activeWidget;
 }
 
-int vfg::ThumbnailContainer::numThumbnails() const
+int ThumbnailContainer::numThumbnails() const
 {
     return layout->count();
 }
 
-void vfg::ThumbnailContainer::setMaxThumbnails(const unsigned max)
+void ThumbnailContainer::setMaxThumbnails(const unsigned max)
 {
     maxThumbnails = max;
 
     emit maximumChanged(max);
 }
 
-bool vfg::ThumbnailContainer::isFull() const
+bool ThumbnailContainer::isFull() const
 {
     return numThumbnails() == maxThumbnails;
 }
 
-void vfg::ThumbnailContainer::mousePressEvent(QMouseEvent *ev)
+void ThumbnailContainer::mousePressEvent(QMouseEvent *ev)
 {
     Q_UNUSED(ev);
 
