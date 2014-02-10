@@ -1,8 +1,16 @@
 #include <map>
-#include <QtWidgets>
+#include <QImage>
+#include <QLabel>
 #include <QMouseEvent>
+#include <QPainter>
 #include <QPair>
+#include <QPalette>
+#include <QPixmap>
+#include <QRect>
+#include <QSize>
+#include <QVBoxLayout>
 #include <QVector>
+#include <QWidget>
 #include "videoframewidget.h"
 
 vfg::VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
