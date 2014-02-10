@@ -1,10 +1,10 @@
 #ifndef VFG_VIDEOFRAMEGENERATOR_H
 #define VFG_VIDEOFRAMEGENERATOR_H
 
-#include <QObject>
-#include <QList>
 #include <QImage>
+#include <QList>
 #include <QMutex>
+#include <QObject>
 #include <QPair>
 #include <QWaitCondition>
 

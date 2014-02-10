@@ -1,5 +1,5 @@
-#include <QMutexLocker>
 #include <QImage>
+#include <QMutexLocker>
 #include <QPair>
 #include "videoframegrabber.h"
 #include "videoframegenerator.h"
