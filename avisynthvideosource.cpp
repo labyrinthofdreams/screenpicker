@@ -90,12 +90,12 @@ bool AvisynthVideoSource::hasVideo() const
     return (info != NULL) && avs_has_video(info);
 }
 
-unsigned AvisynthVideoSource::getNumFrames() const
+int AvisynthVideoSource::getNumFrames() const
 {
     return info->num_frames;
 }
 
-QImage AvisynthVideoSource::getFrame(unsigned frameNumber)
+QImage AvisynthVideoSource::getFrame(int frameNumber)
 {
     if(info == NULL)
     {

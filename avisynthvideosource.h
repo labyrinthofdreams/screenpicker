@@ -17,8 +17,8 @@ namespace vfg
 
         void load(QString fileName);
         bool hasVideo() const;
-        unsigned getNumFrames() const;
-        QImage getFrame(unsigned frameNumber);
+        int getNumFrames() const;
+        QImage getFrame(int frameNumber);
         QString getSupportedFormats();
     };
 }
