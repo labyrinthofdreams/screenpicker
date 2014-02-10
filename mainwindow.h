@@ -10,6 +10,8 @@
 #include <QPair>
 
 // Forward declarations
+class QAction;
+class QActionGroup;
 class QPoint;
 class QDragEvent;
 class QDropEvent;
@@ -53,6 +55,8 @@ private slots:
     void handleSavedMenu(const QPoint& pos);
     void loadFile(QString path);
 
+    void videoZoomChanged(QAction *action);
+
     void on_actionOpen_triggered();
     void on_nextButton_clicked();
     void on_previousButton_clicked();
@@ -80,8 +84,6 @@ private slots:
 
     void on_actionVideo_Settings_triggered();
 
-    void on_actionFull_Resolution_2_triggered(bool checked);
-
 private:
     Ui::MainWindow *ui;
 
@@ -98,6 +100,8 @@ private:
 
     QString lastOpenedFile;
     QString lastSaveDirectory;
+
+    QActionGroup *videoZoomGroup;
 
     // Keeps track of the last requested frame which is used to
     // return to that frame after reloading the script via editor

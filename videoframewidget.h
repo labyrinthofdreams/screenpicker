@@ -18,6 +18,14 @@ class QVBoxLayout;
 
 namespace vfg
 {
+    enum class ZoomMode : int {
+        Zoom_25,
+        Zoom_50,
+        Zoom_100,
+        Zoom_200,
+        Zoom_Scale
+    };
+
     /*
      * Implements a simple video frame widget for displaying images (frames)
      */
@@ -30,18 +38,16 @@ namespace vfg
         QLabel* frameLabel;
         QPixmap framePixmap;
         QPixmap original;
-        bool fullsize;
-
-        QMenu contextMenu;
-        QAction *fsAction;
+        ZoomMode zoomMode;
 
         void updateFrame();
         void drawCropArea();
+
+        double getZoomFactor() const;
     public:
         explicit VideoFrameWidget(QWidget *parent = 0);
 
         QSize getFrameSize() const;
-        bool isFullsize() const;
     protected:
         void resizeEvent(QResizeEvent *event);
         void mousePressEvent(QMouseEvent *event);
@@ -50,7 +56,7 @@ namespace vfg
         void fullsizeChanged(bool);
 
     public slots:
-        void setFullsize(bool value);
+        void setZoom(ZoomMode mode);
         void setFrame(QImage img);
         void setFrame(QPair<unsigned, QImage> img);
         /**

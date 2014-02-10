@@ -1,3 +1,4 @@
+#include <map>
 #include <QtWidgets>
 #include <QtCore>
 #include <stdexcept>
@@ -81,9 +82,22 @@ MainWindow::MainWindow(QWidget *parent) :
         const unsigned frameStep = cfg.value("framestep").toInt();
         ui->frameStepSpinBox->setValue(frameStep);
 
-        ui->actionFull_Resolution_2->setChecked(ui->videoFrameWidget->isFullsize());
-        connect(ui->videoFrameWidget, SIGNAL(fullsizeChanged(bool)),
-                ui->actionFull_Resolution_2, SLOT(setChecked(bool)));
+        videoZoomGroup = new QActionGroup {this};
+        videoZoomGroup->addAction(ui->action25);
+        videoZoomGroup->addAction(ui->action50);
+        videoZoomGroup->addAction(ui->action100);
+        videoZoomGroup->addAction(ui->action200);
+        videoZoomGroup->addAction(ui->actionScaleToWindow);
+        ui->action25->setData("25");
+        ui->action50->setData("50");
+        ui->action100->setData("100");
+        ui->action200->setData("200");
+        ui->actionScaleToWindow->setData("scale");
+        // Scale by default
+        ui->actionScaleToWindow->setChecked(true);
+        ui->videoFrameWidget->setZoom(vfg::ZoomMode::Zoom_Scale);
+        connect(videoZoomGroup, SIGNAL(triggered(QAction*)),
+                this, SLOT(videoZoomChanged(QAction*)));
     }
     catch(std::exception& ex)
     {
@@ -362,6 +376,20 @@ void MainWindow::loadFile(QString path)
         scriptEditor->show();
         scriptEditor->setWindowState(Qt::WindowActive);
     }
+}
+
+void MainWindow::videoZoomChanged(QAction *action)
+{
+    QString mode = action->data().toString();
+    qDebug() << "mode:" << mode;
+    std::map<QString, vfg::ZoomMode> m {
+        {"25", vfg::ZoomMode::Zoom_25},
+        {"50", vfg::ZoomMode::Zoom_50},
+        {"100", vfg::ZoomMode::Zoom_100},
+        {"200", vfg::ZoomMode::Zoom_200},
+        {"scale", vfg::ZoomMode::Zoom_Scale}
+    };
+    ui->videoFrameWidget->setZoom(m[mode]);
 }
 
 void MainWindow::on_actionOpen_triggered()
@@ -949,9 +977,4 @@ void MainWindow::on_actionVideo_Settings_triggered()
     videoSettingsWindow->hide();
     videoSettingsWindow->show();
     videoSettingsWindow->setWindowState(Qt::WindowActive);
-}
-
-void MainWindow::on_actionFull_Resolution_2_triggered(bool checked)
-{
-    ui->videoFrameWidget->setFullsize(checked);
 }

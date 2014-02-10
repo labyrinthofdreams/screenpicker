@@ -1,6 +1,5 @@
+#include <map>
 #include <QtWidgets>
-#include <QMenu>
-#include <QAction>
 #include <QMouseEvent>
 #include <QPair>
 #include <QVector>
@@ -11,11 +10,10 @@ vfg::VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
     cropBorders(),
     framePixmap(),
     original(),
-    fullsize(false),
-    contextMenu()
+    zoomMode(ZoomMode::Zoom_Scale)
 {
     frameLabel = new QLabel;
-    frameLabel->setAlignment(Qt::AlignCenter);
+    frameLabel->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
     // If size policy is not ignored,
     // it prevents the resizeEvent() from being called properly
     // when the widget is resized smaller
@@ -36,13 +34,6 @@ vfg::VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
 
     // Enable context menu
     setContextMenuPolicy(Qt::CustomContextMenu);
-
-    fsAction = new QAction {tr("Full resolution"), this};
-    fsAction->setCheckable(true);
-    fsAction->setChecked(fullsize);
-    connect(fsAction, SIGNAL(triggered(bool)),
-            this, SLOT(setFullsize(bool)));
-    contextMenu.addAction(fsAction);
 }
 
 void vfg::VideoFrameWidget::resizeEvent(QResizeEvent *event)
@@ -64,7 +55,6 @@ void vfg::VideoFrameWidget::mousePressEvent(QMouseEvent *event)
     }
 
     event->accept();
-    contextMenu.exec(event->globalPos());
 }
 
 void vfg::VideoFrameWidget::setFrame(QImage img)
@@ -115,20 +105,20 @@ void vfg::VideoFrameWidget::updateFrame()
         drawCropArea();
     }
 
-    if(!fullsize)
-    {
-        setMinimumSize(1, 1);
-        setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+    QSize zoomSize {};
+    if(zoomMode == ZoomMode::Zoom_Scale) {
+        zoomSize = frameLabel->size();
+    }
+    else {
+        const auto zoomfactor = getZoomFactor();
+        zoomSize = QSize{static_cast<int>(original.width() * zoomfactor),
+                         static_cast<int>(original.height() * zoomfactor)};
+    }
 
-        frameLabel->setPixmap(framePixmap.scaled(frameLabel->size(),
-                                                 Qt::KeepAspectRatio,
-                                                 Qt::SmoothTransformation));
-    }
-    else
-    {
-        frameLabel->setPixmap(framePixmap);
-        setFixedHeight(framePixmap.height());
-    }
+    frameLabel->setPixmap(framePixmap.scaled(zoomSize,
+                                             Qt::KeepAspectRatio,
+                                             Qt::SmoothTransformation));
+
 }
 
 void vfg::VideoFrameWidget::drawCropArea()
@@ -144,14 +134,22 @@ void vfg::VideoFrameWidget::drawCropArea()
     framePixmap.swap(copiedFrame);
 }
 
-void vfg::VideoFrameWidget::setFullsize(bool value)
+double vfg::VideoFrameWidget::getZoomFactor() const
 {
-    fullsize = value;
-    fsAction->setChecked(value);
+    std::map<ZoomMode, double> factors {
+        {ZoomMode::Zoom_25, 0.25}, {ZoomMode::Zoom_50, 0.5},
+        {ZoomMode::Zoom_100, 1.0}, {ZoomMode::Zoom_200, 2.0},
+        {ZoomMode::Zoom_Scale, static_cast<double>(frameLabel->height()) / original.height()}
+    };
+
+    return factors[zoomMode];
+}
+
+void vfg::VideoFrameWidget::setZoom(ZoomMode mode)
+{
+    zoomMode = mode;
 
     updateFrame();
-
-    emit fullsizeChanged(value);
 }
 
 QSize vfg::VideoFrameWidget::getFrameSize() const
@@ -160,9 +158,4 @@ QSize vfg::VideoFrameWidget::getFrameSize() const
         return QSize();
 
     return framePixmap.size();
-}
-
-bool vfg::VideoFrameWidget::isFullsize() const
-{
-    return fullsize;
 }

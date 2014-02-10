@@ -623,9 +623,13 @@
     </property>
     <widget class="QMenu" name="menuPreview">
      <property name="title">
-      <string>Preview</string>
+      <string>Zoom</string>
      </property>
-     <addaction name="actionFull_Resolution_2"/>
+     <addaction name="action25"/>
+     <addaction name="action50"/>
+     <addaction name="action100"/>
+     <addaction name="action200"/>
+     <addaction name="actionScaleToWindow"/>
     </widget>
     <addaction name="actionOpen"/>
     <addaction name="actionOpen_DVD"/>
@@ -703,15 +707,50 @@
     <string>V</string>
    </property>
   </action>
-  <action name="actionFull_Resolution_2">
+  <action name="actionScaleToWindow">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Original Resolution</string>
+    <string>Scale to window</string>
    </property>
    <property name="toolTip">
-    <string>Show video preview in original resolution</string>
+    <string>Scale to window size</string>
+   </property>
+  </action>
+  <action name="action100">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>100% (Default)</string>
+   </property>
+  </action>
+  <action name="action25">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>25%</string>
+   </property>
+  </action>
+  <action name="action50">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>50%</string>
+   </property>
+  </action>
+  <action name="action200">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>200%</string>
    </property>
   </action>
  </widget>
