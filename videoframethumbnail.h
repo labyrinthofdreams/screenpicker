@@ -1,14 +1,13 @@
 #ifndef VIDEOFRAMETHUMBNAIL_H
 #define VIDEOFRAMETHUMBNAIL_H
 
-#include <QWidget>
 #include <QPixmap>
+#include <QWidget>
 
-class QVBoxLayout;
 class QLabel;
-
-class QResizeEvent;
 class QMouseEvent;
+class QResizeEvent;
+class QVBoxLayout;
 
 namespace vfg
 {
