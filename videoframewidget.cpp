@@ -115,15 +115,15 @@ void vfg::VideoFrameWidget::drawCropArea()
 
 const QSize vfg::VideoFrameWidget::calculateSize() const
 {
+    if(zoomMode == ZoomMode::Zoom_Scale) {
+        return frameLabel->size();
+    }
+
     std::map<ZoomMode, double> factors {
         {ZoomMode::Zoom_25, 0.25}, {ZoomMode::Zoom_50, 0.5},
         {ZoomMode::Zoom_100, 1.0}, {ZoomMode::Zoom_200, 2.0},
         {ZoomMode::Zoom_Scale, static_cast<double>(frameLabel->height()) / original.height()}
     };
-
-    if(zoomMode == ZoomMode::Zoom_Scale) {
-        return frameLabel->size();
-    }
 
     const auto zoomfactor = factors[zoomMode];
     return QSize {static_cast<int>(original.width() * zoomfactor),
