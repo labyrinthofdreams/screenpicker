@@ -2,7 +2,8 @@
 #include <QDebug>
 #include "videoframethumbnail.h"
 
-vfg::VideoFrameThumbnail::VideoFrameThumbnail(const unsigned frame, QPixmap thumbnail, QWidget *parent) :
+vfg::VideoFrameThumbnail::VideoFrameThumbnail(
+        int frame, QPixmap thumbnail, QWidget *parent) :
     QWidget(parent),
     layout(new QVBoxLayout),
     pixmapLabel(new QLabel),
@@ -34,7 +35,7 @@ void vfg::VideoFrameThumbnail::markUnselected()
     setStyleSheet("background-color: inherit; border: 0;");
 }
 
-unsigned vfg::VideoFrameThumbnail::frameNum() const
+int vfg::VideoFrameThumbnail::frameNum() const
 {
     return frameNumber;
 }

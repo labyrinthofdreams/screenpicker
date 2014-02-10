@@ -41,14 +41,14 @@ namespace vfg
          * @brief frameNum
          * @return Frame number
          */
-        unsigned frameNum() const;
+        int frameNum() const;
 
     private:
         QVBoxLayout *layout;
         QLabel *pixmapLabel;
         QPixmap thumb;
 
-        unsigned frameNumber;
+        int frameNumber;
 
         /**
          * @brief updateFrameSize Scales the thumbnail to the widget size
@@ -67,14 +67,12 @@ namespace vfg
          * @param thumbnail
          */
         void selected(vfg::VideoFrameThumbnail* thumbnail);
-        void doubleClicked(unsigned frameNumber);
-
-    public slots:
 
         /**
          * @brief doubleClicked Emits the frame number of the widget
          * @param frameNumber
          */
+        void doubleClicked(int frameNumber);
     };
 }
 #endif // VIDEOFRAMETHUMBNAIL_H
