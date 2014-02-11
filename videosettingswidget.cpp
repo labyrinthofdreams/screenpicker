@@ -1,5 +1,7 @@
+#include <map>
 #include <QCloseEvent>
 #include <QMap>
+#include <QPair>
 #include <QRect>
 #include <QShowEvent>
 #include <QString>
@@ -26,6 +28,12 @@ VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->cboxDvdResolution->insertItem(Default_Resolution, tr("Default"));
+    ui->cboxDvdResolution->insertItem(NTSC_16_9, tr("NTSC 16:9"));
+    ui->cboxDvdResolution->insertItem(NTSC_4_3, tr("NTSC 4:3"));
+    ui->cboxDvdResolution->insertItem(PAL_16_9, tr("PAL 16:9"));
+    ui->cboxDvdResolution->insertItem(PAL_4_3, tr("PAL 4:3"));
+
     connect(ui->sboxCropBottom, SIGNAL(valueChanged(int)),
             this, SLOT(handleCropChange()));
     connect(ui->sboxCropLeft, SIGNAL(valueChanged(int)),
@@ -43,28 +51,18 @@ VideoSettingsWidget::~VideoSettingsWidget()
 
 void VideoSettingsWidget::on_cboxDvdResolution_activated(int index)
 {
-    switch(index)
-    {
-    case static_cast<int>(Resolution::NTSC_16_9):
-        ui->sboxResizeWidth->setValue(854);
-        ui->sboxResizeHeight->setValue(480);
-        break;
-    case static_cast<int>(Resolution::NTSC_4_3):
-        ui->sboxResizeWidth->setValue(720);
-        ui->sboxResizeHeight->setValue(540);
-        break;
-    case static_cast<int>(Resolution::PAL_16_9):
-        ui->sboxResizeWidth->setValue(1024);
-        ui->sboxResizeHeight->setValue(576);
-        break;
-    case static_cast<int>(Resolution::PAL_4_3):
-        ui->sboxResizeWidth->setValue(768);
-        ui->sboxResizeHeight->setValue(576);
-        break;
-    default:
-        ui->sboxResizeWidth->setValue(0);
-        ui->sboxResizeHeight->setValue(0);
-    }
+    using VideoSize = QPair<int, int>;
+    std::map<int, VideoSize> sizes {
+        {Default_Resolution, {0, 0}},
+        {NTSC_16_9, {854, 480}},
+        {NTSC_4_3, {720, 540}},
+        {PAL_16_9, {1024, 576}},
+        {PAL_4_3, {768, 576}}
+    };
+
+    const VideoSize res = sizes[index];
+    ui->sboxResizeWidth->setValue(res.first);
+    ui->sboxResizeHeight->setValue(res.second);
 }
 
 void VideoSettingsWidget::on_pushButton_clicked()
