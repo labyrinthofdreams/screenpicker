@@ -20,12 +20,6 @@ namespace vfg {
  * @brief Common DVD resolutions
  */
 enum class Resolution : int {
-};
-
-enum class Deinterlace : int {
-    NONE = 0,
-    IVTC = 1,
-    DEINTERLACE = 2
     Custom = 0, //!< Custom resolution
     NTSC_16_9 = 1, //!< NTSC 16:9
     NTSC_4_3 = 2, //!< NTSC 4:3
