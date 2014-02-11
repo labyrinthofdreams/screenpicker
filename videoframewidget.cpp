@@ -13,6 +13,7 @@
 #include <QWidget>
 #include "videoframewidget.h"
 
+using vfg::ZoomMode;
 using vfg::ui::VideoFrameWidget;
 
 VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
