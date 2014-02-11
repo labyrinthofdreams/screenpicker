@@ -18,9 +18,7 @@ class QVBoxLayout;
 namespace vfg {
 
 /**
- * @brief The ZoomMode enum
- *
- * Specifies the zoom mode for the \link VideoFrameWidget preview frame \endlink
+ * @brief Zoom mode for the \link VideoFrameWidget preview frame \endlink
  * @sa VideoFrameWidget
  */
 enum class ZoomMode : int {
