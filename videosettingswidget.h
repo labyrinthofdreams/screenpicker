@@ -20,17 +20,17 @@ namespace vfg {
  * @brief Common DVD resolutions
  */
 enum class Resolution : int {
-    OTHER = 0,
-    NTSC_169 = 1,
-    NTSC_43 = 2,
-    PAL_169 = 3,
-    PAL_43 = 4
 };
 
 enum class Deinterlace : int {
     NONE = 0,
     IVTC = 1,
     DEINTERLACE = 2
+    Custom = 0, //!< Custom resolution
+    NTSC_16_9 = 1, //!< NTSC 16:9
+    NTSC_4_3 = 2, //!< NTSC 4:3
+    PAL_16_9 = 3, //!< PAL 16:9
+    PAL_4_3 = 4 //!< PAL 4:3
 };
 
 namespace ui {

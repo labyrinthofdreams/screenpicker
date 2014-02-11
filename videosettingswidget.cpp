@@ -45,19 +45,19 @@ void VideoSettingsWidget::on_cboxDvdResolution_activated(int index)
 {
     switch(index)
     {
-    case static_cast<int>(Resolution::NTSC_169):
+    case static_cast<int>(Resolution::NTSC_16_9):
         ui->sboxResizeWidth->setValue(854);
         ui->sboxResizeHeight->setValue(480);
         break;
-    case static_cast<int>(Resolution::NTSC_43):
+    case static_cast<int>(Resolution::NTSC_4_3):
         ui->sboxResizeWidth->setValue(720);
         ui->sboxResizeHeight->setValue(540);
         break;
-    case static_cast<int>(Resolution::PAL_169):
+    case static_cast<int>(Resolution::PAL_16_9):
         ui->sboxResizeWidth->setValue(1024);
         ui->sboxResizeHeight->setValue(576);
         break;
-    case static_cast<int>(Resolution::PAL_43):
+    case static_cast<int>(Resolution::PAL_4_3):
         ui->sboxResizeWidth->setValue(768);
         ui->sboxResizeHeight->setValue(576);
         break;
