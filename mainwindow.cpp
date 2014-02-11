@@ -133,8 +133,8 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(videoError(QString)),
             Qt::QueuedConnection);
 
-    connect(frameGrabber, SIGNAL(frameGrabbed(QPair<uint,QImage>)),
-            ui->videoFrameWidget, SLOT(setFrame(QPair<uint,QImage>)),
+    connect(frameGrabber, SIGNAL(frameGrabbed(QPair<int,QImage>)),
+            ui->videoFrameWidget, SLOT(setFrame(QPair<int,QImage>)),
             Qt::QueuedConnection);
 
     connect(frameGenerator, SIGNAL(frameReady(QPair<int, QImage>)),
