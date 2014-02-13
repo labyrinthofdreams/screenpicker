@@ -15,20 +15,6 @@ namespace Ui {
 }
 
 namespace vfg {
-
-/**
- * @brief Common DVD resolutions for the resize dropdown
- * in \link vfg::ui::VideoSettingsWidget video settings widget \endlink
- * @sa vfg::ui::VideoSettingsWidget
- */
-enum Resolution : int {
-    Default_Resolution = 0, //!< Default resolution
-    NTSC_16_9 = 1, //!< NTSC 16:9
-    NTSC_4_3 = 2, //!< NTSC 4:3
-    PAL_16_9 = 3, //!< PAL 16:9
-    PAL_4_3 = 4 //!< PAL 4:3
-};
-
 namespace ui {
 
 /**
@@ -96,6 +82,17 @@ private:
     struct {
         int left, top, right, bottom;
     } crop = {0, 0, 0, 0};
+
+    /**
+     * @brief Common DVD aspect ratios for the resize dropdown
+     */
+    enum AspectRatio : int {
+        Default_AR = 0, //!< Default aspect ratio
+        NTSC_16_9 = 1, //!< NTSC 16:9
+        NTSC_4_3 = 2, //!< NTSC 4:3
+        PAL_16_9 = 3, //!< PAL 16:9
+        PAL_4_3 = 4 //!< PAL 4:3
+    };
 
 protected:
     void showEvent(QShowEvent *event);
