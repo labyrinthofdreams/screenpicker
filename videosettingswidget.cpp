@@ -24,11 +24,22 @@ constexpr int noneg(const int x)
 VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::VideoSettingsWidget),
-    prevSettings()
+    prevSettings(),
+    resolutions()
 {
     ui->setupUi(this);
 
-    ui->cboxDvdResolution->insertItem(Default_Resolution, tr("Default"));
+    std::map<int, VideoSize> sizes {
+        {Default_AR, {0, 0}},
+        {NTSC_16_9, {854, 480}},
+        {NTSC_4_3, {720, 540}},
+        {PAL_16_9, {1024, 576}},
+        {PAL_4_3, {768, 576}}
+    };
+
+    resolutions.swap(sizes);
+
+    ui->cboxDvdResolution->insertItem(Default_AR, tr("Default"));
     ui->cboxDvdResolution->insertItem(NTSC_16_9, tr("NTSC 16:9"));
     ui->cboxDvdResolution->insertItem(NTSC_4_3, tr("NTSC 4:3"));
     ui->cboxDvdResolution->insertItem(PAL_16_9, tr("PAL 16:9"));
@@ -51,16 +62,7 @@ VideoSettingsWidget::~VideoSettingsWidget()
 
 void VideoSettingsWidget::on_cboxDvdResolution_activated(int index)
 {
-    using VideoSize = QPair<int, int>;
-    std::map<int, VideoSize> sizes {
-        {Default_Resolution, {0, 0}},
-        {NTSC_16_9, {854, 480}},
-        {NTSC_4_3, {720, 540}},
-        {PAL_16_9, {1024, 576}},
-        {PAL_4_3, {768, 576}}
-    };
-
-    const VideoSize res = sizes[index];
+    const VideoSize res = resolutions[index];
     ui->sboxResizeWidth->setValue(res.first);
     ui->sboxResizeHeight->setValue(res.second);
 }
