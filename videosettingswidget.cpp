@@ -1,7 +1,6 @@
 #include <map>
 #include <QCloseEvent>
 #include <QMap>
-#include <QPair>
 #include <QRect>
 #include <QShowEvent>
 #include <QString>
