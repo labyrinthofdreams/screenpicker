@@ -21,8 +21,8 @@ void ThumbnailContainer::addThumbnail(VideoFrameThumbnail *thumbnail)
     connect(thumbnail, SIGNAL(selected(VideoFrameThumbnail*)),
             this, SLOT(handleThumbnailSelection(VideoFrameThumbnail*)));
 
-    connect(thumbnail, SIGNAL(doubleClicked(unsigned)),
-            this, SIGNAL(thumbnailDoubleClicked(unsigned)));
+    connect(thumbnail, SIGNAL(doubleClicked(int)),
+            this, SIGNAL(thumbnailDoubleClicked(int)));
 
 //    QSettings cfg("config.ini", QSettings::IniFormat);
 //    const int maxThumbnails = cfg.value("maxthumbnails").toInt();
@@ -71,7 +71,7 @@ void ThumbnailContainer::clearThumbnails()
     layout->invalidate();
 }
 
-void ThumbnailContainer::resizeThumbnails(const unsigned width)
+void ThumbnailContainer::resizeThumbnails(int width)
 {
     // TODO: Parallelize
     for(int i = 0; i < layout->count(); ++i)
@@ -134,7 +134,7 @@ int ThumbnailContainer::numThumbnails() const
     return layout->count();
 }
 
-void ThumbnailContainer::setMaxThumbnails(const unsigned max)
+void ThumbnailContainer::setMaxThumbnails(int max)
 {
     maxThumbnails = max;
 
