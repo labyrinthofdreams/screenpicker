@@ -4,6 +4,7 @@
 #include "avisynthvideosource.h"
 
 using namespace vfg;
+using namespace vfg::exception;
 
 AvisynthVideoSource::AvisynthVideoSource() :
     AbstractVideoSource(),
