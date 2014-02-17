@@ -21,8 +21,10 @@ class QThread;
 
 namespace vfg {
     class VideoFrameGrabber;
-    class VideoFrameGenerator;
     class DvdProcessor;
+namespace core {
+    class VideoFrameGenerator;
+}
 namespace ui {
     class ScriptEditor;
     class VideoFrameThumbnail;
@@ -91,7 +93,7 @@ private:
     QThread *frameGrabberThread;
     QThread *frameGeneratorThread;
 
-    vfg::VideoFrameGenerator* frameGenerator;
+    vfg::core::VideoFrameGenerator* frameGenerator;
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::ui::ScriptEditor* scriptEditor;
     vfg::DvdProcessor* dvdProcessor;

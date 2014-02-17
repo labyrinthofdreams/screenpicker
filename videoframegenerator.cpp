@@ -4,7 +4,7 @@
 #include "videoframegrabber.h"
 #include "videoframegenerator.h"
 
-namespace vfg {
+using namespace vfg::core;
 
 VideoFrameGenerator::VideoFrameGenerator(vfg::VideoFrameGrabber *frameGrabber,
                                          QObject *parent) :
@@ -118,5 +118,3 @@ void VideoFrameGenerator::clear()
     QMutexLocker lock(&mutex);
     frames.clear();
 }
-
-} // namespace vfg

@@ -14,6 +14,7 @@ namespace vfg {
 }
 
 namespace vfg {
+namespace core {
 
 class VideoFrameGenerator : public QObject
 {
@@ -47,6 +48,7 @@ private:
     bool paused;
 };
 
+} // namespace core
 } // namespace vfg
 
 #endif // VFG_VIDEOFRAMEGENERATOR_H

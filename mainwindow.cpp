@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         frameGrabber = new vfg::VideoFrameGrabber;
 
-        frameGenerator = new vfg::VideoFrameGenerator(frameGrabber);
+        frameGenerator = new vfg::core::VideoFrameGenerator(frameGrabber);
         frameGeneratorThread = new QThread(this);
         frameGenerator->moveToThread(frameGeneratorThread);
         frameGeneratorThread->start();
