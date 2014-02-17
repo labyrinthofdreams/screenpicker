@@ -18,7 +18,7 @@ public:
 
 } // namespace exception
 
-
+namespace internal {
 
 class AbstractVideoSource
 {
@@ -32,6 +32,7 @@ public:
     virtual QString getSupportedFormats() = 0;
 };
 
+} // namespace internal
 } // namespace vfg
 
 #endif // ABSTRACTVIDEOSOURCE_H

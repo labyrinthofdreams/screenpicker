@@ -10,7 +10,9 @@
 
 // Forward declarations
 namespace vfg {
+namespace internal {
     class AbstractVideoSource;
+}
 }
 
 namespace vfg
@@ -28,7 +30,7 @@ namespace vfg
     {
         Q_OBJECT
     private:
-        QSharedPointer<vfg::AbstractVideoSource> avs;
+        QSharedPointer<vfg::internal::AbstractVideoSource> avs;
 
         // Last frame - FirstFrame
         unsigned numFrames;
@@ -39,11 +41,12 @@ namespace vfg
         mutable QMutex mutex;
     public:
         explicit VideoFrameGrabber(QObject *parent = 0);
-        explicit VideoFrameGrabber(QSharedPointer<vfg::AbstractVideoSource> avs, QObject *parent = 0);
+        explicit VideoFrameGrabber(QSharedPointer<vfg::internal::AbstractVideoSource> avs,
+                                   QObject *parent = 0);
         ~VideoFrameGrabber();
 
         bool hasVideo() const;
-        void setVideoSource(QSharedPointer<vfg::AbstractVideoSource> newAvs);
+        void setVideoSource(QSharedPointer<vfg::internal::AbstractVideoSource> newAvs);
 
         // Returns last captured frame number + FirstFrame
         unsigned lastFrame() const;

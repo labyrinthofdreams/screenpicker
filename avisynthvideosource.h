@@ -5,8 +5,8 @@
 #include "avs_internal.c"
 
 namespace vfg
+class AvisynthVideoSource : public vfg::internal::AbstractVideoSource
 {
-    class AvisynthVideoSource : public vfg::AbstractVideoSource
     {
     private:
         avs_hnd_t avsHandle;
