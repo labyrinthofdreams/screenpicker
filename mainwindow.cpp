@@ -357,7 +357,7 @@ void MainWindow::loadFile(QString path)
         QString saveTo = scriptEditor->path();
 
         // Create Avisynth video source and attempt to load the (parsed) Avisynth script
-        QSharedPointer<vfg::AvisynthVideoSource> videoSource(new vfg::AvisynthVideoSource);
+        QSharedPointer<vfg::core::AvisynthVideoSource> videoSource(new vfg::core::AvisynthVideoSource);
         videoSource->load(saveTo);
 
         // TODO: Stop screenshot generation if that's happening...

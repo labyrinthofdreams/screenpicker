@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include "avisynthvideosource.h"
 
-using namespace vfg;
+using namespace vfg::core;
 using namespace vfg::exception;
 
 AvisynthVideoSource::AvisynthVideoSource() :
