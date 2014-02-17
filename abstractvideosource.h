@@ -6,7 +6,7 @@
 #include <QString>
 #include <QImage>
 
-namespace vfg{
+namespace vfg {
 namespace exception {
 
 class VideoSourceError : public std::runtime_error
