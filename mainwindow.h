@@ -1,11 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <memory>
 #include <QMainWindow>
 #include <QString>
 #include <QMap>
 #include <QList>
 #include <QScopedPointer>
+#include <QSharedPointer>
 #include <QMutex>
 #include <QPair>
 
@@ -24,6 +26,9 @@ namespace vfg {
     class DvdProcessor;
 namespace core {
     class VideoFrameGenerator;
+}
+namespace internal {
+    class AbstractVideoSource;
 }
 namespace ui {
     class ScriptEditor;
@@ -93,6 +98,7 @@ private:
     QThread *frameGrabberThread;
     QThread *frameGeneratorThread;
 
+    std::shared_ptr<vfg::internal::AbstractVideoSource> videoSource;
     vfg::core::VideoFrameGenerator* frameGenerator;
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::ui::ScriptEditor* scriptEditor;

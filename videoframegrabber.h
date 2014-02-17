@@ -1,10 +1,10 @@
 #ifndef VIDEOFRAMEGRABBER_H
 #define VIDEOFRAMEGRABBER_H
 
+#include <memory>
 #include <QObject>
 #include <QImage>
 #include <QString>
-#include <QSharedPointer>
 #include <QMutex>
 #include <QPair>
 
@@ -30,7 +30,7 @@ namespace vfg
     {
         Q_OBJECT
     private:
-        QSharedPointer<vfg::internal::AbstractVideoSource> avs;
+        std::shared_ptr<vfg::internal::AbstractVideoSource> avs;
 
         // Last frame - FirstFrame
         unsigned numFrames;
@@ -41,16 +41,16 @@ namespace vfg
         mutable QMutex mutex;
     public:
         explicit VideoFrameGrabber(QObject *parent = 0);
-        explicit VideoFrameGrabber(QSharedPointer<vfg::internal::AbstractVideoSource> avs,
+        explicit VideoFrameGrabber(std::shared_ptr<vfg::internal::AbstractVideoSource> avs,
                                    QObject *parent = 0);
         ~VideoFrameGrabber();
 
         bool hasVideo() const;
-        void setVideoSource(QSharedPointer<vfg::internal::AbstractVideoSource> newAvs);
+        void setVideoSource(std::shared_ptr<vfg::internal::AbstractVideoSource> newAvs);
 
         // Returns last captured frame number + FirstFrame
         unsigned lastFrame() const;
-        unsigned totalFrames() const;
+        unsigned totalFrames();
 
         QImage getFrame(unsigned frameNum);
     public slots:
@@ -60,10 +60,11 @@ namespace vfg
         void requestPreviousFrame();
         // Captures the exact frame between range FirstFrame - totalFrames()
         void requestFrame(unsigned frameNum);
+
+    private slots:
+        void videoSourceUpdated();
+
     signals:
-        // Fired when video has been loaded
-        // Video properties are passed in the signal
-        void videoReady();
         // Fired when frame is available
         void frameGrabbed(QPair<int, QImage> frame);
         // Fired in the event that an error happens

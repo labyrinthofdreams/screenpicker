@@ -3,8 +3,9 @@
 
 #include <stdexcept>
 #include <string>
-#include <QString>
 #include <QImage>
+#include <QObject>
+#include <QString>
 
 namespace vfg {
 namespace exception {
@@ -20,8 +21,9 @@ public:
 
 namespace internal {
 
-class AbstractVideoSource
+class AbstractVideoSource : public QObject
 {
+    Q_OBJECT
 public:
     AbstractVideoSource() {}
     virtual ~AbstractVideoSource() {}
@@ -30,6 +32,9 @@ public:
     virtual int getNumFrames() const = 0;
     virtual QImage getFrame(int frameNumber) = 0;
     virtual QString getSupportedFormats() = 0;
+
+signals:
+    void videoLoaded();
 };
 
 } // namespace internal

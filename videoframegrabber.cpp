@@ -15,7 +15,7 @@ vfg::VideoFrameGrabber::VideoFrameGrabber(QObject *parent) :
 {
 }
 
-vfg::VideoFrameGrabber::VideoFrameGrabber(QSharedPointer<vfg::internal::AbstractVideoSource> avs,
+vfg::VideoFrameGrabber::VideoFrameGrabber(std::shared_ptr<vfg::internal::AbstractVideoSource> avs,
                                           QObject *parent) :
     QObject(parent),
     avs(avs),
@@ -23,6 +23,8 @@ vfg::VideoFrameGrabber::VideoFrameGrabber(QSharedPointer<vfg::internal::Abstract
     currentFrame(0),
     mutex()
 {
+    connect(avs.get(), SIGNAL(videoLoaded()),
+            this, SLOT(videoSourceUpdated()));
 }
 
 vfg::VideoFrameGrabber::~VideoFrameGrabber()
@@ -49,18 +51,17 @@ vfg::VideoFrameGrabber::~VideoFrameGrabber()
 bool vfg::VideoFrameGrabber::hasVideo() const
 {
     QMutexLocker lock(&mutex);
-    return !avs.isNull() && avs->hasVideo();
+    return avs && avs->hasVideo();
 }
 
-void vfg::VideoFrameGrabber::setVideoSource(QSharedPointer<vfg::internal::AbstractVideoSource> newAvs)
+void vfg::VideoFrameGrabber::setVideoSource(std::shared_ptr<vfg::internal::AbstractVideoSource> newAvs)
 {
     QMutexLocker lock(&mutex);
     avs = newAvs;
-    numFrames = avs->getNumFrames();
     currentFrame = 0;
-    lock.unlock();
-
-    emit videoReady();
+    numFrames = avs->getNumFrames();
+    connect(avs.get(), SIGNAL(videoLoaded()),
+            this, SLOT(videoSourceUpdated()));
 }
 
 unsigned vfg::VideoFrameGrabber::lastFrame() const
@@ -82,6 +83,12 @@ void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
 
     //ml.unlock();
     emit frameGrabbed(QPair<int, QImage>(frameNum, frame));
+}
+
+void vfg::VideoFrameGrabber::videoSourceUpdated()
+{
+    QMutexLocker ml(&mutex);
+    numFrames = avs->getNumFrames();
 }
 
 void vfg::VideoFrameGrabber::requestNextFrame()
@@ -137,8 +144,10 @@ QImage vfg::VideoFrameGrabber::getFrame(unsigned frameNum)
     return frame;
 }
 
-unsigned vfg::VideoFrameGrabber::totalFrames() const
+unsigned vfg::VideoFrameGrabber::totalFrames()
 {
     QMutexLocker lock(&mutex);
+
+    numFrames = avs->getNumFrames();
     return numFrames;
 }

@@ -72,6 +72,8 @@ void AvisynthVideoSource::load(QString fileName)
     }
 
     avsHandle.func.avs_release_value(res);
+
+    emit videoLoaded();
 }
 
 bool AvisynthVideoSource::hasVideo() const

@@ -43,6 +43,7 @@ QMap<QString, QString> avinfoParseVideoHeader(QString path)
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
+    videoSource(),
     framesToSave(),
     lastOpenedFile(),
     lastSaveDirectory("/"),
@@ -52,7 +53,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     try
     {
-        frameGrabber = new vfg::VideoFrameGrabber;
+        // Set Avisynth as the default video source
+        videoSource = std::make_shared<vfg::core::AvisynthVideoSource>();
+
+        frameGrabber = new vfg::VideoFrameGrabber(videoSource);
 
         frameGenerator = new vfg::core::VideoFrameGenerator(frameGrabber);
         frameGeneratorThread = new QThread(this);
@@ -125,9 +129,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dvdProcessor, SIGNAL(error(QString)),
             this, SLOT(videoError(QString)));
 
-    connect(frameGrabber, SIGNAL(videoReady()),
-            this, SLOT(videoLoaded()),
-            Qt::QueuedConnection);
+    connect(videoSource.get(), SIGNAL(videoLoaded()),
+            this, SLOT(videoLoaded()));
 
     connect(frameGrabber, SIGNAL(errorOccurred(QString)),
             this, SLOT(videoError(QString)),
@@ -356,12 +359,9 @@ void MainWindow::loadFile(QString path)
         scriptEditor->save();
         QString saveTo = scriptEditor->path();
 
-        // Create Avisynth video source and attempt to load the (parsed) Avisynth script
-        QSharedPointer<vfg::core::AvisynthVideoSource> videoSource(new vfg::core::AvisynthVideoSource);
-        videoSource->load(saveTo);
-
+        // Attempt to load the (parsed) Avisynth script
         // TODO: Stop screenshot generation if that's happening...
-        frameGrabber->setVideoSource(videoSource);
+        videoSource->load(saveTo);
     }
     catch(vfg::ScriptParserTemplateException& ex)
     {
