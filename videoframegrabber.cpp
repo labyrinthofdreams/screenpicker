@@ -15,7 +15,7 @@ vfg::VideoFrameGrabber::VideoFrameGrabber(QObject *parent) :
 {
 }
 
-vfg::VideoFrameGrabber::VideoFrameGrabber(std::shared_ptr<vfg::internal::AbstractVideoSource> avs,
+vfg::VideoFrameGrabber::VideoFrameGrabber(std::shared_ptr<vfg::core::AbstractVideoSource> avs,
                                           QObject *parent) :
     QObject(parent),
     avs(avs),
@@ -54,7 +54,7 @@ bool vfg::VideoFrameGrabber::hasVideo() const
     return avs && avs->hasVideo();
 }
 
-void vfg::VideoFrameGrabber::setVideoSource(std::shared_ptr<vfg::internal::AbstractVideoSource> newAvs)
+void vfg::VideoFrameGrabber::setVideoSource(std::shared_ptr<vfg::core::AbstractVideoSource> newAvs)
 {
     QMutexLocker lock(&mutex);
     avs = newAvs;

@@ -22,13 +22,11 @@ class QImage;
 class QThread;
 
 namespace vfg {
-    class VideoFrameGrabber;
     class DvdProcessor;
+    class VideoFrameGrabber;
 namespace core {
-    class VideoFrameGenerator;
-}
-namespace internal {
     class AbstractVideoSource;
+    class VideoFrameGenerator;
 }
 namespace ui {
     class ScriptEditor;
@@ -98,7 +96,7 @@ private:
     QThread *frameGrabberThread;
     QThread *frameGeneratorThread;
 
-    std::shared_ptr<vfg::internal::AbstractVideoSource> videoSource;
+    std::shared_ptr<vfg::core::AbstractVideoSource> videoSource;
     vfg::core::VideoFrameGenerator* frameGenerator;
     vfg::VideoFrameGrabber* frameGrabber;
     vfg::ui::ScriptEditor* scriptEditor;

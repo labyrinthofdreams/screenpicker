@@ -7,7 +7,7 @@
 namespace vfg {
 namespace core {
 
-class AvisynthVideoSource : public vfg::internal::AbstractVideoSource
+class AvisynthVideoSource : public vfg::core::AbstractVideoSource
 {
 private:
     avs_hnd_t avsHandle;

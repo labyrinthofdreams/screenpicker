@@ -19,7 +19,7 @@ public:
 
 } // namespace exception
 
-namespace internal {
+namespace core {
 
 class AbstractVideoSource : public QObject
 {
