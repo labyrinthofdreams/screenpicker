@@ -8,11 +8,11 @@
 
 namespace vfg
 {
-    class VideoSourceException : public std::runtime_error
+    class VideoSourceError : public std::runtime_error
     {
     public:
-        VideoSourceException(const char* msg) : std::runtime_error(msg) {}
-        VideoSourceException(const std::string& msg) : std::runtime_error(msg) {}
+        VideoSourceError(const char* msg) : std::runtime_error(msg) {}
+        VideoSourceError(const std::string& msg) : std::runtime_error(msg) {}
     };
 
     class AbstractVideoSource

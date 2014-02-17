@@ -367,7 +367,7 @@ void MainWindow::loadFile(QString path)
     {
         QMessageBox::warning(this, tr("Script template error"), QString(ex.what()));
     }
-    catch(vfg::VideoSourceException& ex)
+    catch(vfg::VideoSourceError& ex)
     {
         QMessageBox::warning(this, tr("Error while processing script"), QString(ex.what()));
     }

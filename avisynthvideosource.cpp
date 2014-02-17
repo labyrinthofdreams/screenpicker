@@ -48,11 +48,11 @@ void AvisynthVideoSource::load(QString fileName)
     if(avs_is_error(res))
     {
         // Throw if our imported script fails
-        throw VideoSourceException(avs_as_string(res));
+        throw VideoSourceError(avs_as_string(res));
     }
     if(!avs_is_clip(res))
     {
-        throw VideoSourceException("Imported script did not return a video clip");
+        throw VideoSourceError("Imported script did not return a video clip");
     }
 
     avsHandle.clip = avsHandle.func.avs_take_clip(res, avsHandle.env);
@@ -60,14 +60,14 @@ void AvisynthVideoSource::load(QString fileName)
     if(!avs_has_video(info))
     {
         avsHandle.func.avs_release_value(res);
-        throw VideoSourceException("Imported script does not have video data");
+        throw VideoSourceError("Imported script does not have video data");
     }
 
     // Video must be RGB32
     if(!avs_is_rgb32(info))
     {
         avsHandle.func.avs_release_value(res);
-        throw VideoSourceException("Video is not RGB32. Add ConvertToRGB32() to your script.");
+        throw VideoSourceError("Video is not RGB32. Add ConvertToRGB32() to your script.");
     }
 
     avsHandle.func.avs_release_value(res);
