@@ -13,7 +13,7 @@ AvisynthVideoSource::AvisynthVideoSource() :
     if(internal_avs_load_library(&avsHandle) < 0)
     {
         // Throw if AviSynth library loading fails
-        throw std::runtime_error("Failed to load AviSynth library");
+        throw VideoSourceError("Failed to load AviSynth library");
     }
 
     avsHandle.env = avsHandle.func.avs_create_script_environment(AVS_INTERFACE_25);
@@ -23,7 +23,7 @@ AvisynthVideoSource::AvisynthVideoSource() :
         if(error)
         {
             // Throw if AviSynth script environment fails
-            throw std::runtime_error(error);
+            throw VideoSourceError(error);
         }
     }
 }
