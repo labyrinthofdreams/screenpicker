@@ -57,7 +57,7 @@ private slots:
     void dvdProcessorFinished(QString path);
     void videoLoaded();
     void videoError(QString msg);
-    void thumbnailDoubleClicked(unsigned frameNumber);
+    void thumbnailDoubleClicked(int frameNumber);
     void handleUnsavedMenu(const QPoint& pos);
     void handleSavedMenu(const QPoint& pos);
     void loadFile(QString path);

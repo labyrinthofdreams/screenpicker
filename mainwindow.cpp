@@ -147,11 +147,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->unsavedWidget, SIGNAL(maximumChanged(int)),
             ui->unsavedProgressBar, SLOT(setMaximum(int)));
 
-    connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(unsigned)),
-            this, SLOT(thumbnailDoubleClicked(unsigned)));
+    connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(int)),
+            this, SLOT(thumbnailDoubleClicked(int)));
 
-    connect(ui->savedWidget, SIGNAL(thumbnailDoubleClicked(unsigned)),
-            this, SLOT(thumbnailDoubleClicked(unsigned)));
+    connect(ui->savedWidget, SIGNAL(thumbnailDoubleClicked(int)),
+            this, SLOT(thumbnailDoubleClicked(int)));
 }
 
 MainWindow::~MainWindow()
@@ -547,10 +547,10 @@ void MainWindow::videoError(QString msg)
     QMessageBox::warning(this, tr("Video error"), msg);
 }
 
-void MainWindow::thumbnailDoubleClicked(unsigned frameNumber)
+void MainWindow::thumbnailDoubleClicked(int frameNumber)
 {    
     QMetaObject::invokeMethod(frameGrabber, "requestFrame",
-                              Qt::QueuedConnection, Q_ARG(unsigned, frameNumber));
+                              Qt::QueuedConnection, Q_ARG(int, frameNumber));
     lastRequestedFrame = frameNumber;
     ui->currentFrameLabel->setText(QString::number(frameNumber));
     ui->seekSlider->setValue(frameNumber);
