@@ -781,10 +781,10 @@ void MainWindow::on_saveThumbnailsButton_clicked()
     prog.setCancelButton(0);
     prog.setMinimumDuration(0);
     QDir saveDir(lastSaveDirectory);
-    QListIterator<unsigned> iter(framesToSave);
+    QListIterator<int> iter(framesToSave);
     while(iter.hasNext())
     {
-        const unsigned frameNumber = iter.next();
+        const int frameNumber = iter.next();
         const int current = prog.value();
         prog.setLabelText(tr("Saving image %1 of %2").arg(current).arg(numSaved));
         prog.setValue(current + 1);

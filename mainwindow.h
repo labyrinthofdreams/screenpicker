@@ -103,7 +103,7 @@ private:
     vfg::DvdProcessor* dvdProcessor;
     vfg::ui::VideoSettingsWidget *videoSettingsWindow;
 
-    QList<unsigned> framesToSave;
+    QList<int> framesToSave;
 
     QString lastOpenedFile;
     QString lastSaveDirectory;
