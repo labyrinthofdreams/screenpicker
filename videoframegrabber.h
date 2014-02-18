@@ -31,6 +31,7 @@ namespace core {
 class VideoFrameGrabber : public QObject
 {
     Q_OBJECT
+
 private:
     std::shared_ptr<vfg::core::AbstractVideoSource> avs;
 
@@ -41,6 +42,7 @@ private:
     int currentFrame;
 
     mutable QMutex mutex;
+
 public:
     /**
      * @brief Constructor
@@ -106,6 +108,7 @@ public:
      * @return True if in valid range, otherwise false
      */
     bool isValidFrame(int frameNum) const;
+
 public slots:
     /**
      * @brief Request next frame from video source
