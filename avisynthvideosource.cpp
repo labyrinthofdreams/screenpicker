@@ -110,7 +110,7 @@ QImage AvisynthVideoSource::getFrame(int frameNumber)
     }
 
     QImage image(info->width, info->height, QImage::Format_ARGB32);
-    const unsigned scanlineLength = info->width * 4;
+    const int scanlineLength = info->width * 4;
     const int pitch = avs_get_pitch(frame);
     const BYTE* data = avs_get_read_ptr(frame);
     // If we used y instead of sy the image would be created upside-down
