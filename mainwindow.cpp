@@ -56,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
         // Set Avisynth as the default video source
         videoSource = std::make_shared<vfg::core::AvisynthVideoSource>();
 
-        frameGrabber = new vfg::VideoFrameGrabber(videoSource);
+        frameGrabber = new vfg::core::VideoFrameGrabber(videoSource);
 
         frameGenerator = new vfg::core::VideoFrameGenerator(frameGrabber);
         frameGeneratorThread = new QThread(this);

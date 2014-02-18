@@ -10,7 +10,9 @@
 
 // Forward declarations
 namespace vfg {
+namespace core {
     class VideoFrameGrabber;
+}
 }
 
 namespace vfg {
@@ -31,7 +33,7 @@ public:
      * @param frameGrabber Non-owning pointer to a frame grabber
      * @param parent Owner of the object
      */
-    explicit VideoFrameGenerator(vfg::VideoFrameGrabber *frameGrabber, QObject *parent = 0);
+    explicit VideoFrameGenerator(vfg::core::VideoFrameGrabber *frameGrabber, QObject *parent = 0);
 
     /**
      * @brief Get generator running status
@@ -87,7 +89,7 @@ public slots:
     void fetchNext();
     
 private:
-    vfg::VideoFrameGrabber *frameGrabber;
+    vfg::core::VideoFrameGrabber *frameGrabber;
     QList<int> frames;
     mutable QMutex mutex;
     QWaitCondition waitToContinue;

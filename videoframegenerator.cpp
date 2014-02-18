@@ -4,9 +4,9 @@
 #include "videoframegrabber.h"
 #include "videoframegenerator.h"
 
-using namespace vfg::core;
+using vfg::core::VideoFrameGenerator;
 
-VideoFrameGenerator::VideoFrameGenerator(vfg::VideoFrameGrabber *frameGrabber,
+VideoFrameGenerator::VideoFrameGenerator(vfg::core::VideoFrameGrabber *frameGrabber,
                                          QObject *parent) :
     QObject(parent),
     frameGrabber(frameGrabber),

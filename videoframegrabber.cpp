@@ -6,7 +6,9 @@
 #include <QPair>
 #include <QApplication>
 
-vfg::VideoFrameGrabber::VideoFrameGrabber(QObject *parent) :
+using vfg::core::VideoFrameGrabber;
+
+VideoFrameGrabber::VideoFrameGrabber(QObject *parent) :
     QObject(parent),
     avs(),
     numFrames(0),
@@ -15,7 +17,7 @@ vfg::VideoFrameGrabber::VideoFrameGrabber(QObject *parent) :
 {
 }
 
-vfg::VideoFrameGrabber::VideoFrameGrabber(std::shared_ptr<vfg::core::AbstractVideoSource> avs,
+VideoFrameGrabber::VideoFrameGrabber(std::shared_ptr<vfg::core::AbstractVideoSource> avs,
                                           QObject *parent) :
     QObject(parent),
     avs(avs),
@@ -27,7 +29,7 @@ vfg::VideoFrameGrabber::VideoFrameGrabber(std::shared_ptr<vfg::core::AbstractVid
             this, SLOT(videoSourceUpdated()));
 }
 
-vfg::VideoFrameGrabber::~VideoFrameGrabber()
+VideoFrameGrabber::~VideoFrameGrabber()
 {
     qDebug() << "VFG destructed from thread " << thread()->currentThreadId();
 }
@@ -48,13 +50,13 @@ vfg::VideoFrameGrabber::~VideoFrameGrabber()
 //    }
 //}
 
-bool vfg::VideoFrameGrabber::hasVideo() const
+bool VideoFrameGrabber::hasVideo() const
 {
     QMutexLocker lock(&mutex);
     return avs && avs->hasVideo();
 }
 
-void vfg::VideoFrameGrabber::setVideoSource(std::shared_ptr<vfg::core::AbstractVideoSource> newAvs)
+void VideoFrameGrabber::setVideoSource(std::shared_ptr<vfg::core::AbstractVideoSource> newAvs)
 {
     QMutexLocker lock(&mutex);
     avs = newAvs;
@@ -64,13 +66,13 @@ void vfg::VideoFrameGrabber::setVideoSource(std::shared_ptr<vfg::core::AbstractV
             this, SLOT(videoSourceUpdated()));
 }
 
-int vfg::VideoFrameGrabber::lastFrame() const
+int VideoFrameGrabber::lastFrame() const
 {
     QMutexLocker lock(&mutex);
     return currentFrame + vfg::FirstFrame;
 }
 
-void vfg::VideoFrameGrabber::requestFrame(int frameNum)
+void VideoFrameGrabber::requestFrame(int frameNum)
 {
     QMutexLocker ml(&mutex);
 
@@ -85,13 +87,13 @@ void vfg::VideoFrameGrabber::requestFrame(int frameNum)
     emit frameGrabbed(QPair<int, QImage>(frameNum, frame));
 }
 
-void vfg::VideoFrameGrabber::videoSourceUpdated()
+void VideoFrameGrabber::videoSourceUpdated()
 {
     QMutexLocker ml(&mutex);
     numFrames = avs->getNumFrames();
 }
 
-void vfg::VideoFrameGrabber::requestNextFrame()
+void VideoFrameGrabber::requestNextFrame()
 {
     QMutexLocker ml(&mutex);
     qDebug() << "Start NEXT_FRAME VFG ";
@@ -109,7 +111,7 @@ void vfg::VideoFrameGrabber::requestNextFrame()
     qDebug() << "End NEXT_FRAME VFG ";
 }
 
-void vfg::VideoFrameGrabber::requestPreviousFrame()
+void VideoFrameGrabber::requestPreviousFrame()
 {
     QMutexLocker ml(&mutex);
     qDebug() << "Start PREV_FRAME VFG ";
@@ -126,7 +128,7 @@ void vfg::VideoFrameGrabber::requestPreviousFrame()
     qDebug() << "End PREV_FRAME VFG ";
 }
 
-QImage vfg::VideoFrameGrabber::getFrame(int frameNum)
+QImage VideoFrameGrabber::getFrame(int frameNum)
 {
     QMutexLocker ml(&mutex);
     qDebug() << "Start GET_FRAME VFG " << frameNum;
@@ -144,7 +146,7 @@ QImage vfg::VideoFrameGrabber::getFrame(int frameNum)
     return frame;
 }
 
-int vfg::VideoFrameGrabber::totalFrames()
+int VideoFrameGrabber::totalFrames()
 {
     QMutexLocker lock(&mutex);
 
