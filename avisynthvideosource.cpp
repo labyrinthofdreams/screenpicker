@@ -97,7 +97,7 @@ QImage AvisynthVideoSource::getFrame(int frameNumber)
         return {};
     }
 
-    if(frameNumber >= info->num_frames)
+    if(frameNumber < 0 || frameNumber >= info->num_frames)
     {
         return {};
     }
