@@ -2,23 +2,23 @@
 #define MAINWINDOW_H
 
 #include <memory>
-#include <QMainWindow>
-#include <QString>
-#include <QMap>
 #include <QList>
-#include <QScopedPointer>
-#include <QSharedPointer>
+#include <QMainWindow>
+#include <QMap>
 #include <QMutex>
 #include <QPair>
+#include <QScopedPointer>
+#include <QSharedPointer>
+#include <QString>
 
 // Forward declarations
 class QAction;
 class QActionGroup;
-class QPoint;
+class QCloseEvent;
 class QDragEvent;
 class QDropEvent;
-class QCloseEvent;
 class QImage;
+class QPoint;
 class QThread;
 
 namespace vfg {
