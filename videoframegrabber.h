@@ -27,7 +27,12 @@ inline static bool validRange(const int value, const int rangeMax)
 
 namespace core {
 
-// Class declaration
+/**
+ * @brief The VideoFrameGrabber class
+ *
+ * An interface wrapped around a video source with some
+ * common operations for retrieving frames
+ */
 class VideoFrameGrabber : public QObject
 {
     Q_OBJECT
@@ -42,36 +47,100 @@ private:
 
     mutable QMutex mutex;
 public:
+    /**
+     * @brief Constructor
+     * @param parent Owner of the object
+     */
     explicit VideoFrameGrabber(QObject *parent = 0);
+
+    /**
+     * @brief Constructor
+     * @param avs Video source (does not take ownership)
+     * @param parent Owner of the object
+     */
     explicit VideoFrameGrabber(std::shared_ptr<vfg::core::AbstractVideoSource> avs,
                                QObject *parent = 0);
+
+    /**
+     * @brief Destructor
+     */
     ~VideoFrameGrabber();
 
+    /**
+     * @brief Get video status
+     * @return True if video is available, otherwise false
+     */
     bool hasVideo() const;
+
+    /**
+     * @brief Set source to grab frames from
+     * @param newAvs New video source
+     */
     void setVideoSource(std::shared_ptr<vfg::core::AbstractVideoSource> newAvs);
 
-    // Returns last captured frame number + FirstFrame
+    /**
+     * @brief Get last requested frame number
+     *
+     * @return Last requested frame number + \link vfg::FirstFrame \endlink
+     */
     int lastFrame() const;
+
+    /**
+     * @brief Get total number of frames in video source
+     * @return Total number of frames
+     */
     int totalFrames();
 
+    /**
+     * @brief Get frame from video source
+     *
+     * Requests are between range \link vfg::FirstFrame \endlink - \link totalFrames() \endlink
+     *
+     * @param frameNum Frame to request
+     * @return Frame
+     */
     QImage getFrame(int frameNum);
 public slots:
-    // Load video file
-    //void load(QString filename);
+    /**
+     * @brief Request next frame from video source
+     */
     void requestNextFrame();
+
+    /**
+     * @brief Request previous frame from video source
+     */
     void requestPreviousFrame();
-    // Captures the exact frame between range FirstFrame - totalFrames()
+
+    /**
+     * @brief Get frame from video source
+     *
+     * Requests are between range \link vfg::FirstFrame \endlink - \link totalFrames() \endlink
+     *
+     * This is a slot equivalent of \link getFrame \endlink
+     * It emits \link frameGrabbed \endlink instead of returning QImage
+     *
+     * @param frameNum
+     */
     void requestFrame(int frameNum);
 
 private slots:
+    /**
+     * @brief Update internal state after video source has updated
+     */
     void videoSourceUpdated();
 
 signals:
-    // Fired when frame is available
+    /**
+     * @brief Emit grabbed frame
+     * @param frame Frame number and frame image
+     */
     void frameGrabbed(QPair<int, QImage> frame);
-    // Fired in the event that an error happens
+
+    /**
+     * @brief Emit errors
+     * @param msg Error message
+     */
     void errorOccurred(QString msg);
-public slots:
 };
 
 } // namespace core
