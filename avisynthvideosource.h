@@ -21,6 +21,7 @@ public:
     int getNumFrames() const override;
     QImage getFrame(int frameNumber) override;
     QString getSupportedFormats() override;
+    bool isValidFrame(int frameNum) const override;
 };
 
 } // namespace core

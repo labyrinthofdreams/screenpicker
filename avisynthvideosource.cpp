@@ -129,3 +129,8 @@ QString AvisynthVideoSource::getSupportedFormats()
     static const QString formats = "Avisynth files (*.avs,*.avsi)";
     return formats;
 }
+
+bool AvisynthVideoSource::isValidFrame(int frameNum) const
+{
+    return frameNum >= 0 && frameNum < info->num_frames;
+}

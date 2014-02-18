@@ -86,6 +86,13 @@ public:
      */
     virtual QString getSupportedFormats() = 0;
 
+    /**
+     * @brief Check if frame is in valid range
+     * @param frameNum Frame to check
+     * @return True if in range, otherwise False
+     */
+    virtual bool isValidFrame(int frameNum) const = 0;
+
 signals:    
     /**
      * @brief Signals when the video has been loaded

@@ -20,11 +20,6 @@ namespace vfg {
 // TODO: This is not clever
 static const int FirstFrame = 1;
 
-inline static bool validRange(const int value, const int rangeMax)
-{
-    return (value - vfg::FirstFrame) < rangeMax;
-}
-
 namespace core {
 
 /**
@@ -100,6 +95,17 @@ public:
      * @return Frame
      */
     QImage getFrame(int frameNum);
+
+    /**
+     * @brief Check if frame number is in valid range
+     *
+     * This function is used in place of the video source's equivalent
+     * because the frame grabber uses different frame range
+     *
+     * @param frameNum Frame to check
+     * @return True if in valid range, otherwise false
+     */
+    bool isValidFrame(int frameNum) const;
 public slots:
     /**
      * @brief Request next frame from video source

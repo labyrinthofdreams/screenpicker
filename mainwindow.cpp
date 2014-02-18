@@ -499,7 +499,7 @@ void MainWindow::videoLoaded()
 {
     const int numFrames = frameGrabber->totalFrames();
 
-    const bool invalidRange = !vfg::validRange(lastRequestedFrame, numFrames);
+    const bool invalidRange = !frameGrabber->isValidFrame(lastRequestedFrame);
     if(invalidRange)
     {
         // lastRequestFrame may be out of range when the script
