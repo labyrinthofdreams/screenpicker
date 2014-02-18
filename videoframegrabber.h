@@ -2,11 +2,11 @@
 #define VIDEOFRAMEGRABBER_H
 
 #include <memory>
-#include <QObject>
 #include <QImage>
-#include <QString>
 #include <QMutex>
+#include <QObject>
 #include <QPair>
+#include <QString>
 
 // Forward declarations
 namespace vfg {
