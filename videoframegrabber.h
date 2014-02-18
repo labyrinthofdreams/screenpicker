@@ -18,9 +18,9 @@ namespace core {
 namespace vfg
 {
     // TODO: This is not clever
-    static const unsigned FirstFrame = 1;
+    static const int FirstFrame = 1;
 
-    inline static bool validRange(const unsigned value, const int rangeMax)
+    inline static bool validRange(const int value, const int rangeMax)
     {
         return (value - vfg::FirstFrame) < rangeMax;
     }
@@ -33,10 +33,10 @@ namespace vfg
         std::shared_ptr<vfg::core::AbstractVideoSource> avs;
 
         // Last frame - FirstFrame
-        unsigned numFrames;
+        int numFrames;
 
         // Between range 0 - (last frame - FirstFrame)
-        unsigned currentFrame;
+        int currentFrame;
 
         mutable QMutex mutex;
     public:
@@ -49,17 +49,17 @@ namespace vfg
         void setVideoSource(std::shared_ptr<vfg::core::AbstractVideoSource> newAvs);
 
         // Returns last captured frame number + FirstFrame
-        unsigned lastFrame() const;
-        unsigned totalFrames();
+        int lastFrame() const;
+        int totalFrames();
 
-        QImage getFrame(unsigned frameNum);
+        QImage getFrame(int frameNum);
     public slots:
         // Load video file
         //void load(QString filename);
         void requestNextFrame();
         void requestPreviousFrame();
         // Captures the exact frame between range FirstFrame - totalFrames()
-        void requestFrame(unsigned frameNum);
+        void requestFrame(int frameNum);
 
     private slots:
         void videoSourceUpdated();

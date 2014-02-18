@@ -64,13 +64,13 @@ void vfg::VideoFrameGrabber::setVideoSource(std::shared_ptr<vfg::core::AbstractV
             this, SLOT(videoSourceUpdated()));
 }
 
-unsigned vfg::VideoFrameGrabber::lastFrame() const
+int vfg::VideoFrameGrabber::lastFrame() const
 {
     QMutexLocker lock(&mutex);
     return currentFrame + vfg::FirstFrame;
 }
 
-void vfg::VideoFrameGrabber::requestFrame(unsigned frameNum)
+void vfg::VideoFrameGrabber::requestFrame(int frameNum)
 {
     QMutexLocker ml(&mutex);
 
@@ -126,7 +126,7 @@ void vfg::VideoFrameGrabber::requestPreviousFrame()
     qDebug() << "End PREV_FRAME VFG ";
 }
 
-QImage vfg::VideoFrameGrabber::getFrame(unsigned frameNum)
+QImage vfg::VideoFrameGrabber::getFrame(int frameNum)
 {
     QMutexLocker ml(&mutex);
     qDebug() << "Start GET_FRAME VFG " << frameNum;
@@ -144,7 +144,7 @@ QImage vfg::VideoFrameGrabber::getFrame(unsigned frameNum)
     return frame;
 }
 
-unsigned vfg::VideoFrameGrabber::totalFrames()
+int vfg::VideoFrameGrabber::totalFrames()
 {
     QMutexLocker lock(&mutex);
 
