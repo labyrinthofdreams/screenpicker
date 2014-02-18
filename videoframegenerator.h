@@ -21,7 +21,7 @@ namespace core {
 /**
  * @brief The VideoFrameGenerator class
  *
- * Provides an interface for a \link vfg::VideoFrameGrabber frame grabber \endlink
+ * Provides an interface for a \link vfg::core::VideoFrameGrabber frame grabber \endlink
  * to automate the generation of frames
  */
 class VideoFrameGenerator : public QObject
