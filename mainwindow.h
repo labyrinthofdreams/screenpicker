@@ -112,7 +112,7 @@ private:
 
     // Keeps track of the last requested frame which is used to
     // return to that frame after reloading the script via editor
-    unsigned lastRequestedFrame;
+    int lastRequestedFrame;
 
     void resetState();
 

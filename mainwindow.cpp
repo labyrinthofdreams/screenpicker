@@ -76,14 +76,14 @@ MainWindow::MainWindow(QWidget *parent) :
         QString dgIndexPath = cfg.value("dgindexexecpath").toString();
         dvdProcessor = new vfg::DvdProcessor(dgIndexPath, this);
 
-        const unsigned maxThumbnails = cfg.value("maxthumbnails").toInt();
+        const int maxThumbnails = cfg.value("maxthumbnails").toInt();
         ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
         ui->unsavedProgressBar->setMaximum(maxThumbnails);
 
-        const unsigned numScreenshots = cfg.value("numscreenshots").toInt();
+        const int numScreenshots = cfg.value("numscreenshots").toInt();
         ui->screenshotsSpinBox->setValue(numScreenshots);
 
-        const unsigned frameStep = cfg.value("framestep").toInt();
+        const int frameStep = cfg.value("framestep").toInt();
         ui->frameStepSpinBox->setValue(frameStep);
 
         videoZoomGroup = new QActionGroup {this};
@@ -201,7 +201,7 @@ void MainWindow::closeEvent(QCloseEvent *ev)
 void MainWindow::frameReceived(QPair<int, QImage> frame)
 {
     qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
-    const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
+    const int thumbnailSize = ui->thumbnailSizeSlider->value();
     QPixmap thumbnail = QPixmap::fromImage(frame.second).scaledToWidth(200, Qt::SmoothTransformation);
     auto thumb = new vfg::ui::VideoFrameThumbnail(frame.first, thumbnail);
     thumb->setFixedWidth(thumbnailSize);
@@ -234,7 +234,7 @@ void MainWindow::frameReceived(QPair<int, QImage> frame)
         }
     }
     else {
-        const unsigned generated = ui->generatorProgressBar->value() + 1;
+        const int generated = ui->generatorProgressBar->value() + 1;
         ui->generatorProgressBar->setValue(generated);
 
         const bool generatorFinished = frameGenerator->remaining() == 0;
@@ -337,7 +337,7 @@ void MainWindow::loadFile(QString path)
 
             if(overrideWidth)
             {
-                unsigned resizeWidth = videoHeader.value("v1.x", "0").toInt();
+                int resizeWidth = videoHeader.value("v1.x", "0").toInt();
                 if(resizeWidth % 2 != 0) {
                     resizeWidth++;
                 }
@@ -345,7 +345,7 @@ void MainWindow::loadFile(QString path)
             }
             if(overrideHeight)
             {
-                unsigned resizeHeight = videoHeader.value("v1.y", "0").toInt();
+                int resizeHeight = videoHeader.value("v1.y", "0").toInt();
                 if(resizeHeight % 2 != 0) {
                     resizeHeight++;
                 }
@@ -497,7 +497,7 @@ void MainWindow::scriptEditorUpdated()
 
 void MainWindow::videoLoaded()
 {
-    const unsigned numFrames = frameGrabber->totalFrames();
+    const int numFrames = frameGrabber->totalFrames();
 
     const bool invalidRange = !vfg::validRange(lastRequestedFrame, numFrames);
     if(invalidRange)
@@ -517,7 +517,7 @@ void MainWindow::videoLoaded()
     ui->seekSlider->setValue(lastRequestedFrame);
     // Show first frame
     QMetaObject::invokeMethod(frameGrabber, "requestFrame",
-                              Qt::QueuedConnection, Q_ARG(unsigned, lastRequestedFrame));
+                              Qt::QueuedConnection, Q_ARG(int, lastRequestedFrame));
 
     // Enable buttons
     ui->previousButton->setEnabled(true);
@@ -576,14 +576,14 @@ void MainWindow::on_previousButton_clicked()
 
 void MainWindow::on_seekSlider_valueChanged(int value)
 {
-    const unsigned frameNumber = static_cast<unsigned>(value);
+    const int frameNumber = value;
     if(lastRequestedFrame == frameNumber)
     {
         return;
     }
 
     QMetaObject::invokeMethod(frameGrabber, "requestFrame",
-                              Qt::QueuedConnection, Q_ARG(unsigned, frameNumber));
+                              Qt::QueuedConnection, Q_ARG(int, frameNumber));
     lastRequestedFrame = frameNumber;
     ui->currentFrameLabel->setText(QString::number(frameNumber));
 }
@@ -608,19 +608,19 @@ void MainWindow::on_generateButton_clicked()
     }
 
     // Compute list of frame numbers to grab
-    const unsigned selected_frame = ui->seekSlider->value();
-    const unsigned frame_step = ui->frameStepSpinBox->value();
-    const unsigned num_generate = ui->screenshotsSpinBox->value();
-    const unsigned unlimited_screens = ui->cbUnlimitedScreens->isChecked();
-    const unsigned total_video_frames = frameGrabber->totalFrames();
-    const unsigned total_frame_range = frame_step * num_generate;
-    const unsigned last_frame = selected_frame + total_frame_range;
+    const int selected_frame = ui->seekSlider->value();
+    const int frame_step = ui->frameStepSpinBox->value();
+    const int num_generate = ui->screenshotsSpinBox->value();
+    const int unlimited_screens = ui->cbUnlimitedScreens->isChecked();
+    const int total_video_frames = frameGrabber->totalFrames();
+    const int total_frame_range = frame_step * num_generate;
+    const int last_frame = selected_frame + total_frame_range;
 
     if(frameGenerator->isRunning() || frameGenerator->isPaused()) {
         frameGenerator->stop();
     }
 
-    for(unsigned current_frame = selected_frame; ; current_frame += frame_step)
+    for(int current_frame = selected_frame; ; current_frame += frame_step)
     {
         if(!unlimited_screens) {
             const bool reached_last_frame = current_frame >= last_frame;
@@ -638,7 +638,7 @@ void MainWindow::on_generateButton_clicked()
         frameGenerator->enqueue(current_frame);
     }
 
-    const unsigned remaining = frameGenerator->remaining();
+    const int remaining = frameGenerator->remaining();
 
     QMetaObject::invokeMethod(frameGenerator, "start", Qt::QueuedConnection);
 
@@ -653,8 +653,8 @@ void MainWindow::on_generateButton_clicked()
 
 void MainWindow::on_grabButton_clicked()
 {
-    const unsigned selected = ui->seekSlider->value();      
-    const unsigned thumbnailSize = ui->thumbnailSizeSlider->value();
+    const int selected = ui->seekSlider->value();
+    const int thumbnailSize = ui->thumbnailSizeSlider->value();
     QImage frame = frameGrabber->getFrame(selected);
     QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
 
@@ -863,7 +863,7 @@ void MainWindow::on_actionOptions_triggered()
     {
         QSettings cfg("config.ini", QSettings::IniFormat);
 
-        const unsigned newMaxThumbnails = cfg.value("maxthumbnails").toUInt();
+        const int newMaxThumbnails = cfg.value("maxthumbnails").toInt();
         const bool containerFull = ui->unsavedWidget->isFull();
         const bool containerHasRoom = (newMaxThumbnails > ui->unsavedWidget->numThumbnails());
         const bool generatorHasQueue = (frameGenerator->remaining() > 0);
@@ -902,7 +902,7 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_saveSingleButton_clicked()
 {
-    const unsigned selected = ui->seekSlider->value();
+    const int selected = ui->seekSlider->value();
     QImage frame = frameGrabber->getFrame(selected);
 
     QDir saveDir(lastSaveDirectory);
