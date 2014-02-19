@@ -148,11 +148,20 @@ QImage VideoFrameGrabber::getFrame(int frameNum)
 
 bool VideoFrameGrabber::isValidFrame(int frameNum) const
 {
+<<<<<<< HEAD
     return frameNum >= 0 && (frameNum - vfg::FirstFrame) < totalFrames();
+=======
+    QMutexLocker lock(&mutex);
+    return frameNum >= 0 && (frameNum - vfg::FirstFrame) < avs->getNumFrames();
+>>>>>>> remove_first_frame
 }
 
 int VideoFrameGrabber::totalFrames() const
 {
+<<<<<<< HEAD
+=======
+    QMutexLocker lock(&mutex);
+>>>>>>> remove_first_frame
     numFrames = avs->getNumFrames();
     return numFrames;
 }
