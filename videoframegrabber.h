@@ -36,7 +36,7 @@ private:
     std::shared_ptr<vfg::core::AbstractVideoSource> avs;
 
     // Last frame - FirstFrame
-    mutable int numFrames;
+    int numFrames;
 
     // Between range 0 - (last frame - FirstFrame)
     int currentFrame;
@@ -86,7 +86,7 @@ public:
      * @brief Get total number of frames in video source
      * @return Total number of frames
      */
-    int totalFrames() const;
+    int totalFrames();
 
     /**
      * @brief Get frame from video source
