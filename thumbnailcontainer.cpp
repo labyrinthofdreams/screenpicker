@@ -18,8 +18,8 @@ ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
 
 void ThumbnailContainer::addThumbnail(VideoFrameThumbnail *thumbnail)
 {
-    connect(thumbnail, SIGNAL(selected(VideoFrameThumbnail*)),
-            this, SLOT(handleThumbnailSelection(VideoFrameThumbnail*)));
+    connect(thumbnail, SIGNAL(selected(vfg::ui::VideoFrameThumbnail*)),
+            this, SLOT(handleThumbnailSelection(vfg::ui::VideoFrameThumbnail*)));
 
     connect(thumbnail, SIGNAL(doubleClicked(int)),
             this, SIGNAL(thumbnailDoubleClicked(int)));
