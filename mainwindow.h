@@ -5,11 +5,8 @@
 #include <QList>
 #include <QMainWindow>
 #include <QMap>
-#include <QMutex>
 #include <QPair>
-#include <QScopedPointer>
 #include <QSettings>
-#include <QSharedPointer>
 #include <QString>
 
 // Forward declarations
