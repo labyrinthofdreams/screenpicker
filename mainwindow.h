@@ -8,6 +8,7 @@
 #include <QMutex>
 #include <QPair>
 #include <QScopedPointer>
+#include <QSettings>
 #include <QSharedPointer>
 #include <QString>
 
@@ -109,6 +110,8 @@ private:
     QString lastSaveDirectory;
 
     QActionGroup *videoZoomGroup;
+
+    QSettings config;
 
     // Keeps track of the last requested frame which is used to
     // return to that frame after reloading the script via editor

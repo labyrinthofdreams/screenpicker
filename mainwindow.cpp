@@ -47,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     framesToSave(),
     lastOpenedFile(),
     lastSaveDirectory("/"),
+    config("config.ini", QSettings::IniFormat),
     lastRequestedFrame(vfg::FirstFrame)
 {
     ui->setupUi(this);
@@ -71,19 +72,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
         videoSettingsWindow = new vfg::ui::VideoSettingsWidget;
 
-        QSettings cfg("config.ini", QSettings::IniFormat);
-
-        QString dgIndexPath = cfg.value("dgindexexecpath").toString();
+        QString dgIndexPath = config.value("dgindexexecpath").toString();
         dvdProcessor = new vfg::DvdProcessor(dgIndexPath, this);
 
-        const int maxThumbnails = cfg.value("maxthumbnails").toInt();
+        const int maxThumbnails = config.value("maxthumbnails").toInt();
         ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
         ui->unsavedProgressBar->setMaximum(maxThumbnails);
 
-        const int numScreenshots = cfg.value("numscreenshots").toInt();
+        const int numScreenshots = config.value("numscreenshots").toInt();
         ui->screenshotsSpinBox->setValue(numScreenshots);
 
-        const int frameStep = cfg.value("framestep").toInt();
+        const int frameStep = config.value("framestep").toInt();
         ui->frameStepSpinBox->setValue(frameStep);
 
         videoZoomGroup = new QActionGroup {this};
@@ -213,11 +212,10 @@ void MainWindow::frameReceived(QPair<int, QImage> frame)
     ui->unsavedWidget->addThumbnail(thumb);
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
-    QSettings cfg("config.ini", QSettings::IniFormat);
     if(frameGenerator->isPaused())
     {
         // Jump to last generated frame
-        const bool jumpAfterPaused = cfg.value("jumptolastonpause").toBool();
+        const bool jumpAfterPaused = config.value("jumptolastonpause").toBool();
         if(jumpAfterPaused) {
             ui->seekSlider->setValue(frame.first);
         }
@@ -228,7 +226,7 @@ void MainWindow::frameReceived(QPair<int, QImage> frame)
     const bool generatorStopped = ui->generatorProgressBar->value() == 0 && !frameGenerator->isRunning();
     if(generatorStopped) {
         // Jump to last generated frame
-        const bool jumpAfterStopped = cfg.value("jumptolastonstop").toBool();
+        const bool jumpAfterStopped = config.value("jumptolastonstop").toBool();
         if(jumpAfterStopped) {
             ui->seekSlider->setValue(frame.first);
         }
@@ -245,7 +243,7 @@ void MainWindow::frameReceived(QPair<int, QImage> frame)
             ui->btnStopGenerator->setEnabled(false);
 
             // Jump to last generated frame
-            const bool jumpAfterFinished = cfg.value("jumptolastonfinish").toBool();
+            const bool jumpAfterFinished = config.value("jumptolastonfinish").toBool();
             if(jumpAfterFinished) {
                 ui->seekSlider->setValue(frame.first);
             }
@@ -254,7 +252,7 @@ void MainWindow::frameReceived(QPair<int, QImage> frame)
 
     if(ui->unsavedWidget->isFull())
     {
-        const bool removeOldestAfterMax = cfg.value("removeoldestafterlimit").toBool();
+        const bool removeOldestAfterMax = config.value("removeoldestafterlimit").toBool();
         if(removeOldestAfterMax)
         {
             // When unsaved screenshots container becomes full and the setting
@@ -267,7 +265,7 @@ void MainWindow::frameReceived(QPair<int, QImage> frame)
 
             // ...In case the user has checked they want to jump to last generated frame
             // after filling the container, then jump...
-            const bool jumpToLastAfterReachingMax = cfg.value("jumptolastonreachingmax").toBool();
+            const bool jumpToLastAfterReachingMax = config.value("jumptolastonreachingmax").toBool();
             if(jumpToLastAfterReachingMax)
             {
                 ui->seekSlider->setValue(frame.first);
@@ -407,8 +405,7 @@ void MainWindow::on_actionOpen_triggered()
         ui->btnPauseGenerator->setText(tr("Resume"));
     }
 
-    QSettings cfg {"config.ini", QSettings::IniFormat};
-    QString lastOpened {cfg.value("last_opened", "").toString()};
+    QString lastOpened {config.value("last_opened", "").toString()};
 
     QString filename = QFileDialog::getOpenFileName(this, tr("Open video"),
                                                     lastOpened,
@@ -423,7 +420,7 @@ void MainWindow::on_actionOpen_triggered()
 
     QFileInfo info {filename};
     setWindowTitle(info.absoluteFilePath());
-    cfg.setValue("last_opened", info.absoluteFilePath());
+    config.setValue("last_opened", info.absoluteFilePath());
 
     lastOpenedFile = filename;
 }
@@ -435,8 +432,7 @@ void MainWindow::on_actionOpen_DVD_triggered()
         ui->btnPauseGenerator->setText(tr("Resume"));
     }
 
-    QSettings cfg {"config.ini", QSettings::IniFormat};
-    QString lastOpened {cfg.value("last_opened_dvd", "").toString()};
+    QString lastOpened {config.value("last_opened_dvd", "").toString()};
 
     QStringList vobFiles = QFileDialog::getOpenFileNames(this, tr("Select DVD VOB/Blu-ray M2TS files"),
                                                          lastOpened,
@@ -447,9 +443,9 @@ void MainWindow::on_actionOpen_DVD_triggered()
     }
 
     QFileInfo openedVobFile {vobFiles.first()};
-    cfg.setValue("last_opened_dvd", openedVobFile.absoluteDir().absolutePath());
+    config.setValue("last_opened_dvd", openedVobFile.absoluteDir().absolutePath());
 
-    QString dgIndexPath = cfg.value("dgindexexecpath").toString();
+    QString dgIndexPath = config.value("dgindexexecpath").toString();
     if(!QFile::exists(dgIndexPath))
     {
         QMessageBox::critical(this, tr("DGIndex invalid path"), tr("Please set a valid path to DGIndex"));
@@ -527,14 +523,13 @@ void MainWindow::videoLoaded()
     ui->saveSingleButton->setEnabled(true);
 
     // Load config
-    QSettings cfg("config.ini", QSettings::IniFormat);
-    const bool showEditor = cfg.value("showscripteditor").toBool();
+    const bool showEditor = config.value("showscripteditor").toBool();
     if(showEditor)
     {
         scriptEditor->hide();
         scriptEditor->show();
     }
-    const bool showVideoSettings = cfg.value("showvideosettings").toBool();
+    const bool showVideoSettings = config.value("showvideosettings").toBool();
     if(showVideoSettings)
     {
         videoSettingsWindow->hide();
@@ -596,8 +591,7 @@ void MainWindow::on_seekSlider_sliderMoved(int position)
 
 void MainWindow::on_generateButton_clicked()
 {
-    QSettings cfg("config.ini", QSettings::IniFormat);
-    const bool pauseAfterLimit = cfg.value("pauseafterlimit").toBool();
+    const bool pauseAfterLimit = config.value("pauseafterlimit").toBool();
     if(pauseAfterLimit && ui->unsavedWidget->isFull()) {
         // If user has chosen to pause the generator after reaching
         // maximum limit and has clicked resume (this path) while
@@ -848,8 +842,7 @@ void MainWindow::dropEvent(QDropEvent *ev)
     QFileInfo info(filename);
     setWindowTitle(info.absoluteFilePath());
 
-    QSettings cfg {"config.ini", QSettings::IniFormat};
-    cfg.setValue("last_opened", info.absoluteFilePath());
+    config.setValue("last_opened", info.absoluteFilePath());
 
     lastOpenedFile = filename;
 }
@@ -861,9 +854,7 @@ void MainWindow::on_actionOptions_triggered()
 
     if(saved)
     {
-        QSettings cfg("config.ini", QSettings::IniFormat);
-
-        const int newMaxThumbnails = cfg.value("maxthumbnails").toInt();
+        const int newMaxThumbnails = config.value("maxthumbnails").toInt();
         const bool containerFull = ui->unsavedWidget->isFull();
         const bool containerHasRoom = (newMaxThumbnails > ui->unsavedWidget->numThumbnails());
         const bool generatorHasQueue = (frameGenerator->remaining() > 0);
@@ -877,22 +868,20 @@ void MainWindow::on_actionOptions_triggered()
         }
 
         ui->unsavedWidget->setMaxThumbnails(newMaxThumbnails);
-        dvdProcessor->setProcessor(cfg.value("dgindexexecpath").toString());       
+        dvdProcessor->setProcessor(config.value("dgindexexecpath").toString());
     }
 }
 
 void MainWindow::on_screenshotsSpinBox_valueChanged(int arg1)
 {
-    QSettings cfg("config.ini", QSettings::IniFormat);
-    cfg.setValue("numscreenshots", arg1);
+    config.setValue("numscreenshots", arg1);
 
     ui->screenshotsSpinBox->setValue(arg1);
 }
 
 void MainWindow::on_frameStepSpinBox_valueChanged(int arg1)
 {
-    QSettings cfg("config.ini", QSettings::IniFormat);
-    cfg.setValue("framestep", arg1);
+    config.setValue("framestep", arg1);
 }
 
 void MainWindow::on_actionAbout_triggered()
@@ -943,8 +932,7 @@ void MainWindow::on_btnPauseGenerator_clicked()
     }
     else
     {
-        QSettings cfg("config.ini", QSettings::IniFormat);
-        const bool pauseAfterLimit = cfg.value("pauseafterlimit").toBool();
+        const bool pauseAfterLimit = config.value("pauseafterlimit").toBool();
         if(pauseAfterLimit && ui->unsavedWidget->isFull()) {
             // If user has chosen to pause the generator after reaching
             // maximum limit and has clicked resume (this path) while
