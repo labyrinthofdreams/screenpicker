@@ -77,7 +77,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="vfg::ui::VideoFrameWidget" name="videoFrameWidget" native="true"/>
+             <widget class="vfg::ui::VideoPreviewWidget" name="videoPreviewWidget" native="true"/>
             </item>
            </layout>
           </widget>
@@ -763,9 +763,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>vfg::ui::VideoFrameWidget</class>
+   <class>vfg::ui::VideoPreviewWidget</class>
    <extends>QWidget</extends>
-   <header>videoframewidget.h</header>
+   <header>videopreviewwidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

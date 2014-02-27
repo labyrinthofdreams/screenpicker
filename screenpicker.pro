@@ -13,7 +13,6 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     flowlayout.cpp \
     videoframegrabber.cpp \
-    videoframewidget.cpp \
     videoframethumbnail.cpp \
     thumbnailcontainer.cpp \
     avisynthvideosource.cpp \
@@ -27,12 +26,12 @@ SOURCES += main.cpp\
     scriptparser.cpp \
     defaultscriptparser.cpp \
     .\libs\cpptempl\cpptempl.cpp \
-    videosettingswidget.cpp
+    videosettingswidget.cpp \
+    videopreviewwidget.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
     videoframegrabber.h \
-    videoframewidget.h \
     videoframethumbnail.h \
     thumbnailcontainer.h \
     abstractvideosource.h \
@@ -47,7 +46,8 @@ HEADERS  += mainwindow.h \
     dgindexscriptparser.h \
     avisynthscriptparser.h \
     defaultscriptparser.h \
-    videosettingswidget.h
+    videosettingswidget.h \
+    videopreviewwidget.h
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \

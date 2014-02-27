@@ -18,8 +18,8 @@ class QVBoxLayout;
 namespace vfg {
 
 /**
- * @brief Zoom mode for the \link vfg::ui::VideoFrameWidget preview frame \endlink
- * @sa VideoFrameWidget
+ * @brief Zoom mode for the \link vfg::ui::VideoPreviewWidget preview frame \endlink
+ * @sa VideoPreviewWidget
  */
 enum class ZoomMode : int {
     Zoom_25, //!< Zoom 25%
@@ -32,9 +32,9 @@ enum class ZoomMode : int {
 namespace ui {
 
 /**
- * @brief The VideoFrameWidget class implements the video preview frame
+ * @brief The VideoPreviewWidget class
  */
-class VideoFrameWidget : public QWidget
+class VideoPreviewWidget : public QWidget
 {
     Q_OBJECT
 private:
@@ -72,7 +72,7 @@ public:
      * @brief Constructor
      * @param parent Owner of the widget
      */
-    explicit VideoFrameWidget(QWidget *parent = 0);
+    explicit VideoPreviewWidget(QWidget *parent = 0);
 
 protected:
     /**

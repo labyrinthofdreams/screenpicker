@@ -98,11 +98,11 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->actionScaleToWindow->setData("scale");
         // Scale by default
         ui->actionScaleToWindow->setChecked(true);
-        ui->videoFrameWidget->setZoom(vfg::ZoomMode::Zoom_Scale);
+        ui->videoPreviewWidget->setZoom(vfg::ZoomMode::Zoom_Scale);
         connect(videoZoomGroup, SIGNAL(triggered(QAction*)),
                 this, SLOT(videoZoomChanged(QAction*)));
 
-        connect(ui->videoFrameWidget, SIGNAL(customContextMenuRequested(QPoint)),
+        connect(ui->videoPreviewWidget, SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(contextMenuOnPreview(QPoint)));
     }
     catch(std::exception& ex)
@@ -114,10 +114,10 @@ MainWindow::MainWindow(QWidget *parent) :
             this, SLOT(videoSettingsUpdated()));
 
     connect(videoSettingsWindow, SIGNAL(cropChanged(QRect)),
-            ui->videoFrameWidget, SLOT(setCrop(QRect)));
+            ui->videoPreviewWidget, SLOT(setCrop(QRect)));
 
     connect(videoSettingsWindow, SIGNAL(closed()),
-            ui->videoFrameWidget, SLOT(resetCrop()));
+            ui->videoPreviewWidget, SLOT(resetCrop()));
 
     connect(scriptEditor, SIGNAL(scriptUpdated()),
             this, SLOT(scriptEditorUpdated()));
@@ -136,7 +136,7 @@ MainWindow::MainWindow(QWidget *parent) :
             Qt::QueuedConnection);
 
     connect(frameGrabber, SIGNAL(frameGrabbed(QPair<int,QImage>)),
-            ui->videoFrameWidget, SLOT(setFrame(QPair<int,QImage>)),
+            ui->videoPreviewWidget, SLOT(setFrame(QPair<int,QImage>)),
             Qt::QueuedConnection);
 
     connect(frameGenerator, SIGNAL(frameReady(QPair<int, QImage>)),
@@ -390,12 +390,12 @@ void MainWindow::videoZoomChanged(QAction *action)
         {"200", vfg::ZoomMode::Zoom_200},
         {"scale", vfg::ZoomMode::Zoom_Scale}
     };
-    ui->videoFrameWidget->setZoom(m[mode]);
+    ui->videoPreviewWidget->setZoom(m[mode]);
 }
 
 void MainWindow::contextMenuOnPreview(const QPoint &pos)
 {
-    ui->menuZoom->exec(ui->videoFrameWidget->mapToGlobal(pos));
+    ui->menuZoom->exec(ui->videoPreviewWidget->mapToGlobal(pos));
 }
 
 void MainWindow::on_actionOpen_triggered()

@@ -11,12 +11,12 @@
 #include <QVBoxLayout>
 #include <QVector>
 #include <QWidget>
-#include "videoframewidget.h"
+#include "videopreviewwidget.h"
 
 using vfg::ZoomMode;
-using vfg::ui::VideoFrameWidget;
+using vfg::ui::VideoPreviewWidget;
 
-VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
+VideoPreviewWidget::VideoPreviewWidget(QWidget *parent) :
     QWidget(parent),
     cropBorders(),
     framePixmap(),
@@ -47,7 +47,7 @@ VideoFrameWidget::VideoFrameWidget(QWidget *parent) :
     setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
-void VideoFrameWidget::resizeEvent(QResizeEvent *event)
+void VideoPreviewWidget::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
 
@@ -57,21 +57,21 @@ void VideoFrameWidget::resizeEvent(QResizeEvent *event)
     updateFrame();
 }
 
-void VideoFrameWidget::setFrame(QImage img)
+void VideoPreviewWidget::setFrame(QImage img)
 {
     original = QPixmap::fromImage(img);
     framePixmap = original.copy();
     updateFrame();
 }
 
-void VideoFrameWidget::setFrame(QPair<int, QImage> img)
+void VideoPreviewWidget::setFrame(QPair<int, QImage> img)
 {
     original = QPixmap::fromImage(img.second);
     framePixmap = original.copy();
     updateFrame();
 }
 
-void VideoFrameWidget::setCrop(QRect area)
+void VideoPreviewWidget::setCrop(QRect area)
 {
     QRect left {0, 0, area.left(), framePixmap.height()};
     QRect top {0, 0, framePixmap.width(), area.top()};
@@ -86,14 +86,14 @@ void VideoFrameWidget::setCrop(QRect area)
     updateFrame();
 }
 
-void VideoFrameWidget::resetCrop()
+void VideoPreviewWidget::resetCrop()
 {
     framePixmap = original.copy();
     cropBorders.clear();
     updateFrame();
 }
 
-void VideoFrameWidget::updateFrame()
+void VideoPreviewWidget::updateFrame()
 {
     if(framePixmap.isNull())
     {
@@ -111,7 +111,7 @@ void VideoFrameWidget::updateFrame()
 
 }
 
-void VideoFrameWidget::drawCropArea()
+void VideoPreviewWidget::drawCropArea()
 {
     QPixmap copiedFrame = original.copy();
     QPainter painter {&copiedFrame};
@@ -124,7 +124,7 @@ void VideoFrameWidget::drawCropArea()
     framePixmap.swap(copiedFrame);
 }
 
-const QSize VideoFrameWidget::calculateSize() const
+const QSize VideoPreviewWidget::calculateSize() const
 {
     if(zoomMode == ZoomMode::Zoom_Scale) {
         return frameLabel->size();
@@ -141,7 +141,7 @@ const QSize VideoFrameWidget::calculateSize() const
                   static_cast<int>(original.height() * zoomfactor)};
 }
 
-void VideoFrameWidget::setZoom(ZoomMode mode)
+void VideoPreviewWidget::setZoom(ZoomMode mode)
 {
     zoomMode = mode;
 
