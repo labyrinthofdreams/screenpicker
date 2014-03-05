@@ -10,64 +10,46 @@ VideoFrameGenerator::VideoFrameGenerator(vfg::core::VideoFrameGrabber *frameGrab
                                          QObject *parent) :
     QObject(parent),
     frameGrabber(frameGrabber),
-    mutex(),
-    waitToContinue(),
-    halt(false),
-    active(false),
-    paused(false)
+    mutex()
 {
 }
 
 void VideoFrameGenerator::start()
 {
     QMutexLocker lock(&mutex);
-    paused = false;
-    active = true;
-    while(!frames.empty())
-    {
-        const auto current = frames.takeFirst();
-        lock.unlock();
-        if(!frameGrabber) {
-            break;
-        }
-        QImage frame = frameGrabber->getFrame(current);
-        emit frameReady(QPair<int, QImage>(current, frame));
-        // Without the wait condition all the frames may be processed
-        // faster in the loop than they can be processed in the connected slot for
-        // the signal frameReady (due to e.g. caching in frameGrabber)
-        // causing potentially unexpected behavior
-        lock.relock();
-        waitToContinue.wait(&mutex);
-        if(halt) {
-            break;
-        }
-    }
+    state = State::Running;
+    lock.unlock();
 
-    lock.relock();
-    active = false;
-    halt = false;
+    fetchNext();
 }
 
 void VideoFrameGenerator::fetchNext()
 {
-    waitToContinue.wakeOne();
+    QMutexLocker lock(&mutex);
+    if(!frameGrabber || state != State::Running || frames.empty()) {
+        return;
+    }
+
+    const auto current = frames.takeFirst();
+    QImage frame = frameGrabber->getFrame(current);
+    lock.unlock();
+
+    emit frameReady(QPair<int, QImage>(current, frame));
 }
 
 void VideoFrameGenerator::pause()
 {
     QMutexLocker lock(&mutex);
-    if(active) {
-        halt = true;
-        paused = true;
+    if(state == State::Running) {
+        state = State::Paused;
     }
 }
 
 void VideoFrameGenerator::resume()
 {
     QMutexLocker lock(&mutex);
-    if(!active)
+    if(state == State::Paused)
     {
-        halt = false;
         lock.unlock();
         start();
     }
@@ -76,10 +58,8 @@ void VideoFrameGenerator::resume()
 void VideoFrameGenerator::stop()
 {
     QMutexLocker lock(&mutex);
-    if(active) {
-        halt = true;
-        active = false;
-        waitToContinue.wakeOne();
+    if(state == State::Running) {
+        state = State::Stopped;
     }
     lock.unlock();
     clear();
@@ -88,13 +68,13 @@ void VideoFrameGenerator::stop()
 bool VideoFrameGenerator::isRunning() const
 {
     QMutexLocker lock(&mutex);
-    return active;
+    return state == State::Running;
 }
 
 bool VideoFrameGenerator::isPaused() const
 {
     QMutexLocker lock(&mutex);
-    return paused;
+    return state == State::Paused;
 }
 
 void VideoFrameGenerator::enqueue(int frame)
