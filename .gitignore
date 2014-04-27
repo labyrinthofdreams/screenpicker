@@ -3,6 +3,7 @@
 # Whitelist
 !libs/
 !.gitignore
+!.gitmodules
 !LICENSE.txt
 !README.md
 !*.avs

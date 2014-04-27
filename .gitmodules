@@ -1,0 +1,3 @@
+[submodule "libs/templet"]
+	path = libs/templet
+	url = https://github.com/labyrinthofdreams/templet.git

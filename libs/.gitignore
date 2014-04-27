@@ -1,0 +1,3 @@
+templet/
+# Whitelist libs not in submodules
+!avs2yuv/

@@ -6,14 +6,9 @@
 #include <string>
 #include <stdexcept>
 #include "scriptparser.h"
-#include "cpptempl.h"
+#include "templet.hpp"
 
 namespace vfg {
-
-inline std::wstring to_wstr(const int n)
-{
-    return QString::number(n).toStdWString();
-}
 
 ScriptParser::ScriptParser(QString scriptPath) :
     path(scriptPath),
@@ -46,23 +41,21 @@ QString ScriptParser::parse(QMap<QString, int> settings)
 {
     try
     {
-        using cpptempl::data_map;
-        using cpptempl::make_data;
+        using templet::make_data;
         QSettings cfg("config.ini", QSettings::IniFormat);
         QString script = readTemplate(tplPath);
-        std::wstring str = script.toStdWString();
-        data_map data;
-        data[L"source_path"] = make_data(path.toStdWString());
-        data[L"avs_plugins"] = make_data(cfg.value("avisynthpluginspath").toString().toStdWString());
+        templet::DataMap data;
+        data["source_path"] = make_data(path.toStdString());
+        data["avs_plugins"] = make_data(cfg.value("avisynthpluginspath").toString().toStdString());
         if(settings.value("ivtc", 0))
-            data[L"ivtc"] = make_data(L"true");
+            data["ivtc"] = make_data("true");
         else
-            data[L"ivtc"] = make_data(L"");
+            data["ivtc"] = make_data("");
 
         if(settings.value("deinterlace", 0))
-            data[L"deinterlace"] = make_data(L"true");
+            data["deinterlace"] = make_data("true");
         else
-            data[L"deinterlace"] = make_data(L"");
+            data["deinterlace"] = make_data("");
 
         // lambda function to convert odd numbers to even values
         // TODO: Probably doesn't belong here (unexpected value modification)
@@ -71,13 +64,13 @@ QString ScriptParser::parse(QMap<QString, int> settings)
         const int resizeWidth = settings.value("resizewidth", 0);
         const int resizeHeight = settings.value("resizeheight", 0);
         if(resizeWidth || resizeHeight) {
-            data_map resize;
-            resize[L"width"] = make_data(to_wstr(upconvert_odd(resizeWidth)));
-            resize[L"height"] = make_data(to_wstr(upconvert_odd(resizeHeight)));
-            data[L"resize"] = make_data(resize);
+            templet::DataMap resize;
+            resize["width"] = make_data(upconvert_odd(resizeWidth));
+            resize["height"] = make_data(upconvert_odd(resizeHeight));
+            data["resize"] = make_data(resize);
         }
         else {
-            data[L"resize"] = make_data(L"");
+            data["resize"] = make_data("");
         }
 
         const int cropTop = settings.value("croptop", 0);
@@ -85,20 +78,20 @@ QString ScriptParser::parse(QMap<QString, int> settings)
         const int cropBottom = settings.value("cropbottom", 0);
         const int cropLeft = settings.value("cropleft", 0);
         if(cropTop || cropRight || cropBottom || cropLeft) {
-            data_map crop;
-            crop[L"top"] = make_data(to_wstr(upconvert_odd(cropTop)));
-            crop[L"right"] = make_data(to_wstr(upconvert_odd(cropRight)));
-            crop[L"bottom"] = make_data(to_wstr(upconvert_odd(cropBottom)));
-            crop[L"left"] = make_data(to_wstr(upconvert_odd(cropLeft)));
-            data[L"crop"] = make_data(crop);
+            templet::DataMap crop;
+            crop["top"] = make_data(upconvert_odd(cropTop));
+            crop["right"] = make_data(upconvert_odd(cropRight));
+            crop["bottom"] = make_data(upconvert_odd(cropBottom));
+            crop["left"] = make_data(upconvert_odd(cropLeft));
+            data["crop"] = make_data(crop);
         }
         else {
-            data[L"crop"] = make_data(L"");
+            data["crop"] = make_data("");
         }
 
-        std::wstring result = cpptempl::parse(str, data);
+        templet::Templet tpl(script.toStdString());
 
-        return QString::fromStdWString(result);
+        return QString::fromStdString(tpl.parse(data));
     }
     catch(ScriptParserTemplateException& ex)
     {

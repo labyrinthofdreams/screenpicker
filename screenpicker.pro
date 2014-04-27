@@ -25,9 +25,9 @@ SOURCES += main.cpp\
     avisynthscriptparser.cpp \
     scriptparser.cpp \
     defaultscriptparser.cpp \
-    .\libs\cpptempl\cpptempl.cpp \
     videosettingswidget.cpp \
-    videopreviewwidget.cpp
+    videopreviewwidget.cpp \
+    .\libs\templet\templet.cpp .\libs\templet\nodes.cpp .\libs\templet\types.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -55,10 +55,10 @@ FORMS    += mainwindow.ui \
     videosettingswidget.ui
 
 INCLUDEPATH += .\libs\avs2yuv\src \
-    .\libs\cpptempl
+    .\libs\templet
 
 # These are needed for Avisynth compilation
-QMAKE_CXXFLAGS += -fpermissive -std=c++11
+QMAKE_CXXFLAGS += -fpermissive -std=c++11 -Wall -Wextra -Wpedantic -O3
 DEFINES -= UNICODE
 
 OTHER_FILES += \
