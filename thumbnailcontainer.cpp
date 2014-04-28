@@ -112,11 +112,6 @@ std::unique_ptr<vfg::ui::VideoFrameThumbnail> vfg::ui::ThumbnailContainer::takeS
     return ret;
 }
 
-vfg::ui::VideoFrameThumbnail* vfg::ui::ThumbnailContainer::selected()
-{
-    return activeWidget;
-}
-
 int vfg::ui::ThumbnailContainer::numThumbnails() const
 {
     return layout->count();

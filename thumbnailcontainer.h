@@ -35,7 +35,6 @@ public:
     void clearThumbnails();
     void resizeThumbnails(int width);
     std::unique_ptr<vfg::ui::VideoFrameThumbnail> takeSelected();
-    vfg::ui::VideoFrameThumbnail* selected();
     int numThumbnails() const;
     void setMaxThumbnails(int max);
     bool isFull() const;
