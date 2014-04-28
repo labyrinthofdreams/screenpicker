@@ -9,5 +9,6 @@
 !*.avs
 !*.cpp
 !*.h
+!*.hpp
 !*.pro
 !*.ui
