@@ -114,7 +114,7 @@ VideoFrameThumbnail* ThumbnailContainer::takeSelected()
     const int widgetIndex = layout->indexOf(activeWidget);
     QLayoutItem* item = layout->takeAt(widgetIndex);
 
-    VideoFrameThumbnail* ret = item->widget();
+    VideoFrameThumbnail* ret = static_cast<VideoFrameThumbnail*>(item->widget());
 
     // Bugfix: If this item is not deleted, the ownership of the widget will remain
     // in the container
