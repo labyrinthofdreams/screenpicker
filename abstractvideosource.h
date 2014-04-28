@@ -39,12 +39,12 @@ public:
     /**
      * @brief Constructor
      */
-    AbstractVideoSource() {}
+    AbstractVideoSource() = default;
 
     /**
      * @brief Destructor
      */
-    virtual ~AbstractVideoSource() {}
+    virtual ~AbstractVideoSource() = default;
 
     /**
      * @brief Load given file
