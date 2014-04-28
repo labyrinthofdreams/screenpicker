@@ -80,8 +80,7 @@ bool VideoFrameGenerator::isPaused() const
 void VideoFrameGenerator::enqueue(const int frame)
 {
     QMutexLocker lock(&mutex);
-    const bool exists = frames.contains(frame);
-    if(!exists)
+    if(!frames.contains(frame))
     {
         frames.append(frame);
     }
