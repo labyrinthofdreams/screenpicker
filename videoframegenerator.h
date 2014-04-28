@@ -29,6 +29,16 @@ class VideoFrameGenerator : public QObject
     Q_OBJECT
 public:
     /**
+     * @brief State of the generator
+     */
+    enum class State {
+        Running,
+        Paused,
+        Stopped
+    };
+
+public:
+    /**
      * @brief Constructor
      * @param frameGrabber Non-owning pointer to a frame grabber
      * @param parent Owner of the object
@@ -92,10 +102,7 @@ private:
     vfg::core::VideoFrameGrabber *frameGrabber;
     QList<int> frames;
     mutable QMutex mutex;
-    QWaitCondition waitToContinue;
-    bool halt;
-    bool active;
-    bool paused;
+    State state {State::Stopped};
 };
 
 } // namespace core
