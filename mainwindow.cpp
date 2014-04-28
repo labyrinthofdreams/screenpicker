@@ -676,14 +676,14 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
     {
         // Move thumbnail from unsaved tab to saved tab
         auto thumb = ui->unsavedWidget->takeSelected();
-        disconnect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+        disconnect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
                    this, SLOT(handleUnsavedMenu(QPoint)));
-        connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+        connect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleSavedMenu(QPoint)));
 
         framesToSave.append(thumb->frameNum());
 
-        ui->savedWidget->addThumbnail(thumb);
+        ui->savedWidget->addThumbnail(thumb.release());
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
     }
 }
@@ -701,14 +701,14 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
     {
         // Move thumbnail from saved tab to unsaved tab
         auto thumb = ui->savedWidget->takeSelected();
-        disconnect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+        disconnect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
                    this, SLOT(handleSavedMenu(QPoint)));
-        connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+        connect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleUnsavedMenu(QPoint)));
 
         framesToSave.removeOne(thumb->frameNum());
 
-        ui->unsavedWidget->addThumbnail(thumb);
+        ui->unsavedWidget->addThumbnail(thumb.release());
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
     }
 }

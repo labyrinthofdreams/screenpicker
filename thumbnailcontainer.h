@@ -1,6 +1,7 @@
 #ifndef THUMBNAILCONTAINER_H
 #define THUMBNAILCONTAINER_H
 
+#include <memory>
 #include <QWidget>
 
 // Forward declarations
@@ -25,13 +26,15 @@ private:
     vfg::ui::VideoFrameThumbnail* activeWidget;
 
     int maxThumbnails;
+
+    void removeFirst();
 public:
     explicit ThumbnailContainer(QWidget *parent = 0);
 
     void addThumbnail(vfg::ui::VideoFrameThumbnail* thumbnail);
     void clearThumbnails();
     void resizeThumbnails(int width);
-    vfg::ui::VideoFrameThumbnail* takeSelected();
+    std::unique_ptr<vfg::ui::VideoFrameThumbnail> takeSelected();
     vfg::ui::VideoFrameThumbnail* selected();
     int numThumbnails() const;
     void setMaxThumbnails(int max);
