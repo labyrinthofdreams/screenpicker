@@ -29,13 +29,17 @@ void vfg::ui::ThumbnailContainer::removeFirst()
     }
 }
 
-void vfg::ui::ThumbnailContainer::addThumbnail(vfg::ui::VideoFrameThumbnail *thumbnail)
+void vfg::ui::ThumbnailContainer::addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail> thumbnail)
 {
-    connect(thumbnail,  SIGNAL(selected(vfg::ui::VideoFrameThumbnail*)),
-            this,       SLOT(handleThumbnailSelection(vfg::ui::VideoFrameThumbnail*)));
+    if(!thumbnail) {
+        return;
+    }
 
-    connect(thumbnail,  SIGNAL(doubleClicked(int)),
-            this,       SIGNAL(thumbnailDoubleClicked(int)));
+    connect(thumbnail.get(),    SIGNAL(selected(vfg::ui::VideoFrameThumbnail*)),
+            this,               SLOT(handleThumbnailSelection(vfg::ui::VideoFrameThumbnail*)));
+
+    connect(thumbnail.get(),    SIGNAL(doubleClicked(int)),
+            this,               SIGNAL(thumbnailDoubleClicked(int)));
 
     // If the container has filled max thumbnails
     // remove oldest widgets until there's space
@@ -44,7 +48,7 @@ void vfg::ui::ThumbnailContainer::addThumbnail(vfg::ui::VideoFrameThumbnail *thu
         removeFirst();
     }
 
-    layout->addWidget(thumbnail);
+    layout->addWidget(thumbnail.release());
 }
 
 void vfg::ui::ThumbnailContainer::clearThumbnails()

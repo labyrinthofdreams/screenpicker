@@ -31,7 +31,7 @@ private:
 public:
     explicit ThumbnailContainer(QWidget *parent = 0);
 
-    void addThumbnail(vfg::ui::VideoFrameThumbnail* thumbnail);
+    void addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail> thumbnail);
     void clearThumbnails();
     void resizeThumbnails(int width);
     std::unique_ptr<vfg::ui::VideoFrameThumbnail> takeSelected();

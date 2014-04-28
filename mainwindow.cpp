@@ -1,18 +1,20 @@
 #include <map>
+#include <utility>
 #include <QtWidgets>
 #include <QtCore>
 #include <stdexcept>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "avisynthvideosource.h"
+#include "configdialog.h"
+#include "dvdprocessor.h"
+#include "ptrutil.hpp"
+#include "scripteditor.h"
+#include "scriptparser.h"
+#include "scriptparserfactory.h"
+#include "videoframegenerator.h"
 #include "videoframegrabber.h"
 #include "videoframethumbnail.h"
-#include "avisynthvideosource.h"
-#include "scripteditor.h"
-#include "configdialog.h"
-#include "videoframegenerator.h"
-#include "dvdprocessor.h"
-#include "scriptparserfactory.h"
-#include "scriptparser.h"
 #include "videosettingswidget.h"
 
 QMap<QString, QString> avinfoParseVideoHeader(QString path)
@@ -202,14 +204,14 @@ void MainWindow::frameReceived(QPair<int, QImage> frame)
     qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
     const int thumbnailSize = ui->thumbnailSizeSlider->value();
     QPixmap thumbnail = QPixmap::fromImage(frame.second).scaledToWidth(200, Qt::SmoothTransformation);
-    auto thumb = new vfg::ui::VideoFrameThumbnail(frame.first, thumbnail);
+    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(frame.first, thumbnail);
     thumb->setFixedWidth(thumbnailSize);
 
-    connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+    connect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handleUnsavedMenu(QPoint)));
 
     // Update widgets
-    ui->unsavedWidget->addThumbnail(thumb);
+    ui->unsavedWidget->addThumbnail(std::move(thumb));
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
     if(frameGenerator->isPaused())
@@ -652,12 +654,12 @@ void MainWindow::on_grabButton_clicked()
     QImage frame = frameGrabber->getFrame(selected);
     QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
 
-    auto thumb = new vfg::ui::VideoFrameThumbnail(selected, thumbnail);
+    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(selected, thumbnail);
     thumb->setFixedWidth(thumbnailSize);
-    connect(thumb, SIGNAL(customContextMenuRequested(QPoint)),
+    connect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(handleSavedMenu(QPoint)));
-    ui->savedWidget->addThumbnail(thumb);
     framesToSave.append(thumb->frameNum());
+    ui->savedWidget->addThumbnail(std::move(thumb));
 
 
     statusBar()->showMessage(tr("Grabbed frame #%1").arg(selected), 3000);
@@ -683,7 +685,7 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
 
         framesToSave.append(thumb->frameNum());
 
-        ui->savedWidget->addThumbnail(thumb.release());
+        ui->savedWidget->addThumbnail(std::move(thumb));
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
     }
 }
@@ -708,7 +710,7 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
 
         framesToSave.removeOne(thumb->frameNum());
 
-        ui->unsavedWidget->addThumbnail(thumb.release());
+        ui->unsavedWidget->addThumbnail(std::move(thumb));
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
     }
 }

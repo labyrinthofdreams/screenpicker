@@ -47,7 +47,8 @@ HEADERS  += mainwindow.h \
     avisynthscriptparser.h \
     defaultscriptparser.h \
     videosettingswidget.h \
-    videopreviewwidget.h
+    videopreviewwidget.h \
+    ptrutil.hpp
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
