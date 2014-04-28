@@ -77,10 +77,10 @@ bool VideoFrameGenerator::isPaused() const
     return state == State::Paused;
 }
 
-void VideoFrameGenerator::enqueue(int frame)
+void VideoFrameGenerator::enqueue(const int frame)
 {
     QMutexLocker lock(&mutex);
-    bool exists = frames.contains(frame);
+    const bool exists = frames.contains(frame);
     if(!exists)
     {
         frames.append(frame);
