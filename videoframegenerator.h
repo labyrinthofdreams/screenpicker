@@ -27,15 +27,6 @@ namespace core {
 class VideoFrameGenerator : public QObject
 {
     Q_OBJECT
-public:
-    /**
-     * @brief State of the generator
-     */
-    enum class State {
-        Running,
-        Paused,
-        Stopped
-    };
 
 public:
     /**
@@ -97,6 +88,16 @@ public slots:
     void resume();
     void stop();
     void fetchNext();
+
+private:
+    /**
+     * @brief State of the generator
+     */
+    enum class State {
+        Running,
+        Paused,
+        Stopped
+    };
     
 private:
     vfg::core::VideoFrameGrabber *frameGrabber;
