@@ -69,9 +69,6 @@ QString ScriptParser::parse(QMap<QString, int> settings)
             resize["height"] = make_data(upconvert_odd(resizeHeight));
             data["resize"] = make_data(resize);
         }
-        else {
-            data["resize"] = make_data("");
-        }
 
         const int cropTop = settings.value("croptop", 0);
         const int cropRight = settings.value("cropright", 0);
@@ -84,9 +81,6 @@ QString ScriptParser::parse(QMap<QString, int> settings)
             crop["bottom"] = make_data(upconvert_odd(cropBottom));
             crop["left"] = make_data(upconvert_odd(cropLeft));
             data["crop"] = make_data(crop);
-        }
-        else {
-            data["crop"] = make_data("");
         }
 
         templet::Templet tpl(script.toStdString());
