@@ -59,11 +59,6 @@ public:
                                QObject *parent = 0);
 
     /**
-     * @brief Destructor
-     */
-    ~VideoFrameGrabber();
-
-    /**
      * @brief Get video status
      * @return True if video is available, otherwise false
      */

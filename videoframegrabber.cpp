@@ -28,11 +28,6 @@ VideoFrameGrabber::VideoFrameGrabber(std::shared_ptr<vfg::core::AbstractVideoSou
             this, SLOT(videoSourceUpdated()));
 }
 
-VideoFrameGrabber::~VideoFrameGrabber()
-{
-    qDebug() << "VFG destructed from thread " << thread()->currentThreadId();
-}
-
 //void vfg::VideoFrameGrabber::load(QString filename)
 //{
 //    try
