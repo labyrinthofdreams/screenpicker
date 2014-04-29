@@ -24,8 +24,8 @@ VideoFrameGrabber::VideoFrameGrabber(std::shared_ptr<vfg::core::AbstractVideoSou
     currentFrame(0),
     mutex()
 {
-    connect(avs.get(), SIGNAL(videoLoaded()),
-            this, SLOT(videoSourceUpdated()));
+    connect(avs.get(),  SIGNAL(videoLoaded()),
+            this,       SLOT(videoSourceUpdated()));
 }
 
 //void vfg::VideoFrameGrabber::load(QString filename)
