@@ -16,10 +16,6 @@ ScriptParser::ScriptParser(QString scriptPath) :
 {
 }
 
-ScriptParser::~ScriptParser()
-{
-}
-
 QString ScriptParser::readTemplate(QString path)
 {
     QFile tpl(path);

@@ -17,7 +17,7 @@ class ScriptParser
 {
 public:
     explicit ScriptParser(QString scriptPath);
-    virtual ~ScriptParser();
+    virtual ~ScriptParser() = default;
     virtual QString parse(QMap<QString, int> settings);
 
 protected:
