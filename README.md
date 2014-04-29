@@ -19,10 +19,10 @@ and view results in the application after editing
 
 Requirements:
 
-- C++11 compiler (tested with GCC 4.8.1 on Windows)
-- Qt 5.0 or newer
+- C++11 compiler (requires GCC >=4.8.2)
+- Qt >=5.0
 - avs2yuv (avs2yuv-0.24bm2) (included)
-- templet (included)
+- templet (included as a submodule)
 - Avisynth 2.5.8 + plug-ins (DGDecode.dll, ffms2.dll, nnedi3.dll, TIVTC.dll, yadifmod.dll)
 - avinfo.exe
 
