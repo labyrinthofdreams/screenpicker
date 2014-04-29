@@ -28,22 +28,6 @@ VideoFrameGrabber::VideoFrameGrabber(std::shared_ptr<vfg::core::AbstractVideoSou
             this,       SLOT(videoSourceUpdated()));
 }
 
-//void vfg::VideoFrameGrabber::load(QString filename)
-//{
-//    try
-//    {
-//        avs->load(filename);
-//        numFrames = avs->getNumFrames();
-//        currentFrame = 0;
-
-//        emit videoReady();
-//    }
-//    catch(std::exception& ex)
-//    {
-//        emit errorOccurred(ex.what());
-//    }
-//}
-
 bool VideoFrameGrabber::hasVideo() const
 {
     QMutexLocker lock(&mutex);
