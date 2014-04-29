@@ -39,7 +39,7 @@ AvisynthVideoSource::~AvisynthVideoSource()
     FreeLibrary(avsHandle.library);
 }
 
-void AvisynthVideoSource::load(QString fileName)
+void AvisynthVideoSource::load(const QString fileName)
 {
     // If you don't store the converted data temporarily,
     // you will have a memory leak (or so they say)
@@ -90,7 +90,7 @@ int AvisynthVideoSource::getNumFrames() const
     return info->num_frames;
 }
 
-QImage AvisynthVideoSource::getFrame(int frameNumber)
+QImage AvisynthVideoSource::getFrame(const int frameNumber)
 {
     if(info == nullptr)
     {
@@ -130,7 +130,7 @@ QString AvisynthVideoSource::getSupportedFormats()
     return formats;
 }
 
-bool AvisynthVideoSource::isValidFrame(int frameNum) const
+bool AvisynthVideoSource::isValidFrame(const int frameNum) const
 {
     return frameNum >= 0 && frameNum < info->num_frames;
 }
