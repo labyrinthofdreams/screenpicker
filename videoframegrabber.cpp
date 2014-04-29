@@ -1,10 +1,9 @@
-#include "videoframegrabber.h"
-#include "abstractvideosource.h"
 #include <QDebug>
-#include <QThread>
 #include <QMutexLocker>
 #include <QPair>
-#include <QApplication>
+#include <QThread>
+#include "videoframegrabber.h"
+#include "abstractvideosource.h"
 
 using vfg::core::VideoFrameGrabber;
 
