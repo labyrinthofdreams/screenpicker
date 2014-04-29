@@ -40,8 +40,9 @@ void VideoFrameGrabber::setVideoSource(std::shared_ptr<vfg::core::AbstractVideoS
     avs = newAvs;
     currentFrame = 0;
     numFrames = avs->getNumFrames();
-    connect(avs.get(), SIGNAL(videoLoaded()),
-            this, SLOT(videoSourceUpdated()));
+
+    connect(avs.get(),  SIGNAL(videoLoaded()),
+            this,       SLOT(videoSourceUpdated()));
 }
 
 int VideoFrameGrabber::lastFrame() const
