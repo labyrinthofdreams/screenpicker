@@ -24,7 +24,7 @@ QString ScriptParser::readTemplate(QString path)
 {
     QFile tpl(path);
     if(!tpl.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        throw ScriptParserTemplateException(QString("Unable to open %1").arg(path).toStdString());
+        throw ScriptParserError(QString("Unable to open %1").arg(path).toStdString());
     }
 
     QTextStream stream(&tpl);
@@ -87,7 +87,7 @@ QString ScriptParser::parse(QMap<QString, int> settings)
 
         return QString::fromStdString(tpl.parse(data));
     }
-    catch(ScriptParserTemplateException& ex)
+    catch(ScriptParserError& ex)
     {
         throw;
     }

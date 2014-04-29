@@ -363,7 +363,7 @@ void MainWindow::loadFile(QString path)
         // TODO: Stop screenshot generation if that's happening...
         videoSource->load(saveTo);
     }
-    catch(vfg::ScriptParserTemplateException& ex)
+    catch(vfg::ScriptParserError& ex)
     {
         QMessageBox::warning(this, tr("Script template error"), QString(ex.what()));
     }
