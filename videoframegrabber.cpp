@@ -111,8 +111,7 @@ QImage VideoFrameGrabber::getFrame(int frameNum)
     qDebug() << "Start GET_FRAME VFG " << frameNum;
     frameNum -= vfg::FirstFrame;
 
-    const bool invalidRange = frameNum >= numFrames;
-    if(invalidRange)
+    if(frameNum >= numFrames)
     {
         emit errorOccurred(tr("Out of range"));
         return QImage();
