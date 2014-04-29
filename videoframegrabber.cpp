@@ -76,7 +76,7 @@ void VideoFrameGrabber::requestNextFrame()
 {
     QMutexLocker ml(&mutex);
     qDebug() << "Start NEXT_FRAME VFG ";
-    bool frameIsLast = (currentFrame + vfg::FirstFrame) == numFrames;
+    const bool frameIsLast = (currentFrame + vfg::FirstFrame) == numFrames;
     if(frameIsLast)
     {
         emit errorOccurred(tr("Reached last frame"));
@@ -125,7 +125,7 @@ QImage VideoFrameGrabber::getFrame(int frameNum)
     return frame;
 }
 
-bool VideoFrameGrabber::isValidFrame(int frameNum) const
+bool VideoFrameGrabber::isValidFrame(const int frameNum) const
 {
     QMutexLocker lock(&mutex);
     return frameNum >= 0 && (frameNum - vfg::FirstFrame) < avs->getNumFrames();
