@@ -53,6 +53,12 @@ int VideoFrameGrabber::lastFrame() const
 
 void VideoFrameGrabber::requestFrame(int frameNum)
 {
+    if(!isValidFrame(frameNum)) {
+        emit errorOccurred(tr("Frame number out of range: %1")
+                           .arg(QString::number(frameNum)));
+        return;
+    }
+
     QMutexLocker ml(&mutex);
 
     qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
@@ -107,15 +113,15 @@ void VideoFrameGrabber::requestPreviousFrame()
 
 QImage VideoFrameGrabber::getFrame(int frameNum)
 {
+    if(!isValidFrame(frameNum)) {
+        emit errorOccurred(tr("Frame number out of range: %1")
+                           .arg(QString::number(frameNum)));
+        return QImage();
+    }
+
     QMutexLocker ml(&mutex);
     qDebug() << "Start GET_FRAME VFG " << frameNum;
     frameNum -= vfg::FirstFrame;
-
-    if(frameNum >= numFrames)
-    {
-        emit errorOccurred(tr("Out of range"));
-        return QImage();
-    }
 
     QImage frame = avs->getFrame(frameNum);
     qDebug() << "End GET_FRAME VFG Thread ";
