@@ -1,6 +1,7 @@
-#include <QString>
-#include <QImage>
+#include <cstring>
 #include <stdexcept>
+#include <QImage>
+#include <QString>
 #include "avisynthvideosource.h"
 
 using namespace vfg::core;
@@ -116,7 +117,7 @@ QImage AvisynthVideoSource::getFrame(const int frameNumber)
     // If we used y instead of sy the image would be created upside-down
     for(int y = 0, sy = info->height - 1; y < info->height; ++y, --sy)
     {
-        memcpy(image.scanLine(sy), data + y * pitch, scanlineLength);
+        std::memcpy(image.scanLine(sy), data + y * pitch, scanlineLength);
     }
 
     avsHandle.func.avs_release_video_frame(frame);
