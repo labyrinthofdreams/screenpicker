@@ -8,19 +8,17 @@
 #include "scriptparser.h"
 #include "templet.hpp"
 
-namespace vfg {
-
-ScriptParser::ScriptParser(QString scriptPath) :
+vfg::ScriptParser::ScriptParser(QString scriptPath) :
     path(scriptPath),
     tplPath(":/scripts/default_template.avs")
 {
 }
 
-QString ScriptParser::readTemplate(QString path)
+QString vfg::ScriptParser::readTemplate(QString path)
 {
     QFile tpl(path);
     if(!tpl.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        throw ScriptParserError(QString("Unable to open %1").arg(path).toStdString());
+        throw vfg::ScriptParserError(QString("Unable to open %1").arg(path).toStdString());
     }
 
     QTextStream stream(&tpl);
@@ -28,12 +26,12 @@ QString ScriptParser::readTemplate(QString path)
     return script;
 }
 
-void ScriptParser::setTemplate(QString path)
+void vfg::ScriptParser::setTemplate(QString path)
 {
     tplPath = path;
 }
 
-QString ScriptParser::parse(QMap<QString, int> settings)
+QString vfg::ScriptParser::parse(QMap<QString, int> settings)
 {
     try
     {
@@ -83,7 +81,7 @@ QString ScriptParser::parse(QMap<QString, int> settings)
 
         return QString::fromStdString(tpl.parse(data));
     }
-    catch(ScriptParserError& ex)
+    catch(vfg::ScriptParserError& ex)
     {
         throw;
     }
@@ -92,5 +90,3 @@ QString ScriptParser::parse(QMap<QString, int> settings)
         throw;
     }
 }
-
-} // namespace vfg
