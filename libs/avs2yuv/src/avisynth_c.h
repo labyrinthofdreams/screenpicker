@@ -34,6 +34,15 @@
 // new color spaces added in Avisynth 2.60. By no means is this document
 // completely Avisynth 2.60 compliant.
 
+/*****************************************************************************
+ * Modifications (c) https://github.com/labyrinthofdreams
+ *
+ * Date: 2014-04-30
+ *
+ * - Add constructor for AVS_Value to silence compiler warnings
+ * on uninitialized members when compiling as C++
+ *****************************************************************************/
+
 #ifndef __AVISYNTH_C__
 #define __AVISYNTH_C__
 
@@ -512,13 +521,15 @@ struct AVS_Value {
     const char * string;
     const AVS_Value * array;
   } d;
+
+  AVS_Value() : type('v'), array_size(0), d() {}
 };
 
 // AVS_Value should be initilized with avs_void.
 // Should also set to avs_void after the value is released
 // with avs_copy_value.  Consider it the equalvent of setting
 // a pointer to NULL
-static const AVS_Value avs_void = {'v'};
+static const AVS_Value avs_void = {};
 
 AVSC_API(void, avs_copy_value)(AVS_Value * dest, AVS_Value src);
 AVSC_API(void, avs_release_value)(AVS_Value);

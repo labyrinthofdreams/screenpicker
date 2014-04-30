@@ -23,6 +23,17 @@
  * For more information, contact us at licensing@x264.com.
  *****************************************************************************/
 
+/*****************************************************************************
+ * Modifications (c) https://github.com/labyrinthofdreams
+ *
+ * Date: 2014-04-30
+ *
+ * - Change void* to reinterpret_cast<decltype(h->func.name)> in LOAD_AVS_FUNC
+ * to silence compiler warnings on forbidden casting when compiling as C++
+ *
+ * - Change function signatures to silence compiler warnings on unused functions
+ *****************************************************************************/
+
 #include <windows.h>
 
 #define AVSC_NO_DECLSPEC
@@ -36,7 +47,7 @@
 
 #define LOAD_AVS_FUNC(name, continue_on_fail)\
 {\
-    h->func.name = (void*)GetProcAddress( h->library, #name );\
+    h->func.name = reinterpret_cast<decltype(h->func.name)>(GetProcAddress( h->library, #name ));\
     if( !continue_on_fail && !h->func.name )\
         goto fail;\
 }
@@ -64,6 +75,7 @@ typedef struct
 } avs_hnd_t;
 
 /* load the library and functions we require from it */
+static int internal_avs_load_library( avs_hnd_t * ) __attribute__((unused));
 static int internal_avs_load_library( avs_hnd_t *h )
 {
     h->library = LoadLibrary( "avisynth" );
@@ -87,6 +99,7 @@ fail:
     return -1;
 }
 
+static AVS_Value internal_avs_update_clip( avs_hnd_t *, const AVS_VideoInfo **, AVS_Value, AVS_Value) __attribute__((unused));
 static AVS_Value internal_avs_update_clip( avs_hnd_t *h, const AVS_VideoInfo **vi, AVS_Value res, AVS_Value release )
 {
     h->func.avs_release_clip( h->clip );
@@ -96,6 +109,7 @@ static AVS_Value internal_avs_update_clip( avs_hnd_t *h, const AVS_VideoInfo **v
     return res;
 }
 
+static int internal_avs_close_library( avs_hnd_t * ) __attribute__((unused));
 static int internal_avs_close_library( avs_hnd_t *h )
 {
     h->func.avs_release_clip( h->clip );
