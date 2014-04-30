@@ -41,15 +41,14 @@ QString vfg::ScriptParser::parse(QMap<QString, int> settings)
         templet::DataMap data;
         data["source_path"] = make_data(path.toStdString());
         data["avs_plugins"] = make_data(cfg.value("avisynthpluginspath").toString().toStdString());
-        if(settings.value("ivtc", 0))
-            data["ivtc"] = make_data("true");
-        else
-            data["ivtc"] = make_data("");
 
-        if(settings.value("deinterlace", 0))
+        if(settings.value("ivtc", 0)) {
+            data["ivtc"] = make_data("true");
+        }
+
+        if(settings.value("deinterlace", 0)) {
             data["deinterlace"] = make_data("true");
-        else
-            data["deinterlace"] = make_data("");
+        }
 
         // lambda function to convert odd numbers to even values
         // TODO: Probably doesn't belong here (unexpected value modification)
