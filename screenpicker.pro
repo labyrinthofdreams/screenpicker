@@ -58,8 +58,9 @@ FORMS    += mainwindow.ui \
 INCLUDEPATH += .\libs\avs2yuv\src \
     .\libs\templet
 
-# These are needed for Avisynth compilation
-QMAKE_CXXFLAGS += -fpermissive -std=c++11 -Wall -Wextra -Wpedantic -O3
+QMAKE_CXXFLAGS += -std=c++11 -Wall -Wextra -Wpedantic -O3
+
+# Required for avisynth to compile without using wide characters
 DEFINES -= UNICODE
 
 OTHER_FILES += \
