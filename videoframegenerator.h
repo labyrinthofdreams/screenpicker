@@ -69,11 +69,6 @@ public:
      * @return Number of frames
      */
     int remaining() const;
-
-    /**
-     * @brief Clear the generator queue
-     */
-    void clear();
     
 signals:
     /**

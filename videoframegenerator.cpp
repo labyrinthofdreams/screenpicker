@@ -58,11 +58,9 @@ void VideoFrameGenerator::resume()
 void VideoFrameGenerator::stop()
 {
     QMutexLocker lock(&mutex);
-    if(state == State::Running) {
-        state = State::Stopped;
-    }
-    lock.unlock();
-    clear();
+
+    state = State::Stopped;
+    frames.clear();
 }
 
 bool VideoFrameGenerator::isRunning() const
@@ -90,10 +88,4 @@ int VideoFrameGenerator::remaining() const
 {
     QMutexLocker lock(&mutex);
     return frames.count();
-}
-
-void VideoFrameGenerator::clear()
-{
-    QMutexLocker lock(&mutex);
-    frames.clear();
 }
