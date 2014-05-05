@@ -58,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
         // Set Avisynth as the default video source
         videoSource = std::make_shared<vfg::core::AvisynthVideoSource>();
 
-        frameGrabber = new vfg::core::VideoFrameGrabber(videoSource);
+        frameGrabber = std::make_shared<vfg::core::VideoFrameGrabber>(videoSource);
 
         frameGenerator = new vfg::core::VideoFrameGenerator(frameGrabber);
         frameGeneratorThread = new QThread(this);
@@ -132,11 +132,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(videoSource.get(), SIGNAL(videoLoaded()),
             this, SLOT(videoLoaded()));
 
-    connect(frameGrabber, SIGNAL(errorOccurred(QString)),
+    connect(frameGrabber.get(), SIGNAL(errorOccurred(QString)),
             this, SLOT(videoError(QString)),
             Qt::QueuedConnection);
 
-    connect(frameGrabber, SIGNAL(frameGrabbed(QPair<int,QImage>)),
+    connect(frameGrabber.get(), SIGNAL(frameGrabbed(QPair<int,QImage>)),
             ui->videoPreviewWidget, SLOT(setFrame(QPair<int,QImage>)),
             Qt::QueuedConnection);
 
@@ -159,7 +159,6 @@ MainWindow::~MainWindow()
     delete videoSettingsWindow;
     delete scriptEditor;
     delete frameGenerator;
-    delete frameGrabber;
     delete ui;
 }
 
@@ -490,7 +489,7 @@ void MainWindow::videoLoaded()
     // Move slider back to first frame
     ui->seekSlider->setValue(lastRequestedFrame);
     // Show first frame
-    QMetaObject::invokeMethod(frameGrabber, "requestFrame",
+    QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
                               Qt::QueuedConnection, Q_ARG(int, lastRequestedFrame));
 
     // Enable buttons
@@ -522,7 +521,7 @@ void MainWindow::videoError(QString msg)
 
 void MainWindow::thumbnailDoubleClicked(int frameNumber)
 {    
-    QMetaObject::invokeMethod(frameGrabber, "requestFrame",
+    QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
                               Qt::QueuedConnection, Q_ARG(int, frameNumber));
     lastRequestedFrame = frameNumber;
     ui->currentFrameLabel->setText(QString::number(frameNumber));
@@ -532,7 +531,7 @@ void MainWindow::thumbnailDoubleClicked(int frameNumber)
 void MainWindow::on_nextButton_clicked()
 {
     qDebug() << "Start Main Thread " << qApp->thread()->currentThreadId();
-    QMetaObject::invokeMethod(frameGrabber, "requestNextFrame", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(frameGrabber.get(), "requestNextFrame", Qt::QueuedConnection);
     lastRequestedFrame++;
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
@@ -541,7 +540,7 @@ void MainWindow::on_nextButton_clicked()
 void MainWindow::on_previousButton_clicked()
 {
     qDebug() << "Main Thread " << qApp->thread()->currentThreadId();
-    QMetaObject::invokeMethod(frameGrabber, "requestPreviousFrame", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(frameGrabber.get(), "requestPreviousFrame", Qt::QueuedConnection);
     lastRequestedFrame--;
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
@@ -555,7 +554,7 @@ void MainWindow::on_seekSlider_valueChanged(int value)
         return;
     }
 
-    QMetaObject::invokeMethod(frameGrabber, "requestFrame",
+    QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
                               Qt::QueuedConnection, Q_ARG(int, frameNumber));
     lastRequestedFrame = frameNumber;
     ui->currentFrameLabel->setText(QString::number(frameNumber));

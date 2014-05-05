@@ -1,6 +1,7 @@
 #ifndef VFG_VIDEOFRAMEGENERATOR_H
 #define VFG_VIDEOFRAMEGENERATOR_H
 
+#include <memory>
 #include <QImage>
 #include <QList>
 #include <QMutex>
@@ -34,7 +35,7 @@ public:
      * @param frameGrabber Non-owning pointer to a frame grabber
      * @param parent Owner of the object
      */
-    explicit VideoFrameGenerator(vfg::core::VideoFrameGrabber *frameGrabber, QObject *parent = 0);
+    explicit VideoFrameGenerator(std::shared_ptr<vfg::core::VideoFrameGrabber> frameGrabber, QObject *parent = 0);
 
     /**
      * @brief Get generator running status
@@ -122,7 +123,7 @@ private:
     };
     
 private:
-    vfg::core::VideoFrameGrabber *frameGrabber;
+    std::shared_ptr<vfg::core::VideoFrameGrabber> frameGrabber;
     QList<int> frames;
     mutable QMutex mutex;
     State state {State::Stopped};

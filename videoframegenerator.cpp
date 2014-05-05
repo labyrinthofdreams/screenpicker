@@ -1,3 +1,4 @@
+#include <utility>
 #include <QImage>
 #include <QMutexLocker>
 #include <QPair>
@@ -6,10 +7,10 @@
 
 using vfg::core::VideoFrameGenerator;
 
-VideoFrameGenerator::VideoFrameGenerator(vfg::core::VideoFrameGrabber *frameGrabber,
+VideoFrameGenerator::VideoFrameGenerator(std::shared_ptr<vfg::core::VideoFrameGrabber> newFrameGrabber,
                                          QObject *parent) :
     QObject(parent),
-    frameGrabber(frameGrabber),
+    frameGrabber(std::move(newFrameGrabber)),
     mutex()
 {
 }
