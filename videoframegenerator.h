@@ -78,11 +78,38 @@ signals:
     void frameReady(QPair<int, QImage> frame);
     
 public slots:
+    /**
+     * @brief Starts the generator and begins to emit grabbed frames
+     *
+     * Note that if start is called on a paused generator and a
+     * stored grabbed frame is waiting to be emitted, it is discarded
+     */
     void start();
+
+    /**
+     * @brief Pauses the generator and stops emitting grabbed frames
+     *
+     * Note that the last frame that is grabbed after pause() is called
+     * is stored temporarily and emitted after resume() is called
+     */
     void pause();
+
+    /**
+     * @brief Resumes the generator and begins to emit grabbed frames
+     *
+     * Note that the last frame grabbed after pausing is emitted
+     *
+     * No action is taken if the generator state is not paused
+     */
     void resume();
+
+    /**
+     * @brief Stops the generator and stops emitting grabbed frames
+     *
+     * Remaining frames in the queue are removed and the last frame
+     * grabbed is discarded
+     */
     void stop();
-    void fetchNext();
 
 private:
     /**
@@ -99,6 +126,9 @@ private:
     QList<int> frames;
     mutable QMutex mutex;
     State state {State::Stopped};
+
+    //!< The last frame grabbed after calling pause()
+    QPair<int, QImage> last;
 };
 
 } // namespace core

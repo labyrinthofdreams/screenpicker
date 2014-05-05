@@ -200,6 +200,8 @@ void MainWindow::closeEvent(QCloseEvent *ev)
 
 void MainWindow::frameReceived(QPair<int, QImage> frame)
 {
+    // TODO: Is a lock needed here?
+    lastReceivedFrame = frame.first;
     qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
     const int thumbnailSize = ui->thumbnailSizeSlider->value();
     QPixmap thumbnail = QPixmap::fromImage(frame.second).scaledToWidth(200, Qt::SmoothTransformation);
@@ -213,70 +215,47 @@ void MainWindow::frameReceived(QPair<int, QImage> frame)
     ui->unsavedWidget->addThumbnail(std::move(thumb));
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
-    if(frameGenerator->isPaused())
+    const int numGenerated = ui->generatorProgressBar->value() + 1;
+    ui->generatorProgressBar->setValue(numGenerated);
+
+    const bool generatorFinished = frameGenerator->remaining() == 0;
+    if(generatorFinished)
     {
+        // Generator has finished without explicit stopping
+        ui->btnPauseGenerator->setEnabled(false);
+        ui->btnStopGenerator->setEnabled(false);
+
         // Jump to last generated frame
-        const bool jumpAfterPaused = config.value("jumptolastonpause").toBool();
-        if(jumpAfterPaused) {
+        const bool jumpAfterFinished = config.value("jumptolastonfinish").toBool();
+        if(jumpAfterFinished) {
             ui->seekSlider->setValue(frame.first);
-        }
-    }
-
-    // If true, implies that generator has been explicitly stopped,
-    // otherwise is still running or has finished
-    const bool generatorStopped = ui->generatorProgressBar->value() == 0 && !frameGenerator->isRunning();
-    if(generatorStopped) {
-        // Jump to last generated frame
-        const bool jumpAfterStopped = config.value("jumptolastonstop").toBool();
-        if(jumpAfterStopped) {
-            ui->seekSlider->setValue(frame.first);
-        }
-    }
-    else {
-        const int generated = ui->generatorProgressBar->value() + 1;
-        ui->generatorProgressBar->setValue(generated);
-
-        const bool generatorFinished = frameGenerator->remaining() == 0;
-        if(generatorFinished)
-        {
-            // Generator has finished without explicit stopping
-            ui->btnPauseGenerator->setEnabled(false);
-            ui->btnStopGenerator->setEnabled(false);
-
-            // Jump to last generated frame
-            const bool jumpAfterFinished = config.value("jumptolastonfinish").toBool();
-            if(jumpAfterFinished) {
-                ui->seekSlider->setValue(frame.first);
-            }
         }
     }
 
     if(ui->unsavedWidget->isFull())
     {
         const bool removeOldestAfterMax = config.value("removeoldestafterlimit").toBool();
-        if(removeOldestAfterMax)
-        {
+        if(removeOldestAfterMax) {
             // When unsaved screenshots container becomes full and the setting
-            // "remove oldest after reaching max" is checked, we simply get another frame...
-            frameGenerator->fetchNext();
+            // "remove oldest after reaching max" is checked, let the generator generate
+            return;
         }
-        else
+
+        // ...If the user has NOT checked that option and chooses to pause instead
+        // as pausing is the other action, then...
+        frameGenerator->pause();
+        ui->btnPauseGenerator->setText(tr("Resume"));
+
+        // ...In case the user has checked they want to jump to last generated frame
+        // after filling the container, then jump...
+        const bool jumpToLastAfterReachingMax = config.value("jumptolastonreachingmax").toBool();
+        if(jumpToLastAfterReachingMax)
         {
-            // ...If the user has NOT checked that option and chooses to pause instead...
-
-            // ...In case the user has checked they want to jump to last generated frame
-            // after filling the container, then jump...
-            const bool jumpToLastAfterReachingMax = config.value("jumptolastonreachingmax").toBool();
-            if(jumpToLastAfterReachingMax)
-            {
-                ui->seekSlider->setValue(frame.first);
-            }
-
-            // ...and wait for the user to click Clear, Generate, or open another file
+            ui->seekSlider->setValue(frame.first);
         }
-    }
-    else {
-        frameGenerator->fetchNext();
+
+        // ...and wait for the user to click Clear, Generate, open another file,
+        // or raise the max screenshots limit
     }
 }
 
@@ -720,7 +699,7 @@ void MainWindow::on_clearThumbsButton_clicked()
     const bool generatorHasMore = frameGenerator->remaining() > 0;
     const bool generatorNotExplicitlyPaused = !frameGenerator->isPaused();
     if(generatorHasMore && generatorNotExplicitlyPaused) {
-        frameGenerator->fetchNext();
+        frameGenerator->resume();
     }
 }
 
@@ -854,19 +833,18 @@ void MainWindow::on_actionOptions_triggered()
     if(saved)
     {
         const int newMaxThumbnails = config.value("maxthumbnails").toInt();
-        const bool containerFull = ui->unsavedWidget->isFull();
-        const bool containerHasRoom = (newMaxThumbnails > ui->unsavedWidget->numThumbnails());
+        ui->unsavedWidget->setMaxThumbnails(newMaxThumbnails);
+
+        const bool containerHasRoom = ui->unsavedWidget->isFull();
         const bool generatorHasQueue = (frameGenerator->remaining() > 0);
-        const bool generatorWaiting = (frameGenerator->isRunning() && !frameGenerator->isPaused());
-        const bool continueGenerator = (containerFull && containerHasRoom
-                                        && generatorHasQueue && generatorWaiting);
+        const bool generatorWaiting = frameGenerator->isPaused();
+        const bool continueGenerator = (containerHasRoom && generatorHasQueue && generatorWaiting);
 
         if(continueGenerator)
         {
-            frameGenerator->fetchNext();
+            frameGenerator->resume();
         }
 
-        ui->unsavedWidget->setMaxThumbnails(newMaxThumbnails);
         dvdProcessor->setProcessor(config.value("dgindexexecpath").toString());
     }
 }
@@ -924,30 +902,29 @@ void MainWindow::on_cbUnlimitedScreens_clicked(bool checked)
 
 void MainWindow::on_btnPauseGenerator_clicked()
 {
-    if(!frameGenerator->isPaused())
+    if(frameGenerator->isRunning())
     {
+        // Pause
         frameGenerator->pause();
         ui->btnPauseGenerator->setText(tr("Resume"));
+
+        // Jump to last generated frame if the option is selected
+        const bool jumpAfterPaused = config.value("jumptolastonpause").toBool();
+        if(jumpAfterPaused) {
+            ui->seekSlider->setValue(lastReceivedFrame);
+        }
     }
-    else
+    else if(frameGenerator->isPaused())
     {
-        const bool pauseAfterLimit = config.value("pauseafterlimit").toBool();
-        if(pauseAfterLimit && ui->unsavedWidget->isFull()) {
-            // If user has chosen to pause the generator after reaching
-            // maximum limit and has clicked resume (this path) while
-            // the container is still full we can't resume
+        // Resume
+        if(ui->unsavedWidget->isFull()) {
             QMessageBox::information(this, tr(""), tr("Can't resume generator while the container has reached max limit.\n"
                                                       "Click 'Clear' or raise the max thumbnail limit to continue."));
             return;
         }
         ui->btnPauseGenerator->setText(tr("Pause"));
-        // TODO: If generator is waiting, this will fail (should be fixed)
-        if(frameGenerator->isPaused()) {
-            QMetaObject::invokeMethod(frameGenerator, "resume", Qt::QueuedConnection);
-        }
-        else {
-            frameGenerator->fetchNext();
-        }
+
+        QMetaObject::invokeMethod(frameGenerator, "resume", Qt::QueuedConnection);
     }
 }
 
@@ -959,6 +936,12 @@ void MainWindow::on_btnStopGenerator_clicked()
     ui->btnPauseGenerator->setEnabled(false);
     ui->btnPauseGenerator->setText(tr("Pause"));
     ui->btnStopGenerator->setEnabled(false);
+
+    // Jump to last generated frame if the option is selected
+    const bool jumpAfterStopped = config.value("jumptolastonstop").toBool();
+    if(jumpAfterStopped) {
+        ui->seekSlider->setValue(lastReceivedFrame);
+    }
 }
 
 void MainWindow::on_actionVideo_Settings_triggered()
