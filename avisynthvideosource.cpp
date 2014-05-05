@@ -1,8 +1,14 @@
 #include <cstring>
+#include <memory>
 #include <stdexcept>
+#include <QFileInfo>
 #include <QImage>
 #include <QString>
+#include "avisynthscriptparser.h"
 #include "avisynthvideosource.h"
+#include "dgindexscriptparser.h"
+#include "ptrutil.hpp"
+#include "scriptparser.h"
 
 using namespace vfg::core;
 using namespace vfg::exception;
@@ -135,4 +141,18 @@ QString AvisynthVideoSource::getSupportedFormats()
 bool AvisynthVideoSource::isValidFrame(const int frameNum) const
 {
     return frameNum >= 0 && frameNum < info->num_frames;
+}
+
+std::unique_ptr<vfg::ScriptParser> AvisynthVideoSource::getParser(const QFileInfo& info) const
+{
+    const QString absPath = info.absoluteFilePath();
+    const QString suffix = info.suffix();
+    if(suffix == "avs" || suffix == "avsi") {
+        return util::make_unique<vfg::AvisynthScriptParser>(absPath);
+    }
+    else if(suffix == "d2v") {
+        return util::make_unique<vfg::DgindexScriptParser>(absPath);
+    }
+
+    return util::make_unique<vfg::ScriptParser>(absPath);
 }

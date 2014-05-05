@@ -20,7 +20,6 @@ SOURCES += main.cpp\
     configdialog.cpp \
     videoframegenerator.cpp \
     dvdprocessor.cpp \
-    scriptparserfactory.cpp \
     dgindexscriptparser.cpp \
     avisynthscriptparser.cpp \
     scriptparser.cpp \
@@ -41,7 +40,6 @@ HEADERS  += mainwindow.h \
     init.h \
     videoframegenerator.h \
     dvdprocessor.h \
-    scriptparserfactory.h \
     scriptparser.h \
     dgindexscriptparser.h \
     avisynthscriptparser.h \
