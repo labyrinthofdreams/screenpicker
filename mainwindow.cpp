@@ -11,7 +11,6 @@
 #include "ptrutil.hpp"
 #include "scripteditor.h"
 #include "scriptparser.h"
-#include "scriptparserfactory.h"
 #include "videoframegenerator.h"
 #include "videoframegrabber.h"
 #include "videoframethumbnail.h"
@@ -320,10 +319,7 @@ void MainWindow::resetState()
 void MainWindow::loadFile(QString path)
 {
     try
-    {
-        vfg::ScriptParserFactory parserFactory;
-        QSharedPointer<vfg::ScriptParser> parser = parserFactory.parser(path);
-
+    {      
         QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
 
         // Only overwrite values in video settings if
@@ -353,6 +349,7 @@ void MainWindow::loadFile(QString path)
             }
         }
 
+        const std::unique_ptr<vfg::ScriptParser> parser = videoSource->getParser(path);
         QString parsedScript = parser->parse(videoSettings);
 
         scriptEditor->setContent(parsedScript);

@@ -1,11 +1,19 @@
 #ifndef ABSTRACTVIDEOSOURCE_H
 #define ABSTRACTVIDEOSOURCE_H
 
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <QImage>
 #include <QObject>
 #include <QString>
+
+// Forward declarations
+namespace vfg {
+    class ScriptParser;
+} // namespace vfg
+
+class QFileInfo;
 
 namespace vfg {
 namespace exception {
@@ -92,6 +100,13 @@ public:
      * @return True if in range, otherwise False
      */
     virtual bool isValidFrame(int frameNum) const = 0;
+
+    /**
+     * @brief Get a script parser for the derived video source and filename
+     * @param info File to return the parser for
+     * @return Script parser for a file
+     */
+    virtual std::unique_ptr<vfg::ScriptParser> getParser(const QFileInfo& info) const = 0;
 
 signals:    
     /**
