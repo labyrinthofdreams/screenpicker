@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <utility>
 #include <QImage>
 #include <QMutexLocker>
@@ -13,6 +14,9 @@ VideoFrameGenerator::VideoFrameGenerator(std::shared_ptr<vfg::core::VideoFrameGr
     frameGrabber(std::move(newFrameGrabber)),
     mutex()
 {
+    if(!frameGrabber) {
+        throw std::runtime_error("Frame grabber must be a valid object");
+    }
 }
 
 void VideoFrameGenerator::start()
@@ -20,7 +24,7 @@ void VideoFrameGenerator::start()
     QMutexLocker lock(&mutex);
 
     last = {};
-    if(state == State::Running || !frameGrabber || frames.empty()) {
+    if(state == State::Running || frames.empty()) {
         return;
     }
     state = State::Running;

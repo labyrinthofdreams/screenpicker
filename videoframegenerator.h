@@ -32,8 +32,9 @@ class VideoFrameGenerator : public QObject
 public:
     /**
      * @brief Constructor
-     * @param frameGrabber Non-owning pointer to a frame grabber
+     * @param frameGrabber Shared pointer to frame grabber
      * @param parent Owner of the object
+     * @exception std::runtime_error If frameGrabber is nullptr
      */
     explicit VideoFrameGenerator(std::shared_ptr<vfg::core::VideoFrameGrabber> frameGrabber, QObject *parent = 0);
 
