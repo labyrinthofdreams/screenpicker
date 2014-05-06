@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         frameGrabber = std::make_shared<vfg::core::VideoFrameGrabber>(videoSource);
 
-        frameGenerator = new vfg::core::VideoFrameGenerator(frameGrabber);
+        frameGenerator = util::make_unique<vfg::core::VideoFrameGenerator>(frameGrabber);
         frameGeneratorThread = new QThread(this);
         frameGenerator->moveToThread(frameGeneratorThread);
         frameGeneratorThread->start();
@@ -140,7 +140,7 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->videoPreviewWidget, SLOT(setFrame(QPair<int,QImage>)),
             Qt::QueuedConnection);
 
-    connect(frameGenerator, SIGNAL(frameReady(QPair<int, QImage>)),
+    connect(frameGenerator.get(), SIGNAL(frameReady(QPair<int, QImage>)),
             this, SLOT(frameReceived(QPair<int, QImage>)),
             Qt::QueuedConnection);
 
@@ -158,7 +158,6 @@ MainWindow::~MainWindow()
 {
     delete videoSettingsWindow;
     delete scriptEditor;
-    delete frameGenerator;
     delete ui;
 }
 
@@ -611,7 +610,8 @@ void MainWindow::on_generateButton_clicked()
 
     const int remaining = frameGenerator->remaining();
 
-    QMetaObject::invokeMethod(frameGenerator, "start", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(frameGenerator.get(), "start",
+                              Qt::QueuedConnection);
 
     // Update generator widgets
     ui->btnPauseGenerator->setEnabled(true);
@@ -923,7 +923,8 @@ void MainWindow::on_btnPauseGenerator_clicked()
         }
         ui->btnPauseGenerator->setText(tr("Pause"));
 
-        QMetaObject::invokeMethod(frameGenerator, "resume", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(frameGenerator.get(), "resume",
+                                  Qt::QueuedConnection);
     }
 }
 

@@ -95,7 +95,7 @@ private:
     QThread *frameGeneratorThread;
 
     std::shared_ptr<vfg::core::AbstractVideoSource> videoSource;
-    vfg::core::VideoFrameGenerator* frameGenerator;
+    std::unique_ptr<vfg::core::VideoFrameGenerator> frameGenerator;
     std::shared_ptr<vfg::core::VideoFrameGrabber> frameGrabber;
     vfg::ui::ScriptEditor* scriptEditor;
     vfg::DvdProcessor* dvdProcessor;
