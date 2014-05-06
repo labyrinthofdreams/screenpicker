@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <QDebug>
 #include <QMutexLocker>
 #include <QPair>
@@ -24,6 +25,10 @@ VideoFrameGrabber::VideoFrameGrabber(std::shared_ptr<vfg::core::AbstractVideoSou
     currentFrame(0),
     mutex()
 {
+    if(!avs) {
+        throw std::runtime_error("Video source must be a valid object");
+    }
+
     connect(avs.get(),  SIGNAL(videoLoaded()),
             this,       SLOT(videoSourceUpdated()));
 }

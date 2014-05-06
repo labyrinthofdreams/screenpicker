@@ -52,8 +52,9 @@ public:
 
     /**
      * @brief Constructor
-     * @param avs Video source (does not take ownership)
+     * @param avs Shared pointer to video source
      * @param parent Owner of the object
+     * @exception std::runtime_error If avs is nullptr
      */
     explicit VideoFrameGrabber(std::shared_ptr<vfg::core::AbstractVideoSource> avs,
                                QObject *parent = 0);
