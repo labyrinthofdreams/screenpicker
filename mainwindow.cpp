@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
         scriptEditor = new vfg::ui::ScriptEditor;
 
-        videoSettingsWindow = new vfg::ui::VideoSettingsWidget;
+        videoSettingsWindow = util::make_unique<vfg::ui::VideoSettingsWidget>();
 
         QString dgIndexPath = config.value("dgindexexecpath").toString();
         dvdProcessor = new vfg::DvdProcessor(dgIndexPath, this);
@@ -111,13 +111,13 @@ MainWindow::MainWindow(QWidget *parent) :
         throw;
     }
 
-    connect(videoSettingsWindow, SIGNAL(settingsChanged()),
+    connect(videoSettingsWindow.get(), SIGNAL(settingsChanged()),
             this, SLOT(videoSettingsUpdated()));
 
-    connect(videoSettingsWindow, SIGNAL(cropChanged(QRect)),
+    connect(videoSettingsWindow.get(), SIGNAL(cropChanged(QRect)),
             ui->videoPreviewWidget, SLOT(setCrop(QRect)));
 
-    connect(videoSettingsWindow, SIGNAL(closed()),
+    connect(videoSettingsWindow.get(), SIGNAL(closed()),
             ui->videoPreviewWidget, SLOT(resetCrop()));
 
     connect(scriptEditor, SIGNAL(scriptUpdated()),
@@ -156,7 +156,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete videoSettingsWindow;
     delete scriptEditor;
     delete ui;
 }

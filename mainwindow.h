@@ -99,7 +99,7 @@ private:
     std::shared_ptr<vfg::core::VideoFrameGrabber> frameGrabber;
     vfg::ui::ScriptEditor* scriptEditor;
     vfg::DvdProcessor* dvdProcessor;
-    vfg::ui::VideoSettingsWidget *videoSettingsWindow;
+    std::unique_ptr<vfg::ui::VideoSettingsWidget> videoSettingsWindow;
 
     QList<int> framesToSave;
 
