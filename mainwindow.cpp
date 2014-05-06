@@ -69,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
         frameGrabber->moveToThread(frameGrabberThread);
         frameGrabberThread->start();
 
-        scriptEditor = new vfg::ui::ScriptEditor;
+        scriptEditor = util::make_unique<vfg::ui::ScriptEditor>();
 
         videoSettingsWindow = util::make_unique<vfg::ui::VideoSettingsWidget>();
 
@@ -120,7 +120,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(videoSettingsWindow.get(), SIGNAL(closed()),
             ui->videoPreviewWidget, SLOT(resetCrop()));
 
-    connect(scriptEditor, SIGNAL(scriptUpdated()),
+    connect(scriptEditor.get(), SIGNAL(scriptUpdated()),
             this, SLOT(scriptEditorUpdated()));
 
     connect(dvdProcessor, SIGNAL(finished(QString)),
@@ -156,7 +156,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete scriptEditor;
     delete ui;
 }
 
