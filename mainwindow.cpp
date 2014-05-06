@@ -43,7 +43,7 @@ QMap<QString, QString> avinfoParseVideoHeader(QString path)
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),
+    ui(nullptr),
     frameGrabberThread(nullptr),
     frameGeneratorThread(nullptr),
     videoZoomGroup(nullptr),
@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     lastRequestedFrame(vfg::FirstFrame),
     lastReceivedFrame(-1)
 {
+    ui = util::make_unique<Ui::MainWindow>();
     ui->setupUi(this);
 
     try
@@ -165,7 +166,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete ui;
 }
 
 void MainWindow::closeEvent(QCloseEvent *ev)

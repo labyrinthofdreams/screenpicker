@@ -89,7 +89,7 @@ private slots:
     void on_actionVideo_Settings_triggered();
 
 private:
-    Ui::MainWindow *ui;
+    std::unique_ptr<Ui::MainWindow> ui;
 
     std::unique_ptr<QThread> frameGrabberThread;
     std::unique_ptr<QThread> frameGeneratorThread;
