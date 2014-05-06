@@ -42,23 +42,89 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     
 public:
+    /**
+     * @brief Constructor
+     * @param parent Owner of the object
+     */
     explicit MainWindow(QWidget *parent = 0);
+
+    /**
+     * @brief Destructor
+     *
+     * The destructor is required for the pointers
+     * to have complete type
+     */
     ~MainWindow();
     
 private slots:
-
+    /**
+     * @brief Handles a received frame from a generator
+     * and updates widgets
+     * @param frame Received frame
+     */
     void frameReceived(QPair<int, QImage> frame);
+
+    /**
+     * @brief Triggered when a script in the editor is saved
+     */
     void scriptEditorUpdated();
+
+    /**
+     * @brief Triggered when video settings are saved
+     */
     void videoSettingsUpdated();
+
+    /**
+     * @brief Triggered after the dvd processor has finished
+     * @param path Path to the processed file returned by the dvd processor
+     */
     void dvdProcessorFinished(QString path);
+
+    /**
+     * @brief Triggered after a video source has finished loading
+     */
     void videoLoaded();
+
+    /**
+     * @brief Handles various errors from video related sources
+     * @param msg Error message
+     */
     void videoError(QString msg);
+
+    /**
+     * @brief Triggered after a thumbnail has been clicked
+     * @param frameNumber Frame number of the clicked thumbnail
+     */
     void thumbnailDoubleClicked(int frameNumber);
+
+    /**
+     * @brief Triggered when a thumbnail is right-clicked in the unsaved tab
+     * @param pos Position of the click event
+     */
     void handleUnsavedMenu(const QPoint& pos);
+
+    /**
+     * @brief Triggered when a thumbnail is right-clicked in the saved tab
+     * @param pos Position of the click event
+     */
     void handleSavedMenu(const QPoint& pos);
+
+    /**
+     * @brief Load the given file with the current video source
+     * @param path Path to the file to load
+     */
     void loadFile(QString path);
 
-    void videoZoomChanged(QAction *action);
+    /**
+     * @brief Triggered when the video zoom mode is changed
+     * @param action The action that was performed
+     */
+    void videoZoomChanged(const QAction *action);
+
+    /**
+     * @brief Displays a context menu on the video preview widget
+     * @param pos Position of the right-click event
+     */
     void contextMenuOnPreview(const QPoint& pos);
 
     void on_actionOpen_triggered();
@@ -103,19 +169,28 @@ private:
     std::unique_ptr<vfg::ui::VideoSettingsWidget> videoSettingsWindow;
     std::unique_ptr<vfg::DvdProcessor> dvdProcessor;
 
+    //! List of frame numbers in the saved tab
     QList<int> framesToSave;
 
+    //! Last opened file path
     QString lastOpenedFile;
+
+    //! Last directory where thumbnails were saved
     QString lastSaveDirectory;
 
+    //! Application wide configuration settings
     QSettings config;
 
-    // Keeps track of the last requested frame which is used to
-    // return to that frame after reloading the script via editor
+    //! Last requested frame which is used to
+    //! return to that frame after reloading the script via editor
     int lastRequestedFrame;
 
+    //! Last received frame's frame number
     int lastReceivedFrame;
 
+    /**
+     * @brief Resets widgets and member variables back to default
+     */
     void resetState();
 
 protected:
