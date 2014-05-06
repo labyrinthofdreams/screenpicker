@@ -54,7 +54,6 @@ MainWindow::MainWindow(QWidget *parent) :
     videoSettingsWindow(nullptr),
     dvdProcessor(nullptr),
     framesToSave(),
-    lastSaveDirectory("/"),
     config("config.ini", QSettings::IniFormat),
     lastRequestedFrame(vfg::FirstFrame),
     lastReceivedFrame(-1)
@@ -731,12 +730,15 @@ void MainWindow::on_saveThumbnailsButton_clicked()
         frameGenerator->pause();
     }
 
-    lastSaveDirectory = QFileDialog::getExistingDirectory(this, tr("Select save directory"),
-                                                          lastSaveDirectory);
-    if(lastSaveDirectory.isEmpty())
-    {
+    QString lastSaveDirectory = config.value("last_save_dir", "/").toString();
+    lastSaveDirectory = QFileDialog::getExistingDirectory(
+                            this, tr("Select save directory"),
+                            lastSaveDirectory);
+    if(lastSaveDirectory.isEmpty()) {
         return;
     }
+
+    config.setValue("last_save_dir", lastSaveDirectory);
 
     int resizeWidth = 0;
     QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Resize thumbnails"),
@@ -870,13 +872,13 @@ void MainWindow::on_saveSingleButton_clicked()
     const int selected = ui->seekSlider->value();
     QImage frame = frameGrabber->getFrame(selected);
 
-    QDir saveDir(lastSaveDirectory);
+    QDir saveDir(config.value("last_save_dir", "/").toString());
     QString defaultSavePath = saveDir.absoluteFilePath(QString("%1.png").arg(QString::number(selected)));
     QString outFilename = QFileDialog::getSaveFileName(this, tr("Save as..."),
                                                        defaultSavePath,
                                                        tr("PNG (*.png)"));
     QFileInfo info(outFilename);
-    lastSaveDirectory = info.absoluteDir().absolutePath();
+    config.setValue("last_save_dir", info.absoluteDir().absolutePath());
 
     int resizeWidth = 0;
     QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Resize thumbnails"),
