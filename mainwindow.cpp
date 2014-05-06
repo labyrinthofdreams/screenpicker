@@ -46,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     frameGrabberThread(nullptr),
     frameGeneratorThread(nullptr),
+    videoZoomGroup(nullptr),
     videoSource(nullptr),
     frameGenerator(nullptr),
     frameGrabber(nullptr),
@@ -55,7 +56,6 @@ MainWindow::MainWindow(QWidget *parent) :
     framesToSave(),
     lastOpenedFile(),
     lastSaveDirectory("/"),
-    videoZoomGroup(nullptr),
     config("config.ini", QSettings::IniFormat),
     lastRequestedFrame(vfg::FirstFrame),
     lastReceivedFrame(-1)
@@ -95,7 +95,7 @@ MainWindow::MainWindow(QWidget *parent) :
         const int frameStep = config.value("framestep").toInt();
         ui->frameStepSpinBox->setValue(frameStep);
 
-        videoZoomGroup = new QActionGroup {this};
+        videoZoomGroup = util::make_unique<QActionGroup>(nullptr);
         videoZoomGroup->addAction(ui->action25);
         videoZoomGroup->addAction(ui->action50);
         videoZoomGroup->addAction(ui->action100);
@@ -109,7 +109,7 @@ MainWindow::MainWindow(QWidget *parent) :
         // Scale by default
         ui->actionScaleToWindow->setChecked(true);
         ui->videoPreviewWidget->setZoom(vfg::ZoomMode::Zoom_Scale);
-        connect(videoZoomGroup, SIGNAL(triggered(QAction*)),
+        connect(videoZoomGroup.get(), SIGNAL(triggered(QAction*)),
                 this, SLOT(videoZoomChanged(QAction*)));
 
         connect(ui->videoPreviewWidget, SIGNAL(customContextMenuRequested(QPoint)),

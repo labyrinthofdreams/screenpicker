@@ -94,6 +94,8 @@ private:
     std::unique_ptr<QThread> frameGrabberThread;
     std::unique_ptr<QThread> frameGeneratorThread;
 
+    std::unique_ptr<QActionGroup> videoZoomGroup;
+
     std::shared_ptr<vfg::core::AbstractVideoSource> videoSource;
     std::unique_ptr<vfg::core::VideoFrameGenerator> frameGenerator;
     std::shared_ptr<vfg::core::VideoFrameGrabber> frameGrabber;
@@ -101,13 +103,10 @@ private:
     std::unique_ptr<vfg::ui::VideoSettingsWidget> videoSettingsWindow;
     std::unique_ptr<vfg::DvdProcessor> dvdProcessor;
 
-
     QList<int> framesToSave;
 
     QString lastOpenedFile;
     QString lastSaveDirectory;
-
-    QActionGroup *videoZoomGroup;
 
     QSettings config;
 
