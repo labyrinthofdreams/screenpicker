@@ -83,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
         videoSettingsWindow = util::make_unique<vfg::ui::VideoSettingsWidget>();
 
         QString dgIndexPath = config.value("dgindexexecpath").toString();
-        dvdProcessor = new vfg::DvdProcessor(dgIndexPath, this);
+        dvdProcessor = util::make_unique<vfg::DvdProcessor>(dgIndexPath);
 
         const int maxThumbnails = config.value("maxthumbnails").toInt();
         ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
@@ -132,10 +132,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(scriptEditor.get(), SIGNAL(scriptUpdated()),
             this, SLOT(scriptEditorUpdated()));
 
-    connect(dvdProcessor, SIGNAL(finished(QString)),
+    connect(dvdProcessor.get(), SIGNAL(finished(QString)),
             this, SLOT(dvdProcessorFinished(QString)));
 
-    connect(dvdProcessor, SIGNAL(error(QString)),
+    connect(dvdProcessor.get(), SIGNAL(error(QString)),
             this, SLOT(videoError(QString)));
 
     connect(videoSource.get(), SIGNAL(videoLoaded()),
