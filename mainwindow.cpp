@@ -16,7 +16,7 @@
 #include "videoframethumbnail.h"
 #include "videosettingswidget.h"
 
-QMap<QString, QString> avinfoParseVideoHeader(QString path)
+QMap<QString, QString> avinfoParseVideoHeader(const QString& path)
 {
     QMap<QString, QString> videoHeader;
     QProcess proc;
@@ -203,7 +203,7 @@ void MainWindow::closeEvent(QCloseEvent *ev)
     }
 }
 
-void MainWindow::frameReceived(QPair<int, QImage> frame)
+void MainWindow::frameReceived(const QPair<int, QImage>& frame)
 {
     // TODO: Is a lock needed here?
     lastReceivedFrame = frame.first;
@@ -300,7 +300,7 @@ void MainWindow::resetState()
     ui->generatorProgressBar->setTextVisible(false);
 }
 
-void MainWindow::loadFile(QString path)
+void MainWindow::loadFile(const QString& path)
 {
     try
     {      
@@ -362,7 +362,7 @@ void MainWindow::loadFile(QString path)
     }
 }
 
-void MainWindow::videoZoomChanged(QAction *action)
+void MainWindow::videoZoomChanged(const QAction *action)
 {
     QString mode = action->data().toString();
     qDebug() << "mode:" << mode;
@@ -442,7 +442,7 @@ void MainWindow::on_actionOpen_DVD_triggered()
     dvdProcessor->process(vobFiles);
 }
 
-void MainWindow::dvdProcessorFinished(QString path)
+void MainWindow::dvdProcessorFinished(const QString& path)
 {
     loadFile(path);
 
@@ -520,12 +520,12 @@ void MainWindow::videoLoaded()
     }
 }
 
-void MainWindow::videoError(QString msg)
+void MainWindow::videoError(const QString& msg)
 {
     QMessageBox::warning(this, tr("Video error"), msg);
 }
 
-void MainWindow::thumbnailDoubleClicked(int frameNumber)
+void MainWindow::thumbnailDoubleClicked(const int frameNumber)
 {    
     QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
                               Qt::QueuedConnection, Q_ARG(int, frameNumber));
@@ -552,9 +552,8 @@ void MainWindow::on_previousButton_clicked()
     ui->seekSlider->setValue(lastRequestedFrame);
 }
 
-void MainWindow::on_seekSlider_valueChanged(int value)
+void MainWindow::on_seekSlider_valueChanged(const int frameNumber)
 {
-    const int frameNumber = value;
     if(lastRequestedFrame == frameNumber)
     {
         return;
@@ -566,7 +565,7 @@ void MainWindow::on_seekSlider_valueChanged(int value)
     ui->currentFrameLabel->setText(QString::number(frameNumber));
 }
 
-void MainWindow::on_seekSlider_sliderMoved(int position)
+void MainWindow::on_seekSlider_sliderMoved(const int position)
 {
     //lastRequestedFrame = position;
     ui->currentFrameLabel->setText(QString::number(position));
@@ -709,13 +708,13 @@ void MainWindow::on_clearThumbsButton_clicked()
     }
 }
 
-void MainWindow::on_thumbnailSizeSlider_sliderMoved(int position)
+void MainWindow::on_thumbnailSizeSlider_sliderMoved(const int position)
 {
     ui->unsavedWidget->resizeThumbnails(position);
     ui->savedWidget->resizeThumbnails(position);
 }
 
-void MainWindow::on_thumbnailSizeSlider_valueChanged(int value)
+void MainWindow::on_thumbnailSizeSlider_valueChanged(const int value)
 {
     ui->unsavedWidget->resizeThumbnails(value);
     ui->savedWidget->resizeThumbnails(value);
@@ -855,14 +854,14 @@ void MainWindow::on_actionOptions_triggered()
     }
 }
 
-void MainWindow::on_screenshotsSpinBox_valueChanged(int arg1)
+void MainWindow::on_screenshotsSpinBox_valueChanged(const int arg1)
 {
     config.setValue("numscreenshots", arg1);
 
     ui->screenshotsSpinBox->setValue(arg1);
 }
 
-void MainWindow::on_frameStepSpinBox_valueChanged(int arg1)
+void MainWindow::on_frameStepSpinBox_valueChanged(const int arg1)
 {
     config.setValue("framestep", arg1);
 }
@@ -901,7 +900,7 @@ void MainWindow::on_saveSingleButton_clicked()
     frame.save(outFilename);
 }
 
-void MainWindow::on_cbUnlimitedScreens_clicked(bool checked)
+void MainWindow::on_cbUnlimitedScreens_clicked(const bool checked)
 {
     ui->screenshotsSpinBox->setEnabled(!checked);
 }

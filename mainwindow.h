@@ -62,7 +62,7 @@ private slots:
      * and updates widgets
      * @param frame Received frame
      */
-    void frameReceived(QPair<int, QImage> frame);
+    void frameReceived(const QPair<int, QImage>& frame);
 
     /**
      * @brief Triggered when a script in the editor is saved
@@ -78,7 +78,7 @@ private slots:
      * @brief Triggered after the dvd processor has finished
      * @param path Path to the processed file returned by the dvd processor
      */
-    void dvdProcessorFinished(QString path);
+    void dvdProcessorFinished(const QString& path);
 
     /**
      * @brief Triggered after a video source has finished loading
@@ -89,7 +89,7 @@ private slots:
      * @brief Handles various errors from video related sources
      * @param msg Error message
      */
-    void videoError(QString msg);
+    void videoError(const QString& msg);
 
     /**
      * @brief Triggered after a thumbnail has been clicked
@@ -113,7 +113,7 @@ private slots:
      * @brief Load the given file with the current video source
      * @param path Path to the file to load
      */
-    void loadFile(QString path);
+    void loadFile(const QString& path);
 
     /**
      * @brief Triggered when the video zoom mode is changed
