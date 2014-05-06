@@ -97,8 +97,8 @@ private:
     std::unique_ptr<QActionGroup> videoZoomGroup;
 
     std::shared_ptr<vfg::core::AbstractVideoSource> videoSource;
-    std::unique_ptr<vfg::core::VideoFrameGenerator> frameGenerator;
     std::shared_ptr<vfg::core::VideoFrameGrabber> frameGrabber;
+    std::unique_ptr<vfg::core::VideoFrameGenerator> frameGenerator;
     std::unique_ptr<vfg::ui::ScriptEditor> scriptEditor;
     std::unique_ptr<vfg::ui::VideoSettingsWidget> videoSettingsWindow;
     std::unique_ptr<vfg::DvdProcessor> dvdProcessor;
