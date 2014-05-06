@@ -2,12 +2,9 @@
 #define MAINWINDOW_H
 
 #include <memory>
-#include <QList>
 #include <QMainWindow>
-#include <QMap>
-#include <QPair>
 #include <QSettings>
-#include <QString>
+#include <QtContainerFwd>
 
 // Forward declarations
 class QAction;
@@ -17,6 +14,7 @@ class QDragEvent;
 class QDropEvent;
 class QImage;
 class QPoint;
+class QString;
 class QThread;
 
 namespace vfg {
