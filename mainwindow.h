@@ -170,9 +170,6 @@ private:
     //! List of frame numbers in the saved tab
     QList<int> framesToSave;
 
-    //! Last opened file path
-    QString lastOpenedFile;
-
     //! Last directory where thumbnails were saved
     QString lastSaveDirectory;
 

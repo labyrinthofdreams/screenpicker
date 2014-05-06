@@ -54,7 +54,6 @@ MainWindow::MainWindow(QWidget *parent) :
     videoSettingsWindow(nullptr),
     dvdProcessor(nullptr),
     framesToSave(),
-    lastOpenedFile(),
     lastSaveDirectory("/"),
     config("config.ini", QSettings::IniFormat),
     lastRequestedFrame(vfg::FirstFrame),
@@ -271,7 +270,6 @@ void MainWindow::resetState()
     scriptEditor->reset();
 
     lastRequestedFrame = vfg::FirstFrame;
-    lastOpenedFile.clear();
 
     ui->unsavedWidget->clearThumbnails();
     ui->savedWidget->clearThumbnails();
@@ -404,8 +402,6 @@ void MainWindow::on_actionOpen_triggered()
     QFileInfo info {filename};
     setWindowTitle(info.absoluteFilePath());
     config.setValue("last_opened", info.absoluteFilePath());
-
-    lastOpenedFile = filename;
 }
 
 void MainWindow::on_actionOpen_DVD_triggered()
@@ -449,7 +445,7 @@ void MainWindow::dvdProcessorFinished(const QString& path)
     QFileInfo info(path);
     setWindowTitle(info.absoluteFilePath());
 
-    lastOpenedFile = path;
+    config.setValue("last_opened", info.absoluteFilePath());
 }
 
 void MainWindow::videoSettingsUpdated()
@@ -460,7 +456,7 @@ void MainWindow::videoSettingsUpdated()
         return;
     }
 
-    loadFile(lastOpenedFile);
+    loadFile(config.value("last_opened").toString());
 }
 
 void MainWindow::scriptEditorUpdated()
@@ -471,7 +467,7 @@ void MainWindow::scriptEditorUpdated()
     QFileInfo info(path);
     setWindowTitle(info.absoluteFilePath());
 
-    lastOpenedFile = path;
+    config.setValue("last_opened", info.absoluteFilePath());
 }
 
 void MainWindow::videoLoaded()
@@ -826,8 +822,6 @@ void MainWindow::dropEvent(QDropEvent *ev)
     setWindowTitle(info.absoluteFilePath());
 
     config.setValue("last_opened", info.absoluteFilePath());
-
-    lastOpenedFile = filename;
 }
 
 void MainWindow::on_actionOptions_triggered()
