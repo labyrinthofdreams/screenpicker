@@ -70,12 +70,12 @@ MainWindow::MainWindow(QWidget *parent) :
         frameGrabber = std::make_shared<vfg::core::VideoFrameGrabber>(videoSource);
 
         frameGenerator = util::make_unique<vfg::core::VideoFrameGenerator>(frameGrabber);
-        frameGeneratorThread = new QThread(this);
-        frameGenerator->moveToThread(frameGeneratorThread);
+        frameGeneratorThread = util::make_unique<QThread>();
+        frameGenerator->moveToThread(frameGeneratorThread.get());
         frameGeneratorThread->start();
 
-        frameGrabberThread = new QThread(this);
-        frameGrabber->moveToThread(frameGrabberThread);
+        frameGrabberThread = util::make_unique<QThread>();
+        frameGrabber->moveToThread(frameGrabberThread.get());
         frameGrabberThread->start();
 
         scriptEditor = util::make_unique<vfg::ui::ScriptEditor>();

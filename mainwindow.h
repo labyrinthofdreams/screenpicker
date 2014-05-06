@@ -91,8 +91,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    QThread *frameGrabberThread;
-    QThread *frameGeneratorThread;
+    std::unique_ptr<QThread> frameGrabberThread;
+    std::unique_ptr<QThread> frameGeneratorThread;
 
     std::shared_ptr<vfg::core::AbstractVideoSource> videoSource;
     std::unique_ptr<vfg::core::VideoFrameGenerator> frameGenerator;
