@@ -44,12 +44,21 @@ QMap<QString, QString> avinfoParseVideoHeader(QString path)
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    videoSource(),
+    frameGrabberThread(nullptr),
+    frameGeneratorThread(nullptr),
+    videoSource(nullptr),
+    frameGenerator(nullptr),
+    frameGrabber(nullptr),
+    scriptEditor(nullptr),
+    videoSettingsWindow(nullptr),
+    dvdProcessor(nullptr),
     framesToSave(),
     lastOpenedFile(),
     lastSaveDirectory("/"),
+    videoZoomGroup(nullptr),
     config("config.ini", QSettings::IniFormat),
-    lastRequestedFrame(vfg::FirstFrame)
+    lastRequestedFrame(vfg::FirstFrame),
+    lastReceivedFrame(-1)
 {
     ui->setupUi(this);
 

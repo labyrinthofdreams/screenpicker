@@ -115,7 +115,7 @@ private:
     // return to that frame after reloading the script via editor
     int lastRequestedFrame;
 
-    int lastReceivedFrame = -1;
+    int lastReceivedFrame;
 
     void resetState();
 
