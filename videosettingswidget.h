@@ -2,15 +2,16 @@
 #define VFG_VIDEOSETTINGSWIDGET_H
 
 #include <map>
+#include <memory>
 #include <QMap>
-#include <QPair>
-#include <QString>
 #include <QWidget>
 
 // Forward declarations
 class QCloseEvent;
 class QRect;
 class QShowEvent;
+class QString;
+template <class T, class U> class QPair;
 
 namespace Ui {
     class VideoSettingsWidget;
@@ -77,7 +78,7 @@ private slots:
     void on_btnRevertCrop_clicked();
 
 private:
-    Ui::VideoSettingsWidget *ui;
+    std::unique_ptr<Ui::VideoSettingsWidget> ui;
 
     QMap<QString, int> prevSettings;
 
@@ -113,7 +114,7 @@ signals:
      * @brief Signal changed crop values
      * @param area Area to crop
      */
-    void cropChanged(QRect area);
+    void cropChanged(const QRect& area);
 
     /**
      * @brief Signal window close event

@@ -4,11 +4,9 @@
 #include <QRect>
 #include <QShowEvent>
 #include <QString>
+#include "ptrutil.hpp"
 #include "videosettingswidget.h"
 #include "ui_videosettingswidget.h"
-
-namespace vfg {
-namespace ui {
 
 /**
  * @brief noneg prevents negative values being used
@@ -20,12 +18,13 @@ constexpr int noneg(const int x)
     return x < 0 ? 0 : x;
 }
 
-VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
+vfg::ui::VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::VideoSettingsWidget),
+    ui(nullptr),
     prevSettings(),
     resolutions()
 {
+    ui = util::make_unique<Ui::VideoSettingsWidget>();
     ui->setupUi(this);
 
     std::map<int, VideoSize> sizes {
@@ -45,28 +44,30 @@ VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
     ui->cboxDvdResolution->insertItem(PAL_4_3, tr("PAL 4:3"));
 
     connect(ui->sboxCropBottom, SIGNAL(valueChanged(int)),
-            this, SLOT(handleCropChange()));
-    connect(ui->sboxCropLeft, SIGNAL(valueChanged(int)),
-            this, SLOT(handleCropChange()));
-    connect(ui->sboxCropTop, SIGNAL(valueChanged(int)),
-            this, SLOT(handleCropChange()));
-    connect(ui->sboxCropRight, SIGNAL(valueChanged(int)),
-            this, SLOT(handleCropChange()));
+            this,               SLOT(handleCropChange()));
+
+    connect(ui->sboxCropLeft,   SIGNAL(valueChanged(int)),
+            this,               SLOT(handleCropChange()));
+
+    connect(ui->sboxCropTop,    SIGNAL(valueChanged(int)),
+            this,               SLOT(handleCropChange()));
+
+    connect(ui->sboxCropRight,  SIGNAL(valueChanged(int)),
+            this,               SLOT(handleCropChange()));
 }
 
-VideoSettingsWidget::~VideoSettingsWidget()
-{
-    delete ui;
+vfg::ui::VideoSettingsWidget::~VideoSettingsWidget() {
+
 }
 
-void VideoSettingsWidget::on_cboxDvdResolution_activated(int index)
+void vfg::ui::VideoSettingsWidget::on_cboxDvdResolution_activated(const int index)
 {
     const VideoSize res = resolutions[index];
     ui->sboxResizeWidth->setValue(res.first);
     ui->sboxResizeHeight->setValue(res.second);
 }
 
-void VideoSettingsWidget::on_pushButton_clicked()
+void vfg::ui::VideoSettingsWidget::on_pushButton_clicked()
 {
     // Override previous settings when applying new settings
     prevSettings = getSettings();
@@ -89,54 +90,53 @@ void VideoSettingsWidget::on_pushButton_clicked()
     ui->sboxCropRight->setValue(0);
     ui->sboxCropTop->setValue(0);
 
-    if(crop.left || crop.top || crop.right || crop.bottom)
-    {
+    if(crop.left || crop.top || crop.right || crop.bottom) {
         ui->btnRevertCrop->setEnabled(true);
     }
 
     emit settingsChanged();
 }
 
-void VideoSettingsWidget::handleCropChange()
+void vfg::ui::VideoSettingsWidget::handleCropChange()
 {
-    QRect area {noneg(ui->sboxCropLeft->value()),
-               noneg(ui->sboxCropTop->value()),
-               noneg(ui->sboxCropRight->value()),
-               noneg(ui->sboxCropBottom->value())};
+    const QRect area(noneg(ui->sboxCropLeft->value()),
+                     noneg(ui->sboxCropTop->value()),
+                     noneg(ui->sboxCropRight->value()),
+                     noneg(ui->sboxCropBottom->value()));
 
     emit cropChanged(area);
 }
 
-void VideoSettingsWidget::showEvent(QShowEvent *event)
+void vfg::ui::VideoSettingsWidget::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event);
+
     // Temporarily store previous settings that can be restored
     // when the window is closed
     prevSettings = getSettings();
     event->accept();
 }
 
-void VideoSettingsWidget::closeEvent(QCloseEvent *event)
+void vfg::ui::VideoSettingsWidget::closeEvent(QCloseEvent *event)
 {
     emit closed();
 
     // Restore previous settings that were applied
-    auto& t = prevSettings;
     ui->sboxCropBottom->setValue(0);
     ui->sboxCropLeft->setValue(0);
     ui->sboxCropRight->setValue(0);
     ui->sboxCropTop->setValue(0);
-    ui->sboxResizeHeight->setValue(t.value("resizeheight"));
-    ui->sboxResizeWidth->setValue(t.value("resizewidth"));
+    ui->sboxResizeHeight->setValue(prevSettings.value("resizeheight"));
+    ui->sboxResizeWidth->setValue(prevSettings.value("resizewidth"));
     ui->radioButton->setChecked(true);
-    ui->radioDeinterlace->setChecked(static_cast<bool>(t.value("deinterlace")));
-    ui->radioInverseTelecine->setChecked(static_cast<bool>(t.value("ivtc")));
-    ui->cboxDvdResolution->setCurrentIndex(t.value("dvdresolutionidx"));
+    ui->radioDeinterlace->setChecked(static_cast<bool>(prevSettings.value("deinterlace")));
+    ui->radioInverseTelecine->setChecked(static_cast<bool>(prevSettings.value("ivtc")));
+    ui->cboxDvdResolution->setCurrentIndex(prevSettings.value("dvdresolutionidx"));
 
     event->accept();
 }
 
-QMap<QString, int> VideoSettingsWidget::getSettings() const
+QMap<QString, int> vfg::ui::VideoSettingsWidget::getSettings() const
 {
     QMap<QString, int> settings;
     settings.clear();
@@ -152,7 +152,7 @@ QMap<QString, int> VideoSettingsWidget::getSettings() const
     return settings;
 }
 
-void VideoSettingsWidget::resetSettings()
+void vfg::ui::VideoSettingsWidget::resetSettings()
 {
     ui->sboxCropBottom->setValue(0);
     ui->sboxCropLeft->setValue(0);
@@ -164,7 +164,7 @@ void VideoSettingsWidget::resetSettings()
     ui->cboxDvdResolution->setCurrentIndex(0);
 }
 
-void VideoSettingsWidget::on_btnRevertCrop_clicked()
+void vfg::ui::VideoSettingsWidget::on_btnRevertCrop_clicked()
 {
     ui->sboxCropBottom->setValue(crop.bottom);
     ui->sboxCropLeft->setValue(crop.left);
@@ -175,6 +175,3 @@ void VideoSettingsWidget::on_btnRevertCrop_clicked()
 
     emit settingsChanged();
 }
-
-} // namespace ui
-} // namespace vfg
