@@ -117,7 +117,7 @@ private slots:
      * @brief Triggered when the video zoom mode is changed
      * @param action The action that was performed
      */
-    void videoZoomChanged(const QAction *action);
+    void videoZoomChanged(QAction *action);
 
     /**
      * @brief Displays a context menu on the video preview widget

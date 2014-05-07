@@ -359,7 +359,7 @@ void MainWindow::loadFile(const QString& path)
     }
 }
 
-void MainWindow::videoZoomChanged(const QAction *action)
+void MainWindow::videoZoomChanged(QAction* action)
 {
     QString mode = action->data().toString();
     qDebug() << "mode:" << mode;
