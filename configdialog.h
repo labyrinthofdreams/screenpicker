@@ -1,34 +1,46 @@
 #ifndef CONFIGDIALOG_H
 #define CONFIGDIALOG_H
 
+#include <memory>
 #include <QDialog>
 
 namespace Ui {
 class ConfigDialog;
 }
 
-namespace vfg
+namespace vfg {
+
+/**
+ * @brief The ConfigDialog class
+ */
+class ConfigDialog : public QDialog
 {
-    class ConfigDialog : public QDialog
-    {
-        Q_OBJECT
+    Q_OBJECT
 
-    public:
-        explicit ConfigDialog(QWidget *parent = 0);
-        ~ConfigDialog();
+public:
+    /**
+     * @brief Constructor
+     * @param parent Owner of the object
+     */
+    explicit ConfigDialog(QWidget *parent = 0);
 
-    private slots:
-        void on_buttonBox_rejected();
+    /**
+     * @brief Destructor
+     *
+     * Definition is required for the unique_ptr
+     */
+    ~ConfigDialog();
 
-        void on_buttonBox_accepted();
+private slots:
+    void on_buttonBox_rejected();
+    void on_buttonBox_accepted();
+    void on_btnDgindexPath_clicked();
+    void on_btnAvisynthPluginsPath_clicked();
 
-        void on_btnDgindexPath_clicked();
+private:
+    std::unique_ptr<Ui::ConfigDialog> ui;
+};
 
-        void on_btnAvisynthPluginsPath_clicked();
-
-    private:
-        Ui::ConfigDialog *ui;
-    };
-}
+} // namespace vfg
 
 #endif // CONFIGDIALOG_H

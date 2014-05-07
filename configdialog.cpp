@@ -1,21 +1,22 @@
+#include <utility>
 #include <QSettings>
 #include <QFileDialog>
 #include <QString>
 #include "configdialog.h"
+#include "ptrutil.hpp"
 #include "ui_configdialog.h"
 
-using namespace vfg;
-
-ConfigDialog::ConfigDialog(QWidget *parent) :
+vfg::ConfigDialog::ConfigDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ConfigDialog)
+    ui(nullptr)
 {
+    ui = util::make_unique<Ui::ConfigDialog>();
     ui->setupUi(this);
 
     // Load settings
     QSettings cfg("config.ini", QSettings::IniFormat);
-    QString avisynthPath = cfg.value("avisynthpluginspath").toString();
-    QString dgindexExecPath = cfg.value("dgindexexecpath").toString();
+    const QString avisynthPath = cfg.value("avisynthpluginspath").toString();
+    const QString dgindexExecPath = cfg.value("dgindexexecpath").toString();
     const bool showEditor = cfg.value("showscripteditor").toBool();
     const int maxThumbnails = cfg.value("maxthumbnails").toInt();
     //const int afterMaxLimit = cfg.value("aftermaxlimit").toInt();
@@ -27,8 +28,8 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     const bool jumpToLastOnReachingMax = cfg.value("jumptolastonreachingmax").toBool();
     const bool saveDgIndexFiles = cfg.value("savedgindexfiles").toBool();
 
-    ui->avisynthPluginsPathLineEdit->setText(avisynthPath);
-    ui->dgindexExecPath->setText(dgindexExecPath);
+    ui->avisynthPluginsPathLineEdit->setText(std::move(avisynthPath));
+    ui->dgindexExecPath->setText(std::move(dgindexExecPath));
     ui->showScriptEditorCheckBox->setChecked(showEditor);
     ui->maxThumbnailsSpinBox->setValue(maxThumbnails);
     //ui->buttonGroup->button(afterMaxLimit)->setChecked(true);
@@ -42,9 +43,8 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->cbShowVideoSettings->setChecked(cfg.value("showvideosettings").toBool());
 }
 
-ConfigDialog::~ConfigDialog()
-{
-    delete ui;
+vfg::ConfigDialog::~ConfigDialog() {
+
 }
 
 void vfg::ConfigDialog::on_buttonBox_rejected()
@@ -72,12 +72,15 @@ void vfg::ConfigDialog::on_buttonBox_accepted()
 
 void vfg::ConfigDialog::on_btnDgindexPath_clicked()
 {
-    QString path = QFileDialog::getOpenFileName(this, tr("DGIndex Executable Path"), "/", "dgindex.exe");
-    ui->dgindexExecPath->setText(path);
+    const QString path = QFileDialog::getOpenFileName(this,
+                                        tr("DGIndex Executable Path"),
+                                        "/", "dgindex.exe");
+    ui->dgindexExecPath->setText(std::move(path));
 }
 
 void vfg::ConfigDialog::on_btnAvisynthPluginsPath_clicked()
 {
-    QString path = QFileDialog::getExistingDirectory(this, tr("Avisynth Plugins Directory"), "/");
-    ui->avisynthPluginsPathLineEdit->setText(path);
+    const QString path = QFileDialog::getExistingDirectory(this,
+                                        tr("Avisynth Plugins Directory"), "/");
+    ui->avisynthPluginsPathLineEdit->setText(std::move(path));
 }
