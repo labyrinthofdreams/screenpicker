@@ -14,6 +14,7 @@ class QDragEvent;
 class QDropEvent;
 class QImage;
 class QPoint;
+class QProgressDialog;
 class QString;
 class QThread;
 
@@ -125,6 +126,12 @@ private slots:
      */
     void contextMenuOnPreview(const QPoint& pos);
 
+    /**
+     * @brief Update DVD Progress Dialog
+     * @param progress Current progress
+     */
+    void updateDvdProgressDialog(int progress);
+
     void on_actionOpen_triggered();
     void on_nextButton_clicked();
     void on_previousButton_clicked();
@@ -159,6 +166,9 @@ private:
     std::unique_ptr<QThread> frameGeneratorThread;
 
     std::unique_ptr<QActionGroup> videoZoomGroup;
+
+    //! Display DVD loading progress in a dialog
+    std::unique_ptr<QProgressDialog> dvdProgress;
 
     std::shared_ptr<vfg::core::AbstractVideoSource> videoSource;
     std::shared_ptr<vfg::core::VideoFrameGrabber> frameGrabber;
