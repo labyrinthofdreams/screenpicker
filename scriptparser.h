@@ -20,10 +20,10 @@ class ScriptParser
 public:
     explicit ScriptParser(QString scriptPath);
     virtual ~ScriptParser() = default;
-    virtual QString parse(QMap<QString, int> settings);
+    virtual QString parse(const QMap<QString, int>& settings) const;
 
 protected:
-    QString readTemplate(QString path);
+    QString readTemplate(const QString& path) const;
     void setTemplate(QString path);
 
     QString path;

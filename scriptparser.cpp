@@ -1,3 +1,4 @@
+#include <utility>
 #include <QString>
 #include <QFile>
 #include <QTextStream>
@@ -8,12 +9,12 @@
 #include "templet.hpp"
 
 vfg::ScriptParser::ScriptParser(QString scriptPath) :
-    path(scriptPath),
+    path(std::move(scriptPath)),
     tplPath(":/scripts/default_template.avs")
 {
 }
 
-QString vfg::ScriptParser::readTemplate(QString path)
+QString vfg::ScriptParser::readTemplate(const QString& path) const
 {
     QFile tpl(path);
     if(!tpl.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -21,16 +22,15 @@ QString vfg::ScriptParser::readTemplate(QString path)
     }
 
     QTextStream stream(&tpl);
-    QString script = stream.readAll();
-    return script;
+    return stream.readAll();
 }
 
 void vfg::ScriptParser::setTemplate(QString path)
 {
-    tplPath = path;
+    tplPath = std::move(path);
 }
 
-QString vfg::ScriptParser::parse(QMap<QString, int> settings)
+QString vfg::ScriptParser::parse(const QMap<QString, int>& settings) const
 {
     try
     {

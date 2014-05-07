@@ -11,7 +11,7 @@ class DefaultScriptParser : public vfg::ScriptParser
 {
 public:
     explicit DefaultScriptParser(QString path);
-    ~DefaultScriptParser();
+    ~DefaultScriptParser() = default;
 };
 
 } // namespace vfg

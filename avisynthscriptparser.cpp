@@ -1,30 +1,20 @@
+#include <utility>
 #include <QString>
 #include "avisynthscriptparser.h"
 
 namespace vfg {
 
 AvisynthScriptParser::AvisynthScriptParser(QString scriptPath) :
-    vfg::ScriptParser(scriptPath)
+    vfg::ScriptParser(std::move(scriptPath))
 {
-    setTemplate(scriptPath);
+    setTemplate(path);
 }
 
-AvisynthScriptParser::~AvisynthScriptParser()
+QString AvisynthScriptParser::parse(const QMap<QString, int>& settings) const
 {
-}
+    Q_UNUSED(settings);
 
-QString AvisynthScriptParser::parse()
-{
-    try
-    {
-        QString script = readTemplate(path);
-
-        return script;
-    }
-    catch(std::exception &ex)
-    {
-        throw;
-    }
+    return readTemplate(path);
 }
 
 } // namespace vfg

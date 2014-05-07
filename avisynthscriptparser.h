@@ -1,6 +1,7 @@
 #ifndef VFG_AVISYNTHSCRIPTPARSER_H
 #define VFG_AVISYNTHSCRIPTPARSER_H
 
+#include <QtContainerFwd>
 #include "scriptparser.h"
 
 class QString;
@@ -11,8 +12,8 @@ class AvisynthScriptParser : public vfg::ScriptParser
 {
 public:
     explicit AvisynthScriptParser(QString scriptPath);
-    ~AvisynthScriptParser();
-    QString parse();
+    ~AvisynthScriptParser() = default;
+    QString parse(const QMap<QString, int>& settings) const override;
 };
 
 } // namespace vfg

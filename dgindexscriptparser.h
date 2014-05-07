@@ -11,7 +11,7 @@ class DgindexScriptParser : public vfg::ScriptParser
 {
 public:
     explicit DgindexScriptParser(QString scriptPath);
-    ~DgindexScriptParser();
+    ~DgindexScriptParser() = default;
 };
 
 } // namespace vfg
