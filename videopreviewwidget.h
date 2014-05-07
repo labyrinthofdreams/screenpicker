@@ -1,19 +1,19 @@
 #ifndef VIDEOFRAMEWIDGET_H
 #define VIDEOFRAMEWIDGET_H
 
-#include <QImage>
-#include <QPair>
 #include <QPixmap>
-#include <QVector>
+#include <QtContainerFwd>
 #include <QWidget>
 
 // Forward declarations
+class QImage;
 class QLabel;
 class QMouseEvent;
 class QRect;
 class QResizeEvent;
 class QSize;
 class QVBoxLayout;
+template <class T, class U> class QPair;
 
 namespace vfg {
 
@@ -40,14 +40,19 @@ class VideoPreviewWidget : public QWidget
 private:
     //! Areas to crop are drawn on the current frame
     QVector<QRect> cropBorders;
+
     //! Layout to hold the preview frame
     QVBoxLayout* layout;
+
     //! The label contains the frame
     QLabel* frameLabel;
+
     //! Modifiable copy of the frame that is displayed in the widget
     QPixmap framePixmap;
+
     //! The original frame that is never modified
     QPixmap original;
+
     //! Specifies the current zoom mode
     ZoomMode zoomMode;
 
@@ -65,7 +70,7 @@ private:
      * @brief Calculates new size based on zoom mode
      * @return New frame size
      */
-    const QSize calculateSize() const;
+    QSize calculateSize() const;
 
 public:
     /**
@@ -92,19 +97,19 @@ public slots:
      * @brief Sets the current frame
      * @param img Frame to set
      */
-    void setFrame(QImage img);
+    void setFrame(const QImage& img);
 
     /**
      * @brief Sets the current frame
      * @param img Frame to set with a frame number
      */
-    void setFrame(QPair<int, QImage> img);
+    void setFrame(const QPair<int, QImage>& img);
 
     /**
      * @brief Sets an area to crop
      * @param area Area to crop
      */
-    void setCrop(QRect area);
+    void setCrop(const QRect& area);
 
     /**
      * @brief Resets the areas to crop

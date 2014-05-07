@@ -13,10 +13,7 @@
 #include <QWidget>
 #include "videopreviewwidget.h"
 
-using vfg::ZoomMode;
-using vfg::ui::VideoPreviewWidget;
-
-VideoPreviewWidget::VideoPreviewWidget(QWidget *parent) :
+vfg::ui::VideoPreviewWidget::VideoPreviewWidget(QWidget *parent) :
     QWidget(parent),
     cropBorders(),
     framePixmap(),
@@ -36,42 +33,39 @@ VideoPreviewWidget::VideoPreviewWidget(QWidget *parent) :
     layout->addWidget(frameLabel);
     setLayout(layout);
 
-    setAutoFillBackground(true);
     QPalette plt = palette();
     plt.setColor(QPalette::Window, Qt::white);
     setPalette(plt);
 
+    setAutoFillBackground(true);
     setContentsMargins(0, 0, 0, 0);
-
-    // Enable context menu
     setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
-void VideoPreviewWidget::resizeEvent(QResizeEvent *event)
+void vfg::ui::VideoPreviewWidget::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
 
-    if(framePixmap.isNull())
+    if(framePixmap.isNull()) {
         return;
+    }
 
     updateFrame();
 }
 
-void VideoPreviewWidget::setFrame(QImage img)
+void vfg::ui::VideoPreviewWidget::setFrame(const QImage& img)
 {
     original = QPixmap::fromImage(img);
     framePixmap = original.copy();
     updateFrame();
 }
 
-void VideoPreviewWidget::setFrame(QPair<int, QImage> img)
+void vfg::ui::VideoPreviewWidget::setFrame(const QPair<int, QImage>& img)
 {
-    original = QPixmap::fromImage(img.second);
-    framePixmap = original.copy();
-    updateFrame();
+    setFrame(img.second);
 }
 
-void VideoPreviewWidget::setCrop(QRect area)
+void vfg::ui::VideoPreviewWidget::setCrop(const QRect& area)
 {
     QRect left {0, 0, area.left(), framePixmap.height()};
     QRect top {0, 0, framePixmap.width(), area.top()};
@@ -80,20 +74,20 @@ void VideoPreviewWidget::setCrop(QRect area)
     QRect bottom {0, framePixmap.height() - area.height(),
                  framePixmap.width(), area.height()};
 
-    QVector<QRect> newBorders{left, top, right, bottom};
+    QVector<QRect> newBorders {left, top, right, bottom};
     cropBorders.swap(newBorders);
 
     updateFrame();
 }
 
-void VideoPreviewWidget::resetCrop()
+void vfg::ui::VideoPreviewWidget::resetCrop()
 {
     framePixmap = original.copy();
     cropBorders.clear();
     updateFrame();
 }
 
-void VideoPreviewWidget::updateFrame()
+void vfg::ui::VideoPreviewWidget::updateFrame()
 {
     if(framePixmap.isNull())
     {
@@ -111,10 +105,10 @@ void VideoPreviewWidget::updateFrame()
 
 }
 
-void VideoPreviewWidget::drawCropArea()
+void vfg::ui::VideoPreviewWidget::drawCropArea()
 {
     QPixmap copiedFrame = original.copy();
-    QPainter painter {&copiedFrame};
+    QPainter painter(&copiedFrame);
     painter.setBrush(Qt::cyan);
     // Performs an inverse operation which works well with cyan
     painter.setCompositionMode(QPainter::RasterOp_SourceXorDestination);
@@ -124,7 +118,7 @@ void VideoPreviewWidget::drawCropArea()
     framePixmap.swap(copiedFrame);
 }
 
-const QSize VideoPreviewWidget::calculateSize() const
+QSize vfg::ui::VideoPreviewWidget::calculateSize() const
 {
     if(zoomMode == ZoomMode::Zoom_Scale) {
         return frameLabel->size();
@@ -141,7 +135,7 @@ const QSize VideoPreviewWidget::calculateSize() const
                   static_cast<int>(original.height() * zoomfactor)};
 }
 
-void VideoPreviewWidget::setZoom(ZoomMode mode)
+void vfg::ui::VideoPreviewWidget::setZoom(ZoomMode mode)
 {
     zoomMode = mode;
 
