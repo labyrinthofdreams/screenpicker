@@ -6,6 +6,7 @@
 #include <QString>
 #include "avisynthscriptparser.h"
 #include "avisynthvideosource.h"
+#include "defaultscriptparser.h"
 #include "dgindexscriptparser.h"
 #include "ptrutil.hpp"
 #include "scriptparser.h"
@@ -154,5 +155,5 @@ std::unique_ptr<vfg::ScriptParser> AvisynthVideoSource::getParser(const QFileInf
         return util::make_unique<vfg::DgindexScriptParser>(absPath);
     }
 
-    return util::make_unique<vfg::ScriptParser>(absPath);
+    return util::make_unique<vfg::DefaultScriptParser>(absPath);
 }
