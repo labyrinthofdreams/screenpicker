@@ -1,6 +1,4 @@
 #include <QString>
-#include <QSettings>
-#include <QMap>
 #include "defaultscriptparser.h"
 
 namespace vfg {

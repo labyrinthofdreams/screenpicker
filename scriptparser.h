@@ -1,7 +1,9 @@
 #ifndef VFG_SCRIPTPARSER_H
 #define VFG_SCRIPTPARSER_H
 
-#include <QMap>
+#include <stdexcept>
+#include <QtContainerFwd>
+
 class QString;
 
 namespace vfg {

@@ -1,7 +1,6 @@
 #ifndef VFG_DEFAULTSCRIPTPARSER_H
 #define VFG_DEFAULTSCRIPTPARSER_H
 
-#include <QMap>
 #include "scriptparser.h"
 
 class QString;

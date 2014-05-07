@@ -4,7 +4,6 @@
 #include <QSettings>
 #include <QMap>
 #include <string>
-#include <stdexcept>
 #include "scriptparser.h"
 #include "templet.hpp"
 
