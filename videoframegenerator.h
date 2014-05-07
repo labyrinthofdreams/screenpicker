@@ -77,7 +77,7 @@ signals:
      * @brief Emits a grabbed frame number and the image
      * @param frame The frame number and the grabbed image
      */
-    void frameReady(QPair<int, QImage> frame);
+    void frameReady(const QPair<int, QImage>& frame);
     
 public slots:
     /**

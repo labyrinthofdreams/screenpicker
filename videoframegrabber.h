@@ -139,7 +139,7 @@ signals:
      * @brief Emit grabbed frame
      * @param frame Frame number and frame image
      */
-    void frameGrabbed(QPair<int, QImage> frame);
+    void frameGrabbed(const QPair<int, QImage>& frame);
 
     /**
      * @brief Emit errors
