@@ -1,4 +1,5 @@
 #include <cctype>
+#include <utility>
 #include <QString>
 #include <QStringList>
 #include <QProcess>
@@ -9,39 +10,40 @@
 #include <QDir>
 #include <QFileDialog>
 #include "dvdprocessor.h"
-
-// TODO: Processing DVD or Blu-ray...
+#include "ptrutil.hpp"
 
 namespace vfg {
 
 DvdProcessor::DvdProcessor(QString processorPath, QObject *parent) :
     QObject(parent),
-    processor(processorPath),
+    processor(std::move(processorPath)),
     outputPath("dgindex_tmp"),
     progress(tr("Processing DVD..."), tr("Abort"), 0, 100),
     aborted(false)
 {
-    proc = new QProcess(this);
+    proc = util::make_unique<QProcess>();
 
-    connect(proc, SIGNAL(readyReadStandardOutput()),
-            this, SLOT(updateDialog()));
-    connect(proc, SIGNAL(finished(int)),
-            this, SLOT(handleProcessFinish(int)));
-    connect(proc, SIGNAL(error(QProcess::ProcessError)),
-            this, SLOT(handleProcessError(QProcess::ProcessError)));
-    connect(&progress, SIGNAL(canceled()),
-            this, SLOT(handleAbortProcess()));
+    connect(proc.get(), SIGNAL(readyReadStandardOutput()),
+            this,       SLOT(updateDialog()));
+
+    connect(proc.get(), SIGNAL(finished(int)),
+            this,       SLOT(handleProcessFinish(int)));
+
+    connect(proc.get(), SIGNAL(error(QProcess::ProcessError)),
+            this,       SLOT(handleProcessError(QProcess::ProcessError)));
+
+    connect(&progress,  SIGNAL(canceled()),
+            this,       SLOT(handleAbortProcess()));
 }
 
 DvdProcessor::~DvdProcessor()
 {
-    if(QFile::exists("dgindex_tmp.d2v"))
-    {
+    if(QFile::exists("dgindex_tmp.d2v")) {
         QFile::remove("dgindex_tmp.d2v");
     }
 }
 
-void DvdProcessor::process(QStringList files)
+void DvdProcessor::process(const QStringList& files)
 {
     if(files.empty()) {
         emit error(tr("Nothing to process."));
@@ -57,17 +59,19 @@ void DvdProcessor::process(QStringList files)
     }
 
     QSettings cfg("config.ini", QSettings::IniFormat);
-    if(cfg.value("savedgindexfiles").toBool()) {
-        QString out = QFileDialog::getSaveFileName(0, tr("Select DGIndex project output path"),
-                                     info.absoluteDir().absoluteFilePath("dgindex_project.d2v"),
-                                     tr("DGIndex project (*.d2v)"));
+    if(cfg.value("savedgindexfiles", false).toBool()) {
+        const QString out = QFileDialog::getSaveFileName(
+                    0, tr("Select DGIndex project output path"),
+                    info.absoluteDir().absoluteFilePath("dgindex_project.d2v"),
+                    tr("DGIndex project (*.d2v)"));
         if(out.isEmpty()) {
             return;
         }
 
-        QFileInfo outInfo(out);
-        QString pathWithoutSuffix = outInfo.absoluteDir().absoluteFilePath(outInfo.completeBaseName());
-        outputPath = pathWithoutSuffix;
+        // Get path without suffix
+        const QFileInfo outInfo(out);
+        outputPath = outInfo.absoluteDir().absoluteFilePath(
+                            outInfo.completeBaseName());
     }
     else {
         // Remove existing output file to prevent DGIndex from creating
@@ -82,8 +86,8 @@ void DvdProcessor::process(QStringList files)
     }
 
     QStringList args;
-    args << "-ia" << "5" << "-fo" << "0" << "-yr" << "1" << "-om" << "0" << "-hide" << "-exit"
-             << "-o" << outputPath << "-i" << files;
+    args << "-ia" << "5" << "-fo" << "0" << "-yr" << "1" << "-om" << "0"
+         << "-hide" << "-exit" << "-o" << outputPath << "-i" << files;
 
     progress.setValue(0);
     progress.setVisible(true);
@@ -92,13 +96,13 @@ void DvdProcessor::process(QStringList files)
 
 void DvdProcessor::setProcessor(QString executablePath)
 {
-    processor = executablePath;
+    processor = std::move(executablePath);
 }
 
 void DvdProcessor::updateDialog()
 {
     // Read last integer value from process output
-    QByteArray rawOutput = proc->readAllStandardOutput();
+    const QByteArray rawOutput = proc->readAllStandardOutput();
     QString parsedOutput;
     for(int last = rawOutput.size() - 2; last >= 0; --last)
     {
@@ -112,13 +116,14 @@ void DvdProcessor::updateDialog()
     }
 
     // DGIndex.exe can sometimes output false values
+    // so we must check it against the current value
     const int nextValue = parsedOutput.toInt();
     if(nextValue > progress.value()) {
         progress.setValue(nextValue);
     }
 }
 
-void DvdProcessor::handleProcessFinish(int exitCode)
+void DvdProcessor::handleProcessFinish(const int exitCode)
 {
     progress.setValue(100);
     // Non-zero exit code implies crash / abort
@@ -134,7 +139,7 @@ void DvdProcessor::handleAbortProcess()
     progress.cancel();
 }
 
-void DvdProcessor::handleProcessError(QProcess::ProcessError errorCode)
+void DvdProcessor::handleProcessError(const QProcess::ProcessError errorCode)
 {
     proc->close();
     progress.cancel();
