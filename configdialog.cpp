@@ -15,8 +15,8 @@ vfg::ConfigDialog::ConfigDialog(QWidget *parent) :
 
     // Load settings
     QSettings cfg("config.ini", QSettings::IniFormat);
-    const QString avisynthPath = cfg.value("avisynthpluginspath").toString();
-    const QString dgindexExecPath = cfg.value("dgindexexecpath").toString();
+    QString avisynthPath = cfg.value("avisynthpluginspath").toString();
+    QString dgindexExecPath = cfg.value("dgindexexecpath").toString();
     const bool showEditor = cfg.value("showscripteditor").toBool();
     const int maxThumbnails = cfg.value("maxthumbnails").toInt();
     //const int afterMaxLimit = cfg.value("aftermaxlimit").toInt();
@@ -72,7 +72,7 @@ void vfg::ConfigDialog::on_buttonBox_accepted()
 
 void vfg::ConfigDialog::on_btnDgindexPath_clicked()
 {
-    const QString path = QFileDialog::getOpenFileName(this,
+    QString path = QFileDialog::getOpenFileName(this,
                                         tr("DGIndex Executable Path"),
                                         "/", "dgindex.exe");
     ui->dgindexExecPath->setText(std::move(path));
@@ -80,7 +80,7 @@ void vfg::ConfigDialog::on_btnDgindexPath_clicked()
 
 void vfg::ConfigDialog::on_btnAvisynthPluginsPath_clicked()
 {
-    const QString path = QFileDialog::getExistingDirectory(this,
+    QString path = QFileDialog::getExistingDirectory(this,
                                         tr("Avisynth Plugins Directory"), "/");
     ui->avisynthPluginsPathLineEdit->setText(std::move(path));
 }

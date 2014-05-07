@@ -460,7 +460,7 @@ void MainWindow::on_actionOpen_DVD_triggered()
 
         // Get path without suffix
         const QFileInfo outInfo(out);
-        const QString outputPath = outInfo.absoluteDir().absoluteFilePath(
+        QString outputPath = outInfo.absoluteDir().absoluteFilePath(
                                     outInfo.completeBaseName());
         dvdProcessor->setOutputPath(std::move(outputPath));
     }

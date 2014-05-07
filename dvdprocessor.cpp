@@ -44,12 +44,12 @@ void DvdProcessor::process(const QStringList& files)
     proc->start(processor, args);
 }
 
-void DvdProcessor::setProcessor(const QString executablePath)
+void DvdProcessor::setProcessor(QString executablePath)
 {
     processor = std::move(executablePath);
 }
 
-void DvdProcessor::setOutputPath(const QString newOutputPath)
+void DvdProcessor::setOutputPath(QString newOutputPath)
 {
     outputPath = std::move(newOutputPath);
 }
