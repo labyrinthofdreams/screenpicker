@@ -112,28 +112,29 @@ MainWindow::MainWindow(QWidget *parent) :
         // Scale by default
         ui->actionScaleToWindow->setChecked(true);
         ui->videoPreviewWidget->setZoom(vfg::ZoomMode::Zoom_Scale);
-        connect(videoZoomGroup.get(), SIGNAL(triggered(QAction*)),
-                this, SLOT(videoZoomChanged(QAction*)));
-
-        connect(ui->videoPreviewWidget, SIGNAL(customContextMenuRequested(QPoint)),
-                this, SLOT(contextMenuOnPreview(QPoint)));
     }
     catch(std::exception& ex)
     {
         throw;
     }
 
-    connect(videoSettingsWindow.get(), SIGNAL(settingsChanged()),
-            this, SLOT(videoSettingsUpdated()));
+    connect(videoZoomGroup.get(),   SIGNAL(triggered(QAction*)),
+            this,                   SLOT(videoZoomChanged(QAction*)));
 
-    connect(videoSettingsWindow.get(), SIGNAL(cropChanged(QRect)),
-            ui->videoPreviewWidget, SLOT(setCrop(QRect)));
+    connect(ui->videoPreviewWidget, SIGNAL(customContextMenuRequested(QPoint)),
+            this,                   SLOT(contextMenuOnPreview(QPoint)));
 
-    connect(videoSettingsWindow.get(), SIGNAL(closed()),
-            ui->videoPreviewWidget, SLOT(resetCrop()));
+    connect(videoSettingsWindow.get(),  SIGNAL(settingsChanged()),
+            this,                       SLOT(videoSettingsUpdated()));
+
+    connect(videoSettingsWindow.get(),  SIGNAL(cropChanged(QRect)),
+            ui->videoPreviewWidget,     SLOT(setCrop(QRect)));
+
+    connect(videoSettingsWindow.get(),  SIGNAL(closed()),
+            ui->videoPreviewWidget,     SLOT(resetCrop()));
 
     connect(scriptEditor.get(), SIGNAL(scriptUpdated()),
-            this, SLOT(scriptEditorUpdated()));
+            this,               SLOT(scriptEditorUpdated()));
 
     connect(dvdProcessor.get(), SIGNAL(finished(QString)),
             this, SLOT(dvdProcessorFinished(QString)));
@@ -147,29 +148,29 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dvdProgress.get(),  SIGNAL(canceled()),
             dvdProcessor.get(), SLOT(handleAbortProcess()));
 
-    connect(videoSource.get(), SIGNAL(videoLoaded()),
-            this, SLOT(videoLoaded()));
+    connect(videoSource.get(),  SIGNAL(videoLoaded()),
+            this,               SLOT(videoLoaded()));
 
     connect(frameGrabber.get(), SIGNAL(errorOccurred(QString)),
-            this, SLOT(videoError(QString)),
+            this,               SLOT(videoError(QString)),
             Qt::QueuedConnection);
 
-    connect(frameGrabber.get(), SIGNAL(frameGrabbed(QPair<int,QImage>)),
+    connect(frameGrabber.get(),     SIGNAL(frameGrabbed(QPair<int,QImage>)),
             ui->videoPreviewWidget, SLOT(setFrame(QPair<int,QImage>)),
             Qt::QueuedConnection);
 
-    connect(frameGenerator.get(), SIGNAL(frameReady(QPair<int, QImage>)),
-            this, SLOT(frameReceived(QPair<int, QImage>)),
+    connect(frameGenerator.get(),   SIGNAL(frameReady(QPair<int, QImage>)),
+            this,                   SLOT(frameReceived(QPair<int, QImage>)),
             Qt::QueuedConnection);
 
-    connect(ui->unsavedWidget, SIGNAL(maximumChanged(int)),
+    connect(ui->unsavedWidget,      SIGNAL(maximumChanged(int)),
             ui->unsavedProgressBar, SLOT(setMaximum(int)));
 
-    connect(ui->unsavedWidget, SIGNAL(thumbnailDoubleClicked(int)),
-            this, SLOT(thumbnailDoubleClicked(int)));
+    connect(ui->unsavedWidget,  SIGNAL(thumbnailDoubleClicked(int)),
+            this,               SLOT(thumbnailDoubleClicked(int)));
 
-    connect(ui->savedWidget, SIGNAL(thumbnailDoubleClicked(int)),
-            this, SLOT(thumbnailDoubleClicked(int)));
+    connect(ui->savedWidget,    SIGNAL(thumbnailDoubleClicked(int)),
+            this,               SLOT(thumbnailDoubleClicked(int)));
 }
 
 MainWindow::~MainWindow()
