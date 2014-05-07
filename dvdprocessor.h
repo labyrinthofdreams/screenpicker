@@ -59,6 +59,9 @@ public:
     QString savedPath() const;
 
 public slots:
+    /**
+     * @brief Handle abort request by stopping the processor
+     */
     void handleAbortProcess();
     
 signals:
