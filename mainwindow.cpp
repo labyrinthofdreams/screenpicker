@@ -330,6 +330,9 @@ void MainWindow::loadFile(const QString& path)
 {
     try
     {      
+        const QFileInfo info(path);
+        config.setValue("last_opened", info.absoluteFilePath());
+
         QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
 
         // Only overwrite values in video settings if
@@ -424,10 +427,7 @@ void MainWindow::on_actionOpen_triggered()
     // Reset all states back to zero
     resetState();
 
-    loadFile(filename);       
-
-    const QFileInfo info(filename);
-    config.setValue("last_opened", info.absoluteFilePath());
+    loadFile(filename);           
 }
 
 void MainWindow::on_actionOpen_DVD_triggered()
@@ -500,9 +500,6 @@ void MainWindow::dvdProcessorFinished(const QString& path)
     dvdProgress->setValue(100);
 
     loadFile(path);
-
-    const QFileInfo info(path);
-    config.setValue("last_opened", info.absoluteFilePath());
 }
 
 void MainWindow::videoSettingsUpdated()
@@ -520,9 +517,6 @@ void MainWindow::scriptEditorUpdated()
 {
     const QString path = scriptEditor->path();
     loadFile(path);
-
-    const QFileInfo info(path);
-    config.setValue("last_opened", info.absoluteFilePath());
 }
 
 void MainWindow::videoLoaded()
@@ -878,9 +872,6 @@ void MainWindow::dropEvent(QDropEvent *ev)
     resetState();
 
     loadFile(filename);
-
-    const QFileInfo info(filename);
-    config.setValue("last_opened", info.absoluteFilePath());
 }
 
 void MainWindow::on_actionOptions_triggered()
