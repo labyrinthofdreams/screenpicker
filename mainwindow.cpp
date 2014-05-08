@@ -426,8 +426,7 @@ void MainWindow::on_actionOpen_triggered()
 
     loadFile(filename);       
 
-    QFileInfo info {filename};
-    setWindowTitle(info.absoluteFilePath());
+    const QFileInfo info(filename);
     config.setValue("last_opened", info.absoluteFilePath());
 }
 
@@ -503,8 +502,6 @@ void MainWindow::dvdProcessorFinished(const QString& path)
     loadFile(path);
 
     const QFileInfo info(path);
-    setWindowTitle(info.absoluteFilePath());
-
     config.setValue("last_opened", info.absoluteFilePath());
 }
 
@@ -524,14 +521,14 @@ void MainWindow::scriptEditorUpdated()
     const QString path = scriptEditor->path();
     loadFile(path);
 
-    QFileInfo info(path);
-    setWindowTitle(info.absoluteFilePath());
-
+    const QFileInfo info(path);
     config.setValue("last_opened", info.absoluteFilePath());
 }
 
 void MainWindow::videoLoaded()
 {
+    setWindowTitle(config.value("last_opened").toString());
+
     const int numFrames = frameGrabber->totalFrames();
 
     const bool invalidRange = !frameGrabber->isValidFrame(lastRequestedFrame);
@@ -882,9 +879,7 @@ void MainWindow::dropEvent(QDropEvent *ev)
 
     loadFile(filename);
 
-    QFileInfo info(filename);
-    setWindowTitle(info.absoluteFilePath());
-
+    const QFileInfo info(filename);
     config.setValue("last_opened", info.absoluteFilePath());
 }
 
