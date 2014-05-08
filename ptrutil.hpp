@@ -27,7 +27,7 @@ THE SOFTWARE.
 #ifndef PTRUTIL_HPP
 #define PTRUTIL_HPP
 
-#include <algorithm>
+#include <utility>
 #include <memory>
 
 namespace util {
