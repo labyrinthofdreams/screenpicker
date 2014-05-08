@@ -41,6 +41,24 @@ QMap<QString, QString> avinfoParseVideoHeader(const QString& path)
     return videoHeader;
 }
 
+/**
+ * @brief Get video resolution
+ *
+ * This function is necessary for some video containers that do not
+ * return the correct resolution for a video via avisynth
+ *
+ * @param path Path to the video file
+ * @return Resolution as a pair (width, height)
+ */
+QPair<int, int> getVideoResolution(const QString& path) {
+    const QMap<QString, QString> videoHeader = avinfoParseVideoHeader(path);
+
+    const int resizeWidth = videoHeader.value("v1.x", "0").toInt();
+    const int resizeHeight = videoHeader.value("v1.y", "0").toInt();
+
+    return qMakePair(resizeWidth, resizeHeight);
+}
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(nullptr),
@@ -319,25 +337,16 @@ void MainWindow::loadFile(const QString& path)
         const bool overrideWidth = (videoSettings.value("resizewidth") == 0);
         const bool overrideHeight = (videoSettings.value("resizeheight") == 0);
         const bool overrideSize = (overrideWidth || overrideHeight);
-        if(overrideSize)
-        {
-            QMap<QString, QString> videoHeader = avinfoParseVideoHeader(path);
+        if(overrideSize) {
+            const QPair<int, int> res = getVideoResolution(path);
 
-            if(overrideWidth)
-            {
-                int resizeWidth = videoHeader.value("v1.x", "0").toInt();
-                if(resizeWidth % 2 != 0) {
-                    resizeWidth++;
-                }
-                videoSettings.insert("resizewidth", resizeWidth);
+            if(overrideWidth) {
+                const int newWidth = (res.first % 2 == 0) ? res.first : res.first + 1;
+                videoSettings.insert("resizewidth", newWidth);
             }
-            if(overrideHeight)
-            {
-                int resizeHeight = videoHeader.value("v1.y", "0").toInt();
-                if(resizeHeight % 2 != 0) {
-                    resizeHeight++;
-                }
-                videoSettings.insert("resizeheight", resizeHeight);
+            if(overrideHeight) {
+                const int newHeight = (res.second % 2 == 0) ? res.second : res.second + 1;
+                videoSettings.insert("resizeheight", newHeight);
             }
         }
 
