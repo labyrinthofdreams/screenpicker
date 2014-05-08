@@ -6,6 +6,7 @@
 
 class QLabel;
 class QMouseEvent;
+class QPaintEvent;
 class QResizeEvent;
 class QVBoxLayout;
 
@@ -77,6 +78,6 @@ signals:
 };
 
 } // namespace ui
-} //namespace vfg
+} // namespace vfg
 
 #endif // VIDEOFRAMETHUMBNAIL_H
