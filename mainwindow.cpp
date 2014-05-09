@@ -16,26 +16,28 @@
 #include "videoframethumbnail.h"
 #include "videosettingswidget.h"
 
-QMap<QString, QString> avinfoParseVideoHeader(const QString& path)
-{
+/**
+ * @brief Get video info via avinfo
+ * @param path Path to video file
+ * @return Video info as a map
+ */
+QMap<QString, QString> avinfoParseVideoHeader(const QString& path) {
     QMap<QString, QString> videoHeader;
+
     QProcess proc;
     proc.start(QDir::current().absoluteFilePath("avinfo.exe"), QStringList() << path << "--raw");
     // Wait for 3 seconds max
-    bool ok = proc.waitForFinished(3000);
-    if(ok)
-    {
-        QList<QByteArray> output = proc.readAllStandardOutput().split('\n');
-        for(int i = 0; i < output.size(); ++i)
-        {
-            QString line(output.at(i).trimmed());
-            QStringList kv = line.split("=");
-            if(kv.size() < 2)
-            {
-                break;
-            }
-            videoHeader.insert(kv.at(0), kv.at(1));
+    if(!proc.waitForFinished(3000)) {
+        throw std::runtime_error("avinfo.exe failed to run. Try again.");
+    }
+
+    const QList<QByteArray> output = proc.readAllStandardOutput().split('\n');
+    for(const QString& row : output) {
+        const QStringList kv = row.trimmed().split("=");
+        if(kv.size() < 2) {
+            break;
         }
+        videoHeader.insert(kv.at(0), kv.at(1));
     }
 
     return videoHeader;
