@@ -10,6 +10,7 @@ vfg::DvdProcessor::DvdProcessor(QString processorPath, QObject *parent) :
     QObject(parent),
     processor(std::move(processorPath)),
     outputPath("dgindex_tmp"),
+    proc(nullptr),
     aborted(false)
 {
     proc = util::make_unique<QProcess>();
