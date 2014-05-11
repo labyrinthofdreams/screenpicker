@@ -881,7 +881,7 @@ void MainWindow::on_actionOptions_triggered()
     vfg::ConfigDialog configDialog;
     const int saved = configDialog.exec();
 
-    if(saved)
+    if(saved == QDialog::Accepted)
     {
         const int newMaxThumbnails = config.value("maxthumbnails").toInt();
         ui->unsavedWidget->setMaxThumbnails(newMaxThumbnails);
