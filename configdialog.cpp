@@ -41,6 +41,7 @@ vfg::ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->cbStopAfterReachingMax->setChecked(jumpToLastOnReachingMax);
     ui->cbSaveDgindexFiles->setChecked(saveDgIndexFiles);
     ui->cbShowVideoSettings->setChecked(cfg.value("showvideosettings").toBool());
+    ui->cbResumeGeneratorAfterClear->setChecked(cfg.value("resumegeneratorafterclear").toBool());
 }
 
 vfg::ConfigDialog::~ConfigDialog() {
@@ -68,6 +69,7 @@ void vfg::ConfigDialog::on_buttonBox_accepted()
     cfg.setValue("jumptolastonreachingmax", ui->cbStopAfterReachingMax->isChecked());
     cfg.setValue("savedgindexfiles", ui->cbSaveDgindexFiles->isChecked());
     cfg.setValue("showvideosettings", ui->cbShowVideoSettings->isChecked());
+    cfg.setValue("resumegeneratorafterclear", ui->cbResumeGeneratorAfterClear->isChecked());
 }
 
 void vfg::ConfigDialog::on_btnDgindexPath_clicked()

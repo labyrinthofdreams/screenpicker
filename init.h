@@ -33,7 +33,8 @@ bool isValid()
          << "pauseafterlimit" << "removeoldestafterlimit"
          << "jumptolastonfinish" << "jumptolastonpause"
          << "jumptolastonstop" << "dgindexexecpath" << "jumptolastonreachingmax"
-         << "savedgindexfiles" << "showvideosettings";
+         << "savedgindexfiles" << "showvideosettings"
+         << "resumegeneratorafterclear";
     QStringListIterator iter(keys);
     while(iter.hasNext())
     {
@@ -63,6 +64,7 @@ void create()
     cfg.setValue("jumptolastonreachingmax", true);
     cfg.setValue("savedgindexfiles", false);
     cfg.setValue("showvideosettings", false);
+    cfg.setValue("resumegeneratorafterclear", false);
 }
 
 } // namespace config
