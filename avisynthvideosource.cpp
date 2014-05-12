@@ -11,17 +11,14 @@
 #include "ptrutil.hpp"
 #include "scriptparser.h"
 
-using namespace vfg::core;
-using namespace vfg::exception;
-
-AvisynthVideoSource::AvisynthVideoSource() :
+vfg::core::AvisynthVideoSource::AvisynthVideoSource() :
     AbstractVideoSource(),
     info(nullptr)
 {
     if(internal_avs_load_library(&avsHandle) < 0)
     {
         // Throw if AviSynth library loading fails
-        throw VideoSourceError("Failed to load AviSynth library");
+        throw vfg::exception::VideoSourceError("Failed to load AviSynth library");
     }
 
     avsHandle.env = avsHandle.func.avs_create_script_environment(AVS_INTERFACE_25);
@@ -31,12 +28,12 @@ AvisynthVideoSource::AvisynthVideoSource() :
         if(error)
         {
             // Throw if AviSynth script environment fails
-            throw VideoSourceError(error);
+            throw vfg::exception::VideoSourceError(error);
         }
     }
 }
 
-AvisynthVideoSource::~AvisynthVideoSource()
+vfg::core::AvisynthVideoSource::~AvisynthVideoSource()
 {
     if(hasVideo()) {
         avsHandle.func.avs_release_clip(avsHandle.clip);
@@ -47,7 +44,7 @@ AvisynthVideoSource::~AvisynthVideoSource()
     FreeLibrary(avsHandle.library);
 }
 
-void AvisynthVideoSource::load(const QString fileName)
+void vfg::core::AvisynthVideoSource::load(const QString fileName)
 {
     // If you don't store the converted data temporarily,
     // you will have a memory leak (or so they say)
@@ -57,11 +54,11 @@ void AvisynthVideoSource::load(const QString fileName)
     if(avs_is_error(res))
     {
         // Throw if our imported script fails
-        throw VideoSourceError(avs_as_string(res));
+        throw vfg::exception::VideoSourceError(avs_as_string(res));
     }
     if(!avs_is_clip(res))
     {
-        throw VideoSourceError("Imported script did not return a video clip");
+        throw vfg::exception::VideoSourceError("Imported script did not return a video clip");
     }
 
     avsHandle.clip = avsHandle.func.avs_take_clip(res, avsHandle.env);
@@ -69,14 +66,14 @@ void AvisynthVideoSource::load(const QString fileName)
     if(!avs_has_video(info))
     {
         avsHandle.func.avs_release_value(res);
-        throw VideoSourceError("Imported script does not have video data");
+        throw vfg::exception::VideoSourceError("Imported script does not have video data");
     }
 
     // Video must be RGB32
     if(!avs_is_rgb32(info))
     {
         avsHandle.func.avs_release_value(res);
-        throw VideoSourceError("Video is not RGB32. Add ConvertToRGB32() to your script.");
+        throw vfg::exception::VideoSourceError("Video is not RGB32. Add ConvertToRGB32() to your script.");
     }
 
     avsHandle.func.avs_release_value(res);
@@ -84,12 +81,12 @@ void AvisynthVideoSource::load(const QString fileName)
     emit videoLoaded();
 }
 
-bool AvisynthVideoSource::hasVideo() const
+bool vfg::core::AvisynthVideoSource::hasVideo() const
 {
     return (info != nullptr) && avs_has_video(info);
 }
 
-int AvisynthVideoSource::getNumFrames() const
+int vfg::core::AvisynthVideoSource::getNumFrames() const
 {
     if(info == nullptr) {
         return 0;
@@ -98,7 +95,7 @@ int AvisynthVideoSource::getNumFrames() const
     return info->num_frames;
 }
 
-QImage AvisynthVideoSource::getFrame(const int frameNumber)
+QImage vfg::core::AvisynthVideoSource::getFrame(const int frameNumber)
 {
     if(info == nullptr)
     {
@@ -133,18 +130,18 @@ QImage AvisynthVideoSource::getFrame(const int frameNumber)
     return image;
 }
 
-QString AvisynthVideoSource::getSupportedFormats()
+QString vfg::core::AvisynthVideoSource::getSupportedFormats()
 {
     static const QString formats = "Avisynth files (*.avs,*.avsi)";
     return formats;
 }
 
-bool AvisynthVideoSource::isValidFrame(const int frameNum) const
+bool vfg::core::AvisynthVideoSource::isValidFrame(const int frameNum) const
 {
     return frameNum >= 0 && frameNum < info->num_frames;
 }
 
-std::unique_ptr<vfg::ScriptParser> AvisynthVideoSource::getParser(const QFileInfo& info) const
+std::unique_ptr<vfg::ScriptParser> vfg::core::AvisynthVideoSource::getParser(const QFileInfo& info) const
 {
     const QString absPath = info.absoluteFilePath();
     const QString suffix = info.suffix();
