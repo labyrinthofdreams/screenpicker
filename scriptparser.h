@@ -2,9 +2,9 @@
 #define VFG_SCRIPTPARSER_H
 
 #include <stdexcept>
+#include <string>
+#include <QString>
 #include <QtContainerFwd>
-
-class QString;
 
 namespace vfg {
 
@@ -18,13 +18,13 @@ public:
 class ScriptParser
 {
 public:
-    explicit ScriptParser(QString scriptPath);
+    explicit ScriptParser(QString filePath);
     virtual ~ScriptParser() = default;
     virtual QString parse(const QMap<QString, int>& settings) const;
+    virtual void setTemplate(QString path);
 
 protected:
     QString readTemplate(const QString& path) const;
-    void setTemplate(QString path);
 
     QString path;
     QString tplPath;

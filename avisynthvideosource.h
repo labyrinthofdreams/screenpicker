@@ -22,7 +22,7 @@ public:
     QImage getFrame(int frameNumber) override;
     QString getSupportedFormats() override;
     bool isValidFrame(int frameNum) const override;
-    std::unique_ptr<vfg::ScriptParser> getParser(const QFileInfo &info) const override;
+    vfg::ScriptParser getParser(const QFileInfo &info) const override;
 };
 
 } // namespace core

@@ -20,10 +20,7 @@ SOURCES += main.cpp\
     configdialog.cpp \
     videoframegenerator.cpp \
     dvdprocessor.cpp \
-    dgindexscriptparser.cpp \
-    avisynthscriptparser.cpp \
     scriptparser.cpp \
-    defaultscriptparser.cpp \
     videosettingswidget.cpp \
     videopreviewwidget.cpp \
     .\libs\templet\templet.cpp .\libs\templet\nodes.cpp .\libs\templet\types.cpp
@@ -41,9 +38,6 @@ HEADERS  += mainwindow.h \
     videoframegenerator.h \
     dvdprocessor.h \
     scriptparser.h \
-    dgindexscriptparser.h \
-    avisynthscriptparser.h \
-    defaultscriptparser.h \
     videosettingswidget.h \
     videopreviewwidget.h \
     ptrutil.hpp

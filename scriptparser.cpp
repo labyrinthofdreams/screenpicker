@@ -8,8 +8,8 @@
 #include "scriptparser.h"
 #include "templet.hpp"
 
-vfg::ScriptParser::ScriptParser(QString scriptPath) :
-    path(std::move(scriptPath)),
+vfg::ScriptParser::ScriptParser(QString filePath) :
+    path(std::move(filePath)),
     tplPath(":/scripts/default_template.avs")
 {
 }

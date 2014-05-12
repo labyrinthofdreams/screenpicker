@@ -355,8 +355,8 @@ void MainWindow::loadFile(const QString& path)
             }
         }
 
-        const std::unique_ptr<vfg::ScriptParser> parser = videoSource->getParser(path);
-        QString parsedScript = parser->parse(videoSettings);
+        const vfg::ScriptParser parser = videoSource->getParser(path);
+        QString parsedScript = parser.parse(videoSettings);
 
         scriptEditor->setContent(parsedScript);
         scriptEditor->save();

@@ -1,12 +1,9 @@
 #ifndef ABSTRACTVIDEOSOURCE_H
 #define ABSTRACTVIDEOSOURCE_H
 
-#include <memory>
 #include <stdexcept>
 #include <string>
-#include <QImage>
 #include <QObject>
-#include <QString>
 
 // Forward declarations
 namespace vfg {
@@ -14,6 +11,8 @@ namespace vfg {
 } // namespace vfg
 
 class QFileInfo;
+class QImage;
+class QString;
 
 namespace vfg {
 namespace exception {
@@ -43,6 +42,7 @@ namespace core {
 class AbstractVideoSource : public QObject
 {
     Q_OBJECT
+
 public:
     /**
      * @brief Constructor
@@ -106,7 +106,7 @@ public:
      * @param info File to return the parser for
      * @return Script parser for a file
      */
-    virtual std::unique_ptr<vfg::ScriptParser> getParser(const QFileInfo& info) const = 0;
+    virtual vfg::ScriptParser getParser(const QFileInfo& info) const = 0;
 
 signals:    
     /**
