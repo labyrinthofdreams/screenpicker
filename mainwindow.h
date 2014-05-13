@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <memory>
+#include <QList>
 #include <QMainWindow>
 #include <QSettings>
 #include <QtContainerFwd>

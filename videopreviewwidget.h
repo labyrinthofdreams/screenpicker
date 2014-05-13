@@ -2,7 +2,7 @@
 #define VIDEOFRAMEWIDGET_H
 
 #include <QPixmap>
-#include <QtContainerFwd>
+#include <QVector>
 #include <QWidget>
 
 // Forward declarations
