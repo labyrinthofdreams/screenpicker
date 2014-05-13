@@ -67,12 +67,12 @@ void vfg::ui::VideoPreviewWidget::setFrame(const QPair<int, QImage>& img)
 
 void vfg::ui::VideoPreviewWidget::setCrop(const QRect& area)
 {
-    QRect left {0, 0, area.left(), framePixmap.height()};
-    QRect top {0, 0, framePixmap.width(), area.top()};
-    QRect right {framePixmap.width() - area.width(), 0,
-                area.width(), framePixmap.height()};
-    QRect bottom {0, framePixmap.height() - area.height(),
-                 framePixmap.width(), area.height()};
+    const QRect left(0, 0, area.left(), framePixmap.height());
+    const QRect top(0, 0, framePixmap.width(), area.top());
+    const QRect right(framePixmap.width() - area.width(), 0,
+                        area.width(), framePixmap.height());
+    const QRect bottom(0, framePixmap.height() - area.height(),
+                        framePixmap.width(), area.height());
 
     QVector<QRect> newBorders {left, top, right, bottom};
     cropBorders.swap(newBorders);
@@ -124,18 +124,18 @@ QSize vfg::ui::VideoPreviewWidget::calculateSize() const
         return frameLabel->size();
     }
 
-    std::map<ZoomMode, double> factors {
+    const std::map<ZoomMode, double> factors {
         {ZoomMode::Zoom_25, 0.25}, {ZoomMode::Zoom_50, 0.5},
         {ZoomMode::Zoom_100, 1.0}, {ZoomMode::Zoom_200, 2.0},
         {ZoomMode::Zoom_Scale, static_cast<double>(frameLabel->height()) / original.height()}
     };
 
-    const auto zoomfactor = factors[zoomMode];
-    return QSize {static_cast<int>(original.width() * zoomfactor),
-                  static_cast<int>(original.height() * zoomfactor)};
+    const auto zoomfactor = factors.at(zoomMode);
+    return {static_cast<int>(original.width() * zoomfactor),
+            static_cast<int>(original.height() * zoomfactor)};
 }
 
-void vfg::ui::VideoPreviewWidget::setZoom(ZoomMode mode)
+void vfg::ui::VideoPreviewWidget::setZoom(const ZoomMode mode)
 {
     zoomMode = mode;
 
