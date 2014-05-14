@@ -38,6 +38,14 @@
 **
 ****************************************************************************/
 
+/****************************************************************************
+ * Modifications (c) https://github.com/labyrinthofdreams
+ *
+ * Date: 2014-05-14
+ *
+ * - Add iterator support
+ *
+ ***************************************************************************/
 
 #ifndef FLOWLAYOUT_H
 #define FLOWLAYOUT_H
@@ -48,6 +56,12 @@
 #include <QStyle>
 class FlowLayout : public QLayout
 {
+    using container = QList<QLayoutItem *>;
+
+public:
+    using iterator = typename container::iterator;
+    using const_iterator = typename container::const_iterator;
+
 public:
     FlowLayout(QWidget *parent, int margin = -1, int hSpacing = -1, int vSpacing = -1);
     FlowLayout(int margin = -1, int hSpacing = -1, int vSpacing = -1);
@@ -66,11 +80,17 @@ public:
     QSize sizeHint() const;
     QLayoutItem *takeAt(int index);
 
+    iterator begin();
+    iterator end();
+
+    const_iterator begin() const;
+    const_iterator end() const;
+
 private:
     int doLayout(const QRect &rect, bool testOnly) const;
     int smartSpacing(QStyle::PixelMetric pm) const;
 
-    QList<QLayoutItem *> itemList;
+    container itemList;
     int m_hSpace;
     int m_vSpace;
 };

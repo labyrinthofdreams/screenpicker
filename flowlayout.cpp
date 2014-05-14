@@ -38,6 +38,15 @@
 **
 ****************************************************************************/
 
+/****************************************************************************
+ * Modifications (c) https://github.com/labyrinthofdreams
+ *
+ * Date: 2014-05-14
+ *
+ * - Add iterator support
+ *
+ ***************************************************************************/
+
 #include <QtWidgets>
 
 #include "flowlayout.h"
@@ -99,6 +108,26 @@ QLayoutItem *FlowLayout::takeAt(int index)
         return itemList.takeAt(index);
     else
         return 0;
+}
+
+FlowLayout::iterator FlowLayout::begin()
+{
+    return itemList.begin();
+}
+
+FlowLayout::iterator FlowLayout::end()
+{
+    return itemList.end();
+}
+
+FlowLayout::const_iterator FlowLayout::begin() const
+{
+    return itemList.begin();
+}
+
+FlowLayout::const_iterator FlowLayout::end() const
+{
+    return itemList.end();
 }
 
 Qt::Orientations FlowLayout::expandingDirections() const
