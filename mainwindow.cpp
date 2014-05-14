@@ -709,6 +709,9 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
     {
         // Move thumbnail from unsaved tab to saved tab
         auto thumb = ui->unsavedWidget->takeSelected();
+        if(!thumb) {
+            return;
+        }
         disconnect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
                    this, SLOT(handleUnsavedMenu(QPoint)));
         connect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
@@ -734,6 +737,9 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
     {
         // Move thumbnail from saved tab to unsaved tab
         auto thumb = ui->savedWidget->takeSelected();
+        if(!thumb) {
+            return;
+        }
         disconnect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
                    this, SLOT(handleSavedMenu(QPoint)));
         connect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),

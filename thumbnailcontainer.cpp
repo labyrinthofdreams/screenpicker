@@ -1,3 +1,4 @@
+#include <limits>
 #include <QSettings>
 #include "videoframethumbnail.h"
 #include "thumbnailcontainer.h"
@@ -6,7 +7,7 @@
 vfg::ui::ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
     QWidget(parent),
     activeWidget(nullptr),
-    maxThumbnails(0)
+    maxThumbnails(std::numeric_limits<int>::max())
 {
     layout = new FlowLayout;
     setLayout(layout);
@@ -72,42 +73,37 @@ void vfg::ui::ThumbnailContainer::resizeThumbnails(const int width)
 
 void vfg::ui::ThumbnailContainer::handleThumbnailSelection(vfg::ui::VideoFrameThumbnail *thumbnail)
 {
+    if(activeWidget == thumbnail) {
+        return;
+    }
+
     if(activeWidget) {
         activeWidget->markUnselected();
     }
 
-    // If the widgets differ, set the new one as selected,
-    // otherwise clear the active widget
-    if(activeWidget != thumbnail) {
-        thumbnail->markSelected();
-        activeWidget = thumbnail;
-    }
-    else {
-        activeWidget = nullptr;
-    }
+    thumbnail->markSelected();
+    activeWidget = thumbnail;
 }
 
 std::unique_ptr<vfg::ui::VideoFrameThumbnail> vfg::ui::ThumbnailContainer::takeSelected()
 {
-    std::unique_ptr<vfg::ui::VideoFrameThumbnail> ret;
+    std::unique_ptr<vfg::ui::VideoFrameThumbnail> widget;
     if(!activeWidget) {
-        return ret;
+        return widget;
     }
-
-    activeWidget->markUnselected();
 
     const int widgetIndex = layout->indexOf(activeWidget);
-    QLayoutItem* item = layout->takeAt(widgetIndex);
+    std::unique_ptr<QLayoutItem> item(layout->takeAt(widgetIndex));
     if(!item) {
-        return ret;
+        return widget;
     }
 
-    ret.reset(static_cast<vfg::ui::VideoFrameThumbnail*>(item->widget()));
+    widget.reset(static_cast<vfg::ui::VideoFrameThumbnail*>(item->widget()));
 
-    delete item;
+    activeWidget->markUnselected();
     activeWidget = nullptr;
 
-    return ret;
+    return widget;
 }
 
 int vfg::ui::ThumbnailContainer::numThumbnails() const
