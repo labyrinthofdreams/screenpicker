@@ -1,3 +1,4 @@
+#include <limits>
 #include <QSettings>
 #include "videoframethumbnail.h"
 #include "thumbnailcontainer.h"
@@ -6,7 +7,7 @@
 vfg::ui::ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
     QWidget(parent),
     activeWidget(nullptr),
-    maxThumbnails(0)
+    maxThumbnails(std::numeric_limits<int>::max())
 {
     layout = new FlowLayout;
     setLayout(layout);
