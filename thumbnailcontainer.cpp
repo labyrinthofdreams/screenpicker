@@ -63,9 +63,7 @@ void vfg::ui::ThumbnailContainer::clearThumbnails()
 
 void vfg::ui::ThumbnailContainer::resizeThumbnails(const int width)
 {
-    // TODO: Parallelize
-    for(int i = 0; i < layout->count(); ++i) {
-        QLayoutItem* item = layout->itemAt(i);
+    for(QLayoutItem* item : *layout) {
         if(item) {
             item->widget()->setFixedWidth(width);
         }
