@@ -75,19 +75,16 @@ void vfg::ui::ThumbnailContainer::resizeThumbnails(const int width)
 
 void vfg::ui::ThumbnailContainer::handleThumbnailSelection(vfg::ui::VideoFrameThumbnail *thumbnail)
 {
+    if(activeWidget == thumbnail) {
+        return;
+    }
+
     if(activeWidget) {
         activeWidget->markUnselected();
     }
 
-    // If the widgets differ, set the new one as selected,
-    // otherwise clear the active widget
-    if(activeWidget != thumbnail) {
-        thumbnail->markSelected();
-        activeWidget = thumbnail;
-    }
-    else {
-        activeWidget = nullptr;
-    }
+    thumbnail->markSelected();
+    activeWidget = thumbnail;
 }
 
 std::unique_ptr<vfg::ui::VideoFrameThumbnail> vfg::ui::ThumbnailContainer::takeSelected()
