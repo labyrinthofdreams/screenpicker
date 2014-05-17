@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <memory>
-#include <QList>
 #include <QMainWindow>
 #include <QSettings>
 #include <QtContainerFwd>
@@ -177,9 +176,6 @@ private:
     std::unique_ptr<vfg::ui::ScriptEditor> scriptEditor;
     std::unique_ptr<vfg::ui::VideoSettingsWidget> videoSettingsWindow;
     std::unique_ptr<vfg::DvdProcessor> dvdProcessor;
-
-    //! List of frame numbers in the saved tab
-    QList<int> framesToSave;
 
     //! Application wide configuration settings
     QSettings config;

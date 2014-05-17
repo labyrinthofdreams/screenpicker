@@ -1,8 +1,10 @@
 #ifndef THUMBNAILCONTAINER_H
 #define THUMBNAILCONTAINER_H
 
+#include <cstddef>
 #include <memory>
 #include <QWidget>
+#include "ptrutil.hpp"
 
 // Forward declarations
 class FlowLayout;
@@ -100,6 +102,19 @@ public:
      * @return True if container is full, otherwise false
      */
     bool isFull() const;
+
+    /**
+     * @brief Check if container is empty
+     * @return True if empty, otherwise false
+     */
+    bool isEmpty() const;
+
+    /**
+     * @brief Get item from container at position idx
+     * @param idx Position to get item from (last is zero)
+     * @return Observer pointer to the VideoFrameThumbnail widget, or nullptr
+     */
+    util::observer_ptr<vfg::ui::VideoFrameThumbnail> at(std::size_t idx) const;
 
 protected:
     /**

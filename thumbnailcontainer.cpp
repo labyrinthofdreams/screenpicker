@@ -1,16 +1,18 @@
+#include <cstddef>
 #include <limits>
 #include <QSettings>
-#include "videoframethumbnail.h"
-#include "thumbnailcontainer.h"
 #include "flowlayout.h"
+#include "ptrutil.hpp"
+#include "thumbnailcontainer.h"
+#include "videoframethumbnail.h"
 
 vfg::ui::ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
     QWidget(parent),
+    layout(new FlowLayout),
     activeWidget(nullptr),
     maxThumbnails(std::numeric_limits<int>::max())
 {
-    layout = new FlowLayout;
-    setLayout(layout);
+    setLayout(layout.get());
 }
 
 void vfg::ui::ThumbnailContainer::removeFirst()
@@ -121,6 +123,24 @@ void vfg::ui::ThumbnailContainer::setMaxThumbnails(const int max)
 bool vfg::ui::ThumbnailContainer::isFull() const
 {
     return numThumbnails() == maxThumbnails;
+}
+
+bool vfg::ui::ThumbnailContainer::isEmpty() const
+{
+    return layout->isEmpty();
+}
+
+util::observer_ptr<vfg::ui::VideoFrameThumbnail>
+vfg::ui::ThumbnailContainer::at(const std::size_t idx) const
+{
+    const std::size_t count = layout->count();
+    if(idx >= count) {
+        return nullptr;
+    }
+
+    util::observer_ptr<QLayoutItem> item = layout->itemAt(idx);
+
+    return static_cast<vfg::ui::VideoFrameThumbnail*>(item->widget());
 }
 
 void vfg::ui::ThumbnailContainer::mousePressEvent(QMouseEvent *ev)

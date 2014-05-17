@@ -74,7 +74,6 @@ MainWindow::MainWindow(QWidget *parent) :
     scriptEditor(nullptr),
     videoSettingsWindow(nullptr),
     dvdProcessor(nullptr),
-    framesToSave(),
     config("config.ini", QSettings::IniFormat),
     lastRequestedFrame(vfg::FirstFrame),
     lastReceivedFrame(-1)
@@ -303,7 +302,6 @@ void MainWindow::resetState()
 
     ui->unsavedWidget->clearThumbnails();
     ui->savedWidget->clearThumbnails();
-    framesToSave.clear();
 
     ui->unsavedProgressBar->setValue(0);
 
@@ -687,11 +685,11 @@ void MainWindow::on_grabButton_clicked()
 
     auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(selected, thumbnail);
     thumb->setFixedWidth(thumbnailSize);
-    connect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(handleSavedMenu(QPoint)));
-    framesToSave.append(thumb->frameNum());
-    ui->savedWidget->addThumbnail(std::move(thumb));
 
+    connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
+            this,           SLOT(handleSavedMenu(QPoint)));
+
+    ui->savedWidget->addThumbnail(std::move(thumb));
 
     statusBar()->showMessage(tr("Grabbed frame #%1").arg(selected), 3000);
 }
@@ -716,8 +714,6 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
                    this, SLOT(handleUnsavedMenu(QPoint)));
         connect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleSavedMenu(QPoint)));
-
-        framesToSave.append(thumb->frameNum());
 
         ui->savedWidget->addThumbnail(std::move(thumb));
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
@@ -744,8 +740,6 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
                    this, SLOT(handleSavedMenu(QPoint)));
         connect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
                 this, SLOT(handleUnsavedMenu(QPoint)));
-
-        framesToSave.removeOne(thumb->frameNum());
 
         ui->unsavedWidget->addThumbnail(std::move(thumb));
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
@@ -779,7 +773,7 @@ void MainWindow::on_thumbnailSizeSlider_valueChanged(const int value)
 void MainWindow::on_saveThumbnailsButton_clicked()
 {
     // Save saved images to disk
-    if(framesToSave.isEmpty())
+    if(ui->savedWidget->isEmpty())
     {
         QMessageBox::information(this, tr("Save screenshots"),
                                  tr("Nothing to save. Add one or more screenshots to save."));
@@ -811,33 +805,34 @@ void MainWindow::on_saveThumbnailsButton_clicked()
         resizeWidth = QInputDialog::getInt(this, tr("Resize thumbnails"), tr("Resize to width:"));
     }
 
-    const int numSaved = framesToSave.count();
+    const std::size_t numSaved = ui->savedWidget->numThumbnails();
     QProgressDialog prog("", "Cancel", 0, numSaved, this);
     prog.setWindowModality(Qt::WindowModal);
     prog.setCancelButton(0);
     prog.setMinimumDuration(0);
     QDir saveDir(lastSaveDirectory);
-    QListIterator<int> iter(framesToSave);
-    while(iter.hasNext())
-    {
-        const int frameNumber = iter.next();
+
+    for(std::size_t idx = 0; idx < numSaved; ++idx) {
+        const auto widget = ui->savedWidget->at(idx);
+        if(!widget) {
+            break;
+        }
+        const int frameNumber = widget->frameNum();
         const int current = prog.value();
         prog.setLabelText(tr("Saving image %1 of %2").arg(current).arg(numSaved));
         prog.setValue(current + 1);
-        if(prog.wasCanceled())
-        {
+        if(prog.wasCanceled()) {
             QMessageBox::warning(this, tr("Saving thumbnails aborted"),
                                  tr("Saved %1 of %2 thumbnails").arg(current).arg(numSaved));
             break;
         }
 
-        QString filename = QString("%1.png").arg(QString::number(frameNumber));
-        QString savePath = saveDir.absoluteFilePath(filename);
+        const QString filename = QString("%1.png").arg(QString::number(frameNumber));
+        const QString savePath = saveDir.absoluteFilePath(filename);
 
         // Get current frame
         QImage frame = frameGrabber->getFrame(frameNumber);
-        if(resizeWidth > 0)
-        {
+        if(resizeWidth > 0) {
             frame = frame.scaledToWidth(resizeWidth, Qt::SmoothTransformation);
         }
         frame.save(savePath, "PNG");
