@@ -17,18 +17,15 @@ vfg::ui::ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
 
 void vfg::ui::ThumbnailContainer::removeFirst()
 {
-    QLayoutItem *item = layout->takeAt(0);
-    if(item)
-    {
-        // Only mark active widget as unselected if it's being removed
-        if(activeWidget && activeWidget == item->widget())
-        {
-            activeWidget->markUnselected();
-            activeWidget = nullptr;
-        }
+    std::unique_ptr<QLayoutItem> item(layout->takeAt(0));
+    if(!item) {
+        return;
+    }
 
-        delete item->widget();
-        delete item;
+    std::unique_ptr<QWidget> widget(item->widget());
+
+    if(activeWidget && activeWidget == widget.get()) {
+        activeWidget.reset();
     }
 }
 
@@ -66,10 +63,8 @@ void vfg::ui::ThumbnailContainer::clearThumbnails()
 
 void vfg::ui::ThumbnailContainer::resizeThumbnails(const int width)
 {
-    for(QLayoutItem* item : *layout) {
-        if(item) {
-            item->widget()->setFixedWidth(width);
-        }
+    for(util::observer_ptr<QLayoutItem> item : *layout) {
+        item->widget()->setFixedWidth(width);
     }
 }
 
@@ -89,21 +84,21 @@ void vfg::ui::ThumbnailContainer::handleThumbnailSelection(vfg::ui::VideoFrameTh
 
 std::unique_ptr<vfg::ui::VideoFrameThumbnail> vfg::ui::ThumbnailContainer::takeSelected()
 {
-    std::unique_ptr<vfg::ui::VideoFrameThumbnail> widget;
     if(!activeWidget) {
-        return widget;
+        return nullptr;
     }
 
-    const int widgetIndex = layout->indexOf(activeWidget);
-    std::unique_ptr<QLayoutItem> item(layout->takeAt(widgetIndex));
-    if(!item) {
-        return widget;
+    const int widgetIndex = layout->indexOf(activeWidget.get());
+    if(widgetIndex == -1) {
+        return nullptr;
     }
-
-    widget.reset(static_cast<vfg::ui::VideoFrameThumbnail*>(item->widget()));
 
     activeWidget->markUnselected();
-    activeWidget = nullptr;
+    activeWidget.reset();
+
+    std::unique_ptr<QLayoutItem> item(layout->takeAt(widgetIndex));
+    std::unique_ptr<vfg::ui::VideoFrameThumbnail> widget(
+                static_cast<vfg::ui::VideoFrameThumbnail*>(item->widget()));
 
     return widget;
 }
@@ -150,6 +145,6 @@ void vfg::ui::ThumbnailContainer::mousePressEvent(QMouseEvent *ev)
     if(activeWidget)
     {
         activeWidget->markUnselected();
-        activeWidget = nullptr;
+        activeWidget.reset();
     }
 }

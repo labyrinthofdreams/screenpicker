@@ -31,10 +31,10 @@ class ThumbnailContainer : public QWidget
 
 private:
     //! Widgets are stored in a FlowLayout
-    FlowLayout* layout;
+    util::observer_ptr<FlowLayout> layout;
 
     //! Selected widget in the container
-    vfg::ui::VideoFrameThumbnail* activeWidget;
+    util::observer_ptr<vfg::ui::VideoFrameThumbnail> activeWidget;
 
     //! Number of thumbnails allowed in the container
     int maxThumbnails;
