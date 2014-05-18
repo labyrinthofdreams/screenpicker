@@ -257,6 +257,7 @@ void MainWindow::frameReceived(const QPair<int, QImage>& frame)
         // Generator has finished without explicit stopping
         ui->btnPauseGenerator->setEnabled(false);
         ui->btnStopGenerator->setEnabled(false);
+        ui->generateButton->setEnabled(true);
 
         // Jump to last generated frame
         const bool jumpAfterFinished = config.value("jumptolastonfinish").toBool();
@@ -277,6 +278,8 @@ void MainWindow::frameReceived(const QPair<int, QImage>& frame)
         // ...If the user has NOT checked that option and chooses to pause instead
         // as pausing is the other action, then...
         frameGenerator->pause();
+
+        ui->generateButton->setEnabled(true);
         ui->btnPauseGenerator->setText(tr("Resume"));
 
         // ...In case the user has checked they want to jump to last generated frame
@@ -413,6 +416,8 @@ void MainWindow::on_actionOpen_triggered()
 {
     if(frameGenerator->isRunning()) {
         frameGenerator->pause();
+
+        ui->generateButton->setEnabled(true);
         ui->btnPauseGenerator->setText(tr("Resume"));
     }
 
@@ -434,6 +439,8 @@ void MainWindow::on_actionOpen_DVD_triggered()
 {
     if(frameGenerator->isRunning()) {
         frameGenerator->pause();
+
+        ui->generateButton->setEnabled(true);
         ui->btnPauseGenerator->setText(tr("Resume"));
     }
 
@@ -672,6 +679,7 @@ void MainWindow::on_generateButton_clicked()
                               Qt::QueuedConnection);
 
     // Update generator widgets
+    ui->generateButton->setEnabled(false);
     ui->btnPauseGenerator->setEnabled(true);
     ui->btnPauseGenerator->setText(tr("Pause"));
     ui->btnStopGenerator->setEnabled(true);
@@ -962,7 +970,9 @@ void MainWindow::on_btnPauseGenerator_clicked()
     {
         // Pause
         frameGenerator->pause();
+
         ui->btnPauseGenerator->setText(tr("Resume"));
+        ui->generateButton->setEnabled(true);
 
         // Jump to last generated frame if the option is selected
         const bool jumpAfterPaused = config.value("jumptolastonpause").toBool();
@@ -978,7 +988,9 @@ void MainWindow::on_btnPauseGenerator_clicked()
                                                       "Click 'Clear' or raise the max thumbnail limit to continue."));
             return;
         }
+
         ui->btnPauseGenerator->setText(tr("Pause"));
+        ui->generateButton->setEnabled(false);
 
         QMetaObject::invokeMethod(frameGenerator.get(), "resume",
                                   Qt::QueuedConnection);
@@ -988,6 +1000,8 @@ void MainWindow::on_btnPauseGenerator_clicked()
 void MainWindow::on_btnStopGenerator_clicked()
 {
     frameGenerator->stop();
+
+    ui->generateButton->setEnabled(true);
     ui->generatorProgressBar->setValue(0);
     ui->generatorProgressBar->setTextVisible(false);
     ui->btnPauseGenerator->setEnabled(false);
