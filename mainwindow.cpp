@@ -75,8 +75,7 @@ MainWindow::MainWindow(QWidget *parent) :
     videoSettingsWindow(nullptr),
     dvdProcessor(nullptr),
     config("config.ini", QSettings::IniFormat),
-    lastRequestedFrame(vfg::FirstFrame),
-    lastReceivedFrame(-1)
+    lastRequestedFrame(vfg::FirstFrame)
 {
     ui = util::make_unique<Ui::MainWindow>();
     ui->setupUi(this);
@@ -234,7 +233,6 @@ void MainWindow::closeEvent(QCloseEvent *ev)
 void MainWindow::frameReceived(const QPair<int, QImage>& frame)
 {
     // TODO: Is a lock needed here?
-    lastReceivedFrame = frame.first;
     qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
     const int thumbnailSize = ui->thumbnailSizeSlider->value();
     QPixmap thumbnail = QPixmap::fromImage(frame.second).scaledToWidth(200, Qt::SmoothTransformation);
@@ -977,7 +975,11 @@ void MainWindow::on_btnPauseGenerator_clicked()
         // Jump to last generated frame if the option is selected
         const bool jumpAfterPaused = config.value("jumptolastonpause").toBool();
         if(jumpAfterPaused) {
-            ui->seekSlider->setValue(lastReceivedFrame);
+            const int lastIdx = ui->unsavedWidget->numThumbnails() - 1;
+            const auto widget = ui->unsavedWidget->at(lastIdx);
+            if(widget) {
+                ui->seekSlider->setValue(widget->frameNum());
+            }
         }
     }
     else if(frameGenerator->isPaused())
@@ -1011,7 +1013,11 @@ void MainWindow::on_btnStopGenerator_clicked()
     // Jump to last generated frame if the option is selected
     const bool jumpAfterStopped = config.value("jumptolastonstop").toBool();
     if(jumpAfterStopped) {
-        ui->seekSlider->setValue(lastReceivedFrame);
+        const int lastIdx = ui->unsavedWidget->numThumbnails() - 1;
+        const auto widget = ui->unsavedWidget->at(lastIdx);
+        if(widget) {
+            ui->seekSlider->setValue(widget->frameNum());
+        }
     }
 }
 

@@ -184,9 +184,6 @@ private:
     //! return to that frame after reloading the script via editor
     int lastRequestedFrame;
 
-    //! Last received frame's frame number
-    int lastReceivedFrame;
-
     /**
      * @brief Resets widgets and member variables back to default
      */
