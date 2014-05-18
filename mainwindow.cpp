@@ -621,6 +621,10 @@ void MainWindow::on_seekSlider_sliderMoved(const int position)
 
 void MainWindow::on_generateButton_clicked()
 {
+    if(frameGenerator->isRunning()) {
+        return;
+    }
+
     const bool pauseAfterLimit = config.value("pauseafterlimit").toBool();
     if(pauseAfterLimit && ui->unsavedWidget->isFull()) {
         // If user has chosen to pause the generator after reaching
@@ -640,7 +644,7 @@ void MainWindow::on_generateButton_clicked()
     const int total_frame_range = frame_step * num_generate;
     const int last_frame = selected_frame + total_frame_range;
 
-    if(frameGenerator->isRunning() || frameGenerator->isPaused()) {
+    if(frameGenerator->isPaused()) {
         frameGenerator->stop();
     }
 
