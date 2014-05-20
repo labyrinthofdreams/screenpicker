@@ -2,13 +2,14 @@
 #define VIDEOFRAMEGRABBER_H
 
 #include <memory>
-#include <QImage>
 #include <QMutex>
 #include <QObject>
-#include <QPair>
-#include <QString>
 
 // Forward declarations
+class QImage;
+template <class T, class U> class QPair;
+class QString;
+
 namespace vfg {
 namespace core {
     class AbstractVideoSource;
