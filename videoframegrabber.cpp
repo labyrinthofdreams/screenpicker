@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <QDebug>
+#include <QImage>
 #include <QMutexLocker>
 #include <QPair>
 #include <QThread>

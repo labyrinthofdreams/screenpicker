@@ -2,13 +2,11 @@
 #define VFG_VIDEOFRAMEGENERATOR_H
 
 #include <memory>
+#include <QImage>
 #include <QList>
 #include <QMutex>
 #include <QObject>
 #include <QPair>
-
-// Forward declarations
-class QImage;
 
 namespace vfg {
 namespace core {
