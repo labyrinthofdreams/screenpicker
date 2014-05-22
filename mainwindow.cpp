@@ -234,13 +234,15 @@ void MainWindow::frameReceived(const QPair<int, QImage>& frame)
 {
     // TODO: Is a lock needed here?
     qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
+
     const int thumbnailSize = ui->thumbnailSizeSlider->value();
     QPixmap thumbnail = QPixmap::fromImage(frame.second).scaledToWidth(200, Qt::SmoothTransformation);
-    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(frame.first, thumbnail);
+
+    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(frame.first, std::move(thumbnail));
     thumb->setFixedWidth(thumbnailSize);
 
-    connect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(handleUnsavedMenu(QPoint)));
+    connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
+            this,           SLOT(handleUnsavedMenu(QPoint)));
 
     // Update widgets
     ui->unsavedWidget->addThumbnail(std::move(thumb));
@@ -355,11 +357,11 @@ void MainWindow::loadFile(const QString& path)
         }
 
         const vfg::ScriptParser parser = videoSource->getParser(path);
-        QString parsedScript = parser.parse(videoSettings);
+        const QString parsedScript = parser.parse(videoSettings);
 
         scriptEditor->setContent(parsedScript);
         scriptEditor->save();
-        QString saveTo = scriptEditor->path();
+        const QString saveTo = scriptEditor->path();
 
         // Attempt to load the (parsed) Avisynth script
         // TODO: Stop screenshot generation if that's happening...
@@ -385,16 +387,16 @@ void MainWindow::loadFile(const QString& path)
 
 void MainWindow::videoZoomChanged(QAction* action)
 {
-    QString mode = action->data().toString();
-    qDebug() << "mode:" << mode;
-    std::map<QString, vfg::ZoomMode> m {
+    static const std::map<QString, vfg::ZoomMode> modes {
         {"25", vfg::ZoomMode::Zoom_25},
         {"50", vfg::ZoomMode::Zoom_50},
         {"100", vfg::ZoomMode::Zoom_100},
         {"200", vfg::ZoomMode::Zoom_200},
         {"scale", vfg::ZoomMode::Zoom_Scale}
     };
-    ui->videoPreviewWidget->setZoom(m[mode]);
+
+    const QString mode = action->data().toString();
+    ui->videoPreviewWidget->setZoom(modes.at(mode));
 }
 
 void MainWindow::contextMenuOnPreview(const QPoint &pos)
@@ -419,13 +421,14 @@ void MainWindow::on_actionOpen_triggered()
         ui->btnPauseGenerator->setText(tr("Resume"));
     }
 
-    QString lastOpened {config.value("last_opened", "").toString()};
+    const QString lastOpened(config.value("last_opened", "").toString());
 
-    QString filename = QFileDialog::getOpenFileName(this, tr("Open video"),
-                                                    lastOpened,
-                                                    "All (*.*);;Avisynth (*.avs, *.avsi);;DGIndex (*.d2v)");
-    if(filename.isEmpty())
+    const QString filename =
+            QFileDialog::getOpenFileName(this, tr("Open video"), lastOpened,
+                                         "All (*.*);;Avisynth (*.avs, *.avsi);;DGIndex (*.d2v)");
+    if(filename.isEmpty()) {
         return;
+    }
 
     // Reset all states back to zero
     resetState();
@@ -564,6 +567,7 @@ void MainWindow::videoLoaded()
         scriptEditor->hide();
         scriptEditor->show();
     }
+
     const bool showVideoSettings = config.value("showvideosettings").toBool();
     if(showVideoSettings)
     {
@@ -589,8 +593,8 @@ void MainWindow::thumbnailDoubleClicked(const int frameNumber)
 
 void MainWindow::on_nextButton_clicked()
 {
-    qDebug() << "Start Main Thread " << qApp->thread()->currentThreadId();
-    QMetaObject::invokeMethod(frameGrabber.get(), "requestNextFrame", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(frameGrabber.get(), "requestNextFrame",
+                              Qt::QueuedConnection);
     lastRequestedFrame++;
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
@@ -598,8 +602,8 @@ void MainWindow::on_nextButton_clicked()
 
 void MainWindow::on_previousButton_clicked()
 {
-    qDebug() << "Main Thread " << qApp->thread()->currentThreadId();
-    QMetaObject::invokeMethod(frameGrabber.get(), "requestPreviousFrame", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(frameGrabber.get(), "requestPreviousFrame",
+                              Qt::QueuedConnection);
     lastRequestedFrame--;
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
@@ -720,10 +724,12 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
         if(!thumb) {
             return;
         }
+
         disconnect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
-                   this, SLOT(handleUnsavedMenu(QPoint)));
-        connect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
-                this, SLOT(handleSavedMenu(QPoint)));
+                   this,        SLOT(handleUnsavedMenu(QPoint)));
+
+        connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
+                this,           SLOT(handleSavedMenu(QPoint)));
 
         ui->savedWidget->addThumbnail(std::move(thumb));
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
@@ -746,10 +752,12 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
         if(!thumb) {
             return;
         }
+
         disconnect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
-                   this, SLOT(handleSavedMenu(QPoint)));
-        connect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
-                this, SLOT(handleUnsavedMenu(QPoint)));
+                   this,        SLOT(handleSavedMenu(QPoint)));
+
+        connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
+                this,           SLOT(handleUnsavedMenu(QPoint)));
 
         ui->unsavedWidget->addThumbnail(std::move(thumb));
         ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
@@ -806,12 +814,13 @@ void MainWindow::on_saveThumbnailsButton_clicked()
     config.setValue("last_save_dir", lastSaveDirectory);
 
     int resizeWidth = 0;
-    QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Resize thumbnails"),
-                                                                tr("Do you want to resize thumbnails?"),
-                                                                QMessageBox::Yes | QMessageBox::No,
-                                                                QMessageBox::No);
-    if(clicked == QMessageBox::Yes)
-    {
+    const QMessageBox::StandardButton clicked =
+            QMessageBox::question(this, tr("Resize thumbnails"),
+                                  tr("Do you want to resize thumbnails?"),
+                                  QMessageBox::Yes | QMessageBox::No,
+                                  QMessageBox::No);
+
+    if(clicked == QMessageBox::Yes) {
         resizeWidth = QInputDialog::getInt(this, tr("Resize thumbnails"), tr("Resize to width:"));
     }
 
@@ -820,7 +829,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
     prog.setWindowModality(Qt::WindowModal);
     prog.setCancelButton(0);
     prog.setMinimumDuration(0);
-    QDir saveDir(lastSaveDirectory);
+    const QDir saveDir(lastSaveDirectory);
 
     for(std::size_t idx = 0; idx < numSaved; ++idx) {
         const auto widget = ui->savedWidget->at(idx);
@@ -868,9 +877,8 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *ev)
 
 void MainWindow::dropEvent(QDropEvent *ev)
 {
-    QList<QUrl> urls = ev->mimeData()->urls();
-    if(urls.length() > 1)
-    {
+    const QList<QUrl> urls = ev->mimeData()->urls();
+    if(urls.length() > 1) {
         ev->ignore();
         QMessageBox::information(this, tr("Drop event"),
                                  tr("You can drop only one file"));
@@ -879,7 +887,7 @@ void MainWindow::dropEvent(QDropEvent *ev)
 
     ev->acceptProposedAction();
 
-    QString filename = urls.at(0).toLocalFile();
+    const QString filename = urls.at(0).toLocalFile();
 
     // Reset all states back to zero
     resetState();
@@ -933,22 +941,25 @@ void MainWindow::on_saveSingleButton_clicked()
     const int selected = ui->seekSlider->value();
     QImage frame = frameGrabber->getFrame(selected);
 
-    QDir saveDir(config.value("last_save_dir", "/").toString());
-    QString defaultSavePath = saveDir.absoluteFilePath(QString("%1.png").arg(QString::number(selected)));
-    QString outFilename = QFileDialog::getSaveFileName(this, tr("Save as..."),
+    const QDir saveDir(config.value("last_save_dir", "/").toString());
+    const QString defaultSavePath = saveDir.absoluteFilePath(QString("%1.png").arg(QString::number(selected)));
+    const QString outFilename = QFileDialog::getSaveFileName(this, tr("Save as..."),
                                                        defaultSavePath,
                                                        tr("PNG (*.png)"));
-    QFileInfo info(outFilename);
+    const QFileInfo info(outFilename);
     config.setValue("last_save_dir", info.absoluteDir().absolutePath());
 
-    int resizeWidth = 0;
-    QMessageBox::StandardButton clicked = QMessageBox::question(this, tr("Resize thumbnails"),
-                                                                tr("Do you want to resize thumbnails?"),
-                                                                QMessageBox::Yes | QMessageBox::No,
-                                                                QMessageBox::No);
+    QMessageBox::StandardButton clicked =
+            QMessageBox::question(this, tr("Resize thumbnails"),
+                                  tr("Do you want to resize thumbnails?"),
+                                  QMessageBox::Yes | QMessageBox::No,
+                                  QMessageBox::No);
+
     if(clicked == QMessageBox::Yes)
     {
-        resizeWidth = QInputDialog::getInt(this, tr("Resize thumbnails"), tr("Resize to width:"));
+        const int resizeWidth = QInputDialog::getInt(this,
+                                                     tr("Resize thumbnails"),
+                                                     tr("Resize to width:"));
         if(resizeWidth > 0) {
             frame = frame.scaledToWidth(resizeWidth, Qt::SmoothTransformation);
         }
