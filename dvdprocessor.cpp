@@ -55,6 +55,10 @@ void vfg::DvdProcessor::setOutputPath(QString newOutputPath)
 
 void vfg::DvdProcessor::updateDialog()
 {
+    // Tracks the last processed value from process output
+    // as dgindex can return values smaller than last value
+    static int lastProgress = 0;
+
     // Read last integer value from process output
     const QByteArray rawOutput = proc->readAllStandardOutput();
     QString parsedOutput;
@@ -70,6 +74,11 @@ void vfg::DvdProcessor::updateDialog()
     }
 
     const int currentProgress = parsedOutput.toInt();
+    if(currentProgress < lastProgress) {
+        return;
+    }
+
+    lastProgress = currentProgress;
     emit progressUpdate(currentProgress);
 }
 

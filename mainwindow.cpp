@@ -406,10 +406,7 @@ void MainWindow::contextMenuOnPreview(const QPoint &pos)
 
 void MainWindow::updateDvdProgressDialog(const int progress)
 {
-    // DVD Processor may return smaller values than what we want
-    if(progress > dvdProgress->value()) {
-        dvdProgress->setValue(progress);
-    }
+    dvdProgress->setValue(progress);
 }
 
 void MainWindow::on_actionOpen_triggered()
