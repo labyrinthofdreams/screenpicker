@@ -17,10 +17,6 @@ namespace core {
 }
 
 namespace vfg {
-
-// TODO: This is not clever
-static const int FirstFrame = 1;
-
 namespace core {
 
 /**
@@ -36,10 +32,12 @@ class VideoFrameGrabber : public QObject
 private:
     std::shared_ptr<vfg::core::AbstractVideoSource> avs;
 
-    // Last frame - FirstFrame
+    //! Number of total frames in the source video
     int numFrames;
 
-    // Between range 0 - (last frame - FirstFrame)
+    //! Tracks the last requested frame number to enable
+    //! the use of next and prev member functions.
+    //! Value is between range 0 - (numFrames - 1)
     int currentFrame;
 
     mutable QMutex mutex;

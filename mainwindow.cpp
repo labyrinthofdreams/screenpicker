@@ -75,7 +75,7 @@ MainWindow::MainWindow(QWidget *parent) :
     videoSettingsWindow(nullptr),
     dvdProcessor(nullptr),
     config("config.ini", QSettings::IniFormat),
-    lastRequestedFrame(vfg::FirstFrame)
+    lastRequestedFrame(0)
 {
     ui = util::make_unique<Ui::MainWindow>();
     ui->setupUi(this);
@@ -301,7 +301,7 @@ void MainWindow::resetState()
 
     scriptEditor->reset();
 
-    lastRequestedFrame = vfg::FirstFrame;
+    lastRequestedFrame = 0;
 
     ui->unsavedWidget->clearThumbnails();
     ui->savedWidget->clearThumbnails();
@@ -528,7 +528,7 @@ void MainWindow::videoLoaded()
 {
     setWindowTitle(config.value("last_opened").toString());
 
-    const int numFrames = frameGrabber->totalFrames();
+    const int numFrames = frameGrabber->totalFrames() - 1;
 
     const bool invalidRange = !frameGrabber->isValidFrame(lastRequestedFrame);
     if(invalidRange)
@@ -536,7 +536,7 @@ void MainWindow::videoLoaded()
         // lastRequestFrame may be out of range when the script
         // is reloaded via the editor and when the script produces
         // video with fewer frames than the last request frame
-        lastRequestedFrame = vfg::FirstFrame;
+        lastRequestedFrame = 0;
     }
     // Update frame numbers on the labels
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
