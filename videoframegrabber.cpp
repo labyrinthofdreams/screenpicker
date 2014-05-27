@@ -7,9 +7,7 @@
 #include "videoframegrabber.h"
 #include "abstractvideosource.h"
 
-using vfg::core::VideoFrameGrabber;
-
-VideoFrameGrabber::VideoFrameGrabber(QObject *parent) :
+vfg::core::VideoFrameGrabber::VideoFrameGrabber(QObject *parent) :
     QObject(parent),
     avs(),
     numFrames(0),
@@ -18,8 +16,9 @@ VideoFrameGrabber::VideoFrameGrabber(QObject *parent) :
 {
 }
 
-VideoFrameGrabber::VideoFrameGrabber(std::shared_ptr<vfg::core::AbstractVideoSource> avs,
-                                          QObject *parent) :
+vfg::core::VideoFrameGrabber::VideoFrameGrabber(
+        std::shared_ptr<vfg::core::AbstractVideoSource> avs,
+        QObject *parent) :
     QObject(parent),
     avs(avs),
     numFrames(0),
@@ -34,13 +33,14 @@ VideoFrameGrabber::VideoFrameGrabber(std::shared_ptr<vfg::core::AbstractVideoSou
             this,       SLOT(videoSourceUpdated()));
 }
 
-bool VideoFrameGrabber::hasVideo() const
+bool vfg::core::VideoFrameGrabber::hasVideo() const
 {
     QMutexLocker lock(&mutex);
     return avs && avs->hasVideo();
 }
 
-void VideoFrameGrabber::setVideoSource(std::shared_ptr<vfg::core::AbstractVideoSource> newAvs)
+void vfg::core::VideoFrameGrabber::setVideoSource(
+        std::shared_ptr<vfg::core::AbstractVideoSource> newAvs)
 {
     QMutexLocker lock(&mutex);
     avs = newAvs;
@@ -51,13 +51,13 @@ void VideoFrameGrabber::setVideoSource(std::shared_ptr<vfg::core::AbstractVideoS
             this,       SLOT(videoSourceUpdated()));
 }
 
-int VideoFrameGrabber::lastFrame() const
+int vfg::core::VideoFrameGrabber::lastFrame() const
 {
     QMutexLocker lock(&mutex);
     return currentFrame + vfg::FirstFrame;
 }
 
-void VideoFrameGrabber::requestFrame(int frameNum)
+void vfg::core::VideoFrameGrabber::requestFrame(int frameNum)
 {
     if(!isValidFrame(frameNum)) {
         emit errorOccurred(tr("Frame number out of range: %1")
@@ -78,13 +78,13 @@ void VideoFrameGrabber::requestFrame(int frameNum)
     emit frameGrabbed(QPair<int, QImage>(frameNum, frame));
 }
 
-void VideoFrameGrabber::videoSourceUpdated()
+void vfg::core::VideoFrameGrabber::videoSourceUpdated()
 {
     QMutexLocker ml(&mutex);
     numFrames = avs->getNumFrames();
 }
 
-void VideoFrameGrabber::requestNextFrame()
+void vfg::core::VideoFrameGrabber::requestNextFrame()
 {
     QMutexLocker ml(&mutex);
     qDebug() << "Start NEXT_FRAME VFG ";
@@ -101,7 +101,7 @@ void VideoFrameGrabber::requestNextFrame()
     qDebug() << "End NEXT_FRAME VFG ";
 }
 
-void VideoFrameGrabber::requestPreviousFrame()
+void vfg::core::VideoFrameGrabber::requestPreviousFrame()
 {
     QMutexLocker ml(&mutex);
     qDebug() << "Start PREV_FRAME VFG ";
@@ -117,7 +117,7 @@ void VideoFrameGrabber::requestPreviousFrame()
     qDebug() << "End PREV_FRAME VFG ";
 }
 
-QImage VideoFrameGrabber::getFrame(int frameNum)
+QImage vfg::core::VideoFrameGrabber::getFrame(int frameNum)
 {
     if(!isValidFrame(frameNum)) {
         emit errorOccurred(tr("Frame number out of range: %1")
@@ -134,13 +134,13 @@ QImage VideoFrameGrabber::getFrame(int frameNum)
     return frame;
 }
 
-bool VideoFrameGrabber::isValidFrame(const int frameNum) const
+bool vfg::core::VideoFrameGrabber::isValidFrame(const int frameNum) const
 {
     QMutexLocker lock(&mutex);
     return frameNum >= 0 && (frameNum - vfg::FirstFrame) < avs->getNumFrames();
 }
 
-int VideoFrameGrabber::totalFrames()
+int vfg::core::VideoFrameGrabber::totalFrames()
 {
     QMutexLocker lock(&mutex);
     numFrames = avs->getNumFrames();
