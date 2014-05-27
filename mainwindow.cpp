@@ -672,19 +672,17 @@ void MainWindow::on_generateButton_clicked()
         frameGenerator->enqueue(current_frame);
     }
 
-    const int remaining = frameGenerator->remaining();
-
-    QMetaObject::invokeMethod(frameGenerator.get(), "start",
-                              Qt::QueuedConnection);
-
     // Update generator widgets
     ui->generateButton->setEnabled(false);
     ui->btnPauseGenerator->setEnabled(true);
     ui->btnPauseGenerator->setText(tr("Pause"));
     ui->btnStopGenerator->setEnabled(true);
     ui->generatorProgressBar->setValue(0);
-    ui->generatorProgressBar->setMaximum(remaining);
+    ui->generatorProgressBar->setMaximum(frameGenerator->remaining());
     ui->generatorProgressBar->setTextVisible(true);
+
+    QMetaObject::invokeMethod(frameGenerator.get(), "start",
+                              Qt::QueuedConnection);
 }
 
 void MainWindow::on_grabButton_clicked()
