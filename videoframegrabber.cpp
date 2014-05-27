@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <utility>
 #include <QDebug>
 #include <QImage>
 #include <QMutexLocker>
@@ -17,10 +18,10 @@ vfg::core::VideoFrameGrabber::VideoFrameGrabber(QObject *parent) :
 }
 
 vfg::core::VideoFrameGrabber::VideoFrameGrabber(
-        std::shared_ptr<vfg::core::AbstractVideoSource> avs,
+        std::shared_ptr<vfg::core::AbstractVideoSource> newAvs,
         QObject *parent) :
     QObject(parent),
-    avs(avs),
+    avs(std::move(newAvs)),
     numFrames(0),
     currentFrame(0),
     mutex()
@@ -43,7 +44,10 @@ void vfg::core::VideoFrameGrabber::setVideoSource(
         std::shared_ptr<vfg::core::AbstractVideoSource> newAvs)
 {
     QMutexLocker lock(&mutex);
-    avs = newAvs;
+
+    disconnect(avs.get(), 0, this, 0);
+
+    avs = std::move(newAvs);
     currentFrame = 0;
     numFrames = avs->getNumFrames();
 

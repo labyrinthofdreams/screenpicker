@@ -95,10 +95,10 @@
              <bool>false</bool>
             </property>
             <property name="minimum">
-             <number>1</number>
+             <number>0</number>
             </property>
             <property name="maximum">
-             <number>1</number>
+             <number>0</number>
             </property>
             <property name="pageStep">
              <number>24</number>
@@ -539,8 +539,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>764</width>
-                   <height>200</height>
+                   <width>98</width>
+                   <height>28</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">

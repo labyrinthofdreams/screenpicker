@@ -180,10 +180,6 @@ private:
     //! Application wide configuration settings
     QSettings config;
 
-    //! Last requested frame which is used to
-    //! return to that frame after reloading the script via editor
-    int lastRequestedFrame;
-
     /**
      * @brief Resets widgets and member variables back to default
      */

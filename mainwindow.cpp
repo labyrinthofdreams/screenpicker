@@ -74,8 +74,7 @@ MainWindow::MainWindow(QWidget *parent) :
     scriptEditor(nullptr),
     videoSettingsWindow(nullptr),
     dvdProcessor(nullptr),
-    config("config.ini", QSettings::IniFormat),
-    lastRequestedFrame(0)
+    config("config.ini", QSettings::IniFormat)
 {
     ui = util::make_unique<Ui::MainWindow>();
     ui->setupUi(this);
@@ -301,7 +300,8 @@ void MainWindow::resetState()
 
     scriptEditor->reset();
 
-    lastRequestedFrame = 0;
+    frameGrabber->setVideoSource(videoSource);
+    frameGenerator->stop();
 
     ui->unsavedWidget->clearThumbnails();
     ui->savedWidget->clearThumbnails();
@@ -530,32 +530,31 @@ void MainWindow::videoLoaded()
 
     const int numFrames = frameGrabber->totalFrames() - 1;
 
+    int lastRequestedFrame = frameGrabber->lastFrame();
     const bool invalidRange = !frameGrabber->isValidFrame(lastRequestedFrame);
-    if(invalidRange)
-    {
-        // lastRequestFrame may be out of range when the script
+    if(invalidRange) {
+        // lastRequestedFrame may be out of range when the script
         // is reloaded via the editor and when the script produces
-        // video with fewer frames than the last request frame
+        // video with fewer frames than the last requested frame
         lastRequestedFrame = 0;
     }
-    // Update frame numbers on the labels
+
+    // Update widgets
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->totalFramesLabel->setText(QString::number(numFrames));
-    // Update maximum for seek slider
+
     ui->seekSlider->setEnabled(true);
     ui->seekSlider->setMaximum(numFrames);
-    // Move slider back to first frame
     ui->seekSlider->setValue(lastRequestedFrame);
-    // Show first frame
-    QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
-                              Qt::QueuedConnection, Q_ARG(int, lastRequestedFrame));
 
-    // Enable buttons
     ui->previousButton->setEnabled(true);
     ui->nextButton->setEnabled(true);
     ui->grabButton->setEnabled(true);
     ui->generateButton->setEnabled(true);
     ui->saveSingleButton->setEnabled(true);
+
+    QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
+                              Qt::QueuedConnection, Q_ARG(int, lastRequestedFrame));
 
     // Load config
     const bool showEditor = config.value("showscripteditor").toBool();
@@ -583,45 +582,42 @@ void MainWindow::thumbnailDoubleClicked(const int frameNumber)
 {    
     QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
                               Qt::QueuedConnection, Q_ARG(int, frameNumber));
-    lastRequestedFrame = frameNumber;
+
     ui->currentFrameLabel->setText(QString::number(frameNumber));
     ui->seekSlider->setValue(frameNumber);
 }
 
 void MainWindow::on_nextButton_clicked()
 {
-    QMetaObject::invokeMethod(frameGrabber.get(), "requestNextFrame",
-                              Qt::QueuedConnection);
-    lastRequestedFrame++;
+    frameGrabber->requestNextFrame();
+    const int lastRequestedFrame = frameGrabber->lastFrame();
+
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
 }
 
 void MainWindow::on_previousButton_clicked()
 {
-    QMetaObject::invokeMethod(frameGrabber.get(), "requestPreviousFrame",
-                              Qt::QueuedConnection);
-    lastRequestedFrame--;
+    frameGrabber->requestPreviousFrame();
+    const int lastRequestedFrame = frameGrabber->lastFrame();
+
     ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
 }
 
 void MainWindow::on_seekSlider_valueChanged(const int frameNumber)
 {
-    if(lastRequestedFrame == frameNumber)
-    {
+    const int lastRequestedFrame = frameGrabber->lastFrame();
+    if(lastRequestedFrame == frameNumber) {
         return;
     }
 
-    QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
-                              Qt::QueuedConnection, Q_ARG(int, frameNumber));
-    lastRequestedFrame = frameNumber;
+    frameGrabber->requestFrame(frameNumber);
     ui->currentFrameLabel->setText(QString::number(frameNumber));
 }
 
 void MainWindow::on_seekSlider_sliderMoved(const int position)
 {
-    //lastRequestedFrame = position;
     ui->currentFrameLabel->setText(QString::number(position));
 }
 
