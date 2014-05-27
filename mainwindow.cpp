@@ -633,11 +633,11 @@ void MainWindow::on_generateButton_clicked()
 
     const bool pauseAfterLimit = config.value("pauseafterlimit").toBool();
     if(pauseAfterLimit && ui->unsavedWidget->isFull()) {
-        // If user has chosen to pause the generator after reaching
-        // maximum limit and has clicked resume (this path) while
-        // the container is still full we can't resume
-        QMessageBox::information(this, tr(""), tr("Can't start generator while the container has reached max limit.\n"
-                                                  "Click 'Clear' or raise the max thumbnail limit to continue."));
+        // Can't start the generator if the unsaved widget container is full
+        // and user has selected to pause after the container is full
+        QMessageBox::information(this, tr(""),
+                tr("Thumbnail container has reached max limit.\n"
+                   "Click 'Clear' or raise the max thumbnail limit."));
         return;
     }
 
