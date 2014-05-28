@@ -8,15 +8,6 @@
 #include "videoframegrabber.h"
 #include "abstractvideosource.h"
 
-vfg::core::VideoFrameGrabber::VideoFrameGrabber(QObject *parent) :
-    QObject(parent),
-    avs(),
-    numFrames(0),
-    currentFrame(0),
-    mutex()
-{
-}
-
 vfg::core::VideoFrameGrabber::VideoFrameGrabber(
         std::shared_ptr<vfg::core::AbstractVideoSource> newAvs,
         QObject *parent) :

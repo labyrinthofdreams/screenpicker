@@ -45,12 +45,6 @@ private:
 public:
     /**
      * @brief Constructor
-     * @param parent Owner of the object
-     */
-    explicit VideoFrameGrabber(QObject *parent = 0);
-
-    /**
-     * @brief Constructor
      * @param avs Shared pointer to video source
      * @param parent Owner of the object
      * @exception std::runtime_error If avs is nullptr
