@@ -940,7 +940,7 @@ void MainWindow::on_saveSingleButton_clicked()
     const QFileInfo info(outFilename);
     config.setValue("last_save_dir", info.absoluteDir().absolutePath());
 
-    QMessageBox::StandardButton clicked =
+    const QMessageBox::StandardButton clicked =
             QMessageBox::question(this, tr("Resize thumbnails"),
                                   tr("Do you want to resize thumbnails?"),
                                   QMessageBox::Yes | QMessageBox::No,
