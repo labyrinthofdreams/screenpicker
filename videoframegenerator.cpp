@@ -23,7 +23,6 @@ void VideoFrameGenerator::start()
 {
     QMutexLocker lock(&mutex);
 
-    last = {};
     if(state == State::Running || frames.empty()) {
         return;
     }
@@ -35,22 +34,20 @@ void VideoFrameGenerator::start()
         if(state != State::Running || frames.empty()) {
             break;
         }
-        const int current = frames.takeFirst();
+        const int current = frames.first();
 
         lock.unlock();
         const QImage frame = frameGrabber->getFrame(current);
 
-        // If paused, store the frame temporarily until
-        // the generator is resumed and the frame is emitted
-        // If it's stopped, discard it
         lock.relock();
-        if(state == State::Paused) {
-            last = qMakePair(current, frame);
+        if(state == State::Paused || state == State::Stopped) {
+            // If paused or stopped, discard the frame
+            // and keep the frame for when it's resumed
+            // If the generator is stopped the frame is already removed
             break;
         }
-        else if(state == State::Stopped) {
-            break;
-        }
+
+        frames.takeFirst();
         lock.unlock();
 
         emit frameReady(qMakePair(current, frame));
@@ -72,14 +69,9 @@ void VideoFrameGenerator::pause()
 void VideoFrameGenerator::resume()
 {
     QMutexLocker lock(&mutex);
-    if(state == State::Paused)
-    {
+    if(state == State::Paused) {
         lock.unlock();
 
-        // Emit last grabbed frame after pausing and re-emit it
-        if(!last.second.isNull()) {
-            emit frameReady(last);
-        }
         start();
     }
 }

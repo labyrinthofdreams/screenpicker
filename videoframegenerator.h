@@ -6,7 +6,9 @@
 #include <QList>
 #include <QMutex>
 #include <QObject>
-#include <QPair>
+
+template <class T1, class T2>
+class QPair;
 
 namespace vfg {
 namespace core {
@@ -126,9 +128,6 @@ private:
     QList<int> frames;
     mutable QMutex mutex;
     State state {State::Stopped};
-
-    //!< The last frame grabbed after calling pause()
-    QPair<int, QImage> last;
 };
 
 } // namespace core
