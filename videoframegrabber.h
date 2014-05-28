@@ -61,6 +61,7 @@ public:
     /**
      * @brief Set source to grab frames from
      * @param newAvs New video source
+     * @exception std::runtime_error If avs is nullptr
      */
     void setVideoSource(std::shared_ptr<vfg::core::AbstractVideoSource> newAvs);
 

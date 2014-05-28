@@ -34,6 +34,10 @@ bool vfg::core::VideoFrameGrabber::hasVideo() const
 void vfg::core::VideoFrameGrabber::setVideoSource(
         std::shared_ptr<vfg::core::AbstractVideoSource> newAvs)
 {
+    if(!newAvs) {
+        throw std::runtime_error("Video source must be a valid object");
+    }
+
     QMutexLocker lock(&mutex);
 
     disconnect(avs.get(), 0, this, 0);
