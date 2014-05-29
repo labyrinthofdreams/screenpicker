@@ -98,10 +98,12 @@ bool VideoFrameGenerator::isPaused() const
 void VideoFrameGenerator::enqueue(const int frame)
 {
     QMutexLocker lock(&mutex);
-    if(!frames.contains(frame))
-    {
-        frames.append(frame);
+    if(!frameGrabber->isValidFrame(frame)) {
+        throw std::runtime_error("Frame is out of range");
     }
+
+    // Let duplicate frames be added
+    frames.append(frame);
 }
 
 int VideoFrameGenerator::remaining() const

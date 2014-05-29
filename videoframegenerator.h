@@ -63,6 +63,7 @@ public:
     /**
      * @brief Add a frame number in the queue
      * @param frame Frame to fetch from the grabber
+     * @exception std::runtime_error If frame is out of range for frameGrabber
      */
     void enqueue(int frame);
 
