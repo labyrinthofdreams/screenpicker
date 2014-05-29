@@ -37,7 +37,7 @@ void VideoFrameGenerator::start()
         const int current = frames.first();
 
         lock.unlock();
-        const QImage frame = frameGrabber->getFrame(current);
+        QImage frame = frameGrabber->getFrame(current);
 
         lock.relock();
         if(state == State::Paused || state == State::Stopped) {
@@ -50,7 +50,7 @@ void VideoFrameGenerator::start()
         frames.takeFirst();
         lock.unlock();
 
-        emit frameReady(qMakePair(current, frame));
+        emit frameReady(qMakePair(current, std::move(frame)));
     }
 
     if(state != State::Paused) {
