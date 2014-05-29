@@ -2,6 +2,7 @@
 #include <cstring>
 #include <memory>
 #include <stdexcept>
+#include <string>
 #include <QFileInfo>
 #include <QImage>
 #include <QString>
@@ -76,7 +77,7 @@ vfg::core::AvisynthVideoSource::AvisynthVideoSource() :
                     avsHandle.func.avs_get_error(avsHandle.env));
         if(error) {
             throw vfg::exception::VideoSourceError(
-                        "Failed to create script environment: " + error.get());
+                        std::string("Failed to create script environment: ") + error.get());
         }
     }
 }
