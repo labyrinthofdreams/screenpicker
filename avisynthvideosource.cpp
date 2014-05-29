@@ -44,21 +44,26 @@ QImage videoFrameToQImage(const std::unique_ptr<AVS_VideoFrame, Deleter>& frame,
 /**
  * @brief Call Deleter D on object T on scope exit
  *
- * RaiiDeleter will hold a reference to the object being deleted
+ * RaiiDeleter wraps an object of type T and calls
+ * Deleter D when the object is destructed
  */
 template <class T, class D>
 class RaiiDeleter {
-    T& _object;
+    T _object;
     D _deleter;
 
 public:
-    RaiiDeleter(T& object, D deleter) :
+    RaiiDeleter(T object, D deleter) :
         _object(object),
         _deleter(deleter) {
     }
 
     ~RaiiDeleter() {
         _deleter(_object);
+    }
+
+    T& get() {
+        return _object;
     }
 };
 
@@ -97,24 +102,24 @@ void vfg::core::AvisynthVideoSource::load(const QString& fileName)
 {
     auto&& hf = avsHandle.func;
 
-    AVS_Value res = avs_void;
-    RaiiDeleter<AVS_Value, decltype(hf.avs_release_value)> cleanup(
-                res, hf.avs_release_value);
+    RaiiDeleter<AVS_Value, decltype(hf.avs_release_value)> res(
+                avs_void, hf.avs_release_value);
     {
         // Initialize res by attempting to import the script
-        AVS_Value arg = avs_new_value_string(fileName.toLocal8Bit().constData());
-        res = hf.avs_invoke(avsHandle.env, "Import", arg, NULL);
-        hf.avs_release_value(arg);
+        RaiiDeleter<AVS_Value, decltype(hf.avs_release_value)> arg(
+                    avs_void, hf.avs_release_value);
+        arg.get() = avs_new_value_string(fileName.toLocal8Bit().constData());
+        res.get() = hf.avs_invoke(avsHandle.env, "Import", arg.get(), NULL);
     }
 
-    if(avs_is_error(res)) {
-        throw vfg::exception::VideoSourceError(avs_as_string(res));
+    if(avs_is_error(res.get())) {
+        throw vfg::exception::VideoSourceError(avs_as_string(res.get()));
     }
-    if(!avs_is_clip(res)) {
+    if(!avs_is_clip(res.get())) {
         throw vfg::exception::VideoSourceError("Imported script did not return a video clip");
     }
 
-    avsHandle.clip = hf.avs_take_clip(res, avsHandle.env);
+    avsHandle.clip = hf.avs_take_clip(res.get(), avsHandle.env);
     info = hf.avs_get_video_info(avsHandle.clip);
     if(!avs_has_video(info.get())) {
         throw vfg::exception::VideoSourceError("Imported script does not have video data");
