@@ -96,9 +96,16 @@ vfg::core::AvisynthVideoSource::~AvisynthVideoSource()
 void vfg::core::AvisynthVideoSource::load(const QString& fileName)
 {
     auto&& hf = avsHandle.func;
-    AVS_Value arg = avs_new_value_string(fileName.toLocal8Bit().constData());
-    AVS_Value res = hf.avs_invoke(avsHandle.env, "Import", arg, NULL);
-    RaiiDeleter<AVS_Value, decltype(hf.avs_release_value)> cleanup(res, hf.avs_release_value);
+
+    AVS_Value res = avs_void;
+    RaiiDeleter<AVS_Value, decltype(hf.avs_release_value)> cleanup(
+                res, hf.avs_release_value);
+    {
+        // Initialize res by attempting to import the script
+        AVS_Value arg = avs_new_value_string(fileName.toLocal8Bit().constData());
+        res = hf.avs_invoke(avsHandle.env, "Import", arg, NULL);
+        hf.avs_release_value(arg);
+    }
 
     if(avs_is_error(res)) {
         throw vfg::exception::VideoSourceError(avs_as_string(res));
