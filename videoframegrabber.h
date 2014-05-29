@@ -84,6 +84,7 @@ public:
      * Requests are between range \link vfg::FirstFrame \endlink - \link totalFrames() \endlink
      *
      * @param frameNum Frame to request
+     * @exception std::runtime_error If frameNum is out of range
      * @return Frame
      */
     QImage getFrame(int frameNum);

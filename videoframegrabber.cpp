@@ -119,9 +119,8 @@ void vfg::core::VideoFrameGrabber::requestPreviousFrame()
 QImage vfg::core::VideoFrameGrabber::getFrame(const int frameNum)
 {
     if(!isValidFrame(frameNum)) {
-        emit errorOccurred(tr("Frame number out of range: %1")
-                           .arg(QString::number(frameNum)));
-        return QImage();
+        throw std::runtime_error(tr("Frame number out of range: %1")
+                           .arg(QString::number(frameNum)).toStdString());
     }
 
     QMutexLocker ml(&mutex);
