@@ -16,7 +16,7 @@ public:
     AvisynthVideoSource();
     ~AvisynthVideoSource() override;
 
-    void load(QString fileName) override;
+    void load(const QString& fileName) override;
     bool hasVideo() const override;
     int getNumFrames() const override;
     QImage getFrame(int frameNumber) override;

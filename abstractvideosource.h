@@ -58,7 +58,7 @@ public:
      * @brief Load given file
      * @param fileName Path to video
      */
-    virtual void load(QString fileName) = 0;
+    virtual void load(const QString& fileName) = 0;
 
     /**
      * @brief Get video status
@@ -74,10 +74,8 @@ public:
 
     /**
      * @brief Get frame from the video source
-     *
-     * This function does not throw
-     *
      * @param frameNumber Frame to request
+     * @exception vfg::exception::VideoSourceError
      * @return The requested frame. Empty QImage on error.
      */
     virtual QImage getFrame(int frameNumber) = 0;

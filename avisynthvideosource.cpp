@@ -41,7 +41,7 @@ vfg::core::AvisynthVideoSource::~AvisynthVideoSource()
     FreeLibrary(avsHandle.library);
 }
 
-void vfg::core::AvisynthVideoSource::load(const QString fileName)
+void vfg::core::AvisynthVideoSource::load(const QString& fileName)
 {
     // If you don't store the converted data temporarily,
     // you will have a memory leak (or so they say)
