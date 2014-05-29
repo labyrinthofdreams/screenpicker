@@ -3,6 +3,7 @@
 
 #include "abstractvideosource.h"
 #include "avs_internal.c"
+#include "ptrutil.hpp"
 
 namespace vfg {
 namespace core {
@@ -11,7 +12,7 @@ class AvisynthVideoSource : public vfg::core::AbstractVideoSource
 {
 private:
     avs_hnd_t avsHandle;
-    const AVS_VideoInfo* info;
+    util::observer_ptr<const AVS_VideoInfo> info;
 public:
     AvisynthVideoSource();
     ~AvisynthVideoSource() override;
