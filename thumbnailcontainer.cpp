@@ -10,7 +10,8 @@ vfg::ui::ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
     QWidget(parent),
     layout(new FlowLayout),
     activeWidget(nullptr),
-    maxThumbnails(std::numeric_limits<int>::max())
+    maxThumbnails(std::numeric_limits<int>::max()),
+    thumbnailWidth(200)
 {
     setLayout(layout.get());
 }
@@ -34,6 +35,8 @@ void vfg::ui::ThumbnailContainer::addThumbnail(std::unique_ptr<vfg::ui::VideoFra
     if(!thumbnail) {
         return;
     }
+
+    thumbnail->setFixedWidth(thumbnailWidth);
 
     connect(thumbnail.get(),    SIGNAL(selected(vfg::ui::VideoFrameThumbnail*)),
             this,               SLOT(handleThumbnailSelection(vfg::ui::VideoFrameThumbnail*)));
@@ -66,6 +69,8 @@ void vfg::ui::ThumbnailContainer::resizeThumbnails(const int width)
     for(util::observer_ptr<QLayoutItem> item : *layout) {
         item->widget()->setFixedWidth(width);
     }
+
+    thumbnailWidth = width;
 }
 
 void vfg::ui::ThumbnailContainer::handleThumbnailSelection(vfg::ui::VideoFrameThumbnail *thumbnail)

@@ -129,6 +129,11 @@ MainWindow::MainWindow(QWidget *parent) :
         // Scale by default
         ui->actionScaleToWindow->setChecked(true);
         ui->videoPreviewWidget->setZoom(vfg::ZoomMode::Zoom_Scale);
+
+        // Set default thumbnail sizes for the containers
+        const auto thumbnailSize = ui->thumbnailSizeSlider->value();
+        ui->unsavedWidget->resizeThumbnails(thumbnailSize);
+        ui->savedWidget->resizeThumbnails(thumbnailSize);
     }
     catch(std::exception& ex)
     {
@@ -234,11 +239,8 @@ void MainWindow::frameReceived(const QPair<int, QImage>& frame)
     // TODO: Is a lock needed here?
     qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
 
-    const int thumbnailSize = ui->thumbnailSizeSlider->value();
-    QPixmap thumbnail = QPixmap::fromImage(frame.second).scaledToWidth(200, Qt::SmoothTransformation);
-
+    auto thumbnail = QPixmap::fromImage(frame.second).scaledToWidth(200, Qt::SmoothTransformation);
     auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(frame.first, std::move(thumbnail));
-    thumb->setFixedWidth(thumbnailSize);
 
     connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
             this,           SLOT(handleUnsavedMenu(QPoint)));
@@ -684,12 +686,9 @@ void MainWindow::on_generateButton_clicked()
 void MainWindow::on_grabButton_clicked()
 {
     const int selected = ui->seekSlider->value();
-    const int thumbnailSize = ui->thumbnailSizeSlider->value();
     QImage frame = frameGrabber->getFrame(selected);
-    QPixmap thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
-
-    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(selected, thumbnail);
-    thumb->setFixedWidth(thumbnailSize);
+    auto thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
+    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(selected, std::move(thumbnail));
 
     connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
             this,           SLOT(handleSavedMenu(QPoint)));

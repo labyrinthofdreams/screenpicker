@@ -39,6 +39,9 @@ private:
     //! Number of thumbnails allowed in the container
     int maxThumbnails;
 
+    //! Thumbnail width in pixels (default: 200)
+    int thumbnailWidth;
+
     /**
      * @brief Removes the oldest thumbnail from the container
      *
