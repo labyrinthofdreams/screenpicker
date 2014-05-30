@@ -140,7 +140,7 @@ bool vfg::core::AvisynthVideoSource::hasVideo() const
 
 int vfg::core::AvisynthVideoSource::getNumFrames() const
 {
-    if(!info) {
+    if(!hasVideo()) {
         return 0;
     }
 
@@ -149,8 +149,8 @@ int vfg::core::AvisynthVideoSource::getNumFrames() const
 
 QImage vfg::core::AvisynthVideoSource::getFrame(const int frameNumber)
 {
-    if(!info) {
-        throw vfg::exception::VideoSourceError("Invalid video source handle");
+    if(!hasVideo()) {
+        throw vfg::exception::VideoSourceError("Invalid video source");
     }
 
     if(frameNumber < 0 || frameNumber >= info->num_frames) {
@@ -177,7 +177,7 @@ QString vfg::core::AvisynthVideoSource::getSupportedFormats()
 
 bool vfg::core::AvisynthVideoSource::isValidFrame(const int frameNum) const
 {
-    return frameNum >= 0 && frameNum < info->num_frames;
+    return hasVideo() && frameNum >= 0 && frameNum < info->num_frames;
 }
 
 vfg::ScriptParser vfg::core::AvisynthVideoSource::getParser(const QFileInfo& info) const
