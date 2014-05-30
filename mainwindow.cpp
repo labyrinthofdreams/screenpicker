@@ -532,22 +532,20 @@ void MainWindow::videoLoaded()
 
     const int numFrames = frameGrabber->totalFrames() - 1;
 
-    int lastRequestedFrame = frameGrabber->lastFrame();
+    // lastRequestedFrame may be out of range when the script
+    // is reloaded via the editor and when the script produces
+    // video with fewer frames than the last requested frame
+    const int lastRequestedFrame = frameGrabber->lastFrame();
     const bool invalidRange = !frameGrabber->isValidFrame(lastRequestedFrame);
-    if(invalidRange) {
-        // lastRequestedFrame may be out of range when the script
-        // is reloaded via the editor and when the script produces
-        // video with fewer frames than the last requested frame
-        lastRequestedFrame = 0;
-    }
+    const int jumpToFrame = invalidRange ? 0 : lastRequestedFrame;
 
     // Update widgets
-    ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
+    ui->currentFrameLabel->setText(QString::number(jumpToFrame));
     ui->totalFramesLabel->setText(QString::number(numFrames));
 
     ui->seekSlider->setEnabled(true);
     ui->seekSlider->setMaximum(numFrames);
-    ui->seekSlider->setValue(lastRequestedFrame);
+    ui->seekSlider->setValue(jumpToFrame);
 
     ui->previousButton->setEnabled(true);
     ui->nextButton->setEnabled(true);
@@ -556,7 +554,7 @@ void MainWindow::videoLoaded()
     ui->saveSingleButton->setEnabled(true);
 
     QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
-                              Qt::QueuedConnection, Q_ARG(int, lastRequestedFrame));
+                              Qt::QueuedConnection, Q_ARG(int, jumpToFrame));
 
     // Load config
     const bool showEditor = config.value("showscripteditor").toBool();
