@@ -685,17 +685,17 @@ void MainWindow::on_generateButton_clicked()
 
 void MainWindow::on_grabButton_clicked()
 {
-    const int selected = ui->seekSlider->value();
-    QImage frame = frameGrabber->getFrame(selected);
+    const int selectedFrame = ui->seekSlider->value();
+    QImage frame = frameGrabber->getFrame(selectedFrame);
     auto thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
-    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(selected, std::move(thumbnail));
+    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(selectedFrame, std::move(thumbnail));
 
     connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
             this,           SLOT(handleSavedMenu(QPoint)));
 
     ui->savedWidget->addThumbnail(std::move(thumb));
 
-    statusBar()->showMessage(tr("Grabbed frame #%1").arg(selected), 3000);
+    statusBar()->showMessage(tr("Grabbed frame #%1").arg(selectedFrame), 3000);
 }
 
 void MainWindow::handleUnsavedMenu(const QPoint &pos)
