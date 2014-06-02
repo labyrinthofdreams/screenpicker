@@ -1,7 +1,6 @@
 #ifndef VFG_VIDEOSETTINGSWIDGET_H
 #define VFG_VIDEOSETTINGSWIDGET_H
 
-#include <map>
 #include <memory>
 #include <QMap>
 #include <QWidget>
@@ -11,7 +10,6 @@ class QCloseEvent;
 class QRect;
 class QShowEvent;
 class QString;
-template <class T, class U> class QPair;
 
 namespace Ui {
     class VideoSettingsWidget;
@@ -85,9 +83,6 @@ private:
     struct {
         int left, top, right, bottom;
     } crop = {0, 0, 0, 0};
-
-    using VideoSize = QPair<int, int>;
-    std::map<int, VideoSize> resolutions;
 
     /**
      * @brief Common DVD aspect ratios for the resize dropdown

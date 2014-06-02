@@ -1,8 +1,8 @@
-#include <map>
 #include <QCloseEvent>
 #include <QMap>
 #include <QRect>
 #include <QShowEvent>
+#include <QSize>
 #include <QString>
 #include "ptrutil.hpp"
 #include "videosettingswidget.h"
@@ -21,21 +21,10 @@ constexpr int noneg(const int x)
 vfg::ui::VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
     QWidget(parent),
     ui(nullptr),
-    prevSettings(),
-    resolutions()
+    prevSettings()
 {
     ui = util::make_unique<Ui::VideoSettingsWidget>();
     ui->setupUi(this);
-
-    std::map<int, VideoSize> sizes {
-        {Default_AR, {0, 0}},
-        {NTSC_16_9, {854, 480}},
-        {NTSC_4_3, {720, 540}},
-        {PAL_16_9, {1024, 576}},
-        {PAL_4_3, {768, 576}}
-    };
-
-    resolutions.swap(sizes);
 
     ui->cboxDvdResolution->insertItem(Default_AR, tr("Default"));
     ui->cboxDvdResolution->insertItem(NTSC_16_9, tr("NTSC 16:9"));
@@ -62,9 +51,17 @@ vfg::ui::VideoSettingsWidget::~VideoSettingsWidget() {
 
 void vfg::ui::VideoSettingsWidget::on_cboxDvdResolution_activated(const int index)
 {
-    const VideoSize res = resolutions[index];
-    ui->sboxResizeWidth->setValue(res.first);
-    ui->sboxResizeHeight->setValue(res.second);
+    static const QMap<int, QSize> resolutions {
+        {Default_AR, {0, 0}},
+        {NTSC_16_9, {854, 480}},
+        {NTSC_4_3, {720, 540}},
+        {PAL_16_9, {1024, 576}},
+        {PAL_4_3, {768, 576}}
+    };
+
+    const auto& res = resolutions.value(index);
+    ui->sboxResizeWidth->setValue(res.width());
+    ui->sboxResizeHeight->setValue(res.height());
 }
 
 void vfg::ui::VideoSettingsWidget::on_pushButton_clicked()
