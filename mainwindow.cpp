@@ -338,7 +338,8 @@ void MainWindow::loadFile(const QString& path)
         const QFileInfo info(path);
         config.setValue("last_opened", info.absoluteFilePath());
 
-        QMap<QString, int> videoSettings = videoSettingsWindow->getSettings();
+        QMap<QString, QVariant> videoSettings = videoSettingsWindow->getSettings();
+        videoSettings.insert("avisynthpluginspath", config.value("avisynthpluginspath"));
 
         // Only overwrite values in video settings if
         // they've not been set explicitly by the user

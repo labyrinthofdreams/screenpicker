@@ -10,6 +10,7 @@ class QCloseEvent;
 class QRect;
 class QShowEvent;
 class QString;
+class QVariant;
 
 namespace Ui {
     class VideoSettingsWidget;
@@ -43,7 +44,7 @@ public:
      * @brief Retrieve current settings
      * @return Settings as a map
      */
-    QMap<QString, int> getSettings() const;
+    QMap<QString, QVariant> getSettings() const;
 
     /**
      * @brief Reset all settings to default values
@@ -78,7 +79,7 @@ private slots:
 private:
     std::unique_ptr<Ui::VideoSettingsWidget> ui;
 
-    QMap<QString, int> prevSettings;
+    QMap<QString, QVariant> prevSettings;
 
     struct {
         int left, top, right, bottom;

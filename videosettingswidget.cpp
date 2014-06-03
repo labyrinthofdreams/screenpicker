@@ -4,6 +4,7 @@
 #include <QShowEvent>
 #include <QSize>
 #include <QString>
+#include <QVariant>
 #include "ptrutil.hpp"
 #include "videosettingswidget.h"
 #include "ui_videosettingswidget.h"
@@ -118,19 +119,19 @@ void vfg::ui::VideoSettingsWidget::closeEvent(QCloseEvent *event)
     ui->sboxCropLeft->setValue(0);
     ui->sboxCropRight->setValue(0);
     ui->sboxCropTop->setValue(0);
-    ui->sboxResizeHeight->setValue(prevSettings.value("resizeheight"));
-    ui->sboxResizeWidth->setValue(prevSettings.value("resizewidth"));
+    ui->sboxResizeHeight->setValue(prevSettings.value("resizeheight").toInt());
+    ui->sboxResizeWidth->setValue(prevSettings.value("resizewidth").toInt());
     ui->radioButton->setChecked(true);
-    ui->radioDeinterlace->setChecked(static_cast<bool>(prevSettings.value("deinterlace")));
-    ui->radioInverseTelecine->setChecked(static_cast<bool>(prevSettings.value("ivtc")));
-    ui->cboxDvdResolution->setCurrentIndex(prevSettings.value("dvdresolutionidx"));
+    ui->radioDeinterlace->setChecked(prevSettings.value("deinterlace").toBool());
+    ui->radioInverseTelecine->setChecked(prevSettings.value("ivtc").toBool());
+    ui->cboxDvdResolution->setCurrentIndex(prevSettings.value("dvdresolutionidx").toInt());
 
     event->accept();
 }
 
-QMap<QString, int> vfg::ui::VideoSettingsWidget::getSettings() const
+QMap<QString, QVariant> vfg::ui::VideoSettingsWidget::getSettings() const
 {
-    QMap<QString, int> settings;
+    QMap<QString, QVariant> settings;
     settings.clear();
     settings.insert("croptop", crop.top);
     settings.insert("cropright", crop.right);
@@ -138,8 +139,8 @@ QMap<QString, int> vfg::ui::VideoSettingsWidget::getSettings() const
     settings.insert("cropleft", crop.left);
     settings.insert("resizewidth", ui->sboxResizeWidth->value());
     settings.insert("resizeheight", ui->sboxResizeHeight->value());
-    settings.insert("ivtc", static_cast<int>(ui->radioInverseTelecine->isChecked()));
-    settings.insert("deinterlace", static_cast<int>(ui->radioDeinterlace->isChecked()));
+    settings.insert("ivtc", ui->radioInverseTelecine->isChecked());
+    settings.insert("deinterlace", ui->radioDeinterlace->isChecked());
     settings.insert("dvdresolutionidx", ui->cboxDvdResolution->currentIndex());
     return settings;
 }

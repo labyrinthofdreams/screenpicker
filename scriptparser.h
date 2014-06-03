@@ -6,6 +6,8 @@
 #include <QString>
 #include <QtContainerFwd>
 
+class QVariant;
+
 namespace vfg {
 
 class ScriptParserError : public std::runtime_error
@@ -20,7 +22,7 @@ class ScriptParser
 public:
     explicit ScriptParser(QString filePath);
     virtual ~ScriptParser() = default;
-    virtual QString parse(const QMap<QString, int>& settings) const;
+    virtual QString parse(const QMap<QString, QVariant>& settings) const;
     virtual void setTemplate(QString path);
 
 protected:
