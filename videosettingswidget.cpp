@@ -146,6 +146,9 @@ QMap<QString, int> vfg::ui::VideoSettingsWidget::getSettings() const
 
 void vfg::ui::VideoSettingsWidget::resetSettings()
 {
+    crop.bottom = crop.left = crop.right = crop.top = 0;
+    prevSettings.clear();
+
     ui->sboxCropBottom->setValue(0);
     ui->sboxCropLeft->setValue(0);
     ui->sboxCropRight->setValue(0);
