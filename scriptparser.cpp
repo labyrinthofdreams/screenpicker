@@ -49,16 +49,12 @@ QString vfg::ScriptParser::parse(const QMap<QString, int>& settings) const
             data["deinterlace"] = make_data("true");
         }
 
-        // lambda function to convert odd numbers to even values
-        // TODO: Probably doesn't belong here (unexpected value modification)
-        auto upconvert_odd = [](const int n){return (n % 2 == 0) ? n : n + 1;};
-
         const int resizeWidth = settings.value("resizewidth", 0);
         const int resizeHeight = settings.value("resizeheight", 0);
         if(resizeWidth || resizeHeight) {
             templet::DataMap resize;
-            resize["width"] = make_data(upconvert_odd(resizeWidth));
-            resize["height"] = make_data(upconvert_odd(resizeHeight));
+            resize["width"] = make_data(resizeWidth);
+            resize["height"] = make_data(resizeHeight);
             data["resize"] = make_data(resize);
         }
 
@@ -68,10 +64,10 @@ QString vfg::ScriptParser::parse(const QMap<QString, int>& settings) const
         const int cropLeft = settings.value("cropleft", 0);
         if(cropTop || cropRight || cropBottom || cropLeft) {
             templet::DataMap crop;
-            crop["top"] = make_data(upconvert_odd(cropTop));
-            crop["right"] = make_data(upconvert_odd(cropRight));
-            crop["bottom"] = make_data(upconvert_odd(cropBottom));
-            crop["left"] = make_data(upconvert_odd(cropLeft));
+            crop["top"] = make_data(cropTop);
+            crop["right"] = make_data(cropRight);
+            crop["bottom"] = make_data(cropBottom);
+            crop["left"] = make_data(cropLeft);
             data["crop"] = make_data(crop);
         }
 
