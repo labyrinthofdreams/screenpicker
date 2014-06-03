@@ -69,18 +69,13 @@ void vfg::ui::VideoSettingsWidget::on_pushButton_clicked()
     // Override previous settings when applying new settings
     prevSettings = getSettings();
 
-    crop.left += ui->sboxCropLeft->value();
-    crop.top += ui->sboxCropTop->value();
-    crop.right += ui->sboxCropRight->value();
-    crop.bottom += ui->sboxCropBottom->value();
-
-    // Negative crop values must be checked only after
-    // the current crop values have been added to existing values,
-    // otherwise it is not possible to use negative values at all
-    crop.left = noneg(crop.left);
-    crop.top = noneg(crop.top);
-    crop.right = noneg(crop.right);
-    crop.bottom = noneg(crop.bottom);
+    // Since the crop values are always relative to the original
+    // frame we cannot have negative crop values which may result
+    // if the user is attempting to apply too large negative crop value
+    crop.left = noneg(crop.left + ui->sboxCropLeft->value());
+    crop.top = noneg(crop.top + ui->sboxCropTop->value());
+    crop.right = noneg(crop.right + ui->sboxCropRight->value());
+    crop.bottom = noneg(crop.bottom + ui->sboxCropBottom->value());
 
     ui->sboxCropBottom->setValue(0);
     ui->sboxCropLeft->setValue(0);
