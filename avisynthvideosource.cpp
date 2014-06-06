@@ -62,6 +62,16 @@ public:
         _deleter(_object);
     }
 
+    RaiiDeleter& operator=(const T& other) {
+        _object = other;
+        return *this;
+    }
+
+    RaiiDeleter& operator=(T&& other) {
+        _object = std::move(other);
+        return *this;
+    }
+
     T& get() {
         return _object;
     }
@@ -108,8 +118,8 @@ void vfg::core::AvisynthVideoSource::load(const QString& fileName)
         // Initialize res by attempting to import the script
         RaiiDeleter<AVS_Value, decltype(hf.avs_release_value)> arg(
                     avs_void, hf.avs_release_value);
-        arg.get() = avs_new_value_string(fileName.toLocal8Bit().constData());
-        res.get() = hf.avs_invoke(avsHandle.env, "Import", arg.get(), NULL);
+        arg = avs_new_value_string(fileName.toLocal8Bit().constData());
+        res = hf.avs_invoke(avsHandle.env, "Import", arg.get(), NULL);
     }
 
     if(avs_is_error(res.get())) {
