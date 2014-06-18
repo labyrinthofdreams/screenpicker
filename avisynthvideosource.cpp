@@ -10,133 +10,48 @@
 #include "ptrutil.hpp"
 #include "scriptparser.h"
 
+// TODO: Re-throw AvisynthErrors as VideoSourceErrors
+
 /**
  * @brief Convert AVS_VideoFrame to QImage (32-bit ARGB)
- * @param frame Unique pointer to AVS_VideoFrame
- * @param width Pixel width of the frame
- * @param height Pixel height of the frame
+ * @param frame VideoFrame
  * @exception std::runtime_error If frame is nullptr
  * @return Frame as QImage
  */
-template <class Deleter>
 static
-QImage videoFrameToQImage(const std::unique_ptr<AVS_VideoFrame, Deleter>& frame,
+QImage videoFrameToQImage(const vfg::avisynth::VideoFrame& frame,
                           const std::size_t width,
                           const std::size_t height) {
-    if(!frame) {
+    if(!frame.isValid()) {
         throw std::runtime_error("Frame must be a valid object");
     }
 
+    const auto scanlineLength = width * 4;
+    const auto pitch = frame.pitch();
+    const auto data = frame.data();
     QImage image(width, height, QImage::Format_ARGB32);
-    const std::size_t scanlineLength = width * 4;
-    const std::size_t pitch = avs_get_pitch(frame.get());
-    const util::observer_ptr<const BYTE> data = avs_get_read_ptr(frame.get());
-
-    for(int y = 0, sy = height - 1; y < height; ++y, --sy) {
+    for(std::size_t y = 0, sy = height - 1; y < height; ++y, --sy) {
         // If we used y instead of sy in the scanLine function
         // the image would be created upside-down
-        std::memcpy(image.scanLine(sy), data.get() + y * pitch, scanlineLength);
+        std::memcpy(image.scanLine(sy), data + y * pitch, scanlineLength);
     }
 
     return image;
 }
 
-/**
- * @brief Call Deleter D on object T on scope exit
- *
- * RaiiDeleter wraps an object of type T and calls
- * Deleter D when the object is destructed
- */
-template <class T, class D>
-class RaiiDeleter {
-    T _object;
-    D _deleter;
-
-public:
-    RaiiDeleter(T object, D deleter) :
-        _object(object),
-        _deleter(deleter) {
-    }
-
-    ~RaiiDeleter() {
-        _deleter(_object);
-    }
-
-    RaiiDeleter& operator=(const T& other) {
-        _object = other;
-        return *this;
-    }
-
-    RaiiDeleter& operator=(T&& other) {
-        _object = std::move(other);
-        return *this;
-    }
-
-    T& get() {
-        return _object;
-    }
-};
-
 vfg::core::AvisynthVideoSource::AvisynthVideoSource() :
     AbstractVideoSource(),
-    avsHandle(),
-    info()
+    avs()
 {
-    if(internal_avs_load_library(&avsHandle) < 0) {
-        throw vfg::exception::VideoSourceError("Failed to load AviSynth library");
-    }
 
-    avsHandle.env = avsHandle.func.avs_create_script_environment(AVS_INTERFACE_25);
-    if(avsHandle.func.avs_get_error) {
-        const util::observer_ptr<const char> error(
-                    avsHandle.func.avs_get_error(avsHandle.env));
-        if(error) {
-            throw vfg::exception::VideoSourceError(
-                        std::string("Failed to create script environment: ") + error.get());
-        }
-    }
-}
-
-vfg::core::AvisynthVideoSource::~AvisynthVideoSource()
-{
-    if(hasVideo()) {
-        avsHandle.func.avs_release_clip(avsHandle.clip);
-    }
-    if(avsHandle.func.avs_delete_script_environment) {
-        avsHandle.func.avs_delete_script_environment(avsHandle.env);
-    }
-    FreeLibrary(avsHandle.library);
 }
 
 void vfg::core::AvisynthVideoSource::load(const QString& fileName)
 {
-    auto&& hf = avsHandle.func;
-
-    RaiiDeleter<AVS_Value, decltype(hf.avs_release_value)> res(
-                avs_void, hf.avs_release_value);
-    {
-        // Initialize res by attempting to import the script
-        RaiiDeleter<AVS_Value, decltype(hf.avs_release_value)> arg(
-                    avs_void, hf.avs_release_value);
-        arg = avs_new_value_string(fileName.toLocal8Bit().constData());
-        res = hf.avs_invoke(avsHandle.env, "Import", arg.get(), NULL);
-    }
-
-    if(avs_is_error(res.get())) {
-        throw vfg::exception::VideoSourceError(avs_as_string(res.get()));
-    }
-    if(!avs_is_clip(res.get())) {
-        throw vfg::exception::VideoSourceError("Imported script did not return a video clip");
-    }
-
-    avsHandle.clip = hf.avs_take_clip(res.get(), avsHandle.env);
-    info = hf.avs_get_video_info(avsHandle.clip);
-    if(!avs_has_video(info.get())) {
-        throw vfg::exception::VideoSourceError("Imported script does not have video data");
-    }
+    avs.load(fileName.toStdString());
 
     // Video must be RGB32
-    if(!avs_is_rgb32(info.get())) {
+    if(avs.pixelFormat() != vfg::avisynth::PixelFormat::BGR32) {
         throw vfg::exception::VideoSourceError("Video is not RGB32. Add ConvertToRGB32() to your script.");
     }
 
@@ -145,38 +60,19 @@ void vfg::core::AvisynthVideoSource::load(const QString& fileName)
 
 bool vfg::core::AvisynthVideoSource::hasVideo() const
 {
-    return info && avs_has_video(info.get());
+    return avs.hasVideo();
 }
 
 int vfg::core::AvisynthVideoSource::getNumFrames() const
 {
-    if(!hasVideo()) {
-        return 0;
-    }
-
-    return info->num_frames;
+    return avs.numFrames();
 }
 
 QImage vfg::core::AvisynthVideoSource::getFrame(const int frameNumber)
 {
-    if(!hasVideo()) {
-        throw vfg::exception::VideoSourceError("Invalid video source");
-    }
+    const auto frame = avs.getFrame(frameNumber);
 
-    if(frameNumber < 0 || frameNumber >= info->num_frames) {
-        throw vfg::exception::VideoSourceError("Frame out of range");
-    }
-
-    auto&& hf = avsHandle.func;
-    const std::unique_ptr<AVS_VideoFrame, decltype(hf.avs_release_video_frame)> frame(
-                hf.avs_get_frame(avsHandle.clip, frameNumber),
-                hf.avs_release_video_frame);
-    const util::observer_ptr<const char> error = hf.avs_clip_get_error(avsHandle.clip);
-    if(error) {
-        throw vfg::exception::VideoSourceError(error.get());
-    }
-
-    return videoFrameToQImage(frame, info->width, info->height);
+    return videoFrameToQImage(frame, avs.width(), avs.height());
 }
 
 QString vfg::core::AvisynthVideoSource::getSupportedFormats()
@@ -187,10 +83,11 @@ QString vfg::core::AvisynthVideoSource::getSupportedFormats()
 
 bool vfg::core::AvisynthVideoSource::isValidFrame(const int frameNum) const
 {
-    return hasVideo() && frameNum >= 0 && frameNum < info->num_frames;
+    return avs.hasVideo() && frameNum >= 0 && frameNum < avs.numFrames();
 }
 
-vfg::ScriptParser vfg::core::AvisynthVideoSource::getParser(const QFileInfo& info) const
+vfg::ScriptParser
+vfg::core::AvisynthVideoSource::getParser(const QFileInfo& info) const
 {
     const QString absPath = info.absoluteFilePath();
     const QString suffix = info.suffix();

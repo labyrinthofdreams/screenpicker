@@ -2,8 +2,7 @@
 #define AVISYNTHVIDEOSOURCE_H
 
 #include "abstractvideosource.h"
-#include "avs_internal.c"
-#include "ptrutil.hpp"
+#include "avisynthwrapper.hpp"
 
 namespace vfg {
 namespace core {
@@ -11,11 +10,11 @@ namespace core {
 class AvisynthVideoSource : public vfg::core::AbstractVideoSource
 {
 private:
-    avs_hnd_t avsHandle;
-    util::observer_ptr<const AVS_VideoInfo> info;
+    vfg::avisynth::AvisynthWrapper avs;
+
 public:
     AvisynthVideoSource();
-    ~AvisynthVideoSource() override;
+    ~AvisynthVideoSource() override = default;
 
     void load(const QString& fileName) override;
     bool hasVideo() const override;

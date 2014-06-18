@@ -378,6 +378,10 @@ void MainWindow::loadFile(const QString& path)
     {
         QMessageBox::warning(this, tr("Error while processing script"), QString(ex.what()));
     }
+    catch(vfg::exception::AvisynthError& ex)
+    {
+        QMessageBox::warning(this, tr("Error while processing script"), QString(ex.what()));
+    }
     catch(std::exception& ex)
     {
         QMessageBox::warning(this, tr("Error while loading file"),

@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     scriptparser.cpp \
     videosettingswidget.cpp \
     videopreviewwidget.cpp \
-    .\libs\templet\templet.cpp .\libs\templet\nodes.cpp .\libs\templet\types.cpp
+    .\libs\templet\templet.cpp .\libs\templet\nodes.cpp .\libs\templet\types.cpp \
+    avisynthwrapper.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -40,7 +41,8 @@ HEADERS  += mainwindow.h \
     scriptparser.h \
     videosettingswidget.h \
     videopreviewwidget.h \
-    ptrutil.hpp
+    ptrutil.hpp \
+    avisynthwrapper.hpp
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \

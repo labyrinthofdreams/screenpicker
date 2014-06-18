@@ -37,7 +37,7 @@ private:
 
     //! Tracks the last requested frame number to enable
     //! the use of next and prev member functions.
-    //! Value is between range 0 - (numFrames - 1)
+    //! Value is between range [0, numFrames)
     int currentFrame;
 
     mutable QMutex mutex;
@@ -45,6 +45,7 @@ private:
 public:
     /**
      * @brief Constructor
+     * @pre avs must not be nullptr
      * @param avs Shared pointer to video source
      * @param parent Owner of the object
      * @exception std::runtime_error If avs is nullptr
@@ -60,6 +61,7 @@ public:
 
     /**
      * @brief Set source to grab frames from
+     * @pre newAvs must not be nullptr
      * @param newAvs New video source
      * @exception std::runtime_error If avs is nullptr
      */
@@ -67,8 +69,7 @@ public:
 
     /**
      * @brief Get last requested frame number
-     *
-     * @return Last requested frame number + \link vfg::FirstFrame \endlink
+     * @return Last requested frame number
      */
     int lastFrame() const;
 
@@ -80,9 +81,7 @@ public:
 
     /**
      * @brief Get frame from video source
-     *
-     * Requests are between range \link vfg::FirstFrame \endlink - \link totalFrames() \endlink
-     *
+     * @pre frameNum must be between [0, numFrames)
      * @param frameNum Frame to request
      * @exception std::runtime_error If frameNum is out of range
      * @return Frame
@@ -114,11 +113,10 @@ public slots:
     /**
      * @brief Get frame from video source
      *
-     * Requests are between range \link vfg::FirstFrame \endlink - \link totalFrames() \endlink
-     *
      * This is a slot equivalent of \link getFrame \endlink
      * It emits \link frameGrabbed \endlink instead of returning QImage
      *
+     * @pre Requests are between range [0, numFrames)
      * @param frameNum
      */
     void requestFrame(int frameNum);
