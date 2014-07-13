@@ -539,8 +539,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>98</width>
-                   <height>28</height>
+                   <width>764</width>
+                   <height>200</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -615,6 +615,9 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionOpen_DVD"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuVideo">
@@ -631,9 +634,6 @@
      <addaction name="action200"/>
      <addaction name="actionScaleToWindow"/>
     </widget>
-    <addaction name="actionOpen"/>
-    <addaction name="actionOpen_DVD"/>
-    <addaction name="separator"/>
     <addaction name="menuZoom"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -651,9 +651,16 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionMake_Gif_Image"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuVideo"/>
    <addaction name="menuView"/>
+   <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -751,6 +758,16 @@
    </property>
    <property name="text">
     <string>200%</string>
+   </property>
+  </action>
+  <action name="actionMake_GIF_Image">
+   <property name="text">
+    <string>Make GIF Image</string>
+   </property>
+  </action>
+  <action name="actionMake_Gif_Image">
+   <property name="text">
+    <string>Create GIF Image</string>
    </property>
   </action>
  </widget>
