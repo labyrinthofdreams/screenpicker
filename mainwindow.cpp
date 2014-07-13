@@ -408,7 +408,7 @@ void MainWindow::videoZoomChanged(QAction* action)
 
 void MainWindow::contextMenuOnPreview(const QPoint &pos)
 {
-    ui->menuZoom->exec(ui->videoPreviewWidget->mapToGlobal(pos));
+    ui->menuVideo->exec(ui->videoPreviewWidget->mapToGlobal(pos));
 }
 
 void MainWindow::updateDvdProgressDialog(const int progress)
