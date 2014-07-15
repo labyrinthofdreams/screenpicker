@@ -8,6 +8,7 @@
 #include "avisynthvideosource.h"
 #include "configdialog.h"
 #include "dvdprocessor.h"
+#include "gifmakerwidget.hpp"
 #include "ptrutil.hpp"
 #include "scripteditor.h"
 #include "scriptparser.h"
@@ -63,7 +64,7 @@ QPair<int, int> getVideoResolution(const QString& path) {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(nullptr),
+    ui(new Ui::MainWindow),
     frameGrabberThread(nullptr),
     frameGeneratorThread(nullptr),
     videoZoomGroup(nullptr),
@@ -74,9 +75,10 @@ MainWindow::MainWindow(QWidget *parent) :
     scriptEditor(nullptr),
     videoSettingsWindow(nullptr),
     dvdProcessor(nullptr),
+    previewContext(nullptr),
+    gifMaker(nullptr),
     config("config.ini", QSettings::IniFormat)
 {
-    ui = util::make_unique<Ui::MainWindow>();
     ui->setupUi(this);
 
     try
@@ -134,6 +136,8 @@ MainWindow::MainWindow(QWidget *parent) :
         const auto thumbnailSize = ui->thumbnailSizeSlider->value();
         ui->unsavedWidget->resizeThumbnails(thumbnailSize);
         ui->savedWidget->resizeThumbnails(thumbnailSize);
+
+        previewContext = ui->menuVideo;
     }
     catch(std::exception& ex)
     {
@@ -193,10 +197,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->savedWidget,    SIGNAL(thumbnailDoubleClicked(int)),
             this,               SLOT(thumbnailDoubleClicked(int)));
+
+    connect(ui->menuCreateGIFImage, SIGNAL(triggered(QAction*)),
+            this, SLOT(gitContextMenuTriggered(QAction*)));
 }
 
 MainWindow::~MainWindow()
 {
+    delete ui;
 }
 
 void MainWindow::closeEvent(QCloseEvent *ev)
@@ -408,7 +416,7 @@ void MainWindow::videoZoomChanged(QAction* action)
 
 void MainWindow::contextMenuOnPreview(const QPoint &pos)
 {
-    ui->menuVideo->exec(ui->videoPreviewWidget->mapToGlobal(pos));
+    previewContext->exec(ui->videoPreviewWidget->mapToGlobal(pos));
 }
 
 void MainWindow::updateDvdProgressDialog(const int progress)
@@ -1030,4 +1038,41 @@ void MainWindow::on_actionVideo_Settings_triggered()
     videoSettingsWindow->hide();
     videoSettingsWindow->show();
     videoSettingsWindow->setWindowState(Qt::WindowActive);
+}
+
+void MainWindow::activateGifMaker()
+{
+    if(previewContext == ui->menuCreateGIFImage) {
+        return;
+    }
+
+    if(!gifMaker) {
+        gifMaker = util::make_unique<vfg::ui::GifMakerWidget>();
+    }
+
+    previewContext = ui->menuCreateGIFImage;
+
+    const auto accepted = gifMaker->exec();
+    if(!accepted) {
+        previewContext = ui->menuVideo;
+    }
+}
+
+void MainWindow::on_actionCreateGifImage_triggered()
+{
+    activateGifMaker();
+}
+
+void MainWindow::gitContextMenuTriggered(QAction* action)
+{
+    const auto objName = action->objectName();
+    if(objName == "actionShowEditor") {
+        activateGifMaker();
+    }
+    else if(objName == "actionSetStartFrame") {
+        gifMaker->updateStartFrame(ui->seekSlider->value());
+    }
+    else if(objName == "actionSetEndFrame") {
+        gifMaker->updateLastFrame(ui->seekSlider->value());
+    }
 }

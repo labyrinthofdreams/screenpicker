@@ -77,7 +77,7 @@ private slots:
     void on_btnRevertCrop_clicked();
 
 private:
-    std::unique_ptr<Ui::VideoSettingsWidget> ui;
+    std::unique_ptr<::Ui::VideoSettingsWidget> ui;
 
     QMap<QString, QVariant> prevSettings;
 

@@ -1,7 +1,6 @@
 #ifndef CONFIGDIALOG_H
 #define CONFIGDIALOG_H
 
-#include <memory>
 #include <QDialog>
 
 namespace Ui {
@@ -37,8 +36,12 @@ private slots:
     void on_btnDgindexPath_clicked();
     void on_btnAvisynthPluginsPath_clicked();
 
+    void on_buttonImageMagickBrowse_clicked();
+
+    void on_buttonGifsicleBrowse_clicked();
+
 private:
-    std::unique_ptr<Ui::ConfigDialog> ui;
+    Ui::ConfigDialog* ui;
 };
 
 } // namespace vfg

@@ -32,7 +32,7 @@ private slots:
     void on_btnSaveAs_clicked();
 
 private:
-    Ui::ScriptEditor *ui;
+    ::Ui::ScriptEditor *ui;
 
     QString savePath;
     void setSavePath(QString path);

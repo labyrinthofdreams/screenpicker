@@ -16,6 +16,7 @@ a frame in the Screenshots tab and selecting save, and view them under the "Save
 - Crop, resize, and IVTC/Deinterlace without scripting via video settings window
 - Create Avisynth scripts manually in the application via the built-in Avisynth Script Editor
 and view results in the application after editing
+- Create GIF image sequences from video source
 
 Requirements:
 
@@ -25,6 +26,7 @@ Requirements:
 - templet (included as a submodule)
 - Avisynth 2.5.8 + plug-ins (DGDecode.dll, ffms2.dll, nnedi3.dll, TIVTC.dll, yadifmod.dll)
 - avinfo.exe
+- ImageMagick + gifsicle for GIFs
 
 Installation:
 
@@ -33,3 +35,8 @@ Installation:
 - Open screenpicker.pro in Qt Creator. Build->Build Project.
 - Put avinfo.exe and avisynth.dll in the executable directory
 - Create directory "avisynth" in the executable directory and put the avisynth plug-ins there
+
+FAQ
+==========
+Q: I want to create a GIF with frames from a user-provided script
+A: Set start frame, last frame, and skip frames to 0. Frame delay is used in output.

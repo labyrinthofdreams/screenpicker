@@ -8,9 +8,8 @@
 
 vfg::ConfigDialog::ConfigDialog(QWidget *parent) :
     QDialog(parent),
-    ui(nullptr)
+    ui(new Ui::ConfigDialog)
 {
-    ui = util::make_unique<Ui::ConfigDialog>();
     ui->setupUi(this);
 
     // Load settings
@@ -42,6 +41,8 @@ vfg::ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->cbSaveDgindexFiles->setChecked(saveDgIndexFiles);
     ui->cbShowVideoSettings->setChecked(cfg.value("showvideosettings").toBool());
     ui->cbResumeGeneratorAfterClear->setChecked(cfg.value("resumegeneratorafterclear").toBool());
+    ui->editImageMagickPath->setText(cfg.value("imagemagickpath").toString());
+    ui->editGifsiclePath->setText(cfg.value("gifsiclepath").toString());
 }
 
 vfg::ConfigDialog::~ConfigDialog() {
@@ -70,6 +71,8 @@ void vfg::ConfigDialog::on_buttonBox_accepted()
     cfg.setValue("savedgindexfiles", ui->cbSaveDgindexFiles->isChecked());
     cfg.setValue("showvideosettings", ui->cbShowVideoSettings->isChecked());
     cfg.setValue("resumegeneratorafterclear", ui->cbResumeGeneratorAfterClear->isChecked());
+    cfg.setValue("imagemagickpath", ui->editImageMagickPath->text());
+    cfg.setValue("gifsiclepath", ui->editGifsiclePath->text());
 }
 
 void vfg::ConfigDialog::on_btnDgindexPath_clicked()
@@ -85,4 +88,20 @@ void vfg::ConfigDialog::on_btnAvisynthPluginsPath_clicked()
     QString path = QFileDialog::getExistingDirectory(this,
                                         tr("Avisynth Plugins Directory"), "/");
     ui->avisynthPluginsPathLineEdit->setText(std::move(path));
+}
+
+void vfg::ConfigDialog::on_buttonImageMagickBrowse_clicked()
+{
+    const QString path = QFileDialog::getOpenFileName(this,
+                                        tr("ImageMagick executable path"),
+                                        "/", "convert.exe");
+    ui->editImageMagickPath->setText(path);
+}
+
+void vfg::ConfigDialog::on_buttonGifsicleBrowse_clicked()
+{
+    const QString path = QFileDialog::getOpenFileName(this,
+                                          tr("Gifsicle executable path"),
+                                          "/", "gifsicle.exe");
+    ui->editGifsiclePath->setText(path);
 }

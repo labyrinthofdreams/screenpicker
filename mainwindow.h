@@ -5,6 +5,7 @@
 #include <QMainWindow>
 #include <QSettings>
 #include <QtContainerFwd>
+#include "ptrutil.hpp"
 
 // Forward declarations
 class QAction;
@@ -12,6 +13,7 @@ class QActionGroup;
 class QCloseEvent;
 class QDragEvent;
 class QDropEvent;
+class QMenu;
 class QImage;
 class QPoint;
 class QProgressDialog;
@@ -26,6 +28,7 @@ namespace core {
     class VideoFrameGrabber;
 }
 namespace ui {
+    class GifMakerWidget;
     class ScriptEditor;
     class VideoFrameThumbnail;
     class VideoSettingsWidget;
@@ -152,15 +155,15 @@ private slots:
     void on_saveSingleButton_clicked();
     void on_cbUnlimitedScreens_clicked(bool checked);
     void on_btnPauseGenerator_clicked();
-
     void on_btnStopGenerator_clicked();
-
     void on_actionOpen_DVD_triggered();
-
     void on_actionVideo_Settings_triggered();
+    void on_actionCreateGifImage_triggered();
+
+    void gitContextMenuTriggered(QAction*);
 
 private:
-    std::unique_ptr<Ui::MainWindow> ui;
+    Ui::MainWindow* ui;
 
     std::unique_ptr<QThread> frameGrabberThread;
     std::unique_ptr<QThread> frameGeneratorThread;
@@ -177,6 +180,11 @@ private:
     std::unique_ptr<vfg::ui::VideoSettingsWidget> videoSettingsWindow;
     std::unique_ptr<vfg::DvdProcessor> dvdProcessor;
 
+    //! Current context menu for preview widget
+    util::observer_ptr<QMenu> previewContext;
+
+    std::unique_ptr<vfg::ui::GifMakerWidget> gifMaker;
+
     //! Application wide configuration settings
     QSettings config;
 
@@ -184,6 +192,8 @@ private:
      * @brief Resets widgets and member variables back to default
      */
     void resetState();
+
+    void activateGifMaker();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *ev);
