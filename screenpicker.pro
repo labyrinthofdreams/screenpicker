@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     videopreviewwidget.cpp \
     .\libs\templet\templet.cpp .\libs\templet\nodes.cpp .\libs\templet\types.cpp \
     avisynthwrapper.cpp \
-    gifmakerwidget.cpp
+    gifmakerwidget.cpp \
+    aboutwidget.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -44,13 +45,15 @@ HEADERS  += mainwindow.h \
     videopreviewwidget.h \
     ptrutil.hpp \
     avisynthwrapper.hpp \
-    gifmakerwidget.hpp
+    gifmakerwidget.hpp \
+    aboutwidget.hpp
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
     configdialog.ui \
     videosettingswidget.ui \
-    gifmakerwidget.ui
+    gifmakerwidget.ui \
+    aboutwidget.ui
 
 INCLUDEPATH += .\libs\avs2yuv\src \
     .\libs\templet

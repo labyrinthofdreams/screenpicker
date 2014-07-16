@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "aboutwidget.hpp"
 #include "avisynthvideosource.h"
 #include "configdialog.h"
 #include "dvdprocessor.h"
@@ -934,7 +935,8 @@ void MainWindow::on_frameStepSpinBox_valueChanged(const int arg1)
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::information(this, tr("About"), qApp->applicationVersion());
+    vfg::ui::AboutWidget a;
+    a.exec();
 }
 
 void MainWindow::on_saveSingleButton_clicked()
