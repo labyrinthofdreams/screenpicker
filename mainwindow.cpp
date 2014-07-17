@@ -1060,11 +1060,6 @@ void MainWindow::activateGifMaker()
     }
 }
 
-void MainWindow::on_actionCreateGifImage_triggered()
-{
-    activateGifMaker();
-}
-
 void MainWindow::gitContextMenuTriggered(QAction* action)
 {
     const auto objName = action->objectName();

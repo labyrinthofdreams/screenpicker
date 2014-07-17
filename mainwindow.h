@@ -158,7 +158,6 @@ private slots:
     void on_btnStopGenerator_clicked();
     void on_actionOpen_DVD_triggered();
     void on_actionVideo_Settings_triggered();
-    void on_actionCreateGifImage_triggered();
 
     void gitContextMenuTriggered(QAction*);
 
