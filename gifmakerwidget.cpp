@@ -55,7 +55,8 @@ void GifMakerWidget::on_spinLastFrame_valueChanged(const int value)
 void vfg::ui::GifMakerWidget::on_buttonAutoDelay_clicked()
 {
     const auto delay = (ui->spinSkipFrames->value() * 4) + 4;
-    const auto adjusted = delay <= 100 ? delay : 100;
+    const auto adjusted = delay <= ui->spinFrameDelay->maximum() ?
+                              delay : ui->spinFrameDelay->maximum();
     ui->spinFrameDelay->setValue(adjusted);
 }
 
