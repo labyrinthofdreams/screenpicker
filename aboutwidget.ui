@@ -20,7 +20,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>ScreenPicker 2.0</string>
+      <string>ScreenPicker 2.0 (c) 2012-2014</string>
      </property>
      <property name="scaledContents">
       <bool>false</bool>
@@ -30,7 +30,7 @@
    <item>
     <widget class="QLabel" name="label_6">
      <property name="text">
-      <string>URL: &lt;a href='https://github.com/labyrinthofdreams/screenpicker'&gt;https://github.com/labyrinthofdreams/screenpicker&lt;/a&gt;</string>
+      <string>&lt;a href='https://github.com/labyrinthofdreams/screenpicker'&gt;https://github.com/labyrinthofdreams/screenpicker&lt;/a&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::RichText</enum>
@@ -122,14 +122,6 @@
     </layout>
    </item>
   </layout>
-  <zorder>label</zorder>
-  <zorder>label_2</zorder>
-  <zorder>label_3</zorder>
-  <zorder>label_4</zorder>
-  <zorder>label_5</zorder>
-  <zorder>label_3</zorder>
-  <zorder>verticalSpacer</zorder>
-  <zorder>label_6</zorder>
  </widget>
  <resources/>
  <connections/>
