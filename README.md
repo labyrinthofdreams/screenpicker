@@ -38,5 +38,3 @@ Installation:
 
 FAQ
 ==========
-Q: I want to create a GIF with frames from a user-provided script
-A: Set start frame, last frame, and skip frames to 0. Frame delay is used in output.
