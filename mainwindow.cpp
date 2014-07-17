@@ -546,6 +546,8 @@ void MainWindow::videoLoaded()
 
     const int numFrames = frameGrabber->totalFrames() - 1;
 
+    gifMaker.reset(nullptr);
+
     // lastRequestedFrame may be out of range when the script
     // is reloaded via the editor and when the script produces
     // video with fewer frames than the last requested frame
