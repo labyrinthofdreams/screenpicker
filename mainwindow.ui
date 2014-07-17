@@ -656,6 +656,9 @@
      <string>Tools</string>
     </property>
     <widget class="QMenu" name="menuCreateGIFImage">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Create GIF Image</string>
      </property>
@@ -771,6 +774,9 @@
    </property>
   </action>
   <action name="actionShowEditor">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Show editor</string>
    </property>

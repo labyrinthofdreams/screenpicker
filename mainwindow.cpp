@@ -546,6 +546,7 @@ void MainWindow::videoLoaded()
 
     const int numFrames = frameGrabber->totalFrames() - 1;
 
+    ui->menuCreateGIFImage->setEnabled(true);
     gifMaker.reset(nullptr);
 
     // lastRequestedFrame may be out of range when the script
