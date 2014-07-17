@@ -52,7 +52,7 @@ void GifMakerWidget::on_spinLastFrame_valueChanged(const int value)
     updateLastFrame(value);
 }
 
-void vfg::ui::GifMakerWidget::on_buttonAutoDelay_clicked()
+void GifMakerWidget::on_buttonAutoDelay_clicked()
 {
     const auto delay = (ui->spinSkipFrames->value() * 4) + 4;
     const auto adjusted = delay <= ui->spinFrameDelay->maximum() ?
@@ -60,13 +60,13 @@ void vfg::ui::GifMakerWidget::on_buttonAutoDelay_clicked()
     ui->spinFrameDelay->setValue(adjusted);
 }
 
-void vfg::ui::GifMakerWidget::on_buttonBrowse_clicked()
+void GifMakerWidget::on_buttonBrowse_clicked()
 {
     const QString outDir = QFileDialog::getExistingDirectory(this, tr("Select output directory"), "/");
     ui->editOutputDir->setText(outDir);
 }
 
-void vfg::ui::GifMakerWidget::on_spinSkipFrames_valueChanged(const int value)
+void GifMakerWidget::on_spinSkipFrames_valueChanged(const int value)
 {
     Q_UNUSED(value);
     ui->labelTotalFrames->setText(QString::number(totalFrames()));

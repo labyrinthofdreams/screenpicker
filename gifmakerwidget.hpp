@@ -39,7 +39,7 @@ private:
     int totalFrames() const;
 };
 
-
 } // namespace ui
 } // namespace vfg
+
 #endif // VFG_UI_GIFMAKERWIDGET_HPP
