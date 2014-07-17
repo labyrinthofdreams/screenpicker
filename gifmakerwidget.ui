@@ -324,14 +324,14 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="buttonCreateGif">
         <property name="text">
          <string>Make GIF</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_7">
+       <widget class="QPushButton" name="buttonPreviewGif">
         <property name="text">
          <string>Preview</string>
         </property>
