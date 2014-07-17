@@ -706,7 +706,7 @@
   </action>
   <action name="actionOpen_DVD">
    <property name="text">
-    <string>Open DVD/Blu-ray</string>
+    <string>Open DVD/Blu-ray...</string>
    </property>
   </action>
   <action name="actionVideo_Settings">
