@@ -681,7 +681,7 @@
     <string>Open...</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+O</string>
+    <string>O</string>
    </property>
   </action>
   <action name="actionAvisynth_Script_Editor">
