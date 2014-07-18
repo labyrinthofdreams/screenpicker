@@ -1,7 +1,11 @@
 #ifndef VFG_UI_GIFMAKERWIDGET_HPP
 #define VFG_UI_GIFMAKERWIDGET_HPP
 
+#include <memory>
 #include <QDialog>
+#include <QSettings>
+
+class QMovie;
 
 namespace vfg {
 namespace ui {
@@ -22,6 +26,9 @@ public:
 
     void updateLastFrame(int value);
 
+public slots:
+    void showPreview(const QString& path);
+
 private slots:
     void on_spinStartFrame_valueChanged(int arg1);
 
@@ -33,10 +40,21 @@ private slots:
 
     void on_spinSkipFrames_valueChanged(int arg1);
 
+    void on_buttonPreviewGif_clicked();
+
 private:
     Ui::GifMakerWidget *ui;
 
+    std::unique_ptr<QMovie> preview;
+
+    QSettings config;
+
     int totalFrames() const;
+
+signals:
+    void requestPreview();
+
+    void createGif();
 };
 
 } // namespace ui

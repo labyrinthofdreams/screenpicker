@@ -420,6 +420,45 @@ void MainWindow::contextMenuOnPreview(const QPoint &pos)
     previewContext->exec(ui->videoPreviewWidget->mapToGlobal(pos));
 }
 
+void MainWindow::displayGifPreview()
+{
+    const auto imageMagickPath = config.value("imagemagickpath").toString();
+    if(imageMagickPath.isEmpty()) {
+        QMessageBox::critical(this, tr("Missing ImageMagick path"),
+                              tr("Set path to ImageMagick and try again."));
+    }
+
+    QList<int> frames;
+    const auto start_frame = config.value("gif/startframe").toInt();
+    const auto end_frame = config.value("gif/endframe").toInt();
+    const auto skip_frames = config.value("gif/skipframes").toInt() + 1;
+    const auto delay = config.value("gif/delay").toInt();
+    for(auto current = start_frame; current <= end_frame; current += skip_frames) {
+        QImage frame = frameGrabber->getFrame(current);
+        if(frame.width() > 360) {
+            frame = frame.scaledToWidth(360, Qt::SmoothTransformation);
+        }
+        frame.save(QString("%1.png").arg(current));
+        frames.append(current);
+    }
+
+    QStringList args;
+    args << "+repage" << "-fuzz" << "0.0%" << "-delay" << QString::number(delay) <<
+            "-loop" << "0" << "*.png" << "-layers" << "OptimizePlus" <<
+            "-layers" << "OptimizeTransparency" << "preview.gif";
+
+    QProcess proc;
+    proc.start(imageMagickPath, args);
+    proc.waitForFinished();
+
+    // Remove saved images
+    for(const auto frame : frames) {
+        QFile::remove(QString("%1.png").arg(frame));
+    }
+
+    gifMaker->showPreview("preview.gif");
+}
+
 void MainWindow::updateDvdProgressDialog(const int progress)
 {
     dvdProgress->setValue(progress);
@@ -547,7 +586,8 @@ void MainWindow::videoLoaded()
     const int numFrames = frameGrabber->totalFrames() - 1;
 
     ui->menuCreateGIFImage->setEnabled(true);
-    gifMaker.reset(nullptr);
+    ui->actionSetEndFrame->setEnabled(false);
+    ui->actionSetStartFrame->setEnabled(false);
 
     // lastRequestedFrame may be out of range when the script
     // is reloaded via the editor and when the script produces
@@ -835,7 +875,6 @@ void MainWindow::on_saveThumbnailsButton_clicked()
     prog.setCancelButton(0);
     prog.setMinimumDuration(0);
     const QDir saveDir(lastSaveDirectory);
-
     for(std::size_t idx = 0; idx < numSaved; ++idx) {
         const auto widget = ui->savedWidget->at(idx);
         if(!widget) {
@@ -1051,15 +1090,21 @@ void MainWindow::activateGifMaker()
         return;
     }
 
-    if(!gifMaker) {
-        gifMaker = util::make_unique<vfg::ui::GifMakerWidget>();
-    }
-
     previewContext = ui->menuCreateGIFImage;
+
+    ui->actionSetEndFrame->setEnabled(true);
+    ui->actionSetStartFrame->setEnabled(true);
+
+    gifMaker = util::make_unique<vfg::ui::GifMakerWidget>();
+    connect(gifMaker.get(), SIGNAL(requestPreview()),
+            this, SLOT(displayGifPreview()));
 
     const auto accepted = gifMaker->exec();
     if(!accepted) {
         previewContext = ui->menuVideo;
+
+        ui->actionSetEndFrame->setEnabled(false);
+        ui->actionSetStartFrame->setEnabled(false);
     }
 }
 
