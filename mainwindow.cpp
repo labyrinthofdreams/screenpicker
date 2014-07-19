@@ -438,7 +438,8 @@ void MainWindow::displayGifPreview()
         if(frame.width() > 360) {
             frame = frame.scaledToWidth(360, Qt::SmoothTransformation);
         }
-        frame.save(QString("%1.png").arg(current));
+        // Save as uncompressed PNG images
+        frame.save(QString("%1.png").arg(current), "PNG", 100);
         frames.append(current);
     }
 
