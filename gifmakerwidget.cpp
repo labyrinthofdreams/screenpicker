@@ -2,10 +2,11 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMovie>
+#include <QRect>
 #include <QSettings>
+#include <QString>
 #include "gifmakerwidget.hpp"
 #include "ui_gifmakerwidget.h"
-#include <QDebug>
 
 QString prettySize(double size) {
     if(size < 1000) {
@@ -17,6 +18,10 @@ QString prettySize(double size) {
     }
     size /= 1000;
     return QString("%1 MB").arg(QString::number(size, 'f', 2));
+}
+
+QString prettyResolution(const QRect& area) {
+    return QString("%1x%2").arg(area.width()).arg(area.height());
 }
 
 using vfg::ui::GifMakerWidget;
@@ -53,8 +58,9 @@ void GifMakerWidget::showPreview(const QString& path)
     ui->labelPreview->setMovie(preview.get());
     preview->start();
 
-    const auto mbytes = preview->device()->size();
-    ui->labelGifSize->setText(prettySize(mbytes));
+    const auto bytes = prettySize(preview->device()->size());
+    const auto res = prettyResolution(preview->frameRect());
+    ui->labelGifSize->setText(QString("%1 [%2]").arg(bytes).arg(res));
 }
 
 void GifMakerWidget::updateStartFrame(const int value)

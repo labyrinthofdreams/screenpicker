@@ -442,6 +442,8 @@
     </layout>
    </item>
   </layout>
+  <zorder></zorder>
+  <zorder>horizontalSpacer_7</zorder>
  </widget>
  <resources/>
  <connections/>
