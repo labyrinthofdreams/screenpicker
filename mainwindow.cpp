@@ -442,9 +442,7 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
     const auto delay = config.value("gif/delay").toInt();
     for(auto current = start_frame; current <= end_frame; current += skip_frames) {
         QImage frame = frameGrabber->getFrame(current);
-        if(frame.width() > 360) {
-            frame = frame.scaledToWidth(360, Qt::SmoothTransformation);
-        }
+
         // Save as uncompressed PNG images
         frame.save(QString("%1.png").arg(current), "PNG", 100);
         frames.append(current);

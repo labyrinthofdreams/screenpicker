@@ -111,12 +111,6 @@ void GifMakerWidget::on_buttonAutoDelay_clicked()
     ui->spinFrameDelay->setValue(adjusted);
 }
 
-void GifMakerWidget::on_buttonBrowse_clicked()
-{
-    const QString outDir = QFileDialog::getExistingDirectory(this, tr("Select output directory"), "/");
-    ui->editOutputDir->setText(outDir);
-}
-
 void GifMakerWidget::on_spinSkipFrames_valueChanged(const int value)
 {
     Q_UNUSED(value);
@@ -143,4 +137,14 @@ void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
     const auto optKey = ui->comboGifsicle->currentText();
     const auto optArgs = optKey == "None" ? "" : gifsicle.value(QString("%1/args").arg(optKey)).toString();
     emit requestPreview(args, optArgs);
+}
+
+void vfg::ui::GifMakerWidget::on_buttonSave_clicked()
+{
+    const QString savePath = QFileDialog::getSaveFileName(this, tr("Select save path"),
+                                                          preview->fileName(), tr("GIF (*.gif)"));
+    if(!QFile::copy(preview->fileName(), savePath)) {
+        QMessageBox::critical(this, tr("Saving failed"),
+                              tr("Try again. If the problem persists, try a new filename."));
+    }
 }

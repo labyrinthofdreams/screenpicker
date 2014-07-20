@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>329</width>
-    <height>479</height>
+    <height>417</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -344,38 +344,6 @@
             </item>
            </layout>
           </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout">
-            <item>
-             <widget class="QLabel" name="label_9">
-              <property name="text">
-               <string>Directory:</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout">
-              <item>
-               <widget class="QLineEdit" name="editOutputDir">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="buttonBrowse">
-                <property name="text">
-                 <string>Browse...</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
          </layout>
         </item>
        </layout>
@@ -440,9 +408,9 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
-        <widget class="QPushButton" name="buttonCreateGif">
+        <widget class="QPushButton" name="buttonSave">
          <property name="text">
-          <string>Make GIF</string>
+          <string>Save GIF</string>
          </property>
         </widget>
        </item>

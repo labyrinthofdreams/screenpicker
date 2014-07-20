@@ -36,11 +36,11 @@ private slots:
 
     void on_buttonAutoDelay_clicked();
 
-    void on_buttonBrowse_clicked();
-
     void on_spinSkipFrames_valueChanged(int arg1);
 
     void on_buttonPreviewGif_clicked();
+
+    void on_buttonSave_clicked();
 
 private:
     Ui::GifMakerWidget *ui;
