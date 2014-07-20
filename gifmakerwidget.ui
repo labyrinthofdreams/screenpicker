@@ -438,6 +438,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="buttonPreviewGif">
+         <property name="toolTip">
+          <string>Generate a preview using the selected Command</string>
+         </property>
          <property name="text">
           <string>Preview</string>
          </property>
