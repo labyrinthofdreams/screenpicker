@@ -1,5 +1,6 @@
 #include <QFile>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QMovie>
 #include <QSettings>
 #include "gifmakerwidget.hpp"
@@ -11,9 +12,13 @@ GifMakerWidget::GifMakerWidget(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GifMakerWidget),
     preview(),
-    config("config.ini", QSettings::IniFormat)
+    config("config.ini", QSettings::IniFormat),
+    imageMagick("scripts/imagemagick.ini", QSettings::IniFormat)
 {
     ui->setupUi(this);
+
+    ui->comboImageMagick->addItems(imageMagick.childGroups());
+    ui->comboImageMagick->addItem(tr("All"));
 }
 
 GifMakerWidget::~GifMakerWidget()
@@ -96,7 +101,27 @@ void GifMakerWidget::on_spinSkipFrames_valueChanged(const int value)
 
 void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
 {
+    if(ui->comboImageMagick->currentText() == "All") {
+        QMessageBox::information(this, tr("Invalid selection"),
+                                 tr("Can't generate a preview for selection: All"));
+        return;
+    }
+
     config.setValue("gif/delay", ui->spinFrameDelay->value());
     ui->labelPreview->setText(tr("Generating preview..."));
-    emit requestPreview();
+
+    const auto key = ui->comboImageMagick->currentText();
+    const auto args = imageMagick.value(QString("%1/args").arg(key)).toString();
+    emit requestPreview(args);
+}
+
+void vfg::ui::GifMakerWidget::on_comboImageMagick_activated(const QString& key)
+{
+    if(key == "All") {
+        ui->labelImageMagickArgs->setText("");
+    }
+    else {
+        const auto args = imageMagick.value(QString("%1/args").arg(key)).toString();
+        ui->labelImageMagickArgs->setText(args);
+    }
 }

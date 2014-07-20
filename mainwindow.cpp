@@ -420,7 +420,7 @@ void MainWindow::contextMenuOnPreview(const QPoint &pos)
     previewContext->exec(ui->videoPreviewWidget->mapToGlobal(pos));
 }
 
-void MainWindow::displayGifPreview()
+void MainWindow::displayGifPreview(QString args)
 {
     const auto imageMagickPath = config.value("imagemagickpath").toString();
     if(imageMagickPath.isEmpty()) {
@@ -443,13 +443,12 @@ void MainWindow::displayGifPreview()
         frames.append(current);
     }
 
-    QStringList args;
-    args << "+repage" << "-fuzz" << "0.0%" << "-delay" << QString::number(delay) <<
-            "-loop" << "0" << "*.png" << "-layers" << "OptimizePlus" <<
-            "-layers" << "OptimizeTransparency" << "preview.gif";
+    QStringList newArgs;
+    newArgs << args.replace(QString("%delay%"), QString::number(delay)).split(" ")
+            << "*.png" << "preview.gif";
 
     QProcess proc;
-    proc.start(imageMagickPath, args);
+    proc.start(imageMagickPath, newArgs);
     proc.waitForFinished();
 
     // Remove saved images
@@ -1097,8 +1096,8 @@ void MainWindow::activateGifMaker()
     ui->actionSetStartFrame->setEnabled(true);
 
     gifMaker = util::make_unique<vfg::ui::GifMakerWidget>();
-    connect(gifMaker.get(), SIGNAL(requestPreview()),
-            this, SLOT(displayGifPreview()));
+    connect(gifMaker.get(), SIGNAL(requestPreview(const QString&)),
+            this, SLOT(displayGifPreview(const QString&)));
 
     const auto accepted = gifMaker->exec();
     if(!accepted) {

@@ -42,17 +42,20 @@ private slots:
 
     void on_buttonPreviewGif_clicked();
 
+    void on_comboImageMagick_activated(const QString &arg1);
+
 private:
     Ui::GifMakerWidget *ui;
 
     std::unique_ptr<QMovie> preview;
 
     QSettings config;
+    QSettings imageMagick;
 
     int totalFrames() const;
 
 signals:
-    void requestPreview();
+    void requestPreview(const QString& args);
 
     void createGif();
 };

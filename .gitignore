@@ -1,6 +1,8 @@
 # Ignore everything
 *
 # Whitelist
+!scripts/*.ini
+!scripts/
 !libs/
 !.gitignore
 !.gitmodules
