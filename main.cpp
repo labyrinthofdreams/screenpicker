@@ -41,6 +41,11 @@ int main(int argc, char *argv[])
             }
         }
 
+        // Write scripts
+        if(!QFile::exists("scripts/imagemagick.ini")) {
+            QFile::copy(":scripts/imagemagick.ini", "scripts/imagemagick.ini");
+        }
+
         MainWindow w;
         w.show();
 
