@@ -51,11 +51,12 @@ private:
 
     QSettings config;
     QSettings imageMagick;
+    QSettings gifsicle;
 
     int totalFrames() const;
 
 signals:
-    void requestPreview(const QString& args);
+    void requestPreview(const QString& args, const QString& optArgs);
 
     void createGif();
 };

@@ -13,12 +13,17 @@ GifMakerWidget::GifMakerWidget(QWidget *parent) :
     ui(new Ui::GifMakerWidget),
     preview(),
     config("config.ini", QSettings::IniFormat),
-    imageMagick("scripts/imagemagick.ini", QSettings::IniFormat)
+    imageMagick("scripts/imagemagick.ini", QSettings::IniFormat),
+    gifsicle("scripts/gifsicle.ini", QSettings::IniFormat)
 {
     ui->setupUi(this);
 
     ui->comboImageMagick->addItems(imageMagick.childGroups());
     ui->comboImageMagick->addItem(tr("All"));
+
+    ui->comboGifsicle->addItem(tr("None"));
+    ui->comboGifsicle->addItems(gifsicle.childGroups());
+    ui->comboGifsicle->addItem(tr("All"));
 }
 
 GifMakerWidget::~GifMakerWidget()
@@ -101,7 +106,8 @@ void GifMakerWidget::on_spinSkipFrames_valueChanged(const int value)
 
 void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
 {
-    if(ui->comboImageMagick->currentText() == "All") {
+    if(ui->comboImageMagick->currentText() == "All" ||
+            ui->comboGifsicle->currentText() == "All") {
         QMessageBox::information(this, tr("Invalid selection"),
                                  tr("Can't generate a preview for selection: All"));
         return;
@@ -112,7 +118,10 @@ void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
 
     const auto key = ui->comboImageMagick->currentText();
     const auto args = imageMagick.value(QString("%1/args").arg(key)).toString();
-    emit requestPreview(args);
+
+    const auto optKey = ui->comboGifsicle->currentText();
+    const auto optArgs = optKey == "None" ? "" : gifsicle.value(QString("%1/args").arg(optKey)).toString();
+    emit requestPreview(args, optArgs);
 }
 
 void vfg::ui::GifMakerWidget::on_comboImageMagick_activated(const QString& key)

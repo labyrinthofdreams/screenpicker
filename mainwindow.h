@@ -135,7 +135,7 @@ private slots:
      */
     void updateDvdProgressDialog(int progress);
 
-    void displayGifPreview(QString args);
+    void displayGifPreview(QString args, QString optArgs);
 
     void on_actionOpen_triggered();
     void on_nextButton_clicked();

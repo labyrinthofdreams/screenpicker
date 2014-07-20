@@ -420,12 +420,19 @@ void MainWindow::contextMenuOnPreview(const QPoint &pos)
     previewContext->exec(ui->videoPreviewWidget->mapToGlobal(pos));
 }
 
-void MainWindow::displayGifPreview(QString args)
+void MainWindow::displayGifPreview(QString args, QString optArgs)
 {
     const auto imageMagickPath = config.value("imagemagickpath").toString();
     if(imageMagickPath.isEmpty()) {
         QMessageBox::critical(this, tr("Missing ImageMagick path"),
                               tr("Set path to ImageMagick and try again."));
+    }
+
+    const auto gifsiclePath = config.value("gifsiclepath").toString();
+    if(!optArgs.isEmpty() && gifsiclePath.isEmpty()) {
+        QMessageBox::critical(this, tr("Missing Gifsicle path"),
+                              tr("Set path to Gifsicle and try again."));
+        return;
     }
 
     QList<int> frames;
@@ -454,6 +461,16 @@ void MainWindow::displayGifPreview(QString args)
     // Remove saved images
     for(const auto frame : frames) {
         QFile::remove(QString("%1.png").arg(frame));
+    }
+
+    if(!optArgs.isEmpty()) {
+        const auto curDir = QDir::current();
+        QStringList newOptArgs;
+        newOptArgs << "--batch" << optArgs.split(" ") << curDir.absoluteFilePath("preview.gif");
+
+        QProcess gifsicle;
+        gifsicle.start(gifsiclePath, newOptArgs);
+        gifsicle.waitForFinished();
     }
 
     gifMaker->showPreview("preview.gif");
@@ -1096,8 +1113,8 @@ void MainWindow::activateGifMaker()
     ui->actionSetStartFrame->setEnabled(true);
 
     gifMaker = util::make_unique<vfg::ui::GifMakerWidget>();
-    connect(gifMaker.get(), SIGNAL(requestPreview(const QString&)),
-            this, SLOT(displayGifPreview(const QString&)));
+    connect(gifMaker.get(), SIGNAL(requestPreview(QString, QString)),
+            this, SLOT(displayGifPreview(QString, QString)));
 
     const auto accepted = gifMaker->exec();
     if(!accepted) {
