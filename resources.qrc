@@ -3,5 +3,6 @@
         <file>d2v_template.avs</file>
         <file>default_template.avs</file>
         <file alias="imagemagick.ini">scripts/imagemagick.ini</file>
+        <file alias="gifsicle.ini">scripts/gifsicle.ini</file>
     </qresource>
 </RCC>

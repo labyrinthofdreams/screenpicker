@@ -45,6 +45,9 @@ int main(int argc, char *argv[])
         if(!QFile::exists("scripts/imagemagick.ini")) {
             QFile::copy(":scripts/imagemagick.ini", "scripts/imagemagick.ini");
         }
+        if(!QFile::exists("scripts/gifsicle.ini")) {
+            QFile::copy(":scripts/gifsicle.ini", "scripts/gifsicle.ini");
+        }
 
         MainWindow w;
         w.show();
