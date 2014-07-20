@@ -144,14 +144,3 @@ void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
     const auto optArgs = optKey == "None" ? "" : gifsicle.value(QString("%1/args").arg(optKey)).toString();
     emit requestPreview(args, optArgs);
 }
-
-void vfg::ui::GifMakerWidget::on_comboImageMagick_activated(const QString& key)
-{
-    if(key == "All") {
-        ui->labelImageMagickArgs->setText("");
-    }
-    else {
-        const auto args = imageMagick.value(QString("%1/args").arg(key)).toString();
-        ui->labelImageMagickArgs->setText(args);
-    }
-}
