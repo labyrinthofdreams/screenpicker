@@ -125,6 +125,11 @@ void GifMakerWidget::on_spinSkipFrames_valueChanged(const int value)
 
 void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
 {
+    if(totalFrames() == 0) {
+        QMessageBox::information(this, tr("Nothing to process"),
+                                 tr("Set start/end frame by right-clicking the video"));
+    }
+
     config.setValue("gif/delay", ui->spinFrameDelay->value());
     ui->labelPreview->setText(tr("Generating preview..."));
 
