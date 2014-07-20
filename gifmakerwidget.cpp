@@ -32,11 +32,9 @@ GifMakerWidget::GifMakerWidget(QWidget *parent) :
     ui->setupUi(this);
 
     ui->comboImageMagick->addItems(imageMagick.childGroups());
-    ui->comboImageMagick->addItem(tr("All"));
 
     ui->comboGifsicle->addItem(tr("None"));
     ui->comboGifsicle->addItems(gifsicle.childGroups());
-    ui->comboGifsicle->addItem(tr("All"));
 }
 
 GifMakerWidget::~GifMakerWidget()
@@ -121,13 +119,6 @@ void GifMakerWidget::on_spinSkipFrames_valueChanged(const int value)
 
 void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
 {
-    if(ui->comboImageMagick->currentText() == "All" ||
-            ui->comboGifsicle->currentText() == "All") {
-        QMessageBox::information(this, tr("Invalid selection"),
-                                 tr("Can't generate a preview for selection: All"));
-        return;
-    }
-
     config.setValue("gif/delay", ui->spinFrameDelay->value());
     ui->labelPreview->setText(tr("Generating preview..."));
 
