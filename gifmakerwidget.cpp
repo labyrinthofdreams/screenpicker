@@ -5,6 +5,19 @@
 #include <QSettings>
 #include "gifmakerwidget.hpp"
 #include "ui_gifmakerwidget.h"
+#include <QDebug>
+
+QString prettySize(double size) {
+    if(size < 1000) {
+        return QString("%1 B").arg(size);
+    }
+    size /= 1000;
+    if(size < 1000) {
+        return QString("%1 KB").arg(QString::number(size, 'f', 2));
+    }
+    size /= 1000;
+    return QString("%1 MB").arg(QString::number(size, 'f', 2));
+}
 
 using vfg::ui::GifMakerWidget;
 
@@ -41,6 +54,9 @@ void GifMakerWidget::showPreview(const QString& path)
 
     ui->labelPreview->setMovie(preview.get());
     preview->start();
+
+    const auto mbytes = preview->device()->size();
+    ui->labelGifSize->setText(prettySize(mbytes));
 }
 
 void GifMakerWidget::updateStartFrame(const int value)
@@ -53,6 +69,8 @@ void GifMakerWidget::updateStartFrame(const int value)
     ui->spinStartFrame->setValue(value);
     config.setValue("gif/startframe", value);
     ui->labelTotalFrames->setText(QString::number(totalFrames()));
+
+    ui->labelGifSize->setText("n/a");
 }
 
 void GifMakerWidget::updateLastFrame(const int value)
@@ -65,6 +83,8 @@ void GifMakerWidget::updateLastFrame(const int value)
     ui->spinLastFrame->setValue(value);
     config.setValue("gif/endframe", value);
     ui->labelTotalFrames->setText(QString::number(totalFrames()));
+
+    ui->labelGifSize->setText("n/a");
 }
 
 int GifMakerWidget::totalFrames() const
@@ -102,6 +122,7 @@ void GifMakerWidget::on_spinSkipFrames_valueChanged(const int value)
     Q_UNUSED(value);
     config.setValue("gif/skipframes", value);
     ui->labelTotalFrames->setText(QString::number(totalFrames()));
+    ui->labelGifSize->setText("n/a");
 }
 
 void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
