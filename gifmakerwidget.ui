@@ -236,7 +236,7 @@
        <item>
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>Command:</string>
+          <string>Quality:</string>
          </property>
         </widget>
        </item>
@@ -443,7 +443,6 @@
    </item>
   </layout>
   <zorder></zorder>
-  <zorder>horizontalSpacer_7</zorder>
  </widget>
  <resources/>
  <connections/>
