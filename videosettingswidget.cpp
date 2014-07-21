@@ -1,3 +1,4 @@
+#include <cmath>
 #include <QCloseEvent>
 #include <QMap>
 #include <QRect>
@@ -21,10 +22,11 @@ constexpr int noneg(const int x)
 
 vfg::ui::VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
     QWidget(parent),
-    ui(nullptr),
-    prevSettings()
+    ui(new Ui::VideoSettingsWidget),
+    prevSettings(),
+    origWidth(0),
+    origHeight(0)
 {
-    ui = util::make_unique<Ui::VideoSettingsWidget>();
     ui->setupUi(this);
 
     ui->cboxDvdResolution->insertItem(Default_AR, tr("Default"));
@@ -46,8 +48,9 @@ vfg::ui::VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
             this,               SLOT(handleCropChange()));
 }
 
-vfg::ui::VideoSettingsWidget::~VideoSettingsWidget() {
-
+vfg::ui::VideoSettingsWidget::~VideoSettingsWidget()
+{
+    delete ui;
 }
 
 void vfg::ui::VideoSettingsWidget::on_cboxDvdResolution_activated(const int index)
@@ -170,4 +173,49 @@ void vfg::ui::VideoSettingsWidget::on_btnRevertCrop_clicked()
     crop.bottom = crop.left = crop.right = crop.top = 0;
 
     emit settingsChanged();
+}
+
+void vfg::ui::VideoSettingsWidget::on_radioLockWidth_clicked()
+{
+    ui->sboxResizeWidth->setEnabled(false);
+    ui->sboxResizeHeight->setEnabled(true);
+
+    origHeight = ui->sboxResizeHeight->value();
+    origWidth = ui->sboxResizeWidth->value();
+}
+
+void vfg::ui::VideoSettingsWidget::on_radioLockHeight_clicked()
+{
+    ui->sboxResizeWidth->setEnabled(true);
+    ui->sboxResizeHeight->setEnabled(false);
+
+    origHeight = ui->sboxResizeHeight->value();
+    origWidth = ui->sboxResizeWidth->value();
+}
+
+void vfg::ui::VideoSettingsWidget::on_radioLockDefault_clicked()
+{
+    ui->sboxResizeWidth->setEnabled(true);
+    ui->sboxResizeHeight->setEnabled(true);
+
+    origHeight = 0;
+    origWidth = 0;
+}
+
+void vfg::ui::VideoSettingsWidget::on_sboxResizeWidth_valueChanged(const int width)
+{
+    if(ui->radioLockHeight->isChecked()) {
+        const double ratio = static_cast<double>(origHeight) / origWidth;
+        const int newHeight = std::ceil(ratio * width);
+        ui->sboxResizeHeight->setValue(newHeight);
+    }
+}
+
+void vfg::ui::VideoSettingsWidget::on_sboxResizeHeight_valueChanged(const int height)
+{
+    if(ui->radioLockWidth->isChecked()) {
+        const double ratio = static_cast<double>(origHeight) / origWidth;
+        const int newWidth = std::ceil(height / ratio);
+        ui->sboxResizeWidth->setValue(newWidth);
+    }
 }

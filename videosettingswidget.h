@@ -76,14 +76,26 @@ private slots:
      */
     void on_btnRevertCrop_clicked();
 
+    void on_radioLockWidth_clicked();
+
+    void on_radioLockHeight_clicked();
+
+    void on_radioLockDefault_clicked();
+
+    void on_sboxResizeWidth_valueChanged(int arg1);
+
+    void on_sboxResizeHeight_valueChanged(int arg1);
+
 private:
-    std::unique_ptr<::Ui::VideoSettingsWidget> ui;
+    ::Ui::VideoSettingsWidget* ui;
 
     QMap<QString, QVariant> prevSettings;
 
     struct {
         int left, top, right, bottom;
     } crop = {0, 0, 0, 0};
+
+    int origWidth, origHeight;
 
     /**
      * @brief Common DVD aspect ratios for the resize dropdown
