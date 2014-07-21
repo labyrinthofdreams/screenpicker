@@ -2,13 +2,11 @@
 #define VFG_VIDEOFRAMEGENERATOR_H
 
 #include <memory>
-#include <QImage>
 #include <QList>
 #include <QMutex>
 #include <QObject>
 
-template <class T1, class T2>
-class QPair;
+class QImage;
 
 namespace vfg {
 namespace core {
@@ -78,7 +76,7 @@ signals:
      * @brief Emits a grabbed frame number and the image
      * @param frame The frame number and the grabbed image
      */
-    void frameReady(const QPair<int, QImage>& frame);
+    void frameReady(int frameNum, const QImage& frame);
     
 public slots:
     /**

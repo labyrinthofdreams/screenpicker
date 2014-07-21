@@ -60,9 +60,9 @@ void vfg::ui::VideoPreviewWidget::setFrame(const QImage& img)
     updateFrame();
 }
 
-void vfg::ui::VideoPreviewWidget::setFrame(const QPair<int, QImage>& img)
+void vfg::ui::VideoPreviewWidget::setFrame(const int frameNum, const QImage& frame)
 {
-    setFrame(img.second);
+    setFrame(frame);
 }
 
 void vfg::ui::VideoPreviewWidget::setCrop(const QRect& area)

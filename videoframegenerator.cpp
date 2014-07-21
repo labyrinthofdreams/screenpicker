@@ -2,7 +2,6 @@
 #include <utility>
 #include <QImage>
 #include <QMutexLocker>
-#include <QPair>
 #include "videoframegrabber.h"
 #include "videoframegenerator.h"
 
@@ -50,7 +49,7 @@ void VideoFrameGenerator::start()
         frames.takeFirst();
         lock.unlock();
 
-        emit frameReady(qMakePair(current, std::move(frame)));
+        emit frameReady(current, std::move(frame));
     }
 
     if(state != State::Paused) {

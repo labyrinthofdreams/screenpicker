@@ -3,7 +3,6 @@
 #include <QDebug>
 #include <QImage>
 #include <QMutexLocker>
-#include <QPair>
 #include <QSize>
 #include <QThread>
 #include "videoframegrabber.h"
@@ -71,7 +70,7 @@ void vfg::core::VideoFrameGrabber::requestFrame(const int frameNum)
     currentFrame = frameNum;
 
     QImage frame = avs->getFrame(frameNum);
-    emit frameGrabbed(qMakePair(frameNum, std::move(frame)));
+    emit frameGrabbed(frameNum, std::move(frame));
 }
 
 void vfg::core::VideoFrameGrabber::videoSourceUpdated()
@@ -92,7 +91,7 @@ void vfg::core::VideoFrameGrabber::requestNextFrame()
     }
 
     QImage frame = avs->getFrame(++currentFrame);
-    emit frameGrabbed(qMakePair(currentFrame, std::move(frame)));
+    emit frameGrabbed(currentFrame, std::move(frame));
 
     qDebug() << "End NEXT_FRAME VFG ";
 }
@@ -110,7 +109,7 @@ void vfg::core::VideoFrameGrabber::requestPreviousFrame()
     }
 
     QImage frame = avs->getFrame(--currentFrame);
-    emit frameGrabbed(qMakePair(currentFrame, std::move(frame)));
+    emit frameGrabbed(currentFrame, std::move(frame));
 
     qDebug() << "End PREV_FRAME VFG ";
 }

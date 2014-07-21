@@ -19,8 +19,6 @@ int main(int argc, char *argv[])
         {
             using namespace vfg::init;
 
-            meta::registerTypes();
-
             if(QFile::exists("config.ini")) {
                 if(!config::isValid()) {
                     QMessageBox::StandardButton clicked =

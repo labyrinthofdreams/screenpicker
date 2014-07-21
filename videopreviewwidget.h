@@ -13,7 +13,6 @@ class QRect;
 class QResizeEvent;
 class QSize;
 class QVBoxLayout;
-template <class T, class U> class QPair;
 
 namespace vfg {
 
@@ -103,7 +102,7 @@ public slots:
      * @brief Sets the current frame
      * @param img Frame to set with a frame number
      */
-    void setFrame(const QPair<int, QImage>& img);
+    void setFrame(int frameNum, const QImage& frame);
 
     /**
      * @brief Sets an area to crop

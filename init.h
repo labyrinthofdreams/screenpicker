@@ -13,15 +13,6 @@
 
 namespace vfg {
 namespace init {
-namespace meta {
-
-void registerTypes()
-{
-    qRegisterMetaType<QPair<int, QImage> >("QPair<int, QImage>");
-}
-
-} // namespace meta
-
 namespace config {
 
 bool isValid()

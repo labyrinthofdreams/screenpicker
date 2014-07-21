@@ -7,7 +7,6 @@
 
 // Forward declarations
 class QImage;
-template <class T, class U> class QPair;
 class QSize;
 class QString;
 
@@ -139,7 +138,7 @@ signals:
      * @brief Emit grabbed frame
      * @param frame Frame number and frame image
      */
-    void frameGrabbed(const QPair<int, QImage>& frame);
+    void frameGrabbed(int frameNum, const QImage& frame);
 
     /**
      * @brief Emit errors

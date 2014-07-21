@@ -64,7 +64,7 @@ private slots:
      * and updates widgets
      * @param frame Received frame
      */
-    void frameReceived(const QPair<int, QImage>& frame);
+    void frameReceived(int frameNum, const QImage& frame);
 
     /**
      * @brief Triggered when a script in the editor is saved

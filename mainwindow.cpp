@@ -182,12 +182,12 @@ MainWindow::MainWindow(QWidget *parent) :
             this,               SLOT(videoError(QString)),
             Qt::QueuedConnection);
 
-    connect(frameGrabber.get(),     SIGNAL(frameGrabbed(QPair<int,QImage>)),
-            ui->videoPreviewWidget, SLOT(setFrame(QPair<int,QImage>)),
+    connect(frameGrabber.get(),     SIGNAL(frameGrabbed(int, QImage)),
+            ui->videoPreviewWidget, SLOT(setFrame(int, QImage)),
             Qt::QueuedConnection);
 
-    connect(frameGenerator.get(),   SIGNAL(frameReady(QPair<int, QImage>)),
-            this,                   SLOT(frameReceived(QPair<int, QImage>)),
+    connect(frameGenerator.get(),   SIGNAL(frameReady(int, QImage)),
+            this,                   SLOT(frameReceived(int, QImage)),
             Qt::QueuedConnection);
 
     connect(ui->unsavedWidget,      SIGNAL(maximumChanged(int)),
@@ -243,13 +243,13 @@ void MainWindow::closeEvent(QCloseEvent *ev)
     }
 }
 
-void MainWindow::frameReceived(const QPair<int, QImage>& frame)
+void MainWindow::frameReceived(const int frameNum, const QImage& frame)
 {
     // TODO: Is a lock needed here?
-    qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frame.first;
+    qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frameNum;
 
-    auto thumbnail = QPixmap::fromImage(frame.second).scaledToWidth(200, Qt::SmoothTransformation);
-    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(frame.first, std::move(thumbnail));
+    auto thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
+    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, std::move(thumbnail));
 
     connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
             this,           SLOT(handleUnsavedMenu(QPoint)));
@@ -272,7 +272,7 @@ void MainWindow::frameReceived(const QPair<int, QImage>& frame)
         // Jump to last generated frame
         const bool jumpAfterFinished = config.value("jumptolastonfinish").toBool();
         if(jumpAfterFinished) {
-            ui->seekSlider->setValue(frame.first);
+            ui->seekSlider->setValue(frameNum);
         }
     }
 
@@ -297,7 +297,7 @@ void MainWindow::frameReceived(const QPair<int, QImage>& frame)
         const bool jumpToLastAfterReachingMax = config.value("jumptolastonreachingmax").toBool();
         if(jumpToLastAfterReachingMax)
         {
-            ui->seekSlider->setValue(frame.first);
+            ui->seekSlider->setValue(frameNum);
         }
 
         // ...and wait for the user to click Clear, Generate, open another file,
