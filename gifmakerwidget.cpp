@@ -63,6 +63,8 @@ void GifMakerWidget::showPreview(const QString& path)
     const auto bytes = prettySize(preview->device()->size());
     const auto res = prettyResolution(preview->frameRect());
     ui->labelGifSize->setText(QString("%1 [%2]").arg(bytes).arg(res));
+
+    ui->buttonSave->setEnabled(true);
 }
 
 void GifMakerWidget::updateStartFrame(const int value)
