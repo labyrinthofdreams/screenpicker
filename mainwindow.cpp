@@ -440,13 +440,31 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
     const auto end_frame = config.value("gif/endframe").toInt();
     const auto skip_frames = config.value("gif/skipframes").toInt() + 1;
     const auto delay = config.value("gif/delay").toInt();
+    QProgressDialog progress(tr("Generating frames"), tr("Cancel"), start_frame, end_frame + 2);
+    progress.setWindowModality(Qt::WindowModal);
+    progress.setMinimumDuration(0);
     for(auto current = start_frame; current <= end_frame; current += skip_frames) {
+        if(progress.wasCanceled()) {
+            progress.setLabelText(tr("Cancelling"));
+            // Remove saved images
+            for(const auto frame : frames) {
+                QFile::remove(QString("%1.png").arg(frame));
+            }
+
+            return;
+        }
+        progress.setValue(current);
+
         QImage frame = frameGrabber->getFrame(current);
 
         // Save as uncompressed PNG images
         frame.save(QString("%1.png").arg(current), "PNG", 100);
         frames.append(current);
+
+        QCoreApplication::processEvents();
     }
+    progress.setLabelText(tr("Generating GIF"));
+    QCoreApplication::processEvents();
 
     QStringList newArgs;
     newArgs << args.replace(QString("%delay%"), QString::number(delay)).split(" ")
@@ -461,7 +479,12 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
         QFile::remove(QString("%1.png").arg(frame));
     }
 
+    progress.setValue(end_frame + 1);
+
     if(!optArgs.isEmpty()) {
+        progress.setLabelText(tr("Optimizing GIF"));
+        QCoreApplication::processEvents();
+
         const auto curDir = QDir::current();
         QStringList newOptArgs;
         newOptArgs << "--batch" << optArgs.split(" ") << curDir.absoluteFilePath("preview.gif");
@@ -470,6 +493,8 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
         gifsicle.start(gifsiclePath, newOptArgs);
         gifsicle.waitForFinished();
     }
+
+    progress.setValue(end_frame + 2);
 
     gifMaker->showPreview("preview.gif");
 }
