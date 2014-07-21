@@ -2,6 +2,7 @@
 #include <QCloseEvent>
 #include <QMap>
 #include <QRect>
+#include <QSettings>
 #include <QShowEvent>
 #include <QSize>
 #include <QString>
@@ -23,6 +24,7 @@ constexpr int noneg(const int x)
 vfg::ui::VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::VideoSettingsWidget),
+    config("config.ini", QSettings::IniFormat),
     prevSettings(),
     origWidth(0),
     origHeight(0)
@@ -106,6 +108,10 @@ void vfg::ui::VideoSettingsWidget::handleCropChange()
 void vfg::ui::VideoSettingsWidget::showEvent(QShowEvent *event)
 {
     Q_UNUSED(event);
+
+    const QSize videoRes = config.value("video/resolution").toSize();
+    ui->sboxResizeWidth->setValue(videoRes.width());
+    ui->sboxResizeHeight->setValue(videoRes.height());
 
     // Temporarily store previous settings that can be restored
     // when the window is closed

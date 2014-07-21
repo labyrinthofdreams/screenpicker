@@ -603,6 +603,7 @@ void MainWindow::videoLoaded()
     const QSize resolution = frameGrabber->resolution();
     ui->labelVideoResolution->setText(QString("[%1x%2]").arg(resolution.width())
                                       .arg(resolution.height()));
+    config.setValue("video/resolution", resolution);
 
     ui->menuCreateGIFImage->setEnabled(true);
     ui->actionSetEndFrame->setEnabled(false);

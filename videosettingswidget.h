@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <QMap>
+#include <QSettings>
 #include <QWidget>
 
 // Forward declarations
@@ -88,6 +89,8 @@ private slots:
 
 private:
     ::Ui::VideoSettingsWidget* ui;
+
+    QSettings config;
 
     QMap<QString, QVariant> prevSettings;
 
