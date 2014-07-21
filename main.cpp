@@ -1,7 +1,8 @@
 #include <QApplication>
+#include <QDir>
+#include <QFile>
 #include <QMessageBox>
 #include <QString>
-#include <QFile>
 #include <stdexcept>
 #include "mainwindow.h"
 #include "init.h"
@@ -41,12 +42,15 @@ int main(int argc, char *argv[])
             }
         }
 
-        // Write scripts
+        // Write scripts        
+        QDir current;
+        current.mkdir("scripts");
+
         if(!QFile::exists("scripts/imagemagick.ini")) {
-            QFile::copy(":scripts/imagemagick.ini", "scripts/imagemagick.ini");
+            QFile::copy(":/scripts/imagemagick.ini", "scripts/imagemagick.ini");
         }
         if(!QFile::exists("scripts/gifsicle.ini")) {
-            QFile::copy(":scripts/gifsicle.ini", "scripts/gifsicle.ini");
+            QFile::copy(":/scripts/gifsicle.ini", "scripts/gifsicle.ini");
         }
 
         MainWindow w;
