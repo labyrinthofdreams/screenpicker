@@ -45,7 +45,9 @@ GifMakerWidget::GifMakerWidget(QWidget *parent) :
 GifMakerWidget::~GifMakerWidget()
 {
     if(preview) {
-        QFile::remove(preview->fileName());
+        const auto fileName = preview->fileName();
+        preview.reset();
+        QFile::remove(fileName);
     }
 
     delete ui;
