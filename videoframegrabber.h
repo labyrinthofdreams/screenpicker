@@ -8,6 +8,7 @@
 // Forward declarations
 class QImage;
 template <class T, class U> class QPair;
+class QSize;
 class QString;
 
 namespace vfg {
@@ -98,6 +99,12 @@ public:
      * @return True if in valid range, otherwise false
      */
     bool isValidFrame(int frameNum) const;
+
+    /**
+     * @brief Get video resolution
+     * @return Video resolution
+     */
+    QSize resolution() const;
 
 public slots:
     /**

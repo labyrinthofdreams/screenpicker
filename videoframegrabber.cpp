@@ -4,6 +4,7 @@
 #include <QImage>
 #include <QMutexLocker>
 #include <QPair>
+#include <QSize>
 #include <QThread>
 #include "videoframegrabber.h"
 #include "abstractvideosource.h"
@@ -140,4 +141,10 @@ int vfg::core::VideoFrameGrabber::totalFrames()
     QMutexLocker lock(&mutex);
     numFrames = avs->getNumFrames();
     return numFrames;
+}
+
+QSize vfg::core::VideoFrameGrabber::resolution() const
+{
+    QMutexLocker lock(&mutex);
+    return avs->resolution();
 }

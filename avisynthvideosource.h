@@ -23,6 +23,7 @@ public:
     QString getSupportedFormats() override;
     bool isValidFrame(int frameNum) const override;
     vfg::ScriptParser getParser(const QFileInfo &info) const override;
+    QSize resolution() const override;
 };
 
 } // namespace core

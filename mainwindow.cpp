@@ -600,6 +600,10 @@ void MainWindow::videoLoaded()
 
     const int numFrames = frameGrabber->totalFrames() - 1;
 
+    const QSize resolution = frameGrabber->resolution();
+    ui->labelVideoResolution->setText(QString("[%1x%2]").arg(resolution.width())
+                                      .arg(resolution.height()));
+
     ui->menuCreateGIFImage->setEnabled(true);
     ui->actionSetEndFrame->setEnabled(false);
     ui->actionSetStartFrame->setEnabled(false);

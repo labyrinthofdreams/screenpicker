@@ -12,6 +12,7 @@ namespace vfg {
 
 class QFileInfo;
 class QImage;
+class QSize;
 class QString;
 
 namespace vfg {
@@ -105,6 +106,8 @@ public:
      * @return Script parser for a file
      */
     virtual vfg::ScriptParser getParser(const QFileInfo& info) const = 0;
+
+    virtual QSize resolution() const = 0;
 
 signals:    
     /**

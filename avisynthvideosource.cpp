@@ -5,6 +5,7 @@
 #include <string>
 #include <QFileInfo>
 #include <QImage>
+#include <QSize>
 #include <QString>
 #include "avisynthvideosource.h"
 #include "ptrutil.hpp"
@@ -103,4 +104,9 @@ vfg::core::AvisynthVideoSource::getParser(const QFileInfo& info) const
     }
 
     return parser;
+}
+
+QSize vfg::core::AvisynthVideoSource::resolution() const
+{
+    return QSize(avs.width(), avs.height());
 }
