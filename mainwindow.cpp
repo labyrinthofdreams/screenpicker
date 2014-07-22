@@ -1,8 +1,8 @@
 #include <map>
-#include <utility>
-#include <QtWidgets>
-#include <QtCore>
 #include <stdexcept>
+#include <utility>
+#include <QtCore>
+#include <QtWidgets>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "aboutwidget.hpp"
