@@ -1,65 +1,50 @@
-#ifndef STARTUP_H
-#define STARTUP_H
+#ifndef INIT_H
+#define INIT_H
 
+#include <QDebug>
 #include <QDir>
-#include <QFile>
-#include <QString>
-#include <QTextStream>
+#include <QMap>
 #include <QSettings>
-#include <QMetaType>
-#include <QPair>
-#include <QImage>
-#include <QStringList>
+#include <QString>
+#include <QVariant>
 
 namespace vfg {
-namespace init {
 namespace config {
 
-bool isValid()
+QMap<QString, QVariant> getDefaultSettings()
 {
-    QSettings cfg("config.ini", QSettings::IniFormat);
-    QStringList keys;
-    keys << "avisynthpluginspath" << "showscripteditor"
-         << "maxthumbnails" << "numscreenshots" << "framestep"
-         << "pauseafterlimit" << "removeoldestafterlimit"
-         << "jumptolastonfinish" << "jumptolastonpause"
-         << "jumptolastonstop" << "dgindexexecpath" << "jumptolastonreachingmax"
-         << "savedgindexfiles" << "showvideosettings"
-         << "resumegeneratorafterclear";
-    QStringListIterator iter(keys);
-    while(iter.hasNext())
-    {
-        const QString key = iter.next();
-        if(!cfg.contains(key)) {
-            return false;
-        }
-    }
-
-    return true;
+    QMap<QString, QVariant> cfg;
+    cfg["avisynthpluginspath"] = QDir::currentPath().append("/avisynth");
+    cfg["dgindexexecpath"] = "";
+    cfg["showscripteditor"] = false;
+    cfg["maxthumbnails"] = 1000;
+    cfg["numscreenshots"] = 100;
+    cfg["framestep"] = 100;
+    cfg["pauseafterlimit"] = true;
+    cfg["removeoldestafterlimit"] = false;
+    cfg["jumptolastonfinish"] = true;
+    cfg["jumptolastonpause"] = true;
+    cfg["jumptolastonstop"] = true;
+    cfg["jumptolastonreachingmax"] = true;
+    cfg["savedgindexfiles"] = false;
+    cfg["showvideosettings"] = false;
+    cfg["resumegeneratorafterclear"] = false;
+    cfg["gifsiclepath"] = QDir::currentPath().append("/gifsicle.exe");
+    return cfg;
 }
 
-void create()
+void merge(QSettings& cfg, const QMap<QString, QVariant>& defaults)
 {
-    QSettings cfg("config.ini", QSettings::IniFormat);
-    cfg.setValue("avisynthpluginspath", QDir::currentPath().append("/avisynth"));
-    cfg.setValue("dgindexexecpath", "");
-    cfg.setValue("showscripteditor", false);
-    cfg.setValue("maxthumbnails", 100);
-    cfg.setValue("numscreenshots", 100);
-    cfg.setValue("framestep", 100);
-    cfg.setValue("pauseafterlimit", true);
-    cfg.setValue("removeoldestafterlimit", false);
-    cfg.setValue("jumptolastonfinish", true);
-    cfg.setValue("jumptolastonpause", true);
-    cfg.setValue("jumptolastonstop", true);
-    cfg.setValue("jumptolastonreachingmax", true);
-    cfg.setValue("savedgindexfiles", false);
-    cfg.setValue("showvideosettings", false);
-    cfg.setValue("resumegeneratorafterclear", false);
+    // Note: for(e : range) selects a wrong iterator that only returns values
+    for(auto kv = defaults.cbegin(), end = defaults.cend(); kv != end; ++kv) {
+        if(!cfg.contains(kv.key())) {
+            qDebug() << "Writing:" << kv.key();
+            cfg.setValue(kv.key(), kv.value());
+        }
+    }
 }
 
 } // namespace config
-} // namespace init
 } // namespace vfg
 
-#endif // STARTUP_H
+#endif // INIT_H

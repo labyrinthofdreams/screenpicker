@@ -2,6 +2,7 @@
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
+#include <QSettings>
 #include <QString>
 #include <stdexcept>
 #include "mainwindow.h"
@@ -16,29 +17,9 @@ int main(int argc, char *argv[])
 
     try
     {
-        {
-            using namespace vfg::init;
-
-            if(QFile::exists("config.ini")) {
-                if(!config::isValid()) {
-                    QMessageBox::StandardButton clicked =
-                            QMessageBox::question(0, a.tr("Configuration error"),
-                                                  a.tr("Outdated configuration file. Do you want to remove old settings?"),
-                                                  QMessageBox::Yes | QMessageBox::No,
-                                                  QMessageBox::Yes);
-                    if(clicked == QMessageBox::Yes) {
-                        QFile::remove("config.ini");
-                        config::create();
-                    }
-                    else {
-                        throw std::runtime_error("Can't proceed with outdated configuration file");
-                    }
-                }
-            }
-            else {
-                config::create();
-            }
-        }
+        // Create config
+        QSettings config("config.ini", QSettings::IniFormat);
+        vfg::config::merge(config, vfg::config::getDefaultSettings());
 
         // Write scripts        
         QDir current;
