@@ -5,4 +5,12 @@
         <file alias="imagemagick.ini">scripts/imagemagick.ini</file>
         <file alias="gifsicle.ini">scripts/gifsicle.ini</file>
     </qresource>
+    <qresource prefix="/icon">
+        <file alias="previous.png">icons/back.png</file>
+        <file alias="next.png">icons/forward.png</file>
+        <file alias="save.png">icons/save.png</file>
+        <file alias="generate.png">icons/generate.png</file>
+        <file alias="grab.png">icons/grab.png</file>
+        <file alias="clear.png">icons/clear.png</file>
+    </qresource>
 </RCC>
