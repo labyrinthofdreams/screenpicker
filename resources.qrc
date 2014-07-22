@@ -12,5 +12,8 @@
         <file alias="generate.png">icons/generate.png</file>
         <file alias="grab.png">icons/grab.png</file>
         <file alias="clear.png">icons/clear.png</file>
+        <file alias="pause.png">icons/pause.png</file>
+        <file alias="resume.png">icons/resume.png</file>
+        <file alias="stop.png">icons/stop.png</file>
     </qresource>
 </RCC>

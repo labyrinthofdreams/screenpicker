@@ -232,7 +232,7 @@
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string>Generate n screenshots with m frame step (H)</string>
+             <string>Generate thumbnails</string>
             </property>
             <property name="text">
              <string>Generate</string>
@@ -445,7 +445,7 @@
                    </size>
                   </property>
                   <property name="toolTip">
-                   <string>Frame generator progress</string>
+                   <string>Generator progress</string>
                   </property>
                   <property name="minimum">
                    <number>0</number>
@@ -482,10 +482,14 @@
                    </size>
                   </property>
                   <property name="toolTip">
-                   <string>Pause/Resume frame generator</string>
+                   <string>Pause/Resume generator</string>
                   </property>
                   <property name="text">
                    <string>Pause</string>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="resources.qrc">
+                    <normaloff>:/icon/pause.png</normaloff>:/icon/pause.png</iconset>
                   </property>
                  </widget>
                 </item>
@@ -495,10 +499,14 @@
                    <bool>false</bool>
                   </property>
                   <property name="toolTip">
-                   <string>Stop frame generator</string>
+                   <string>Stop generator</string>
                   </property>
                   <property name="text">
                    <string>Stop</string>
+                  </property>
+                  <property name="icon">
+                   <iconset resource="resources.qrc">
+                    <normaloff>:/icon/stop.png</normaloff>:/icon/stop.png</iconset>
                   </property>
                  </widget>
                 </item>
@@ -517,7 +525,7 @@
                    </size>
                   </property>
                   <property name="toolTip">
-                   <string>How close the number of unsaved screenshots is to the max limit</string>
+                   <string>Thumbnail limit</string>
                   </property>
                   <property name="minimum">
                    <number>0</number>

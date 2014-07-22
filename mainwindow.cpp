@@ -291,6 +291,7 @@ void MainWindow::frameReceived(const int frameNum, const QImage& frame)
 
         ui->generateButton->setEnabled(true);
         ui->btnPauseGenerator->setText(tr("Resume"));
+        ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
 
         // ...In case the user has checked they want to jump to last generated frame
         // after filling the container, then jump...
@@ -511,6 +512,7 @@ void MainWindow::on_actionOpen_triggered()
 
         ui->generateButton->setEnabled(true);
         ui->btnPauseGenerator->setText(tr("Resume"));
+        ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
     }
 
     const QString lastOpened(config.value("last_opened", "").toString());
@@ -535,6 +537,7 @@ void MainWindow::on_actionOpen_DVD_triggered()
 
         ui->generateButton->setEnabled(true);
         ui->btnPauseGenerator->setText(tr("Resume"));
+        ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
     }
 
     const QString lastOpened(config.value("last_opened_dvd", "").toString());
@@ -774,6 +777,7 @@ void MainWindow::on_generateButton_clicked()
     ui->generateButton->setEnabled(false);
     ui->btnPauseGenerator->setEnabled(true);
     ui->btnPauseGenerator->setText(tr("Pause"));
+    ui->btnPauseGenerator->setIcon(QIcon(":/icon/pause.png"));
     ui->btnStopGenerator->setEnabled(true);
     ui->generatorProgressBar->setValue(0);
     ui->generatorProgressBar->setMaximum(frameGenerator->remaining());
@@ -1071,6 +1075,7 @@ void MainWindow::on_btnPauseGenerator_clicked()
         frameGenerator->pause();
 
         ui->btnPauseGenerator->setText(tr("Resume"));
+        ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
         ui->generateButton->setEnabled(true);
 
         // Jump to last generated frame if the option is selected
@@ -1093,6 +1098,7 @@ void MainWindow::on_btnPauseGenerator_clicked()
         }
 
         ui->btnPauseGenerator->setText(tr("Pause"));
+        ui->btnPauseGenerator->setIcon(QIcon(":/icon/pause.png"));
         ui->generateButton->setEnabled(false);
 
         QMetaObject::invokeMethod(frameGenerator.get(), "resume",
@@ -1109,6 +1115,7 @@ void MainWindow::on_btnStopGenerator_clicked()
     ui->generatorProgressBar->setTextVisible(false);
     ui->btnPauseGenerator->setEnabled(false);
     ui->btnPauseGenerator->setText(tr("Pause"));
+    ui->btnPauseGenerator->setIcon(QIcon(":/icon/pause.png"));
     ui->btnStopGenerator->setEnabled(false);
 
     // Jump to last generated frame if the option is selected
