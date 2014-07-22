@@ -473,7 +473,11 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
 
     QProcess proc;
     proc.start(imageMagickPath, newArgs);
-    proc.waitForFinished();
+    if(!proc.waitForFinished(90000)) {
+        QMessageBox::critical(this, tr("Operation timed out"),
+                              tr("Try selecting fewer frames or "
+                                 "resizing the video and try again"));
+    }
 
     // Remove saved images
     for(const auto frame : frames) {
@@ -488,11 +492,16 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
 
         const auto curDir = QDir::current();
         QStringList newOptArgs;
-        newOptArgs << "--batch" << optArgs.split(" ") << curDir.absoluteFilePath("preview.gif");
+        newOptArgs << "--batch" << optArgs.split(" ")
+                   << curDir.absoluteFilePath("preview.gif");
 
         QProcess gifsicle;
         gifsicle.start(gifsiclePath, newOptArgs);
-        gifsicle.waitForFinished();
+        if(!gifsicle.waitForFinished()) {
+            QMessageBox::critical(this, tr("Operation timed out"),
+                                  tr("Try selecting fewer frames, resizing the video, "
+                                     "or selecting 'None', and try again"));
+        }
     }
 
     progress.setValue(end_frame + 2);
