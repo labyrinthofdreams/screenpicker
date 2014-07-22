@@ -107,6 +107,10 @@ public:
      */
     virtual vfg::ScriptParser getParser(const QFileInfo& info) const = 0;
 
+    /**
+     * @brief Get video resolution
+     * @return Video resolution
+     */
     virtual QSize resolution() const = 0;
 
 signals:    

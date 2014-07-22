@@ -100,7 +100,8 @@ public slots:
 
     /**
      * @brief Sets the current frame
-     * @param img Frame to set with a frame number
+     * @param frameNum frame number
+     * @param img Preview frame
      */
     void setFrame(int frameNum, const QImage& frame);
 

@@ -62,6 +62,7 @@ private slots:
     /**
      * @brief Handles a received frame from a generator
      * and updates widgets
+     * @param frameNum Frame number
      * @param frame Received frame
      */
     void frameReceived(int frameNum, const QImage& frame);
@@ -135,6 +136,11 @@ private slots:
      */
     void updateDvdProgressDialog(int progress);
 
+    /**
+     * @brief Generate and display GIF preview
+     * @param args ImageMagick arguments
+     * @param optArgs Optimization arguments
+     */
     void displayGifPreview(QString args, QString optArgs);
 
     void on_actionOpen_triggered();
