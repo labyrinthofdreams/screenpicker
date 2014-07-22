@@ -62,6 +62,8 @@ void vfg::ui::VideoPreviewWidget::setFrame(const QImage& img)
 
 void vfg::ui::VideoPreviewWidget::setFrame(const int frameNum, const QImage& frame)
 {
+    Q_UNUSED(frameNum);
+
     setFrame(frame);
 }
 
