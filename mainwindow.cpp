@@ -200,7 +200,7 @@ MainWindow::MainWindow(QWidget *parent) :
             this,               SLOT(thumbnailDoubleClicked(int)));
 
     connect(ui->menuCreateGIFImage, SIGNAL(triggered(QAction*)),
-            this, SLOT(gitContextMenuTriggered(QAction*)));
+            this,                   SLOT(gifContextMenuTriggered(QAction*)));
 }
 
 MainWindow::~MainWindow()
@@ -1169,7 +1169,7 @@ void MainWindow::activateGifMaker()
     }
 }
 
-void MainWindow::gitContextMenuTriggered(QAction* action)
+void MainWindow::gifContextMenuTriggered(QAction* action)
 {
     const auto objName = action->objectName();
     if(objName == "actionShowEditor") {

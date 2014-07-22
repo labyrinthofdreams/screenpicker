@@ -167,7 +167,10 @@ private slots:
     void on_actionOpen_DVD_triggered();
     void on_actionVideo_Settings_triggered();
 
-    void gitContextMenuTriggered(QAction*);
+    /**
+     * @brief Handle GIF menu clicks
+     */
+    void gifContextMenuTriggered(QAction*);
 
 private:
     Ui::MainWindow* ui;
