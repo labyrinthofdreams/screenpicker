@@ -439,8 +439,8 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
     QList<int> frames;
     const auto start_frame = config.value("gif/startframe").toInt();
     const auto end_frame = config.value("gif/endframe").toInt();
-    const auto skip_frames = config.value("gif/skipframes").toInt() + 1;
-    const auto delay = config.value("gif/delay").toInt();
+    const auto skip_frames = config.value("gif/skipframes", 0).toInt() + 1;
+    const auto delay = config.value("gif/delay", 4).toInt();
     QProgressDialog progress(tr("Generating frames"), tr("Cancel"), start_frame, end_frame + 2);
     progress.setWindowModality(Qt::WindowModal);
     progress.setMinimumDuration(0);

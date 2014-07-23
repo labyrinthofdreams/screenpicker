@@ -135,6 +135,7 @@ void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
     }
 
     config.setValue("gif/delay", ui->spinFrameDelay->value());
+    config.setValue("gif/skipframes", ui->spinSkipFrames->value());
     ui->labelPreview->setText(tr("Generating preview..."));
 
     const auto key = ui->comboImageMagick->currentText();
