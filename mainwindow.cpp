@@ -1156,9 +1156,11 @@ void MainWindow::activateGifMaker()
     ui->actionSetEndFrame->setEnabled(true);
     ui->actionSetStartFrame->setEnabled(true);
 
-    gifMaker = util::make_unique<vfg::ui::GifMakerWidget>();
-    connect(gifMaker.get(), SIGNAL(requestPreview(QString, QString)),
-            this, SLOT(displayGifPreview(QString, QString)));
+    if(!gifMaker) {
+        gifMaker = util::make_unique<vfg::ui::GifMakerWidget>();
+        connect(gifMaker.get(), SIGNAL(requestPreview(QString, QString)),
+                this, SLOT(displayGifPreview(QString, QString)));
+    }
 
     const auto accepted = gifMaker->exec();
     if(!accepted) {
