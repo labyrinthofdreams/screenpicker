@@ -97,10 +97,10 @@ vfg::core::AvisynthVideoSource::getParser(const QFileInfo& info) const
         parser.setTemplate(absPath);
     }
     else if(suffix == "d2v") {
-        parser.setTemplate(":/scripts/d2v_template.avs");
+        parser.setTemplate("scripts/d2v_template.avs");
     }
     else {
-        parser.setTemplate(":/scripts/default_template.avs");
+        parser.setTemplate("scripts/default_template.avs");
     }
 
     return parser;

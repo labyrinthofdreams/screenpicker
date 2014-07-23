@@ -1,5 +1,8 @@
 # Default Avisynth script
-# http://avisynth.org/mediawiki/Internal_functions/Control_functions
+# For syntax see https://github.com/labyrinthofdreams/templet
+# Available variables: source_path (string), avs_plugins (string),
+# deinterlace (boolean), resize (boolean), resize.width/resize.height (int), 
+# crop (boolean), crop.left/crop.top/crop.right/crop.bottom (int)
 SetMemoryMax(128)
 
 PathToVideo = "{$source_path}"

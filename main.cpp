@@ -8,6 +8,20 @@
 #include "mainwindow.h"
 #include "init.h"
 
+/**
+ * @brief Conditionally copy file "from" to "to" if "to" doesn't exist
+ * @param from Copy from path
+ * @param to Copy to path
+ * @return True on success, otherwise false
+ */
+bool condCopy(const QString& from, const QString& to) {
+    if(QFile::exists(to)) {
+        return false;
+    }
+
+    return QFile::copy(from, to);
+}
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -25,12 +39,10 @@ int main(int argc, char *argv[])
         QDir current;
         current.mkdir("scripts");
 
-        if(!QFile::exists("scripts/imagemagick.ini")) {
-            QFile::copy(":/scripts/imagemagick.ini", "scripts/imagemagick.ini");
-        }
-        if(!QFile::exists("scripts/gifsicle.ini")) {
-            QFile::copy(":/scripts/gifsicle.ini", "scripts/gifsicle.ini");
-        }
+        condCopy(":/scripts/imagemagick.ini", "scripts/imagemagick.ini");
+        condCopy(":/scripts/gifsicle.ini", "scripts/gifsicle.ini");
+        condCopy(":/scripts/d2v_template.avs", "scripts/d2v_template.avs");
+        condCopy(":/scripts/default_template.avs", "scripts/default_template.avs");
 
         MainWindow w;
         w.show();
