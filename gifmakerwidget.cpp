@@ -37,6 +37,9 @@ GifMakerWidget::GifMakerWidget(QWidget *parent) :
     ui->setupUi(this);
 
     ui->comboImageMagick->addItems(imageMagick.childGroups());
+    const auto first = ui->comboImageMagick->currentText();
+    const auto args = imageMagick.value(QString("%1/args").arg(first)).toString();
+    ui->plainTextPreset->setPlainText(args);
 
     ui->comboGifsicle->addItem(tr("None"));
     ui->comboGifsicle->addItems(gifsicle.childGroups());
@@ -137,8 +140,11 @@ void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
     config.setValue("gif/delay", ui->spinFrameDelay->value());
     config.setValue("gif/skipframes", ui->spinSkipFrames->value());
 
-    const auto key = ui->comboImageMagick->currentText();
-    const auto args = imageMagick.value(QString("%1/args").arg(key)).toString();
+    auto args = ui->plainTextPreset->toPlainText();
+    if(args.isEmpty()) {
+        const auto key = ui->comboImageMagick->currentText();
+        args = imageMagick.value(QString("%1/args").arg(key)).toString();
+    }
 
     const auto optKey = ui->comboGifsicle->currentText();
     const auto optArgs = optKey == "None" ? "" : gifsicle.value(QString("%1/args").arg(optKey)).toString();
@@ -165,4 +171,9 @@ void vfg::ui::GifMakerWidget::on_buttonReset_clicked()
     ui->comboGifsicle->setCurrentIndex(0);
     ui->labelPreview->clear();
     ui->buttonSave->setEnabled(false);
+}
+
+void vfg::ui::GifMakerWidget::on_comboImageMagick_activated(const QString &arg1)
+{
+    ui->plainTextPreset->setPlainText(imageMagick.value(QString("%1/args").arg(arg1)).toString());
 }

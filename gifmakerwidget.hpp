@@ -44,6 +44,8 @@ private slots:
 
     void on_buttonReset_clicked();
 
+    void on_comboImageMagick_activated(const QString &arg1);
+
 private:
     Ui::GifMakerWidget *ui;
 
