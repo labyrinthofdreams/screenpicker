@@ -30,6 +30,8 @@ QMap<QString, QVariant> getDefaultSettings()
     cfg["showvideosettings"] = false;
     cfg["resumegeneratorafterclear"] = false;
     cfg["gifsiclepath"] = QDir::currentPath().append("/gifsicle.exe");
+    cfg["imagemagicktimeout"] = 90;
+    cfg["gifsicletimeout"] = 30;
     return cfg;
 }
 

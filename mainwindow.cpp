@@ -473,7 +473,8 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
 
     QProcess imageMagick;
     imageMagick.start(imageMagickPath, newArgs);
-    if(!imageMagick.waitForFinished(90000)) {
+    const auto imTimeout = 1000 * config.value("imagemagicktimeout").toInt();
+    if(!imageMagick.waitForFinished(imTimeout)) {
         QString error;
         switch(imageMagick.error()) {
         case QProcess::FailedToStart:
@@ -510,7 +511,8 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
 
         QProcess gifsicle;
         gifsicle.start(gifsiclePath, newOptArgs);
-        if(!gifsicle.waitForFinished()) {
+        const auto gifsicleTimeout = 1000 * config.value("gifsicletimeout").toInt();
+        if(!gifsicle.waitForFinished(gifsicleTimeout)) {
             QString error;
             switch(gifsicle.error()) {
             case QProcess::FailedToStart:

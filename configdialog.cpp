@@ -43,6 +43,9 @@ vfg::ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->cbResumeGeneratorAfterClear->setChecked(cfg.value("resumegeneratorafterclear").toBool());
     ui->editImageMagickPath->setText(cfg.value("imagemagickpath").toString());
     ui->editGifsiclePath->setText(cfg.value("gifsiclepath").toString());
+
+    ui->spinImageMagickTimeout->setValue(cfg.value("imagemagicktimeout").toInt());
+    ui->spinGifsicleTimeout->setValue(cfg.value("gifsicletimeout").toInt());
 }
 
 vfg::ConfigDialog::~ConfigDialog() {
