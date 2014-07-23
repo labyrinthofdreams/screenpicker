@@ -149,7 +149,8 @@ void vfg::ui::GifMakerWidget::on_buttonSave_clicked()
 {
     const QString savePath = QFileDialog::getSaveFileName(this, tr("Select save path"),
                                                           preview->fileName(), tr("GIF (*.gif)"));
-    if(!QFile::copy(preview->fileName(), savePath)) {
+    if(!savePath.isEmpty() &&
+            !QFile::copy(preview->fileName(), savePath)) {
         QMessageBox::critical(this, tr("Saving failed"),
                               tr("Try again. If the problem persists, try a new filename."));
     }
