@@ -136,7 +136,6 @@ void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
 
     config.setValue("gif/delay", ui->spinFrameDelay->value());
     config.setValue("gif/skipframes", ui->spinSkipFrames->value());
-    ui->labelPreview->setText(tr("Generating preview..."));
 
     const auto key = ui->comboImageMagick->currentText();
     const auto args = imageMagick.value(QString("%1/args").arg(key)).toString();
@@ -164,5 +163,6 @@ void vfg::ui::GifMakerWidget::on_buttonReset_clicked()
     ui->spinSkipFrames->setValue(0);
     ui->spinFrameDelay->setValue(4);
     ui->comboGifsicle->setCurrentIndex(0);
-    ui->labelPreview->setText(tr("Nothing to display..."));
+    ui->labelPreview->clear();
+    ui->buttonSave->setEnabled(false);
 }

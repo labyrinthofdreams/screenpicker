@@ -379,7 +379,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Nothing to display...</string>
+           <string/>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
