@@ -156,3 +156,13 @@ void vfg::ui::GifMakerWidget::on_buttonSave_clicked()
                               tr("Try again. If the problem persists, try a new filename."));
     }
 }
+
+void vfg::ui::GifMakerWidget::on_buttonReset_clicked()
+{
+    ui->spinStartFrame->setValue(0);
+    ui->spinLastFrame->setValue(0);
+    ui->spinSkipFrames->setValue(0);
+    ui->spinFrameDelay->setValue(4);
+    ui->comboGifsicle->setCurrentIndex(0);
+    ui->labelPreview->setText(tr("Nothing to display..."));
+}

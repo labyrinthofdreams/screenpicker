@@ -42,6 +42,8 @@ private slots:
 
     void on_buttonSave_clicked();
 
+    void on_buttonReset_clicked();
+
 private:
     Ui::GifMakerWidget *ui;
 
