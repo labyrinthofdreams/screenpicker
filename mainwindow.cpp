@@ -842,7 +842,7 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
 {
     Q_UNUSED(pos);
     QMenu menu;
-    QAction *saveAction = new QAction(tr("Save"), this);
+    QAction *saveAction = new QAction(tr("Enqueue"), this);
     saveAction->setData(1);
     menu.addAction(saveAction);
 
@@ -870,7 +870,7 @@ void MainWindow::handleSavedMenu(const QPoint &pos)
 {
     Q_UNUSED(pos);
     QMenu menu;
-    QAction *unsaveAction = new QAction(tr("Unsave"), this);
+    QAction *unsaveAction = new QAction(tr("Remove from queue"), this);
     unsaveAction->setData(1);
     menu.addAction(unsaveAction);
 

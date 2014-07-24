@@ -48,7 +48,7 @@
              <x>0</x>
              <y>0</y>
              <width>790</width>
-             <height>114</height>
+             <height>113</height>
             </rect>
            </property>
            <property name="sizePolicy">
@@ -364,7 +364,7 @@
                    <x>0</x>
                    <y>0</y>
                    <width>764</width>
-                   <height>198</height>
+                   <height>199</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -563,7 +563,7 @@
           </widget>
           <widget class="QWidget" name="second">
            <attribute name="title">
-            <string>Saved</string>
+            <string>Queue</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_11">
             <item>
@@ -579,7 +579,7 @@
                    <x>0</x>
                    <y>0</y>
                    <width>764</width>
-                   <height>199</height>
+                   <height>200</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
