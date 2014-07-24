@@ -46,6 +46,8 @@ private slots:
 
     void on_comboImageMagick_activated(const QString &arg1);
 
+    void on_spinFrameDelay_valueChanged(const QString &arg1);
+
 private:
     Ui::GifMakerWidget *ui;
 
@@ -56,6 +58,8 @@ private:
     QSettings gifsicle;
 
     int totalFrames() const;
+
+    QString parseImageMagickArgs(const QString& argName);
 
 signals:
     void requestPreview(const QString& args, const QString& optArgs);

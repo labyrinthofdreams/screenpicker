@@ -440,7 +440,7 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
     const auto start_frame = config.value("gif/startframe").toInt();
     const auto end_frame = config.value("gif/endframe").toInt();
     const auto skip_frames = config.value("gif/skipframes", 0).toInt() + 1;
-    const auto delay = config.value("gif/delay", 4).toInt();
+    //const auto delay = config.value("gif/delay", 4).toInt();
     QProgressDialog progress(tr("Generating frames"), tr("Cancel"), start_frame, end_frame + 2);
     progress.setWindowModality(Qt::WindowModal);
     progress.setMinimumDuration(0);
@@ -468,8 +468,7 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
     QCoreApplication::processEvents();
 
     QStringList newArgs;
-    newArgs << args.replace(QString("%delay%"), QString::number(delay)).split(" ")
-            << "*.png" << "preview.gif";
+    newArgs << args.split(" ") << "*.png" << "preview.gif";
 
     QProcess imageMagick;
     imageMagick.start(imageMagickPath, newArgs);
