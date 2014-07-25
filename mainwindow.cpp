@@ -334,11 +334,11 @@ void MainWindow::resetState()
     ui->nextButton->setEnabled(false);
     ui->grabButton->setEnabled(false);
     ui->generateButton->setEnabled(false);
-    ui->saveSingleButton->setEnabled(false);
     ui->btnPauseGenerator->setEnabled(false);
     ui->btnStopGenerator->setEnabled(false);
     ui->generatorProgressBar->setValue(0);
     ui->generatorProgressBar->setTextVisible(false);
+    ui->actionSave_as_PNG->setEnabled(false);
 }
 
 void MainWindow::loadFile(const QString& path)
@@ -692,7 +692,8 @@ void MainWindow::videoLoaded()
     ui->nextButton->setEnabled(true);
     ui->grabButton->setEnabled(true);
     ui->generateButton->setEnabled(true);
-    ui->saveSingleButton->setEnabled(true);
+
+    ui->actionSave_as_PNG->setEnabled(true);
 
     QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
                               Qt::QueuedConnection, Q_ARG(int, jumpToFrame));
@@ -1066,38 +1067,6 @@ void MainWindow::on_actionAbout_triggered()
     a.exec();
 }
 
-void MainWindow::on_saveSingleButton_clicked()
-{
-    const int selected = ui->seekSlider->value();
-    QImage frame = frameGrabber->getFrame(selected);
-
-    const QDir saveDir(config.value("last_save_dir", "/").toString());
-    const QString defaultSavePath = saveDir.absoluteFilePath(QString("%1.png").arg(QString::number(selected)));
-    const QString outFilename = QFileDialog::getSaveFileName(this, tr("Save as..."),
-                                                       defaultSavePath,
-                                                       tr("PNG (*.png)"));
-    const QFileInfo info(outFilename);
-    config.setValue("last_save_dir", info.absoluteDir().absolutePath());
-
-    const QMessageBox::StandardButton clicked =
-            QMessageBox::question(this, tr("Resize thumbnails"),
-                                  tr("Do you want to resize thumbnails?"),
-                                  QMessageBox::Yes | QMessageBox::No,
-                                  QMessageBox::No);
-
-    if(clicked == QMessageBox::Yes)
-    {
-        const int resizeWidth = QInputDialog::getInt(this,
-                                                     tr("Resize thumbnails"),
-                                                     tr("Resize to width:"));
-        if(resizeWidth > 0) {
-            frame = frame.scaledToWidth(resizeWidth, Qt::SmoothTransformation);
-        }
-    }
-
-    frame.save(outFilename);
-}
-
 void MainWindow::on_cbUnlimitedScreens_clicked(const bool checked)
 {
     ui->screenshotsSpinBox->setEnabled(!checked);
@@ -1210,4 +1179,23 @@ void MainWindow::gifContextMenuTriggered(QAction* action)
     else if(objName == "actionSetEndFrame") {
         gifMaker->updateLastFrame(ui->seekSlider->value());
     }
+}
+
+void MainWindow::on_actionSave_as_PNG_triggered()
+{
+    if(!frameGrabber->hasVideo()) {
+        return;
+    }
+    const int selected = ui->seekSlider->value();
+    const QDir saveDir(config.value("last_save_dir", "/").toString());
+    const auto saveName = QString("%1.png").arg(QString::number(selected));
+    const QString defaultSavePath = saveDir.absoluteFilePath(saveName);
+    const QString outFilename =
+            QFileDialog::getSaveFileName(this, tr("Save as..."),
+                                         defaultSavePath, tr("PNG (*.png)"));
+    const auto absOutPath = QFileInfo(outFilename).absoluteDir().absolutePath();
+    config.setValue("last_save_dir", absOutPath);
+
+    QImage frame = frameGrabber->getFrame(selected);
+    frame.save(absOutPath);
 }

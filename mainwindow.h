@@ -160,7 +160,6 @@ private slots:
     void on_screenshotsSpinBox_valueChanged(int arg1);
     void on_frameStepSpinBox_valueChanged(int arg1);
     void on_actionAbout_triggered();
-    void on_saveSingleButton_clicked();
     void on_cbUnlimitedScreens_clicked(bool checked);
     void on_btnPauseGenerator_clicked();
     void on_btnStopGenerator_clicked();
@@ -171,6 +170,8 @@ private slots:
      * @brief Handle GIF menu clicks
      */
     void gifContextMenuTriggered(QAction*);
+
+    void on_actionSave_as_PNG_triggered();
 
 private:
     Ui::MainWindow* ui;
