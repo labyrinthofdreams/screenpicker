@@ -773,9 +773,8 @@ void MainWindow::on_generateButton_clicked()
     if(pauseAfterLimit && ui->unsavedWidget->isFull()) {
         // Can't start the generator if the unsaved widget container is full
         // and user has selected to pause after the container is full
-        QMessageBox::information(this, tr(""),
-                tr("Thumbnail container has reached max limit.\n"
-                   "Click 'Clear' or raise the max thumbnail limit."));
+        QMessageBox::information(this, tr("Thumbnail container is full"),
+                tr("Click 'Clear' or raise the max thumbnail limit."));
         return;
     }
 
