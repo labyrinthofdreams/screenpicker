@@ -924,8 +924,8 @@ void MainWindow::on_saveThumbnailsButton_clicked()
     // Save saved images to disk
     if(ui->savedWidget->isEmpty())
     {
-        QMessageBox::information(this, tr("Save screenshots"),
-                                 tr("Nothing to save. Add one or more screenshots to save."));
+        QMessageBox::information(this, tr("Nothing to save"),
+                                 tr("Add one or more screenshots to queue."));
         return;
     }
 
@@ -934,39 +934,28 @@ void MainWindow::on_saveThumbnailsButton_clicked()
         frameGenerator->pause();
     }
 
-    QString lastSaveDirectory = config.value("last_save_dir", "/").toString();
-    lastSaveDirectory = QFileDialog::getExistingDirectory(
-                            this, tr("Select save directory"),
-                            lastSaveDirectory);
+    const QString lastSaveDirectory =
+            QFileDialog::getExistingDirectory(this, tr("Select save directory"),
+                                              config.value("last_save_dir", "/").toString());
     if(lastSaveDirectory.isEmpty()) {
         return;
     }
 
     config.setValue("last_save_dir", lastSaveDirectory);
 
-    int resizeWidth = 0;
-    const QMessageBox::StandardButton clicked =
-            QMessageBox::question(this, tr("Resize thumbnails"),
-                                  tr("Do you want to resize thumbnails?"),
-                                  QMessageBox::Yes | QMessageBox::No,
-                                  QMessageBox::No);
+    const std::size_t numSaved = ui->savedWidget->numThumbnails();    
+    const QDir saveDir(lastSaveDirectory);
 
-    if(clicked == QMessageBox::Yes) {
-        resizeWidth = QInputDialog::getInt(this, tr("Resize thumbnails"), tr("Resize to width:"));
-    }
-
-    const std::size_t numSaved = ui->savedWidget->numThumbnails();
     QProgressDialog prog("", "Cancel", 0, numSaved, this);
     prog.setWindowModality(Qt::WindowModal);
     prog.setCancelButton(0);
     prog.setMinimumDuration(0);
-    const QDir saveDir(lastSaveDirectory);
     for(std::size_t idx = 0; idx < numSaved; ++idx) {
         const auto widget = ui->savedWidget->at(idx);
         if(!widget) {
             break;
         }
-        const int frameNumber = widget->frameNum();
+
         const int current = prog.value();
         prog.setLabelText(tr("Saving image %1 of %2").arg(current).arg(numSaved));
         prog.setValue(current + 1);
@@ -976,16 +965,14 @@ void MainWindow::on_saveThumbnailsButton_clicked()
             break;
         }
 
+        const int frameNumber = widget->frameNum();
         const QString filename = QString("%1.png").arg(QString::number(frameNumber));
         const QString savePath = saveDir.absoluteFilePath(filename);
 
-        // Get current frame
-        QImage frame = frameGrabber->getFrame(frameNumber);
-        if(resizeWidth > 0) {
-            frame = frame.scaledToWidth(resizeWidth, Qt::SmoothTransformation);
-        }
+        const QImage frame = frameGrabber->getFrame(frameNumber);
         frame.save(savePath, "PNG");
     }
+
     prog.setValue(numSaved);
 }
 
