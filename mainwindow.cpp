@@ -1015,22 +1015,9 @@ void MainWindow::dropEvent(QDropEvent *ev)
 void MainWindow::on_actionOptions_triggered()
 {
     vfg::ConfigDialog configDialog;
-    const int saved = configDialog.exec();
-
-    if(saved == QDialog::Accepted)
-    {
-        const int newMaxThumbnails = config.value("maxthumbnails").toInt();
-        ui->unsavedWidget->setMaxThumbnails(newMaxThumbnails);
-
-        const bool containerHasRoom = ui->unsavedWidget->isFull();
-        const bool generatorHasQueue = (frameGenerator->remaining() > 0);
-        const bool generatorWaiting = frameGenerator->isPaused();
-        const bool continueGenerator = (containerHasRoom && generatorHasQueue && generatorWaiting);
-
-        if(continueGenerator)
-        {
-            frameGenerator->resume();
-        }
+    const auto saved = configDialog.exec();
+    if(saved) {
+        ui->unsavedWidget->setMaxThumbnails(config.value("maxthumbnails").toInt());
 
         dvdProcessor->setProcessor(config.value("dgindexexecpath").toString());
     }
