@@ -79,8 +79,6 @@ void GifMakerWidget::updateStartFrame(const int value)
     ui->spinStartFrame->setValue(value);
     config.setValue("gif/startframe", value);
     ui->labelTotalFrames->setText(QString::number(totalFrames()));
-
-    ui->labelGifSize->setText("n/a");
 }
 
 void GifMakerWidget::updateLastFrame(const int value)
@@ -93,8 +91,6 @@ void GifMakerWidget::updateLastFrame(const int value)
     ui->spinLastFrame->setValue(value);
     config.setValue("gif/endframe", value);
     ui->labelTotalFrames->setText(QString::number(totalFrames()));
-
-    ui->labelGifSize->setText("n/a");
 }
 
 int GifMakerWidget::totalFrames() const
@@ -133,7 +129,6 @@ void GifMakerWidget::on_spinSkipFrames_valueChanged(const int value)
     Q_UNUSED(value);
     config.setValue("gif/skipframes", value);
     ui->labelTotalFrames->setText(QString::number(totalFrames()));
-    ui->labelGifSize->setText("n/a");
 }
 
 void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
@@ -176,6 +171,8 @@ void vfg::ui::GifMakerWidget::on_buttonReset_clicked()
     ui->spinFrameDelay->setValue(4);
     ui->comboGifsicle->setCurrentIndex(0);
     ui->labelPreview->clear();
+    ui->labelGifSize->setText(tr("n/a"));
+    ui->labelTotalFrames->clear();
     ui->buttonSave->setEnabled(false);
 }
 

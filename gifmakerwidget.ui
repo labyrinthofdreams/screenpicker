@@ -495,7 +495,7 @@
     </layout>
    </item>
   </layout>
-  <zorder></zorder>
+  <zorder>groupPreview</zorder>
   <zorder>groupBox_2</zorder>
   <zorder>groupBox_3</zorder>
   <zorder>groupBox</zorder>
