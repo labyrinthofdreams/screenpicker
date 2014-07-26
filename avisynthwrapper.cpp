@@ -109,6 +109,7 @@ void vfg::avisynth::AvisynthWrapper::load(const std::string& path) {
     if(avs_is_error(res.get())) {
         throw vfg::exception::AvisynthError(avs_as_string(res.get()));
     }
+
     if(!avs_is_clip(res.get())) {
         throw vfg::exception::AvisynthError("Imported script did not return a video clip");
     }
@@ -120,6 +121,8 @@ void vfg::avisynth::AvisynthWrapper::load(const std::string& path) {
         info.reset();
         throw vfg::exception::AvisynthError("Imported script does not have video data");
     }
+
+    openFilePath = path;
 }
 
 vfg::avisynth::VideoFrame
@@ -202,4 +205,8 @@ int vfg::avisynth::AvisynthWrapper::width() const {
 
 int vfg::avisynth::AvisynthWrapper::height() const {
     return hasVideo() ? info->height : 0;
+}
+
+std::string vfg::avisynth::AvisynthWrapper::fileName() const {
+    return openFilePath;
 }

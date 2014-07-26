@@ -17,6 +17,7 @@
 #include "videoframegrabber.h"
 #include "videoframethumbnail.h"
 #include "videosettingswidget.h"
+#include "x264encoderdialog.hpp"
 
 /**
  * @brief Get video info via avinfo
@@ -205,6 +206,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    config.remove("video");
+
     delete ui;
 }
 
@@ -338,7 +341,9 @@ void MainWindow::resetState()
     ui->btnStopGenerator->setEnabled(false);
     ui->generatorProgressBar->setValue(0);
     ui->generatorProgressBar->setTextVisible(false);
+
     ui->actionSave_as_PNG->setEnabled(false);
+    ui->actionX264_Encoder->setEnabled(false);
 }
 
 void MainWindow::loadFile(const QString& path)
@@ -662,6 +667,8 @@ void MainWindow::videoLoaded()
 {
     setWindowTitle(config.value("last_opened").toString());
 
+    config.setValue("last_opened_script", videoSource->fileName());
+
     const int numFrames = frameGrabber->totalFrames() - 1;
 
     const QSize resolution = frameGrabber->resolution();
@@ -694,6 +701,7 @@ void MainWindow::videoLoaded()
     ui->generateButton->setEnabled(true);
 
     ui->actionSave_as_PNG->setEnabled(true);
+    ui->actionX264_Encoder->setEnabled(true);
 
     QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
                               Qt::QueuedConnection, Q_ARG(int, jumpToFrame));
@@ -1171,4 +1179,10 @@ void MainWindow::on_actionSave_as_PNG_triggered()
 
     QImage frame = frameGrabber->getFrame(selected);
     frame.save(absOutPath);
+}
+
+void MainWindow::on_actionX264_Encoder_triggered()
+{
+    vfg::ui::x264EncoderDialog w;
+    w.exec();
 }

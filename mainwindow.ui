@@ -692,6 +692,7 @@
      <addaction name="actionShowEditor"/>
     </widget>
     <addaction name="menuCreateGIFImage"/>
+    <addaction name="actionX264_Encoder"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuVideo"/>
@@ -811,6 +812,14 @@
    </property>
    <property name="text">
     <string>Save as PNG...</string>
+   </property>
+  </action>
+  <action name="actionX264_Encoder">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>x264 Encoder</string>
    </property>
   </action>
  </widget>

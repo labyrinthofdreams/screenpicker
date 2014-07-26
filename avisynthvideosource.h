@@ -24,6 +24,7 @@ public:
     bool isValidFrame(int frameNum) const override;
     vfg::ScriptParser getParser(const QFileInfo &info) const override;
     QSize resolution() const override;
+    QString fileName() const override;
 };
 
 } // namespace core

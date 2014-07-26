@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets concurrent
+QT       += core gui widgets concurrent multimedia multimediawidgets
 
 TARGET = screenpicker
 TEMPLATE = app
@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     .\libs\templet\templet.cpp .\libs\templet\nodes.cpp .\libs\templet\types.cpp \
     avisynthwrapper.cpp \
     gifmakerwidget.cpp \
-    aboutwidget.cpp
+    aboutwidget.cpp \
+    x264encoderdialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -46,14 +47,16 @@ HEADERS  += mainwindow.h \
     ptrutil.hpp \
     avisynthwrapper.hpp \
     gifmakerwidget.hpp \
-    aboutwidget.hpp
+    aboutwidget.hpp \
+    x264encoderdialog.hpp
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
     configdialog.ui \
     videosettingswidget.ui \
     gifmakerwidget.ui \
-    aboutwidget.ui
+    aboutwidget.ui \
+    x264encoderdialog.ui
 
 INCLUDEPATH += .\libs\avs2yuv\src \
     .\libs\templet

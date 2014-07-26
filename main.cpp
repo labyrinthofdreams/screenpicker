@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
 
         condCopy(":/scripts/imagemagick.ini", "scripts/imagemagick.ini");
         condCopy(":/scripts/gifsicle.ini", "scripts/gifsicle.ini");
+        condCopy(":/scripts/x264.ini", "scripts/x264.ini");
         condCopy(":/scripts/d2v_template.avs", "scripts/d2v_template.avs");
         condCopy(":/scripts/default_template.avs", "scripts/default_template.avs");
 

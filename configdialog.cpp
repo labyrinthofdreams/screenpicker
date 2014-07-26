@@ -46,6 +46,8 @@ vfg::ConfigDialog::ConfigDialog(QWidget *parent) :
 
     ui->spinImageMagickTimeout->setValue(cfg.value("imagemagicktimeout").toInt());
     ui->spinGifsicleTimeout->setValue(cfg.value("gifsicletimeout").toInt());
+
+    ui->editX264Path->setText(cfg.value("x264path").toString());
 }
 
 vfg::ConfigDialog::~ConfigDialog() {
@@ -76,6 +78,7 @@ void vfg::ConfigDialog::on_buttonBox_accepted()
     cfg.setValue("resumegeneratorafterclear", ui->cbResumeGeneratorAfterClear->isChecked());
     cfg.setValue("imagemagickpath", ui->editImageMagickPath->text());
     cfg.setValue("gifsiclepath", ui->editGifsiclePath->text());
+    cfg.setValue("x264path", ui->editX264Path->text());
 }
 
 void vfg::ConfigDialog::on_btnDgindexPath_clicked()
@@ -107,4 +110,12 @@ void vfg::ConfigDialog::on_buttonGifsicleBrowse_clicked()
                                           tr("Gifsicle executable path"),
                                           "/", "gifsicle.exe");
     ui->editGifsiclePath->setText(path);
+}
+
+void vfg::ConfigDialog::on_buttonBrowseX264_clicked()
+{
+    const QString path = QFileDialog::getOpenFileName(this,
+                                          tr("x264 executable path"),
+                                          "/", "x264.exe");
+    ui->editX264Path->setText(path);
 }

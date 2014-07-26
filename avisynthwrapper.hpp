@@ -91,6 +91,7 @@ class AvisynthWrapper
 private:
     avs_hnd_t avsHandle;
     util::observer_ptr<const AVS_VideoInfo> info;
+    std::string openFilePath;
 
 public:
     /**
@@ -163,6 +164,12 @@ public:
      * @return Video height or 0
      */
     int height() const;
+
+    /**
+     * @brief Get opened filename
+     * @return Opened filename
+     */
+    std::string fileName() const;
 };
 
 } // namespace avisynth

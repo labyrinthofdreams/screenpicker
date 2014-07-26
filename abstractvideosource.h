@@ -113,6 +113,12 @@ public:
      */
     virtual QSize resolution() const = 0;
 
+    /**
+     * @brief Get opened filename
+     * @return Absolute path to opened file
+     */
+    virtual QString fileName() const = 0;
+
 signals:    
     /**
      * @brief Signals when the video has been loaded

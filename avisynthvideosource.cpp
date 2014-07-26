@@ -110,3 +110,9 @@ QSize vfg::core::AvisynthVideoSource::resolution() const
 {
     return QSize(avs.width(), avs.height());
 }
+
+QString vfg::core::AvisynthVideoSource::fileName() const
+{
+    const QFileInfo info(QString::fromStdString(avs.fileName()));
+    return info.absoluteFilePath();
+}

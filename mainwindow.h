@@ -173,6 +173,8 @@ private slots:
 
     void on_actionSave_as_PNG_triggered();
 
+    void on_actionX264_Encoder_triggered();
+
 private:
     Ui::MainWindow* ui;
 

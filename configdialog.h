@@ -40,6 +40,8 @@ private slots:
 
     void on_buttonGifsicleBrowse_clicked();
 
+    void on_buttonBrowseX264_clicked();
+
 private:
     Ui::ConfigDialog* ui;
 };

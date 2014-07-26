@@ -4,6 +4,7 @@
         <file>default_template.avs</file>
         <file alias="imagemagick.ini">scripts/imagemagick.ini</file>
         <file alias="gifsicle.ini">scripts/gifsicle.ini</file>
+        <file alias="x264.ini">scripts/x264.ini</file>
     </qresource>
     <qresource prefix="/icon">
         <file alias="previous.png">icons/back.png</file>
