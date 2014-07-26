@@ -60,6 +60,8 @@ x264EncoderDialog::x264EncoderDialog(QWidget *parent) :
 
 x264EncoderDialog::~x264EncoderDialog()
 {
+    QFile::remove("preview.mkv");
+
     delete ui;
 }
 
