@@ -86,7 +86,7 @@
         <item>
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>Quality (0-51:</string>
+           <string>Quality (0-51):</string>
           </property>
          </widget>
         </item>
