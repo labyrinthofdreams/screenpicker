@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>392</height>
+    <height>422</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -190,8 +190,6 @@
       </item>
      </layout>
      <zorder></zorder>
-     <zorder>label_2</zorder>
-     <zorder></zorder>
      <zorder></zorder>
      <zorder>plainTextEditPreset</zorder>
     </widget>
@@ -320,6 +318,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="buttonSaveAs">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Save as...</string>
        </property>

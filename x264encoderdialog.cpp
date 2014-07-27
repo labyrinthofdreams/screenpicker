@@ -110,6 +110,7 @@ void vfg::ui::x264EncoderDialog::processFinished(int exitCode, QProcess::ExitSta
 
     ui->progressBar->setValue(100);
     ui->labelStatusText->setText(tr("Done!"));
+    ui->buttonSaveAs->setEnabled(true);
 
     // Play preview
     const QUrl previewUrl = QUrl::fromLocalFile("preview.mkv");
