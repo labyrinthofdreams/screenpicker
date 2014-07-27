@@ -8,6 +8,7 @@
 
 class QMediaPlayer;
 class QString;
+class QVBoxLayout;
 class QVideoWidget;
 
 namespace vfg {
@@ -52,6 +53,7 @@ private:
 
     std::unique_ptr<QMediaPlayer> mediaPlayer;
 
+    QVBoxLayout *videoLayout;
     QVideoWidget *videoWidget;
 
     QString parseArgs(const QString& section) const;

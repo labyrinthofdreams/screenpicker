@@ -36,11 +36,10 @@ x264EncoderDialog::x264EncoderDialog(QWidget *parent) :
     x264config("scripts/x264.ini", QSettings::IniFormat),
     x264(new QProcess),
     mediaPlayer(new QMediaPlayer),
+    videoLayout(new QVBoxLayout),
     videoWidget(new QVideoWidget)
 {
     ui->setupUi(this);
-
-    auto videoLayout = new QVBoxLayout;
 
     mediaPlayer->setVideoOutput(videoWidget);
 
@@ -116,6 +115,7 @@ void vfg::ui::x264EncoderDialog::processFinished(int exitCode, QProcess::ExitSta
     const QUrl previewUrl = QUrl::fromLocalFile("preview.mkv");
     const QFileInfo info(previewUrl.toLocalFile());
     ui->labelEncodeSize->setText(prettySize(info.size()));
+    videoLayout->setSizeConstraint(QLayout::SetFixedSize);
     videoWidget->setFixedSize(config.value("video/resolution").toSize());
     mediaPlayer->setMedia(previewUrl);
     mediaPlayer->play();
