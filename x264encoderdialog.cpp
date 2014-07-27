@@ -77,13 +77,17 @@ QString vfg::ui::x264EncoderDialog::parseArgs(const QString& section) const
     const QSize resolution = config.value("video/resolution").toSize();
     QString args = x264config.value(QString("%1/args").arg(section)).toString();
     args.replace("$quality", QString::number(ui->spinQuality->value()))
-            .replace("$fps", QString::number(ui->spinFps->value()))
             .replace("$width", QString::number(resolution.width()))
             .replace("$height", QString::number(resolution.height()));
 
     // Add tune only if set
     if(ui->comboTune->currentIndex() != 0) {
         args.append(" --tune ").append(ui->comboTune->currentText().toLower());
+    }
+
+    // Add FPS only if auto-detect is not set
+    if(!ui->checkBoxFpsAutoDetect->isChecked()) {
+        args.append(" --fps ").append(QString::number(ui->spinFps->value()));
     }
 
     return args;
@@ -161,4 +165,10 @@ void vfg::ui::x264EncoderDialog::on_buttonSaveAs_clicked()
         QMessageBox::critical(this, tr("Saving failed"),
                               tr("Try again. If the problem persists, try a new filename."));
     }
+}
+
+void vfg::ui::x264EncoderDialog::on_checkBoxFpsAutoDetect_toggled(const bool checked)
+{
+    ui->spinFps->setEnabled(!checked);
+    ui->plainTextEditPreset->setPlainText(parseArgs(ui->comboPreset->currentText()));
 }
