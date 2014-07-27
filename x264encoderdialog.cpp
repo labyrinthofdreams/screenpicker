@@ -3,10 +3,12 @@
 #include <QFileInfo>
 #include <QMediaPlayer>
 #include <QMessageBox>
+#include <QPlainTextEdit>
 #include <QProcess>
 #include <QRegExp>
 #include <QSettings>
 #include <QString>
+#include <QStringList>
 #include <QSize>
 #include <QUrl>
 #include <QVBoxLayout>
@@ -26,10 +28,7 @@ static QString prettySize(double size) {
     return QString("%1 MB").arg(QString::number(size, 'f', 2));
 }
 
-namespace vfg {
-namespace ui {
-
-x264EncoderDialog::x264EncoderDialog(QWidget *parent) :
+vfg::ui::x264EncoderDialog::x264EncoderDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::x264EncoderDialog),
     config("config.ini", QSettings::IniFormat),
@@ -37,9 +36,13 @@ x264EncoderDialog::x264EncoderDialog(QWidget *parent) :
     x264(new QProcess),
     mediaPlayer(new QMediaPlayer),
     videoLayout(new QVBoxLayout),
-    videoWidget(new QVideoWidget)
+    videoWidget(new QVideoWidget),
+    logWindow(new QPlainTextEdit)
 {
     ui->setupUi(this);
+
+    logWindow->setWindowTitle(tr("x264 Log"));
+    logWindow->resize(400, 500);
 
     mediaPlayer->setVideoOutput(videoWidget);
 
@@ -49,6 +52,9 @@ x264EncoderDialog::x264EncoderDialog(QWidget *parent) :
     connect(x264.get(), SIGNAL(readyReadStandardOutput()),
             this,       SLOT(parseProcessOutput()));
 
+    connect(x264.get(), SIGNAL(started()),
+            this,       SLOT(processStarted()));
+
     connect(x264.get(), SIGNAL(finished(int, QProcess::ExitStatus)),
             this,       SLOT(processFinished(int, QProcess::ExitStatus)));
 
@@ -57,15 +63,12 @@ x264EncoderDialog::x264EncoderDialog(QWidget *parent) :
     ui->plainTextEditPreset->setPlainText(parseArgs(ui->comboPreset->currentText()));
 }
 
-x264EncoderDialog::~x264EncoderDialog()
+vfg::ui::x264EncoderDialog::~x264EncoderDialog()
 {
     QFile::remove("preview.mkv");
 
     delete ui;
 }
-
-} // namespace ui
-} // namespace vfg
 
 void vfg::ui::x264EncoderDialog::on_comboPreset_activated(const QString &arg1)
 {
@@ -99,12 +102,28 @@ void vfg::ui::x264EncoderDialog::parseProcessOutput()
     // Matches from output: [3.3%] and [33.3%]
     static const QRegExp rx("^\\[(\\d+)\\.\\d+%\\]");
     const QString out = x264->readAllStandardOutput();
-    if(out.at(0) == '[') {
-        rx.indexIn(out);
-        const int progress = rx.cap(1).toInt();
-        ui->labelStatusText->setText(out);
-        ui->progressBar->setValue(progress);
+    const QStringList splitLines = out.split("\n");
+    for(int i = 0; i < splitLines.size(); ++i) {
+        const QString& current = splitLines.at(i);
+        if(current.isEmpty()) {
+            continue;
+        }
+        if(current.at(0) != '[') {
+            logWindow->appendPlainText(current);
+        }
+        else {
+            rx.indexIn(current);
+            const int progress = rx.cap(1).toInt();
+            ui->labelStatusText->setText(current);
+            ui->progressBar->setValue(progress);
+        }
     }
+}
+
+void vfg::ui::x264EncoderDialog::processStarted()
+{
+    logWindow->clear();
+    logWindow->show();
 }
 
 void vfg::ui::x264EncoderDialog::processFinished(int exitCode, QProcess::ExitStatus status)
@@ -115,6 +134,8 @@ void vfg::ui::x264EncoderDialog::processFinished(int exitCode, QProcess::ExitSta
     ui->progressBar->setValue(100);
     ui->labelStatusText->setText(tr("Done!"));
     ui->buttonSaveAs->setEnabled(true);
+
+    logWindow->show();
 
     // Play preview
     const QUrl previewUrl = QUrl::fromLocalFile("preview.mkv");

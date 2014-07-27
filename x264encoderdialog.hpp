@@ -7,6 +7,7 @@
 #include <QSettings>
 
 class QMediaPlayer;
+class QPlainTextEdit;
 class QString;
 class QVBoxLayout;
 class QVideoWidget;
@@ -39,6 +40,8 @@ private slots:
 
     void parseProcessOutput();
 
+    void processStarted();
+
     void processFinished(int exitCode, QProcess::ExitStatus status);
 
     void on_buttonSaveAs_clicked();
@@ -57,6 +60,8 @@ private:
 
     QVBoxLayout *videoLayout;
     QVideoWidget *videoWidget;
+
+    std::unique_ptr<QPlainTextEdit> logWindow;
 
     QString parseArgs(const QString& section) const;
 };
