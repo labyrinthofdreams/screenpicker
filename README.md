@@ -1,7 +1,8 @@
 ScreenPicker
 ===
 
-A special purpose application for generating screenshots and GIFs from common video formats, including DVDs and Blu-rays. 
+A special purpose application for generating screenshots, GIFs, and HTML5 videos
+from common video formats, including DVDs and Blu-rays. 
 
 It works by having an Avisynth backend that provides the application with frame accurate
 frame traversal letting the user navigate a video either frame by frame, jumping to any desired frame,
@@ -28,6 +29,7 @@ or by generating thumbnails from a given range
 - Deinterlace and inverse telecine DVDs and Blu-rays without scripting
 - For advanced users write custom Avisynth scripts
 - Create GIF image sequences from video source
+- Create HTML5 videos
 
 Requirements for building:  
 - C++11 compiler (recommended GCC >=4.8.2)
@@ -40,6 +42,7 @@ Requirements for running:
 - avinfo.exe
 - ImageMagick + gifsicle for GIFs
 - DGIndex for DVDs and Blu-rays
+- x264.exe for HTML5 videos
 
 Installation:
 
