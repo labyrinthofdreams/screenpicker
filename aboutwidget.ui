@@ -88,6 +88,19 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="label_9">
+       <property name="text">
+        <string>&lt;a href='http://www.videolan.org/developers/x264.html'&gt;x264&lt;/a&gt; &amp;copy;</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::RichText</enum>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::TextBrowserInteraction</set>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>&lt;a href='http://imagemagick.org/'&gt;ImageMagick&lt;/a&gt; &amp;copy; 1999-2014 ImageMagick Studio LLC</string>
@@ -122,7 +135,7 @@
      <item>
       <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>&lt;a href='http://shounen.ru/soft/avinfo/desc_en.shtml'&gt;AVInfo&lt;/a&gt;</string>
+        <string>&lt;a href='http://shounen.ru/soft/avinfo/desc_en.shtml'&gt;AVInfo&lt;/a&gt; &amp;copy;</string>
        </property>
        <property name="textFormat">
         <enum>Qt::RichText</enum>
