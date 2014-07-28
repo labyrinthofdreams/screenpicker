@@ -19,6 +19,26 @@
 #include "videosettingswidget.h"
 #include "x264encoderdialog.hpp"
 
+QString QProcessErrorToString(const QProcess::ProcessError errorCode,
+                              const QString& errorString) {
+    QString error;
+
+    switch(errorCode) {
+    case QProcess::FailedToStart:
+        error = QCoreApplication::tr("Process failed to start. Either the program is missing "
+                    "or you have insufficient execution permissions.");
+    case QProcess::Crashed:
+        error = QCoreApplication::tr("Process crashed.");
+    case QProcess::Timedout:
+        error = QCoreApplication::tr("Process took too long to execute.");
+    default:
+        error = QCoreApplication::tr("Unspecified error (code %1): %2.")
+                .arg(errorCode).arg(errorString);
+    }
+
+    return error;
+}
+
 /**
  * @brief Get video info via avinfo
  * @param path Path to video file
@@ -479,22 +499,9 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
     imageMagick.start(imageMagickPath, newArgs);
     const auto imTimeout = 1000 * config.value("imagemagicktimeout").toInt();
     if(!imageMagick.waitForFinished(imTimeout)) {
-        QString error;
-        switch(imageMagick.error()) {
-        case QProcess::FailedToStart:
-            error = tr("ImageMagick failed to start. Either it is missing "
-                    "or you have insufficient permissions.");
-        case QProcess::Crashed:
-            error = tr("ImageMagick crashed. Please try again.");
-        case QProcess::Timedout:
-            error = tr("ImageMagick took too long to execute. Try resizing "
-                    "the video or selecting fewer frames.");
-        default:
-            error = tr("Unknown error invoking ImageMagick (code %1): %2.")
-                    .arg(imageMagick.error()).arg(imageMagick.errorString());
-        }
-
-        QMessageBox::critical(this, tr("Gifsicle error"), error);
+        QMessageBox::critical(this, tr("ImageMagick error"),
+                              QProcessErrorToString(imageMagick.error(),
+                                                    imageMagick.errorString()));
     }
 
     // Remove saved images
@@ -517,22 +524,9 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
         gifsicle.start(gifsiclePath, newOptArgs);
         const auto gifsicleTimeout = 1000 * config.value("gifsicletimeout").toInt();
         if(!gifsicle.waitForFinished(gifsicleTimeout)) {
-            QString error;
-            switch(gifsicle.error()) {
-            case QProcess::FailedToStart:
-                error = tr("Gifsicle failed to start. Either it is missing "
-                        "or you have insufficient permissions.");
-            case QProcess::Crashed:
-                error = tr("Gifsicle crashed. Please try again.");
-            case QProcess::Timedout:
-                error = tr("Gifsicle took too long to execute. Try resizing "
-                        "the video or selecting fewer frames.");
-            default:
-                error = tr("Unknown error invoking gifsicle (code %1): %2.")
-                        .arg(gifsicle.error()).arg(gifsicle.errorString());
-            }
-
-            QMessageBox::critical(this, tr("Gifsicle error"), error);
+            QMessageBox::critical(this, tr("Gifsicle error"),
+                                  QProcessErrorToString(gifsicle.error(),
+                                                        gifsicle.errorString()));
         }
     }
 
