@@ -16,5 +16,6 @@
         <file alias="pause.png">icons/pause.png</file>
         <file alias="resume.png">icons/resume.png</file>
         <file alias="stop.png">icons/stop.png</file>
+        <file alias="cancel.png">icons/cancel.png</file>
     </qresource>
 </RCC>

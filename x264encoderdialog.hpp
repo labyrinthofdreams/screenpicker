@@ -49,6 +49,8 @@ private slots:
 
     void on_checkBoxFpsAutoDetect_toggled(bool checked);
 
+    void on_buttonStopEncode_clicked();
+
 private:
     Ui::x264EncoderDialog *ui;
 

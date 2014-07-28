@@ -253,6 +253,23 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
+         <widget class="QPushButton" name="buttonStopEncode">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Cancel encoding process</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="resources.qrc">
+            <normaloff>:/icon/cancel.png</normaloff>:/icon/cancel.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QProgressBar" name="progressBar">
           <property name="value">
            <number>0</number>
@@ -340,6 +357,9 @@
        <property name="text">
         <string>Encode</string>
        </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
      <item>
@@ -369,6 +389,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

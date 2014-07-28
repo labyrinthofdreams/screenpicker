@@ -15,6 +15,7 @@
 #include <QVideoWidget>
 #include "x264encoderdialog.hpp"
 #include "ui_x264encoderdialog.h"
+#include <QDebug>
 
 static QString prettySize(double size) {
     if(size < 1000) {
@@ -125,12 +126,22 @@ void vfg::ui::x264EncoderDialog::processStarted()
 {
     logWindow->clear();
     logWindow->show();
+
+    ui->buttonStopEncode->setEnabled(true);
 }
 
 void vfg::ui::x264EncoderDialog::processFinished(int exitCode, QProcess::ExitStatus status)
 {
     Q_UNUSED(exitCode);
-    Q_UNUSED(status);
+
+    ui->buttonStopEncode->setEnabled(false);
+
+    if(status == QProcess::CrashExit) {
+        ui->labelStatusText->setText("Cancelled");
+        ui->progressBar->setValue(0);
+        logWindow->appendPlainText("\nProcess cancelled.");
+        return;
+    }
 
     ui->progressBar->setValue(100);
     ui->labelStatusText->setText(tr("Done!"));
@@ -192,4 +203,9 @@ void vfg::ui::x264EncoderDialog::on_checkBoxFpsAutoDetect_toggled(const bool che
 {
     ui->spinFps->setEnabled(!checked);
     ui->plainTextEditPreset->setPlainText(parseArgs(ui->comboPreset->currentText()));
+}
+
+void vfg::ui::x264EncoderDialog::on_buttonStopEncode_clicked()
+{
+    x264->kill();
 }
