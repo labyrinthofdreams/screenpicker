@@ -37,7 +37,8 @@ vfg::ui::x264EncoderDialog::x264EncoderDialog(QWidget *parent) :
     mediaPlayer(new QMediaPlayer),
     videoLayout(new QVBoxLayout),
     videoWidget(new QVideoWidget),
-    logWindow(new QPlainTextEdit)
+    logWindow(new QPlainTextEdit),
+    previewFile("preview.mkv")
 {
     ui->setupUi(this);
 
@@ -65,7 +66,7 @@ vfg::ui::x264EncoderDialog::x264EncoderDialog(QWidget *parent) :
 
 vfg::ui::x264EncoderDialog::~x264EncoderDialog()
 {
-    QFile::remove("preview.mkv");
+    QFile::remove(previewFile.absoluteFilePath());
 
     delete ui;
 }
@@ -135,15 +136,13 @@ void vfg::ui::x264EncoderDialog::processFinished(int exitCode, QProcess::ExitSta
     ui->labelStatusText->setText(tr("Done!"));
     ui->buttonSaveAs->setEnabled(true);
 
-    logWindow->show();
+    previewFile.refresh();
+    ui->labelEncodeSize->setText(prettySize(previewFile.size()));
 
-    // Play preview
-    const QUrl previewUrl = QUrl::fromLocalFile("preview.mkv");
-    const QFileInfo info(previewUrl.toLocalFile());
-    ui->labelEncodeSize->setText(prettySize(info.size()));
     videoLayout->setSizeConstraint(QLayout::SetFixedSize);
     videoWidget->setFixedSize(config.value("video/resolution").toSize());
-    mediaPlayer->setMedia(previewUrl);
+
+    mediaPlayer->setMedia(QUrl::fromLocalFile(previewFile.absoluteFilePath()));
     mediaPlayer->play();
 }
 
@@ -170,11 +169,12 @@ void vfg::ui::x264EncoderDialog::on_comboTune_activated(const QString &arg1)
 
 void vfg::ui::x264EncoderDialog::on_buttonEncode_clicked()
 {
-    QString args = ui->plainTextEditPreset->toPlainText();
-    args.append(" --output preview.mkv ").append(config.value("last_opened_script").toString());
+    QStringList args = ui->plainTextEditPreset->toPlainText().split(" ");
+    args << "--output" << previewFile.absoluteFilePath()
+         << config.value("last_opened_script").toString();
 
     x264->setProcessChannelMode(QProcess::MergedChannels);
-    x264->start(config.value("x264path").toString(), args.split(" "));
+    x264->start(config.value("x264path").toString(), args);
 }
 
 void vfg::ui::x264EncoderDialog::on_buttonSaveAs_clicked()
@@ -182,7 +182,7 @@ void vfg::ui::x264EncoderDialog::on_buttonSaveAs_clicked()
     const QString savePath = QFileDialog::getSaveFileName(this, tr("Select save path"),
                                                           "", tr("MKV (*.mkv)"));
     if(!savePath.isEmpty() &&
-            !QFile::copy("preview.mkv", savePath)) {
+            !QFile::copy(previewFile.absoluteFilePath(), savePath)) {
         QMessageBox::critical(this, tr("Saving failed"),
                               tr("Try again. If the problem persists, try a new filename."));
     }

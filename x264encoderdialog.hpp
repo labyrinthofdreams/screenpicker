@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <QDialog>
+#include <QFileInfo>
 #include <QProcess>
 #include <QSettings>
 
@@ -62,6 +63,8 @@ private:
     QVideoWidget *videoWidget;
 
     std::unique_ptr<QPlainTextEdit> logWindow;
+
+    QFileInfo previewFile;
 
     QString parseArgs(const QString& section) const;
 };
