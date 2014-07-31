@@ -30,6 +30,7 @@ GifMakerWidget::GifMakerWidget(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GifMakerWidget),
     preview(),
+    previousPreview(),
     config("config.ini", QSettings::IniFormat),
     imageMagick("scripts/imagemagick.ini", QSettings::IniFormat),
     gifsicle("scripts/gifsicle.ini", QSettings::IniFormat)
@@ -57,8 +58,15 @@ GifMakerWidget::~GifMakerWidget()
 
 void GifMakerWidget::showPreview(const QString& path)
 {
-    preview.reset(new QMovie(path));
+    if(preview) {
+        preview->stop();
+        previousPreview.reset(preview.release());
+        ui->labelPreviousGif->setMovie(previousPreview.get());
+        previousPreview->start();
+    }
 
+    preview.reset(new QMovie(path));
+    preview->setCacheMode(QMovie::CacheAll);
     ui->labelPreview->setMovie(preview.get());
     preview->start();
 

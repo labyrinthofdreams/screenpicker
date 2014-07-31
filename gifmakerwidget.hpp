@@ -51,7 +51,11 @@ private slots:
 private:
     Ui::GifMakerWidget *ui;
 
+    //! Last generated preview
     std::unique_ptr<QMovie> preview;
+
+    //! Previously generated preview for comparison
+    std::unique_ptr<QMovie> previousPreview;
 
     QSettings config;
     QSettings imageMagick;
