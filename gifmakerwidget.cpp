@@ -195,6 +195,8 @@ void vfg::ui::GifMakerWidget::on_comboImageMagick_activated(const QString &arg1)
 
 void vfg::ui::GifMakerWidget::on_spinFrameDelay_valueChanged(const QString &arg1)
 {
+    Q_UNUSED(arg1);
+
     const auto current = ui->comboImageMagick->currentText();
     ui->plainTextPreset->setPlainText(parseImageMagickArgs(current));
 }
