@@ -422,7 +422,7 @@
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
-          <string>Current</string>
+          <string>Preview</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
@@ -474,7 +474,7 @@
         </widget>
         <widget class="QWidget" name="tab_2">
          <attribute name="title">
-          <string>Previous</string>
+          <string>Compare</string>
          </attribute>
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
