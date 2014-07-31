@@ -58,11 +58,13 @@ GifMakerWidget::~GifMakerWidget()
 
 void GifMakerWidget::showPreview(const QString& path)
 {
-    if(preview) {
+    if(preview && ui->checkBoxCompare->isChecked()) {
         preview->stop();
         previousPreview.reset(preview.release());
         ui->labelPreviousGif->setMovie(previousPreview.get());
         previousPreview->start();
+
+        ui->checkBoxCompare->setChecked(false);
     }
 
     preview.reset(new QMovie(path));
@@ -75,6 +77,7 @@ void GifMakerWidget::showPreview(const QString& path)
     ui->labelGifSize->setText(QString("%1 [%2]").arg(bytes).arg(res));
 
     ui->buttonSave->setEnabled(true);
+    ui->checkBoxCompare->setEnabled(true);
 }
 
 void GifMakerWidget::updateStartFrame(const int value)
