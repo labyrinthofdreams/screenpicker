@@ -1172,7 +1172,7 @@ void MainWindow::on_actionSave_as_PNG_triggered()
     config.setValue("last_save_dir", absOutPath);
 
     QImage frame = frameGrabber->getFrame(selected);
-    frame.save(absOutPath);
+    frame.save(outFilename);
 }
 
 void MainWindow::on_actionX264_Encoder_triggered()
