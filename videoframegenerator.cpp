@@ -98,7 +98,7 @@ void VideoFrameGenerator::enqueue(const int frame)
 {
     QMutexLocker lock(&mutex);
     if(!frameGrabber->isValidFrame(frame)) {
-        throw std::runtime_error("Frame is out of range");
+        return;
     }
 
     // Let duplicate frames be added
