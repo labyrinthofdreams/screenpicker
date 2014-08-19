@@ -8,7 +8,7 @@
 #include "videoframethumbnail.h"
 
 vfg::ui::VideoFrameThumbnail::VideoFrameThumbnail(
-        int frame, QPixmap thumbnail, QWidget *parent) :
+        const int frame, QPixmap thumbnail, QWidget *parent) :
     QWidget(parent),
     layout(new QVBoxLayout),
     pixmapLabel(new QLabel),
