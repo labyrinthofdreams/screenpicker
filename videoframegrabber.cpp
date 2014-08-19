@@ -126,8 +126,7 @@ QImage vfg::core::VideoFrameGrabber::getFrame(const int frameNum)
     qDebug() << "Start GET_FRAME VFG " << frameNum;
 
     if(!avs->isValidFrame(frameNum)) {
-        throw std::runtime_error(tr("Frame number out of range: %1")
-                           .arg(QString::number(frameNum)).toStdString());
+        return {};
     }
 
     QImage frame = avs->getFrame(frameNum);

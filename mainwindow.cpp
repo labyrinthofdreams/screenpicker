@@ -482,6 +482,9 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
         progress.setValue(current);
 
         QImage frame = frameGrabber->getFrame(current);
+        if(frame.isNull()) {
+            continue;
+        }
 
         // Save as uncompressed PNG images
         frame.save(QString("%1.png").arg(current), "PNG", 100);
@@ -829,6 +832,10 @@ void MainWindow::on_grabButton_clicked()
 {
     const int selectedFrame = ui->seekSlider->value();
     QImage frame = frameGrabber->getFrame(selectedFrame);
+    if(frame.isNull()) {
+        QMessageBox::critical(this, tr("Invalid image"), tr("Invalid image format. Try again."));
+    }
+
     auto thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
     auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(selectedFrame, std::move(thumbnail));
 
@@ -971,6 +978,10 @@ void MainWindow::on_saveThumbnailsButton_clicked()
         const QString savePath = saveDir.absoluteFilePath(filename);
 
         const QImage frame = frameGrabber->getFrame(frameNumber);
+        if(frame.isNull()) {
+            continue;
+        }
+
         frame.save(savePath, "PNG");
     }
 
@@ -1172,7 +1183,12 @@ void MainWindow::on_actionSave_as_PNG_triggered()
     config.setValue("last_save_dir", absOutPath);
 
     QImage frame = frameGrabber->getFrame(selected);
-    frame.save(outFilename);
+    if(!frame.isNull()) {
+        frame.save(outFilename);
+    }
+    else {
+        QMessageBox::critical(this, tr("Invalid image"), tr("Invalid image format. Try again."));
+    }
 }
 
 void MainWindow::on_actionX264_Encoder_triggered()
