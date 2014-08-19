@@ -268,11 +268,14 @@ void MainWindow::closeEvent(QCloseEvent *ev)
 
 void MainWindow::frameReceived(const int frameNum, const QImage& frame)
 {
-    // TODO: Is a lock needed here?
-    qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frameNum;
+    qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frameNum << frame.isNull();
 
-    auto thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
-    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, std::move(thumbnail));
+    if(frame.isNull()) {
+        return;
+    }
+
+    const QImage resized = frame.scaledToWidth(200, Qt::SmoothTransformation);
+    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, resized);
 
     connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
             this,           SLOT(handleUnsavedMenu(QPoint)));

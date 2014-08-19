@@ -30,6 +30,15 @@ public:
                                  QWidget *parent = 0);
 
     /**
+     * @brief Constructor
+     * @param frame Frame number
+     * @param thumbnail Thumbnail image
+     * @param parent Owner of the widget
+     */
+    explicit VideoFrameThumbnail(int frame, const QImage& thumbnail,
+                                 QWidget *parent = 0);
+
+    /**
      * @brief Highlights the thumbnail
      */
     void markSelected();

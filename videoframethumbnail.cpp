@@ -24,6 +24,13 @@ vfg::ui::VideoFrameThumbnail::VideoFrameThumbnail(
     setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
+vfg::ui::VideoFrameThumbnail::VideoFrameThumbnail(const int frame,
+                                                  const QImage& thumbnail, QWidget* parent) :
+    VideoFrameThumbnail(frame, QPixmap::fromImage(thumbnail), parent)
+{
+
+}
+
 void vfg::ui::VideoFrameThumbnail::updateFrameSize()
 {
     pixmapLabel->setPixmap(thumb.scaledToWidth(pixmapLabel->width(),
