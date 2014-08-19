@@ -126,7 +126,7 @@ private:
     std::shared_ptr<vfg::core::VideoFrameGrabber> frameGrabber;
     QList<int> frames;
     mutable QMutex mutex;
-    State state {State::Stopped};
+    State state;
 };
 
 } // namespace core

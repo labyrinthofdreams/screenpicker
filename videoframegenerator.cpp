@@ -11,7 +11,9 @@ VideoFrameGenerator::VideoFrameGenerator(std::shared_ptr<vfg::core::VideoFrameGr
                                          QObject *parent) :
     QObject(parent),
     frameGrabber(std::move(newFrameGrabber)),
-    mutex()
+    frames(),
+    mutex(),
+    state(State::Stopped)
 {
     if(!frameGrabber) {
         throw std::runtime_error("Frame grabber must be a valid object");
