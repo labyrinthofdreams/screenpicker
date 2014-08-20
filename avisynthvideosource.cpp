@@ -69,11 +69,14 @@ int vfg::core::AvisynthVideoSource::getNumFrames() const
     return avs.numFrames();
 }
 
-QImage vfg::core::AvisynthVideoSource::getFrame(const int frameNumber)
+QImage vfg::core::AvisynthVideoSource::getFrame(const int frameNumber) try
 {
     const auto frame = avs.getFrame(frameNumber);
 
     return videoFrameToQImage(frame, avs.width(), avs.height());
+}
+catch(const std::exception& exc) {
+    return {};
 }
 
 QString vfg::core::AvisynthVideoSource::getSupportedFormats()
