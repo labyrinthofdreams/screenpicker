@@ -28,9 +28,6 @@
  *
  * Date: 2014-04-30
  *
- * - Change void* to reinterpret_cast<decltype(h->func.name)> in LOAD_AVS_FUNC
- * to silence compiler warnings on forbidden casting when compiling as C++
- *
  * - Change function signatures to silence compiler warnings on unused functions
  *****************************************************************************/
 
@@ -47,7 +44,7 @@
 
 #define LOAD_AVS_FUNC(name, continue_on_fail)\
 {\
-    h->func.name = reinterpret_cast<decltype(h->func.name)>(GetProcAddress( h->library, #name ));\
+    h->func.name = (void*)GetProcAddress( h->library, #name );\
     if( !continue_on_fail && !h->func.name )\
         goto fail;\
 }
