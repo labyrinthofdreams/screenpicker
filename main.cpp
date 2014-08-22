@@ -24,10 +24,11 @@ bool condCopy(const QString& from, const QString& to) {
 
 int main(int argc, char *argv[])
 {
+    const QString appName = "ScreenPicker 3.0 (beta) rev1";
     QApplication a(argc, argv);
-    a.setApplicationName("ScreenPicker 2.0");
-    a.setApplicationDisplayName("ScreenPicker 2.0");
-    a.setApplicationVersion(QString("ScreenPicker 2.0 (beta) %1").arg(__TIMESTAMP__));
+    a.setApplicationName(appName);
+    a.setApplicationDisplayName(appName);
+    a.setApplicationVersion(appName);
 
     try
     {
