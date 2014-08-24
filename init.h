@@ -32,6 +32,7 @@ QMap<QString, QVariant> getDefaultSettings()
     cfg["gifsiclepath"] = QDir::currentPath().append("/gifsicle.exe");
     cfg["imagemagicktimeout"] = 90;
     cfg["gifsicletimeout"] = 30;
+    cfg["enable_logging"] = false;
     return cfg;
 }
 
