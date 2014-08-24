@@ -19,6 +19,8 @@ VideoFrameGenerator::VideoFrameGenerator(std::shared_ptr<vfg::core::VideoFrameGr
     state(State::Stopped)
 {
     if(!frameGrabber) {
+        qCCritical(GENERATOR) << "Invalid frame grabber passed to generator";
+
         throw std::runtime_error("Frame grabber must be a valid object");
     }
 }
@@ -31,6 +33,8 @@ void VideoFrameGenerator::start()
         return;
     }
     state = State::Running;
+
+    qCDebug(GENERATOR) << "Starting frame generator with" << frames.size() << "frames";
 
     while(true) {
         lock.relock();
@@ -66,6 +70,8 @@ void VideoFrameGenerator::pause()
 {
     QMutexLocker lock(&mutex);
     if(state == State::Running && !frames.empty()) {
+        qCDebug(GENERATOR) << "Pausing frame generator";
+
         state = State::Paused;
     }
 }
@@ -74,6 +80,8 @@ void VideoFrameGenerator::resume()
 {
     QMutexLocker lock(&mutex);
     if(state == State::Paused) {
+        qCDebug(GENERATOR) << "Resuming frame generator";
+
         lock.unlock();
 
         start();
@@ -82,7 +90,10 @@ void VideoFrameGenerator::resume()
 
 void VideoFrameGenerator::stop()
 {
-    QMutexLocker lock(&mutex);    
+    QMutexLocker lock(&mutex);
+
+    qCDebug(GENERATOR) << "Stopping frame generator";
+
     state = State::Stopped;
     frames.clear();
 }
@@ -111,7 +122,12 @@ void VideoFrameGenerator::enqueue(const QList<int>& newFrames)
 void VideoFrameGenerator::enqueue(const int frame)
 {
     QMutexLocker lock(&mutex);
+
+    qCDebug(GENERATOR) << "Enqueueing frame" << frame;
+
     if(!frameGrabber->isValidFrame(frame)) {
+        qCCritical(GENERATOR) << "Invalid frame";
+
         return;
     }
 

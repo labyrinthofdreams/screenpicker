@@ -2,11 +2,14 @@
 #include <utility>
 #include <QDebug>
 #include <QImage>
+#include <QLoggingCategory>
 #include <QMutexLocker>
 #include <QSize>
 #include <QThread>
 #include "videoframegrabber.h"
 #include "abstractvideosource.h"
+
+Q_LOGGING_CATEGORY(GRABBER, "videoframegrabber")
 
 vfg::core::VideoFrameGrabber::VideoFrameGrabber(
         std::shared_ptr<vfg::core::AbstractVideoSource> newAvs,
@@ -18,6 +21,7 @@ vfg::core::VideoFrameGrabber::VideoFrameGrabber(
     mutex()
 {
     if(!avs) {
+        qCCritical(GRABBER) << "Invalid video source";
         throw std::runtime_error("Video source must be a valid object");
     }
 
@@ -38,8 +42,11 @@ void vfg::core::VideoFrameGrabber::setVideoSource(
     QMutexLocker lock(&mutex);
 
     if(!newAvs) {
+        qCCritical(GRABBER) << "Invalid video source";
         throw std::runtime_error("Video source must be a valid object");
     }
+
+    qCDebug(GRABBER) << "Set video source";
 
     disconnect(avs.get(), 0, this, 0);
     avs = std::move(newAvs);
@@ -63,12 +70,13 @@ void vfg::core::VideoFrameGrabber::requestFrame(const int frameNum)
     QMutexLocker ml(&mutex);
 
     if(!avs->isValidFrame(frameNum)) {
+        qCCritical(GRABBER) << "Frame number out of range:" << frameNum;
         emit errorOccurred(tr("Frame number out of range: %1")
                            .arg(QString::number(frameNum)));
         return;
     }
 
-    qDebug() << Q_FUNC_INFO << QThread::currentThreadId();
+    qCDebug(GRABBER) << "Request frame" << frameNum << "from" << QThread::currentThreadId();
 
     currentFrame = frameNum;
     QImage frame = avs->getFrame(frameNum);
@@ -87,18 +95,18 @@ void vfg::core::VideoFrameGrabber::requestNextFrame()
 {
     QMutexLocker ml(&mutex);
 
-    qDebug() << "Start NEXT_FRAME VFG ";
-
     if(currentFrame == numFrames) {
+        qCDebug(GRABBER) << "Reached last frame";
+
         emit errorOccurred(tr("Reached last frame"));
 
         return;
     }
 
+    qCDebug(GRABBER) << "Requesting next frame" << currentFrame + 1;
+
     QImage frame = avs->getFrame(++currentFrame);
     emit frameGrabbed(currentFrame, std::move(frame));
-
-    qDebug() << "End NEXT_FRAME VFG ";
 }
 
 void vfg::core::VideoFrameGrabber::requestPreviousFrame()
@@ -108,32 +116,31 @@ void vfg::core::VideoFrameGrabber::requestPreviousFrame()
     qDebug() << "Start PREV_FRAME VFG ";
 
     if(currentFrame == 0) {
+        qCDebug(GRABBER) << "Reached first frame";
+
         emit errorOccurred(tr("Reached first frame"));
 
         return;
     }
 
+    qCDebug(GRABBER) << "Requesting previous frame" << currentFrame - 1;
+
     QImage frame = avs->getFrame(--currentFrame);
     emit frameGrabbed(currentFrame, std::move(frame));
-
-    qDebug() << "End PREV_FRAME VFG ";
 }
 
 QImage vfg::core::VideoFrameGrabber::getFrame(const int frameNum)
 {
     QMutexLocker ml(&mutex);
 
-    qDebug() << "Start GET_FRAME VFG " << frameNum;
+    qCDebug(GRABBER) << "Get frame" << frameNum;
 
     if(!avs->isValidFrame(frameNum)) {
+        qCCritical(GRABBER) << "Frame out of range:" << frameNum << "(" << avs->getNumFrames() << ")";
         return {};
     }
 
-    QImage frame = avs->getFrame(frameNum);
-
-    qDebug() << "End GET_FRAME VFG Thread ";
-
-    return frame;
+    return avs->getFrame(frameNum);
 }
 
 bool vfg::core::VideoFrameGrabber::isValidFrame(const int frameNum) const
