@@ -19,6 +19,8 @@
 #include "videosettingswidget.h"
 #include "x264encoderdialog.hpp"
 
+Q_LOGGING_CATEGORY(MAINWINDOW, "mainwindow")
+
 QString QProcessErrorToString(const QProcess::ProcessError errorCode,
                               const QString& errorString) {
     QString error;
@@ -105,22 +107,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     try
     {
+        setupInternal();
+
         dvdProgress = util::make_unique<QProgressDialog>(tr("Processing DVD..."),
                                                          tr("Abort"), 0, 100);
-
-        // Set Avisynth as the default video source
-        videoSource = std::make_shared<vfg::core::AvisynthVideoSource>();
-
-        frameGrabber = std::make_shared<vfg::core::VideoFrameGrabber>(videoSource);
-
-        frameGenerator = util::make_unique<vfg::core::VideoFrameGenerator>(frameGrabber);
-        frameGeneratorThread = util::make_unique<QThread>();
-        frameGenerator->moveToThread(frameGeneratorThread.get());
-        frameGeneratorThread->start();
-
-        frameGrabberThread = util::make_unique<QThread>();
-        frameGrabber->moveToThread(frameGrabberThread.get());
-        frameGrabberThread->start();
 
         scriptEditor = util::make_unique<vfg::ui::ScriptEditor>();
 
@@ -332,14 +322,11 @@ void MainWindow::frameReceived(const int frameNum, const QImage& frame)
     }
 }
 
-void MainWindow::resetState()
+void MainWindow::setupUi()
 {
     videoSettingsWindow->resetSettings();
 
     scriptEditor->reset();
-
-    frameGrabber->setVideoSource(videoSource);
-    frameGenerator->stop();
 
     ui->unsavedWidget->clearThumbnails();
     ui->savedWidget->clearThumbnails();
@@ -367,6 +354,44 @@ void MainWindow::resetState()
 
     ui->actionSave_as_PNG->setEnabled(false);
     ui->actionX264_Encoder->setEnabled(false);
+}
+
+void MainWindow::setupInternal()
+{
+    qCDebug(MAINWINDOW) << "Resetting internal state";
+
+    // Set Avisynth as the default video source
+    videoSource = std::make_shared<vfg::core::AvisynthVideoSource>();
+    frameGrabber = std::make_shared<vfg::core::VideoFrameGrabber>(videoSource);
+    frameGenerator = util::make_unique<vfg::core::VideoFrameGenerator>(frameGrabber);
+
+    if(!frameGrabberThread) {
+        qCDebug(MAINWINDOW) << "Creating frame grabber thread";
+        frameGrabberThread = util::make_unique<QThread>();
+    }
+
+    if(frameGrabberThread->isRunning()) {
+        qCDebug(MAINWINDOW) << "Quitting frame grabber thread";
+        frameGrabberThread->quit();
+    }
+
+    qCDebug(MAINWINDOW) << "Starting frame grabber thread";
+    frameGrabber->moveToThread(frameGrabberThread.get());
+    frameGrabberThread->start();
+
+    if(!frameGeneratorThread) {
+        qCDebug(MAINWINDOW) << "Creating frame generator thread";
+        frameGeneratorThread = util::make_unique<QThread>();
+    }
+
+    if(frameGeneratorThread->isRunning()) {
+        qCDebug(MAINWINDOW) << "Quitting frame generator thread";
+        frameGeneratorThread->quit();
+    }
+
+    qCDebug(MAINWINDOW) << "Starting frame generator thread";
+    frameGenerator->moveToThread(frameGeneratorThread.get());
+    frameGeneratorThread->start();
 }
 
 void MainWindow::loadFile(const QString& path)
@@ -566,7 +591,7 @@ void MainWindow::on_actionOpen_triggered()
     }
 
     // Reset all states back to zero
-    resetState();
+    setupUi();
 
     loadFile(filename);           
 }
@@ -627,7 +652,7 @@ void MainWindow::on_actionOpen_DVD_triggered()
     }
 
     // Reset all states back to zero
-    resetState();
+    setupUi();
 
     dvdProgress->setValue(0);
     dvdProgress->setVisible(true);
@@ -1022,7 +1047,7 @@ void MainWindow::dropEvent(QDropEvent *ev)
     const QString filename = urls.at(0).toLocalFile();
 
     // Reset all states back to zero
-    resetState();
+    setupUi();
 
     loadFile(filename);
 }

@@ -202,9 +202,14 @@ private:
     QSettings config;
 
     /**
-     * @brief Resets widgets and member variables back to default
+     * @brief Setup widgets to default values
      */
-    void resetState();
+    void setupUi();
+
+    /**
+     * @brief Setup internal states to default values
+     */
+    void setupInternal();
 
     void activateGifMaker();
 
