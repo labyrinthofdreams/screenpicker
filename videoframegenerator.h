@@ -65,6 +65,8 @@ public:
      */
     void enqueue(int frame);
 
+    void enqueue(const QList<int>& newFrames);
+
     /**
      * @brief Get number of frames in the generator queue
      * @return Number of frames

@@ -1,9 +1,12 @@
 #include <stdexcept>
 #include <utility>
 #include <QImage>
+#include <QLoggingCategory>
 #include <QMutexLocker>
 #include "videoframegrabber.h"
 #include "videoframegenerator.h"
+
+Q_LOGGING_CATEGORY(GENERATOR, "videoframegenerator")
 
 using vfg::core::VideoFrameGenerator;
 
@@ -94,6 +97,15 @@ bool VideoFrameGenerator::isPaused() const
 {
     QMutexLocker lock(&mutex);
     return state == State::Paused;
+}
+
+void VideoFrameGenerator::enqueue(const QList<int>& newFrames)
+{
+    for(const int frame : newFrames) {
+        frames.append(frame);
+    }
+
+    qCDebug(GENERATOR) << "Enqueued" << newFrames.size() << "frames";
 }
 
 void VideoFrameGenerator::enqueue(const int frame)

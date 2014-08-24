@@ -824,6 +824,7 @@ void MainWindow::on_generateButton_clicked()
         frameGenerator->stop();
     }
 
+    QList<int> queue;
     for(int current_frame = selected_frame; ; current_frame += frame_step)
     {
         if(!unlimited_screens) {
@@ -839,8 +840,10 @@ void MainWindow::on_generateButton_clicked()
         if(reached_video_end)
             break;
 
-        frameGenerator->enqueue(current_frame);
+        queue.append(current_frame);
     }
+
+    frameGenerator->enqueue(queue);
 
     // Update generator widgets
     ui->generateButton->setEnabled(false);
