@@ -1,4 +1,5 @@
 #include <string>
+#include <sstream>
 #include <utility>
 #include <QFile>
 #include <QMap>
@@ -31,57 +32,56 @@ void vfg::ScriptParser::setTemplate(QString path)
     tplPath = std::move(path);
 }
 
-QString vfg::ScriptParser::parse(const QMap<QString, QVariant>& settings) const
+QString vfg::ScriptParser::parse(const QMap<QString, QVariant>& settings) const try
 {
-    try
-    {
-        using templet::make_data;
-        const QString script = readTemplate(tplPath);
-        templet::DataMap data;
-        data["source_path"] = make_data(path.toStdString());
-        data["avs_plugins"] = make_data(settings.value("avisynthpluginspath")
-                                        .toString().toStdString());
+    using templet::make_data;
 
-        if(settings.value("ivtc", 0).toInt()) {
-            data["ivtc"] = make_data("true");
-        }
+    templet::DataMap data;
+    data["source_path"] = make_data(path.toStdString());
+    data["avs_plugins"] = make_data(settings.value("avisynthpluginspath")
+                                    .toString().toStdString());
 
-        if(settings.value("deinterlace", 0).toInt()) {
-            data["deinterlace"] = make_data("true");
-        }
-
-        const int resizeWidth = settings.value("resizewidth", 0).toInt();
-        const int resizeHeight = settings.value("resizeheight", 0).toInt();
-        if(resizeWidth || resizeHeight) {
-            templet::DataMap resize;
-            resize["width"] = make_data(resizeWidth);
-            resize["height"] = make_data(resizeHeight);
-            data["resize"] = make_data(resize);
-        }
-
-        const int cropTop = settings.value("croptop", 0).toInt();
-        const int cropRight = settings.value("cropright", 0).toInt();
-        const int cropBottom = settings.value("cropbottom", 0).toInt();
-        const int cropLeft = settings.value("cropleft", 0).toInt();
-        if(cropTop || cropRight || cropBottom || cropLeft) {
-            templet::DataMap crop;
-            crop["top"] = make_data(cropTop);
-            crop["right"] = make_data(cropRight);
-            crop["bottom"] = make_data(cropBottom);
-            crop["left"] = make_data(cropLeft);
-            data["crop"] = make_data(crop);
-        }
-
-        templet::Templet tpl(script.toStdString());
-
-        return QString::fromStdString(tpl.parse(data));
+    if(settings.value("ivtc", 0).toInt()) {
+        data["ivtc"] = make_data("true");
     }
-    catch(vfg::ScriptParserError& ex)
-    {
-        throw;
+
+    if(settings.value("deinterlace", 0).toInt()) {
+        data["deinterlace"] = make_data("true");
     }
-    catch(std::exception &ex)
-    {
-        throw;
+
+    const int resizeWidth = settings.value("resizewidth", 0).toInt();
+    const int resizeHeight = settings.value("resizeheight", 0).toInt();
+    if(resizeWidth || resizeHeight) {
+        templet::DataMap resize;
+        resize["width"] = make_data(resizeWidth);
+        resize["height"] = make_data(resizeHeight);
+        data["resize"] = make_data(resize);
     }
+
+    const int cropTop = settings.value("croptop", 0).toInt();
+    const int cropRight = settings.value("cropright", 0).toInt();
+    const int cropBottom = settings.value("cropbottom", 0).toInt();
+    const int cropLeft = settings.value("cropleft", 0).toInt();
+    if(cropTop || cropRight || cropBottom || cropLeft) {
+        templet::DataMap crop;
+        crop["top"] = make_data(cropTop);
+        crop["right"] = make_data(cropRight);
+        crop["bottom"] = make_data(cropBottom);
+        crop["left"] = make_data(cropLeft);
+        data["crop"] = make_data(crop);
+    }
+
+    const std::string tpl = readTemplate(tplPath).toStdString();
+    std::ostringstream oss;
+    templet::parse(tpl, data, oss);
+
+    return QString::fromStdString(oss.str());
+}
+catch(vfg::ScriptParserError& ex)
+{
+    throw;
+}
+catch(std::exception &ex)
+{
+    throw;
 }
