@@ -23,7 +23,7 @@ bool condCopy(const QString& from, const QString& to) {
     return QFile::copy(from, to);
 }
 
-void myMessageHandler(QtMsgType msgType, const QMessageLogContext& ctx, const QString& msg)
+void logToFile(QtMsgType msgType, const QMessageLogContext& ctx, const QString& msg)
 {
     QString type;
     switch (msgType) {
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     vfg::config::merge(config, vfg::config::getDefaultSettings());
 
     if(config.value("enable_logging", false).toBool()) {
-        qInstallMessageHandler(myMessageHandler);
+        qInstallMessageHandler(logToFile);
     }
 
     // Write scripts
