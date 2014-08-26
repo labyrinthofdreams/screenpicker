@@ -41,7 +41,7 @@ void logToFile(QtMsgType msgType, const QMessageLogContext& ctx, const QString& 
         break;
     }
 
-    QString text = QString("[%1] (%2): %3").arg(ctx.category).arg(type).arg(msg);
+    const QString text = QString("[%1] (%2): %3").arg(ctx.category).arg(type).arg(msg);
 
     QFile outFile("log.txt");
     outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Append);
