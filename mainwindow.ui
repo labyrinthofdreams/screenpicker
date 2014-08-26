@@ -673,7 +673,16 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <widget class="QMenu" name="menuDebug">
+     <property name="title">
+      <string>Debug</string>
+     </property>
+     <addaction name="actionDebugOff"/>
+     <addaction name="actionDebugOn"/>
+    </widget>
     <addaction name="actionAbout"/>
+    <addaction name="separator"/>
+    <addaction name="menuDebug"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -820,6 +829,25 @@
    </property>
    <property name="text">
     <string>x264 Encoder</string>
+   </property>
+  </action>
+  <action name="actionDebugOff">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Off</string>
+   </property>
+  </action>
+  <action name="actionDebugOn">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>On</string>
    </property>
   </action>
  </widget>

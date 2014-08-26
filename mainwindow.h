@@ -175,6 +175,10 @@ private slots:
 
     void on_actionX264_Encoder_triggered();
 
+    void on_actionDebugOn_triggered(bool checked);
+
+    void on_actionDebugOff_triggered(bool checked);
+
 private:
     Ui::MainWindow* ui;
 

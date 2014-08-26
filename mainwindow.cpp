@@ -150,6 +150,15 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->savedWidget->resizeThumbnails(thumbnailSize);
 
         previewContext = ui->menuVideo;
+
+        if(config.value("enable_logging", false).toBool()) {
+            ui->actionDebugOn->setChecked(true);
+            ui->actionDebugOff->setChecked(false);
+        }
+        else {
+            ui->actionDebugOn->setChecked(false);
+            ui->actionDebugOff->setChecked(true);
+        }
     }
     catch(std::exception& ex)
     {
@@ -1226,4 +1235,20 @@ void MainWindow::on_actionX264_Encoder_triggered()
 {
     vfg::ui::x264EncoderDialog w;
     w.exec();
+}
+
+void MainWindow::on_actionDebugOn_triggered(bool checked)
+{
+    ui->actionDebugOff->setChecked(!checked);
+    config.setValue("enable_logging", true);
+
+    QMessageBox::information(this, tr("Restart"), tr("Please restart the application"));
+}
+
+void MainWindow::on_actionDebugOff_triggered(bool checked)
+{
+    ui->actionDebugOn->setChecked(!checked);
+    config.setValue("enable_logging", false);
+
+    QMessageBox::information(this, tr("Restart"), tr("Please restart the application"));
 }
