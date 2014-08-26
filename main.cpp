@@ -25,8 +25,6 @@ bool condCopy(const QString& from, const QString& to) {
 
 void myMessageHandler(QtMsgType msgType, const QMessageLogContext& ctx, const QString& msg)
 {
-    Q_UNUSED(ctx);
-
     QString type;
     switch (msgType) {
     case QtDebugMsg:
