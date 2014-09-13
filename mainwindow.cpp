@@ -225,37 +225,35 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *ev)
 {
-    // TODO: Change it to only ask if there's unsaved screenshots,
-    // or if the generation is still running (in which case pause it)
+    qCDebug(MAINWINDOW) << "Close event";
     const QMessageBox::StandardButton response =
             QMessageBox::question(this, tr("Quit?"), tr("Are you sure?"),
                                   QMessageBox::Yes | QMessageBox::No,
                                   QMessageBox::No);
-    if(response == QMessageBox::Yes)
-    {
-        if(frameGeneratorThread->isRunning())
-        {
-            frameGenerator->stop();
-            frameGeneratorThread->quit();
-            frameGeneratorThread->wait();
-        }
-
-        if(frameGrabberThread->isRunning())
-        {
-            frameGrabberThread->quit();
-            frameGrabberThread->wait();
-        }
-
-        // Close script editor if it's open
-        scriptEditor->close();
-        videoSettingsWindow->close();
-
-        ev->accept();
-    }
-    else
-    {
+    if(response == QMessageBox::No) {
+        qCDebug(MAINWINDOW) << "Close event cancelled";
         ev->ignore();
+
+        return;
     }
+
+    if(frameGeneratorThread->isRunning()) {
+        qCDebug(MAINWINDOW) << "Quitting frame generator + thread";
+        frameGenerator->stop();
+        frameGeneratorThread->quit();
+        frameGeneratorThread->wait();
+    }
+
+    if(frameGrabberThread->isRunning()) {
+        qCDebug(MAINWINDOW) << "Quitting frame grabber thread";
+        frameGrabberThread->quit();
+        frameGrabberThread->wait();
+    }
+
+    scriptEditor->close();
+    videoSettingsWindow->close();
+
+    ev->accept();
 }
 
 void MainWindow::frameReceived(const int frameNum, const QImage& frame)
