@@ -218,6 +218,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    qCDebug(MAINWINDOW) << "Destructor";
+
     config.remove("video");
 
     delete ui;
@@ -258,9 +260,10 @@ void MainWindow::closeEvent(QCloseEvent *ev)
 
 void MainWindow::frameReceived(const int frameNum, const QImage& frame)
 {
-    qDebug() << "FRAME_RECEIVED in thread" << qApp->thread()->currentThreadId() << frameNum << frame.isNull();
-
+    qCDebug(MAINWINDOW) << "Frame" << frameNum << "received in thread" << qApp->thread()->currentThreadId();
     if(frame.isNull()) {
+        qCWarning(MAINWINDOW) << "Frame is null";
+
         return;
     }
 
@@ -280,7 +283,8 @@ void MainWindow::frameReceived(const int frameNum, const QImage& frame)
     const bool generatorFinished = frameGenerator->remaining() == 0;
     if(generatorFinished)
     {
-        // Generator has finished without explicit stopping
+        qCDebug(MAINWINDOW) << "Generator finished without explicit stopping";
+
         ui->btnPauseGenerator->setEnabled(false);
         ui->btnStopGenerator->setEnabled(false);
         ui->generateButton->setEnabled(true);
@@ -288,23 +292,29 @@ void MainWindow::frameReceived(const int frameNum, const QImage& frame)
         // Jump to last generated frame
         const bool jumpAfterFinished = config.value("jumptolastonfinish").toBool();
         if(jumpAfterFinished) {
+            qCDebug(MAINWINDOW) << "Set: Jump to last generated frame after finishing generation";
+
             ui->seekSlider->setValue(frameNum);
         }
     }
 
     if(ui->unsavedWidget->isFull())
     {
+        qCDebug(MAINWINDOW) << "Screenshots tab is full";
+
         const bool removeOldestAfterMax = config.value("removeoldestafterlimit").toBool();
         if(removeOldestAfterMax) {
             // When unsaved screenshots container becomes full and the setting
             // "remove oldest after reaching max" is checked, let the generator generate
+            qCDebug(MAINWINDOW) << "Set: Remove oldest after reaching max limit";
+
             return;
         }
 
         // ...If the user has NOT checked that option and chooses to pause instead
         // as pausing is the other action, then...
+        qCDebug(MAINWINDOW) << "Pausing frame generator";
         frameGenerator->pause();
-
         ui->generateButton->setEnabled(true);
         ui->btnPauseGenerator->setText(tr("Resume"));
         ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
@@ -312,18 +322,21 @@ void MainWindow::frameReceived(const int frameNum, const QImage& frame)
         // ...In case the user has checked they want to jump to last generated frame
         // after filling the container, then jump...
         const bool jumpToLastAfterReachingMax = config.value("jumptolastonreachingmax").toBool();
-        if(jumpToLastAfterReachingMax)
-        {
+        if(jumpToLastAfterReachingMax) {
+            qCDebug(MAINWINDOW) << "Set: Jump to last frame after reaching max limit";
+
             ui->seekSlider->setValue(frameNum);
         }
 
-        // ...and wait for the user to click Clear, Generate, open another file,
-        // or raise the max screenshots limit
+        qCDebug(MAINWINDOW) << "Waiting for user to click clear, generate, "
+                               "open a new file, or change max screenshots limit";
     }
 }
 
 void MainWindow::setupUi()
 {
+    qCDebug(MAINWINDOW) << "Setting up UI";
+
     videoSettingsWindow->resetSettings();
 
     scriptEditor->reset();
@@ -358,7 +371,7 @@ void MainWindow::setupUi()
 
 void MainWindow::setupInternal()
 {
-    qCDebug(MAINWINDOW) << "Resetting internal state";
+    qCDebug(MAINWINDOW) << "Setting up internal state";
 
     // Set Avisynth as the default video source
     videoSource = std::make_shared<vfg::core::AvisynthVideoSource>();
@@ -399,6 +412,8 @@ void MainWindow::loadFile(const QString& path)
     try
     {      
         const QFileInfo info(path);
+
+        qCDebug(MAINWINDOW) << "Opening file" << info.absoluteFilePath();
         config.setValue("last_opened", info.absoluteFilePath());
 
         QMap<QString, QVariant> videoSettings = videoSettingsWindow->getSettings();
@@ -410,6 +425,8 @@ void MainWindow::loadFile(const QString& path)
         const bool overrideHeight = (videoSettings.value("resizeheight") == 0);
         const bool overrideSize = (overrideWidth || overrideHeight);
         if(overrideSize) {
+            qCDebug(MAINWINDOW) << "Overriding video resolution";
+
             const QPair<int, int> res = getVideoResolution(path);
 
             if(overrideWidth) {
@@ -422,6 +439,8 @@ void MainWindow::loadFile(const QString& path)
             }
         }
 
+        qCDebug(MAINWINDOW) << "Parsing script template";
+
         const vfg::ScriptParser parser = videoSource->getParser(path);
         const QString parsedScript = parser.parse(videoSettings);
 
@@ -431,22 +450,28 @@ void MainWindow::loadFile(const QString& path)
 
         // Attempt to load the (parsed) Avisynth script
         // TODO: Stop screenshot generation if that's happening...
+        qCDebug(MAINWINDOW) << "Loading file" << saveTo;
+
         videoSource->load(saveTo);
     }
     catch(vfg::ScriptParserError& ex)
     {
+        qCCritical(MAINWINDOW) << "Script template error:" << ex.what();
         QMessageBox::warning(this, tr("Script template error"), QString(ex.what()));
     }
     catch(vfg::exception::VideoSourceError& ex)
     {
+        qCCritical(MAINWINDOW) << "Script processing error:" << ex.what();
         QMessageBox::warning(this, tr("Error while processing script"), QString(ex.what()));
     }
     catch(vfg::exception::AvisynthError& ex)
     {
+        qCCritical(MAINWINDOW) << "Script processing error:" << ex.what();
         QMessageBox::warning(this, tr("Error while processing script"), QString(ex.what()));
     }
     catch(std::exception& ex)
     {
+        qCCritical(MAINWINDOW) << "Generic error:" << ex.what();
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
 
@@ -456,7 +481,7 @@ void MainWindow::loadFile(const QString& path)
 }
 
 void MainWindow::videoZoomChanged(QAction* action)
-{
+{                           
     static const std::map<QString, vfg::ZoomMode> modes {
         {"25", vfg::ZoomMode::Zoom_25},
         {"50", vfg::ZoomMode::Zoom_50},
@@ -467,23 +492,32 @@ void MainWindow::videoZoomChanged(QAction* action)
 
     const QString mode = action->data().toString();
     ui->videoPreviewWidget->setZoom(modes.at(mode));
+
+    qCDebug(MAINWINDOW) << "Changing video zoom mode:" << mode;
 }
 
 void MainWindow::contextMenuOnPreview(const QPoint &pos)
 {
+    qCDebug(MAINWINDOW) << "Context menu requested on preview";
+
     previewContext->exec(ui->videoPreviewWidget->mapToGlobal(pos));
 }
 
 void MainWindow::displayGifPreview(QString args, QString optArgs)
 {
+    qCDebug(MAINWINDOW) << "Displaying GIF preview";
+
     const auto imageMagickPath = config.value("imagemagickpath").toString();
     if(imageMagickPath.isEmpty()) {
+        qCWarning(MAINWINDOW) << "ImageMagick path is not set";
+
         QMessageBox::critical(this, tr("Missing ImageMagick path"),
                               tr("Set path to ImageMagick and try again."));
     }
 
     const auto gifsiclePath = config.value("gifsiclepath").toString();
     if(!optArgs.isEmpty() && gifsiclePath.isEmpty()) {
+        qCWarning(MAINWINDOW) << "Gifsicle path is not set";
         QMessageBox::critical(this, tr("Missing Gifsicle path"),
                               tr("Set path to Gifsicle and try again."));
         return;
@@ -520,6 +554,10 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
 
         QCoreApplication::processEvents();
     }
+
+    qCDebug(MAINWINDOW) << "Extracted" << frames.size() << "frames";
+    qCDebug(MAINWINDOW) << "Generating GIF";
+
     progress.setLabelText(tr("Generating GIF"));
     QCoreApplication::processEvents();
 
@@ -530,9 +568,10 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
     imageMagick.start(imageMagickPath, newArgs);
     const auto imTimeout = 1000 * config.value("imagemagicktimeout").toInt();
     if(!imageMagick.waitForFinished(imTimeout)) {
-        QMessageBox::critical(this, tr("ImageMagick error"),
-                              QProcessErrorToString(imageMagick.error(),
-                                                    imageMagick.errorString()));
+        const auto error = QProcessErrorToString(imageMagick.error(), imageMagick.errorString());
+        qCCritical(MAINWINDOW) << "ImageMagick error:" << error;
+
+        QMessageBox::critical(this, tr("ImageMagick error"), error);
     }
 
     // Remove saved images
@@ -543,6 +582,8 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
     progress.setValue(end_frame + 1);
 
     if(!optArgs.isEmpty()) {
+        qCDebug(MAINWINDOW) << "Optimizing GIF";
+
         progress.setLabelText(tr("Optimizing GIF"));
         QCoreApplication::processEvents();
 
@@ -555,9 +596,10 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
         gifsicle.start(gifsiclePath, newOptArgs);
         const auto gifsicleTimeout = 1000 * config.value("gifsicletimeout").toInt();
         if(!gifsicle.waitForFinished(gifsicleTimeout)) {
-            QMessageBox::critical(this, tr("Gifsicle error"),
-                                  QProcessErrorToString(gifsicle.error(),
-                                                        gifsicle.errorString()));
+            const auto error = QProcessErrorToString(gifsicle.error(), gifsicle.errorString());
+            qCCritical(MAINWINDOW) << "Gifsicle error:" << error;
+
+            QMessageBox::critical(this, tr("Gifsicle error"), error);
         }
     }
 
@@ -573,7 +615,11 @@ void MainWindow::updateDvdProgressDialog(const int progress)
 
 void MainWindow::on_actionOpen_triggered()
 {
+    qCDebug(MAINWINDOW) << "Triggered Open file";
+
     if(frameGenerator->isRunning()) {
+        qCDebug(MAINWINDOW) << "Pausing frame generator";
+
         frameGenerator->pause();
 
         ui->generateButton->setEnabled(true);
@@ -587,6 +633,8 @@ void MainWindow::on_actionOpen_triggered()
             QFileDialog::getOpenFileName(this, tr("Open video"), lastOpened,
                                          "All (*.*);;Avisynth (*.avs, *.avsi);;DGIndex (*.d2v)");
     if(filename.isEmpty()) {
+        qCDebug(MAINWINDOW) << "Cancelled opening a new file";
+
         return;
     }
 
@@ -598,7 +646,11 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionOpen_DVD_triggered()
 {
+    qCDebug(MAINWINDOW) << "Triggered Open DVD";
+
     if(frameGenerator->isRunning()) {
+        qCDebug(MAINWINDOW) << "Pausing frame generator";
+
         frameGenerator->pause();
 
         ui->generateButton->setEnabled(true);
@@ -612,6 +664,8 @@ void MainWindow::on_actionOpen_DVD_triggered()
                                                          lastOpened,
                                                          "DVD VOB (*.vob);;Blu-ray M2TS (*.m2ts)");
     if(vobFiles.empty()) {
+        qCDebug(MAINWINDOW) << "Cancelled opening DVD";
+
         return;
     }
 
@@ -620,6 +674,8 @@ void MainWindow::on_actionOpen_DVD_triggered()
 
     const QString dgIndexPath = config.value("dgindexexecpath").toString();
     if(!QFile::exists(dgIndexPath)) {
+        qCWarning(MAINWINDOW) << "DGIndex invalid path";
+
         QMessageBox::critical(this, tr("DGIndex invalid path"),
                               tr("Please set a valid path to DGIndex"));
         ui->actionOptions->trigger();
@@ -627,6 +683,8 @@ void MainWindow::on_actionOpen_DVD_triggered()
     }
 
     if(config.value("savedgindexfiles", false).toBool()) {
+        qCDebug(MAINWINDOW) << "Saving DGIndex file";
+
         const QString out = QFileDialog::getSaveFileName(
                                 0, tr("Select DGIndex project output path"),
                                 openedVobFile.absoluteDir().absoluteFilePath("dgindex_project.d2v"),
@@ -634,6 +692,8 @@ void MainWindow::on_actionOpen_DVD_triggered()
         if(out.isEmpty()) {
             return;
         }
+
+        qCDebug(MAINWINDOW) << out;
 
         // Get path without suffix
         const QFileInfo outInfo(out);
@@ -666,6 +726,8 @@ void MainWindow::on_actionOpen_DVD_triggered()
 
 void MainWindow::dvdProcessorFinished(const QString& path)
 {
+    qCDebug(MAINWINDOW) << "DVD Processor finished";
+
     dvdProgress->setValue(100);
 
     loadFile(path);
@@ -673,9 +735,12 @@ void MainWindow::dvdProcessorFinished(const QString& path)
 
 void MainWindow::videoSettingsUpdated()
 {    
-    if(!frameGrabber->hasVideo())
-    {
+    qCDebug(MAINWINDOW) << "Video settings updated";
+
+    if(!frameGrabber->hasVideo()) {
+        qCCritical(MAINWINDOW) << "No video in frame grabber";
         QMessageBox::warning(this, tr("No video"), tr("This operation requires a video"));
+
         return;
     }
 
@@ -684,12 +749,15 @@ void MainWindow::videoSettingsUpdated()
 
 void MainWindow::scriptEditorUpdated()
 {
-    const QString path = scriptEditor->path();
-    loadFile(path);
+    qCDebug(MAINWINDOW) << "Script editor updated";
+
+    loadFile(scriptEditor->path());
 }
 
 void MainWindow::videoLoaded()
 {
+    qCDebug(MAINWINDOW) << "Video loaded";
+
     setWindowTitle(config.value("last_opened").toString());
 
     config.setValue("last_opened_script", videoSource->fileName());
@@ -749,12 +817,14 @@ void MainWindow::videoLoaded()
 
 void MainWindow::videoError(const QString& msg)
 {
+    qCWarning(MAINWINDOW) << "Video error:" << msg;
     dvdProgress->cancel();
     QMessageBox::warning(this, tr("Video error"), msg);
 }
 
 void MainWindow::thumbnailDoubleClicked(const int frameNumber)
 {    
+    qCDebug(MAINWINDOW) << "Double clicked thumbnail";
     QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
                               Qt::QueuedConnection, Q_ARG(int, frameNumber));
 
@@ -764,6 +834,8 @@ void MainWindow::thumbnailDoubleClicked(const int frameNumber)
 
 void MainWindow::on_nextButton_clicked()
 {
+    qCDebug(MAINWINDOW) << "Clicked next button";
+
     frameGrabber->requestNextFrame();
     const int lastRequestedFrame = frameGrabber->lastFrame();
 
@@ -773,6 +845,8 @@ void MainWindow::on_nextButton_clicked()
 
 void MainWindow::on_previousButton_clicked()
 {
+    qCDebug(MAINWINDOW) << "Clicked previous button";
+
     frameGrabber->requestPreviousFrame();
     const int lastRequestedFrame = frameGrabber->lastFrame();
 
@@ -782,6 +856,8 @@ void MainWindow::on_previousButton_clicked()
 
 void MainWindow::on_seekSlider_valueChanged(const int frameNumber)
 {
+    qCDebug(MAINWINDOW) << "Moved seek slider";
+
     const int lastRequestedFrame = frameGrabber->lastFrame();
     if(lastRequestedFrame == frameNumber) {
         return;
@@ -798,7 +874,11 @@ void MainWindow::on_seekSlider_sliderMoved(const int position)
 
 void MainWindow::on_generateButton_clicked()
 {
+    qCDebug(MAINWINDOW) << "Clicked generate button";
+
     if(frameGenerator->isRunning()) {
+        qCWarning(MAINWINDOW) << "Frame generator is running";
+
         return;
     }
 
@@ -806,6 +886,8 @@ void MainWindow::on_generateButton_clicked()
     if(pauseAfterLimit && ui->unsavedWidget->isFull()) {
         // Can't start the generator if the unsaved widget container is full
         // and user has selected to pause after the container is full
+        qCWarning(MAINWINDOW) << "Thumbnail container is full";
+
         QMessageBox::information(this, tr("Thumbnail container is full"),
                 tr("Click 'Clear' or raise the max thumbnail limit."));
         return;
@@ -821,6 +903,8 @@ void MainWindow::on_generateButton_clicked()
     const int last_frame = selected_frame + total_frame_range;
 
     if(frameGenerator->isPaused()) {
+        qCDebug(MAINWINDOW) << "Restarting frame generator";
+
         frameGenerator->stop();
     }
 
@@ -861,10 +945,15 @@ void MainWindow::on_generateButton_clicked()
 
 void MainWindow::on_grabButton_clicked()
 {
+    qCDebug(MAINWINDOW) << "Clicked grab button";
+
     const int selectedFrame = ui->seekSlider->value();
     QImage frame = frameGrabber->getFrame(selectedFrame);
     if(frame.isNull()) {
+        qCCritical(MAINWINDOW) << "Frame is null";
         QMessageBox::critical(this, tr("Invalid image"), tr("Invalid image format. Try again."));
+
+        return;
     }
 
     auto thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
@@ -881,17 +970,21 @@ void MainWindow::on_grabButton_clicked()
 void MainWindow::handleUnsavedMenu(const QPoint &pos)
 {
     Q_UNUSED(pos);
+
+    qCDebug(MAINWINDOW) << "Moving unsaved screenshot";
+
     QMenu menu;
     QAction *saveAction = new QAction(tr("Enqueue"), this);
     saveAction->setData(1);
     menu.addAction(saveAction);
-
     QAction* selected = menu.exec(QCursor::pos());
     if(selected && selected->data().toInt() == 1)
     {
         // Move thumbnail from unsaved tab to saved tab
         auto thumb = ui->unsavedWidget->takeSelected();
         if(!thumb) {
+            qCWarning(MAINWINDOW) << "Thumbnail is null";
+
             return;
         }
 
@@ -909,17 +1002,21 @@ void MainWindow::handleUnsavedMenu(const QPoint &pos)
 void MainWindow::handleSavedMenu(const QPoint &pos)
 {
     Q_UNUSED(pos);
+
+    qCDebug(MAINWINDOW) << "Moving saved screenshot";
+
     QMenu menu;
     QAction *unsaveAction = new QAction(tr("Remove from queue"), this);
     unsaveAction->setData(1);
     menu.addAction(unsaveAction);
-
     QAction* selected = menu.exec(QCursor::pos());
     if(selected && selected->data().toInt() == 1)
     {
         // Move thumbnail from saved tab to unsaved tab
         auto thumb = ui->savedWidget->takeSelected();
         if(!thumb) {
+            qCWarning(MAINWINDOW) << "Thumbnail is null";
+
             return;
         }
 
@@ -942,6 +1039,7 @@ void MainWindow::on_clearThumbsButton_clicked()
     const bool resumeAfterClear = config.value("resumegeneratorafterclear", false).toBool();
     if(resumeAfterClear && frameGenerator->remaining() > 0
             && frameGenerator->isPaused()) {
+        qCDebug(MAINWINDOW) << "Resuming frame generator";
         QMetaObject::invokeMethod(frameGenerator.get(), "resume", Qt::QueuedConnection);
     }
 }
@@ -960,9 +1058,12 @@ void MainWindow::on_thumbnailSizeSlider_valueChanged(const int value)
 
 void MainWindow::on_saveThumbnailsButton_clicked()
 {
+    qCDebug(MAINWINDOW) << "Clicked save button";
+
     // Save saved images to disk
     if(ui->savedWidget->isEmpty())
     {
+        qCWarning(MAINWINDOW) << "Nothing to save";
         QMessageBox::information(this, tr("Nothing to save"),
                                  tr("Add one or more screenshots to queue."));
         return;
@@ -970,6 +1071,8 @@ void MainWindow::on_saveThumbnailsButton_clicked()
 
     // Pause frame generator
     if(frameGenerator->isRunning()) {
+        qCDebug(MAINWINDOW) << "Pausing frame generator";
+
         frameGenerator->pause();
     }
 
@@ -992,6 +1095,8 @@ void MainWindow::on_saveThumbnailsButton_clicked()
     for(std::size_t idx = 0; idx < numSaved; ++idx) {
         const auto widget = ui->savedWidget->at(idx);
         if(!widget) {
+            qCCritical(MAINWINDOW) << "Invalid widget";
+
             break;
         }
 
@@ -999,6 +1104,8 @@ void MainWindow::on_saveThumbnailsButton_clicked()
         prog.setLabelText(tr("Saving image %1 of %2").arg(current).arg(numSaved));
         prog.setValue(current + 1);
         if(prog.wasCanceled()) {
+            qCCritical(MAINWINDOW) << "Aborted";
+
             QMessageBox::warning(this, tr("Saving thumbnails aborted"),
                                  tr("Saved %1 of %2 thumbnails").arg(current).arg(numSaved));
             break;
@@ -1010,6 +1117,8 @@ void MainWindow::on_saveThumbnailsButton_clicked()
 
         const QImage frame = frameGrabber->getFrame(frameNumber);
         if(frame.isNull()) {
+            qCCritical(MAINWINDOW) << "Frame is null";
+
             continue;
         }
 
@@ -1037,8 +1146,12 @@ void MainWindow::dragEnterEvent(QDragEnterEvent *ev)
 
 void MainWindow::dropEvent(QDropEvent *ev)
 {
+    qCDebug(MAINWINDOW) << "Drop event";
+
     const QList<QUrl> urls = ev->mimeData()->urls();
     if(urls.length() > 1) {
+        qCWarning(MAINWINDOW) << "Too many dropped objects";
+
         ev->ignore();
         QMessageBox::information(this, tr("Drop event"),
                                  tr("You can drop only one file"));
@@ -1093,7 +1206,8 @@ void MainWindow::on_btnPauseGenerator_clicked()
 {
     if(frameGenerator->isRunning())
     {
-        // Pause
+        qCDebug(MAINWINDOW) << "Paused frame generator";
+
         frameGenerator->pause();
 
         ui->btnPauseGenerator->setText(tr("Resume"));
@@ -1112,7 +1226,8 @@ void MainWindow::on_btnPauseGenerator_clicked()
     }
     else if(frameGenerator->isPaused())
     {
-        // Resume
+        qCDebug(MAINWINDOW) << "Resuming frame generator";
+
         if(ui->unsavedWidget->isFull()) {
             QMessageBox::information(this, tr(""), tr("Can't resume generator while the container has reached max limit.\n"
                                                       "Click 'Clear' or raise the max thumbnail limit to continue."));
@@ -1130,6 +1245,8 @@ void MainWindow::on_btnPauseGenerator_clicked()
 
 void MainWindow::on_btnStopGenerator_clicked()
 {
+    qCDebug(MAINWINDOW) << "Stopping frame generator";
+
     frameGenerator->stop();
 
     ui->generateButton->setEnabled(true);
@@ -1200,9 +1317,14 @@ void MainWindow::gifContextMenuTriggered(QAction* action)
 
 void MainWindow::on_actionSave_as_PNG_triggered()
 {
+    qCDebug(MAINWINDOW) << "Saving current as PNG";
+
     if(!frameGrabber->hasVideo()) {
+        qCCritical(MAINWINDOW) << "No video";
+
         return;
     }
+
     const int selected = ui->seekSlider->value();
     const QDir saveDir(config.value("last_save_dir", "/").toString());
     const auto saveName = QString("%1.png").arg(QString::number(selected));
@@ -1218,6 +1340,7 @@ void MainWindow::on_actionSave_as_PNG_triggered()
         frame.save(outFilename);
     }
     else {
+        qCWarning(MAINWINDOW) << "Frame is null";
         QMessageBox::critical(this, tr("Invalid image"), tr("Invalid image format. Try again."));
     }
 }
