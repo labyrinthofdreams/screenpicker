@@ -105,64 +105,57 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    try
-    {
-        setupInternal();
+    setupInternal();
 
-        dvdProgress = util::make_unique<QProgressDialog>(tr("Processing DVD..."),
-                                                         tr("Abort"), 0, 100);
+    dvdProgress = util::make_unique<QProgressDialog>(tr("Processing DVD..."),
+                                                     tr("Abort"), 0, 100);
 
-        scriptEditor = util::make_unique<vfg::ui::ScriptEditor>();
+    scriptEditor = util::make_unique<vfg::ui::ScriptEditor>();
 
-        videoSettingsWindow = util::make_unique<vfg::ui::VideoSettingsWidget>();
+    videoSettingsWindow = util::make_unique<vfg::ui::VideoSettingsWidget>();
 
-        QString dgIndexPath = config.value("dgindexexecpath").toString();
-        dvdProcessor = util::make_unique<vfg::DvdProcessor>(dgIndexPath);
+    QString dgIndexPath = config.value("dgindexexecpath").toString();
+    dvdProcessor = util::make_unique<vfg::DvdProcessor>(dgIndexPath);
 
-        const int maxThumbnails = config.value("maxthumbnails").toInt();
-        ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
-        ui->unsavedProgressBar->setMaximum(maxThumbnails);
+    const int maxThumbnails = config.value("maxthumbnails").toInt();
+    ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
+    ui->unsavedProgressBar->setMaximum(maxThumbnails);
 
-        const int numScreenshots = config.value("numscreenshots").toInt();
-        ui->screenshotsSpinBox->setValue(numScreenshots);
+    const int numScreenshots = config.value("numscreenshots").toInt();
+    ui->screenshotsSpinBox->setValue(numScreenshots);
 
-        const int frameStep = config.value("framestep").toInt();
-        ui->frameStepSpinBox->setValue(frameStep);
+    const int frameStep = config.value("framestep").toInt();
+    ui->frameStepSpinBox->setValue(frameStep);
 
-        videoZoomGroup = util::make_unique<QActionGroup>(nullptr);
-        videoZoomGroup->addAction(ui->action25);
-        videoZoomGroup->addAction(ui->action50);
-        videoZoomGroup->addAction(ui->action100);
-        videoZoomGroup->addAction(ui->action200);
-        videoZoomGroup->addAction(ui->actionScaleToWindow);
-        ui->action25->setData("25");
-        ui->action50->setData("50");
-        ui->action100->setData("100");
-        ui->action200->setData("200");
-        ui->actionScaleToWindow->setData("scale");
-        // Scale by default
-        ui->actionScaleToWindow->setChecked(true);
-        ui->videoPreviewWidget->setZoom(vfg::ZoomMode::Zoom_Scale);
+    videoZoomGroup = util::make_unique<QActionGroup>(nullptr);
+    videoZoomGroup->addAction(ui->action25);
+    videoZoomGroup->addAction(ui->action50);
+    videoZoomGroup->addAction(ui->action100);
+    videoZoomGroup->addAction(ui->action200);
+    videoZoomGroup->addAction(ui->actionScaleToWindow);
+    ui->action25->setData("25");
+    ui->action50->setData("50");
+    ui->action100->setData("100");
+    ui->action200->setData("200");
+    ui->actionScaleToWindow->setData("scale");
+    // Scale by default
+    ui->actionScaleToWindow->setChecked(true);
+    ui->videoPreviewWidget->setZoom(vfg::ZoomMode::Zoom_Scale);
 
-        // Set default thumbnail sizes for the containers
-        const auto thumbnailSize = ui->thumbnailSizeSlider->value();
-        ui->unsavedWidget->resizeThumbnails(thumbnailSize);
-        ui->savedWidget->resizeThumbnails(thumbnailSize);
+    // Set default thumbnail sizes for the containers
+    const auto thumbnailSize = ui->thumbnailSizeSlider->value();
+    ui->unsavedWidget->resizeThumbnails(thumbnailSize);
+    ui->savedWidget->resizeThumbnails(thumbnailSize);
 
-        previewContext = ui->menuVideo;
+    previewContext = ui->menuVideo;
 
-        if(config.value("enable_logging", false).toBool()) {
-            ui->actionDebugOn->setChecked(true);
-            ui->actionDebugOff->setChecked(false);
-        }
-        else {
-            ui->actionDebugOn->setChecked(false);
-            ui->actionDebugOff->setChecked(true);
-        }
+    if(config.value("enable_logging", false).toBool()) {
+        ui->actionDebugOn->setChecked(true);
+        ui->actionDebugOff->setChecked(false);
     }
-    catch(std::exception& ex)
-    {
-        throw;
+    else {
+        ui->actionDebugOn->setChecked(false);
+        ui->actionDebugOff->setChecked(true);
     }
 
     connect(videoZoomGroup.get(),   SIGNAL(triggered(QAction*)),

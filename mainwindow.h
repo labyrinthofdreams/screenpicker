@@ -47,6 +47,7 @@ public:
     /**
      * @brief Constructor
      * @param parent Owner of the object
+     * @throws std::exception on critical failure
      */
     explicit MainWindow(QWidget *parent = 0);
 
