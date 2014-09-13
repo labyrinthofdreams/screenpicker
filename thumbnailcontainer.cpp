@@ -78,8 +78,6 @@ void vfg::ui::ThumbnailContainer::clearThumbnails()
 
 void vfg::ui::ThumbnailContainer::resizeThumbnails(const int width)
 {
-    qCDebug(CONTAINER) << "Resizing thumbnails";
-
     for(util::observer_ptr<QLayoutItem> item : *layout) {
         item->widget()->setFixedWidth(width);
     }
