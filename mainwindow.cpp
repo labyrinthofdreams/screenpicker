@@ -267,9 +267,15 @@ void MainWindow::frameReceived(const int frameNum, const QImage& frame)
         return;
     }
 
-    const QImage resized = frame.scaledToWidth(200, Qt::SmoothTransformation);
-    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, resized);
+    QImage resized;
+    if(frame.width() > 200) {
+        resized = frame.scaledToWidth(200, Qt::SmoothTransformation);
+    }
+    else {
+        resized = frame;
+    }
 
+    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, resized);
     connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
             this,           SLOT(handleUnsavedMenu(QPoint)));
 
