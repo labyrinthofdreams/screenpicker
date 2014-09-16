@@ -149,14 +149,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     previewContext = ui->menuVideo;
 
-    if(config.value("enable_logging", false).toBool()) {
-        ui->actionDebugOn->setChecked(true);
-        ui->actionDebugOff->setChecked(false);
-    }
-    else {
-        ui->actionDebugOn->setChecked(false);
-        ui->actionDebugOff->setChecked(true);
-    }
+    const auto logging = config.value("enable_logging", false).toBool();
+    ui->actionDebugOn->setChecked(logging);
+    ui->actionDebugOff->setChecked(!logging);
 
     connect(videoZoomGroup.get(),   SIGNAL(triggered(QAction*)),
             this,                   SLOT(videoZoomChanged(QAction*)));
