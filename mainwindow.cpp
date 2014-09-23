@@ -42,48 +42,19 @@ QString QProcessErrorToString(const QProcess::ProcessError errorCode,
 }
 
 /**
- * @brief Get video info via avinfo
- * @param path Path to video file
- * @return Video info as a map
- */
-QMap<QString, QString> avinfoParseVideoHeader(const QString& path) {
-    QMap<QString, QString> videoHeader;
-
-    QProcess proc;
-    proc.start(QDir::current().absoluteFilePath("avinfo.exe"), QStringList() << path << "--raw");
-    // Wait for 3 seconds max
-    if(!proc.waitForFinished(3000)) {
-        throw std::runtime_error("avinfo.exe failed to run. Try again.");
-    }
-
-    const QList<QByteArray> output = proc.readAllStandardOutput().split('\n');
-    for(const QString& row : output) {
-        const QStringList kv = row.trimmed().split("=");
-        if(kv.size() < 2) {
-            break;
-        }
-        videoHeader.insert(kv.at(0), kv.at(1));
-    }
-
-    return videoHeader;
-}
-
-/**
- * @brief Get video resolution
- *
- * This function is necessary for some video containers that do not
- * return the correct resolution for a video via avisynth
- *
+ * @brief Get MediaInfo video parameter
  * @param path Path to the video file
- * @return Resolution as a pair (width, height)
+ * @param param Parameter to get
+ * @return Parameter output from MediaInfo
  */
-QPair<int, int> getVideoResolution(const QString& path) {
-    const QMap<QString, QString> videoHeader = avinfoParseVideoHeader(path);
+QString getMediaInfoParameter(const QString& path, const QString& param) {
+    QProcess mediaInfo;
+    mediaInfo.start(QDir::current().absoluteFilePath("mediainfo.exe"), QStringList() << path << QString("--output=%1").arg(param));
+    if(!mediaInfo.waitForFinished()) {
+        throw std::runtime_error("Mediainfo.exe failed to run. Try again.");
+    }
 
-    const int resizeWidth = videoHeader.value("v1.x", "0").toInt();
-    const int resizeHeight = videoHeader.value("v1.y", "0").toInt();
-
-    return qMakePair(resizeWidth, resizeHeight);
+    return mediaInfo.readAllStandardOutput();
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -423,19 +394,25 @@ void MainWindow::loadFile(const QString& path)
         // Only overwrite values in video settings if
         // they've not been set explicitly by the user
         const bool overrideWidth = (videoSettings.value("resizewidth") == 0);
-        const bool overrideHeight = (videoSettings.value("resizeheight") == 0);
-        const bool overrideSize = (overrideWidth || overrideHeight);
-        if(overrideSize) {
-            qCDebug(MAINWINDOW) << "Overriding video resolution";
-
-            const QPair<int, int> res = getVideoResolution(path);
-
-            if(overrideWidth) {
-                const int newWidth = (res.first % 2 == 0) ? res.first : res.first + 1;
+        if(overrideWidth) {
+            qCDebug(MAINWINDOW) << "Overriding video width";
+            const int width = getMediaInfoParameter(info.absoluteFilePath(), "Video;%Width%").toInt();
+            if(width != 0) {
+                const double par = getMediaInfoParameter(info.absoluteFilePath(), "Video;%PixelAspectRatio%").toDouble();
+                const int parWidth = par * width;
+                qCDebug(MAINWINDOW) << "Original:" << width << "Par:" << par << "Width:" << parWidth;
+                const int newWidth = ((parWidth % 2 == 0) ? parWidth : parWidth + 1);
                 videoSettings.insert("resizewidth", newWidth);
             }
-            if(overrideHeight) {
-                const int newHeight = (res.second % 2 == 0) ? res.second : res.second + 1;
+        }
+
+        const bool overrideHeight = (videoSettings.value("resizeheight") == 0);
+        if(overrideHeight) {
+            qCDebug(MAINWINDOW) << "Overriding video height";
+            const int height = getMediaInfoParameter(info.absoluteFilePath(), "Video;%Height%").toInt();
+            if(height != 0) {
+                qCDebug(MAINWINDOW) << "Height:" << height;
+                const int newHeight = (height % 2 == 0) ? height : height + 1;
                 videoSettings.insert("resizeheight", newHeight);
             }
         }

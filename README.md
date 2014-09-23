@@ -39,7 +39,7 @@ Requirements for building:
 
 Requirements for running:  
 - Avisynth 2.5.8 + plug-ins (DGDecode.dll, ffms2.dll, nnedi3.dll, TIVTC.dll, yadifmod.dll)
-- avinfo.exe
+- mediainfo.exe + mediainfo.dll (CLI)
 - ImageMagick + gifsicle for GIFs
 - DGIndex for DVDs and Blu-rays
 - x264.exe for HTML5 videos
@@ -49,7 +49,8 @@ Installation:
 - git submodule init
 - git submodule update
 - Open screenpicker.pro in Qt Creator. Build->Build Project.
-- Put avinfo.exe and avisynth.dll in the executable directory
+- Put avisynth.dll in the executable directory
+- Put mediainfo.exe and mediainfo.dll in the executable directory
 - Create directory "avisynth" in the executable directory and put the avisynth plug-ins there
 
 FAQ
