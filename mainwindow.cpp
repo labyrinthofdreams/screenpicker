@@ -894,8 +894,9 @@ void MainWindow::on_generateButton_clicked()
 
         const bool reached_video_end = current_frame > total_video_frames;
         // Always check for reaching last frame of the video
-        if(reached_video_end)
+        if(reached_video_end) {
             break;
+        }
 
         queue.append(current_frame);
     }
