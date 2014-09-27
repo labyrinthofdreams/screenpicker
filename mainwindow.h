@@ -180,6 +180,8 @@ private slots:
 
     void on_actionDebugOff_triggered(bool checked);
 
+    void frameGeneratorFinished();
+
 private:
     Ui::MainWindow* ui;
 

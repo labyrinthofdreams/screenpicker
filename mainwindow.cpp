@@ -165,6 +165,9 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->videoPreviewWidget, SLOT(setFrame(int, QImage)),
             Qt::QueuedConnection);
 
+    connect(frameGenerator.get(),   SIGNAL(finished()),
+            this,                   SLOT(frameGeneratorFinished()));
+
     connect(frameGenerator.get(),   SIGNAL(frameReady(int, QImage)),
             this,                   SLOT(frameReceived(int, QImage)),
             Qt::QueuedConnection);
@@ -247,24 +250,6 @@ void MainWindow::frameReceived(const int frameNum, const QImage& frame)
     const int numGenerated = ui->generatorProgressBar->value() + 1;
     ui->generatorProgressBar->setValue(numGenerated);
 
-    const bool generatorFinished = frameGenerator->remaining() == 0;
-    if(generatorFinished)
-    {
-        qCDebug(MAINWINDOW) << "Generator finished without explicit stopping";
-
-        ui->btnPauseGenerator->setEnabled(false);
-        ui->btnStopGenerator->setEnabled(false);
-        ui->generateButton->setEnabled(true);
-
-        // Jump to last generated frame
-        const bool jumpAfterFinished = config.value("jumptolastonfinish").toBool();
-        if(jumpAfterFinished) {
-            qCDebug(MAINWINDOW) << "Set: Jump to last generated frame after finishing generation";
-
-            ui->seekSlider->setValue(frameNum);
-        }
-    }
-
     if(ui->unsavedWidget->isFull())
     {
         qCDebug(MAINWINDOW) << "Screenshots tab is full";
@@ -297,6 +282,25 @@ void MainWindow::frameReceived(const int frameNum, const QImage& frame)
 
         qCDebug(MAINWINDOW) << "Waiting for user to click clear, generate, "
                                "open a new file, or change max screenshots limit";
+    }
+
+    config.setValue("last_received_frame", frameNum);
+}
+
+void MainWindow::frameGeneratorFinished()
+{
+    qCDebug(MAINWINDOW) << "Frame generator finished";
+
+    ui->btnPauseGenerator->setEnabled(false);
+    ui->btnStopGenerator->setEnabled(false);
+    ui->generateButton->setEnabled(true);
+
+    // Jump to last generated frame
+    const bool jumpAfterFinished = config.value("jumptolastonfinish").toBool();
+    if(jumpAfterFinished) {
+        qCDebug(MAINWINDOW) << "Set: Jump to last generated frame after finishing generation";
+
+        ui->seekSlider->setValue(config.value("last_received_frame").toInt());
     }
 }
 

@@ -63,6 +63,8 @@ void VideoFrameGenerator::start()
 
     if(state != State::Paused) {
         state = State::Stopped;
+
+        emit finished();
     }
 }
 

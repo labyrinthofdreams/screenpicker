@@ -79,6 +79,12 @@ signals:
      * @param frame The frame number and the grabbed image
      */
     void frameReady(int frameNum, const QImage& frame);
+
+    /**
+     * @brief Finished signal is emitted when explicitly stopped
+     * or when all frames have been processed
+     */
+    void finished();
     
 public slots:
     /**
