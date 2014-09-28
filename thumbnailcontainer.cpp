@@ -46,6 +46,16 @@ void vfg::ui::ThumbnailContainer::addThumbnail(std::unique_ptr<vfg::ui::VideoFra
         return;
     }
 
+    const int numThumbnails = layout->count() + 1;
+    if(numThumbnails > maxThumbnails) {
+        emit full();
+
+        return;
+    }
+    if(numThumbnails == maxThumbnails) {
+        emit full();
+    }
+
     thumbnail->setFixedWidth(thumbnailWidth);
 
     connect(thumbnail.get(),    SIGNAL(selected(vfg::ui::VideoFrameThumbnail*)),
@@ -56,10 +66,10 @@ void vfg::ui::ThumbnailContainer::addThumbnail(std::unique_ptr<vfg::ui::VideoFra
 
     // If the container has filled max thumbnails
     // remove oldest widgets until there's space
-    int numThumbnails = layout->count();
-    while(numThumbnails-- >= maxThumbnails) {
-        removeFirst();
-    }
+
+//    while(numThumbnails-- >= maxThumbnails) {
+//        removeFirst();
+//    }
 
     layout->addWidget(thumbnail.release());
 }

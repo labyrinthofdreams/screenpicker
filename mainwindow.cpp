@@ -178,6 +178,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->unsavedWidget,  SIGNAL(thumbnailDoubleClicked(int)),
             this,               SLOT(thumbnailDoubleClicked(int)));
 
+    connect(ui->unsavedWidget,  SIGNAL(full()),
+            this,               SLOT(screenshotsFull()));
+
     connect(ui->savedWidget,    SIGNAL(thumbnailDoubleClicked(int)),
             this,               SLOT(thumbnailDoubleClicked(int)));
 
@@ -243,48 +246,46 @@ void MainWindow::frameReceived(const int frameNum, const QImage& frame)
     connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
             this,           SLOT(handleUnsavedMenu(QPoint)));
 
+    config.setValue("last_received_frame", frameNum);
+
     // Update widgets
     ui->unsavedWidget->addThumbnail(std::move(thumb));
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
     const int numGenerated = ui->generatorProgressBar->value() + 1;
     ui->generatorProgressBar->setValue(numGenerated);
+}
 
-    if(ui->unsavedWidget->isFull())
-    {
-        qCDebug(MAINWINDOW) << "Screenshots tab is full";
+void MainWindow::screenshotsFull()
+{
+    qCDebug(MAINWINDOW) << "Screenshots tab is full";
 
-        const bool removeOldestAfterMax = config.value("removeoldestafterlimit").toBool();
-        if(removeOldestAfterMax) {
-            // When unsaved screenshots container becomes full and the setting
-            // "remove oldest after reaching max" is checked, let the generator generate
-            qCDebug(MAINWINDOW) << "Set: Remove oldest after reaching max limit";
+    const bool removeOldestAfterMax = config.value("removeoldestafterlimit").toBool();
+    if(removeOldestAfterMax) {
+        ui->unsavedWidget->removeFirst();
 
-            return;
-        }
-
-        // ...If the user has NOT checked that option and chooses to pause instead
-        // as pausing is the other action, then...
-        qCDebug(MAINWINDOW) << "Pausing frame generator";
-        frameGenerator->pause();
-        ui->generateButton->setEnabled(true);
-        ui->btnPauseGenerator->setText(tr("Resume"));
-        ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
-
-        // ...In case the user has checked they want to jump to last generated frame
-        // after filling the container, then jump...
-        const bool jumpToLastAfterReachingMax = config.value("jumptolastonreachingmax").toBool();
-        if(jumpToLastAfterReachingMax) {
-            qCDebug(MAINWINDOW) << "Set: Jump to last frame after reaching max limit";
-
-            ui->seekSlider->setValue(frameNum);
-        }
-
-        qCDebug(MAINWINDOW) << "Waiting for user to click clear, generate, "
-                               "open a new file, or change max screenshots limit";
+        return;
     }
 
-    config.setValue("last_received_frame", frameNum);
+    // ...If the user has NOT checked above option and chooses to pause instead
+    // as pausing is the other action, then...
+    qCDebug(MAINWINDOW) << "Pausing frame generator";
+    frameGenerator->pause();
+    ui->generateButton->setEnabled(true);
+    ui->btnPauseGenerator->setText(tr("Resume"));
+    ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
+
+    // ...In case the user has checked they want to jump to last generated frame
+    // after filling the container, then jump...
+    const bool jumpToLastAfterReachingMax = config.value("jumptolastonreachingmax").toBool();
+    if(jumpToLastAfterReachingMax) {
+        qCDebug(MAINWINDOW) << "Set: Jump to last frame after reaching max limit";
+
+        ui->seekSlider->setValue(config.value("last_received_frame").toInt());
+    }
+
+    qCDebug(MAINWINDOW) << "Waiting for user to click clear, generate, "
+                           "open a new file, or change max screenshots limit";
 }
 
 void MainWindow::frameGeneratorFinished()

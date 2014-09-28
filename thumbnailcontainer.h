@@ -42,13 +42,6 @@ private:
     //! Thumbnail width in pixels (default: 200)
     int thumbnailWidth;
 
-    /**
-     * @brief Removes the oldest thumbnail from the container
-     *
-     * This member function does nothing if the container is empty
-     */
-    void removeFirst();
-
 public:
     /**
      * @brief Constructor
@@ -119,6 +112,13 @@ public:
      */
     util::observer_ptr<vfg::ui::VideoFrameThumbnail> at(std::size_t idx) const;
 
+    /**
+     * @brief Removes the oldest thumbnail from the container
+     *
+     * This member function does nothing if the container is empty
+     */
+    void removeFirst();
+
 protected:
     /**
      * @brief Handle mouse press event on the container
@@ -138,6 +138,8 @@ signals:
      * @param newMaximum Value of the new max
      */
     void maximumChanged(int newMaximum);
+
+    void full();
 
 private slots:
     /**
