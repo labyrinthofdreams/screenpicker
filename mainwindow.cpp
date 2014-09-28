@@ -1196,11 +1196,7 @@ void MainWindow::on_btnPauseGenerator_clicked()
         // Jump to last generated frame if the option is selected
         const bool jumpAfterPaused = config.value("jumptolastonpause").toBool();
         if(jumpAfterPaused) {
-            const int lastIdx = ui->unsavedWidget->numThumbnails() - 1;
-            const auto widget = ui->unsavedWidget->at(lastIdx);
-            if(widget) {
-                ui->seekSlider->setValue(widget->frameNum());
-            }
+            ui->seekSlider->setValue(config.value("last_received_frame").toInt());
         }
     }
     else if(frameGenerator->isPaused())
@@ -1239,11 +1235,7 @@ void MainWindow::on_btnStopGenerator_clicked()
     // Jump to last generated frame if the option is selected
     const bool jumpAfterStopped = config.value("jumptolastonstop").toBool();
     if(jumpAfterStopped) {
-        const int lastIdx = ui->unsavedWidget->numThumbnails() - 1;
-        const auto widget = ui->unsavedWidget->at(lastIdx);
-        if(widget) {
-            ui->seekSlider->setValue(widget->frameNum());
-        }
+        ui->seekSlider->setValue(config.value("last_received_frame").toInt());
     }
 }
 
