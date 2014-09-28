@@ -64,13 +64,6 @@ void vfg::ui::ThumbnailContainer::addThumbnail(std::unique_ptr<vfg::ui::VideoFra
     connect(thumbnail.get(),    SIGNAL(doubleClicked(int)),
             this,               SIGNAL(thumbnailDoubleClicked(int)));
 
-    // If the container has filled max thumbnails
-    // remove oldest widgets until there's space
-
-//    while(numThumbnails-- >= maxThumbnails) {
-//        removeFirst();
-//    }
-
     layout->addWidget(thumbnail.release());
 }
 
