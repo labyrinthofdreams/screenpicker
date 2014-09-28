@@ -261,7 +261,7 @@ void MainWindow::screenshotsFull()
     qCDebug(MAINWINDOW) << "Screenshots tab is full";
 
     const bool removeOldestAfterMax = config.value("removeoldestafterlimit").toBool();
-    if(removeOldestAfterMax) {
+    if(removeOldestAfterMax && !ui->unsavedWidget->isEmpty()) {
         ui->unsavedWidget->removeFirst();
 
         return;
