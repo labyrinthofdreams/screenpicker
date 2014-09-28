@@ -47,13 +47,13 @@ void vfg::ui::ThumbnailContainer::addThumbnail(std::unique_ptr<vfg::ui::VideoFra
     }
 
     const int numThumbnails = layout->count() + 1;
-    if(numThumbnails > maxThumbnails) {
+    if(numThumbnails >= maxThumbnails) {
         emit full();
-
-        return;
     }
-    if(numThumbnails == maxThumbnails) {
-        emit full();
+
+    if(numThumbnails > maxThumbnails) {
+        // Exit if adding the screenshot would go over the max limit
+        return;
     }
 
     thumbnail->setFixedWidth(thumbnailWidth);
