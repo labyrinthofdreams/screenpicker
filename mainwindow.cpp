@@ -269,11 +269,13 @@ void MainWindow::screenshotsFull()
 
     // ...If the user has NOT checked above option and chooses to pause instead
     // as pausing is the other action, then...
-    qCDebug(MAINWINDOW) << "Pausing frame generator";
-    frameGenerator->pause();
-    ui->generateButton->setEnabled(true);
-    ui->btnPauseGenerator->setText(tr("Resume"));
-    ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
+    if(frameGenerator->remaining() > 0) {
+        qCDebug(MAINWINDOW) << "Pausing frame generator";
+        frameGenerator->pause();
+        ui->generateButton->setEnabled(true);
+        ui->btnPauseGenerator->setText(tr("Resume"));
+        ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
+    }
 
     // ...In case the user has checked they want to jump to last generated frame
     // after filling the container, then jump...
