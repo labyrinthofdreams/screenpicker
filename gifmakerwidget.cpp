@@ -1,5 +1,7 @@
+#include <QDir>
 #include <QFile>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QMessageBox>
 #include <QMovie>
 #include <QRect>
@@ -166,13 +168,30 @@ void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
 
 void vfg::ui::GifMakerWidget::on_buttonSave_clicked()
 {
+    const QDir saveDir(config.value("last_saved_gif_dir").toString());
     const QString savePath = QFileDialog::getSaveFileName(this, tr("Select save path"),
-                                                          preview->fileName(), tr("GIF (*.gif)"));
-    if(!savePath.isEmpty() &&
-            !QFile::copy(preview->fileName(), savePath)) {
+                                                          saveDir.absoluteFilePath(preview->fileName()),
+                                                          tr("GIF (*.gif)"));
+    if(savePath.isEmpty()) {
+        return;
+    }
+
+    if(QFile::exists(savePath)) {
+        // QFileDialog will ask to overwrite the output file if it exists
+        // but the copy operation below will not succeed if it's not removed
+        // since QFile::copy does not overwrite existing files
+        QFile::remove(savePath);
+    }
+
+    if(!QFile::copy(preview->fileName(), savePath)) {
         QMessageBox::critical(this, tr("Saving failed"),
                               tr("Try again. If the problem persists, try a new filename."));
+
+        return;
     }
+
+    const QFileInfo saved(savePath);
+    config.setValue("last_saved_gif_dir", saved.absoluteDir().absolutePath());
 }
 
 void vfg::ui::GifMakerWidget::on_buttonReset_clicked()
