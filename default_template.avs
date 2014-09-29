@@ -14,7 +14,7 @@ LoadPlugin(AvisynthPluginsDir + "/nnedi3.dll")
 Import(AvisynthPluginsDir + "/FFMS2.avsi")
 
 # Load video
-FFVideoSource(PathToVideo)
+FFVideoSource(PathToVideo, -1, false)
 
 {% if deinterlace %}
 # Deinterlace
