@@ -1,3 +1,4 @@
+#include <QImage>
 #include <QLabel>
 #include <QPainter>
 #include <QPixmap>
@@ -8,11 +9,11 @@
 #include "videoframethumbnail.h"
 
 vfg::ui::VideoFrameThumbnail::VideoFrameThumbnail(
-        const int frame, QPixmap thumbnail, QWidget *parent) :
+        const int frame, const QImage& thumbnail, QWidget *parent) :
     QWidget(parent),
     layout(new QVBoxLayout),
     pixmapLabel(new QLabel),
-    thumb(thumbnail),
+    thumb(QPixmap::fromImage(thumbnail.scaledToWidth(200, Qt::SmoothTransformation))),
     frameNumber(frame)
 {
     pixmapLabel->setPixmap(thumb);
@@ -22,13 +23,6 @@ vfg::ui::VideoFrameThumbnail::VideoFrameThumbnail(
     setContentsMargins(0, 0, 0, 0);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setContextMenuPolicy(Qt::CustomContextMenu);
-}
-
-vfg::ui::VideoFrameThumbnail::VideoFrameThumbnail(const int frame,
-                                                  const QImage& thumbnail, QWidget* parent) :
-    VideoFrameThumbnail(frame, QPixmap::fromImage(thumbnail), parent)
-{
-
 }
 
 void vfg::ui::VideoFrameThumbnail::updateFrameSize()

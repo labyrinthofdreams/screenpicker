@@ -4,6 +4,7 @@
 #include <QPixmap>
 #include <QWidget>
 
+class QImage;
 class QLabel;
 class QMouseEvent;
 class QPaintEvent;
@@ -20,15 +21,6 @@ class VideoFrameThumbnail : public QWidget
 {
     Q_OBJECT
 public:
-    /**
-     * @brief Constructor
-     * @param frame Frame number
-     * @param thumbnail Thumbnail image
-     * @param parent Owner of the widget
-     */
-    explicit VideoFrameThumbnail(int frame, QPixmap thumbnail,
-                                 QWidget *parent = 0);
-
     /**
      * @brief Constructor
      * @param frame Frame number

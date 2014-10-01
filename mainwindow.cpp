@@ -247,10 +247,7 @@ void MainWindow::frameReceived(const int frameNum, const QImage& frame)
         return;
     }
 
-    const QImage resized = frame.width() > 200 ? frame.scaledToWidth(200, Qt::SmoothTransformation)
-                                               : frame;
-
-    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, resized);
+    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, frame);
     connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
             this,           SLOT(handleUnsavedMenu(QPoint)));
 
@@ -998,7 +995,7 @@ void MainWindow::on_grabButton_clicked()
     qCDebug(MAINWINDOW) << "Clicked grab button";
 
     const int selectedFrame = ui->seekSlider->value();
-    QImage frame = frameGrabber->getFrame(selectedFrame);
+    const QImage frame = frameGrabber->getFrame(selectedFrame);
     if(frame.isNull()) {
         qCCritical(MAINWINDOW) << "Frame is null";
         QMessageBox::critical(this, tr("Invalid image"), tr("Invalid image format. Try again."));
@@ -1006,9 +1003,7 @@ void MainWindow::on_grabButton_clicked()
         return;
     }
 
-    auto thumbnail = QPixmap::fromImage(frame).scaledToWidth(200, Qt::SmoothTransformation);
-    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(selectedFrame, std::move(thumbnail));
-
+    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(selectedFrame, frame);
     connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
             this,           SLOT(handleSavedMenu(QPoint)));
 
