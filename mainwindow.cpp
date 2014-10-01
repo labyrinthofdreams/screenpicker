@@ -200,6 +200,14 @@ MainWindow::~MainWindow()
 void MainWindow::closeEvent(QCloseEvent *ev)
 {
     qCDebug(MAINWINDOW) << "Close event";
+
+    if(frameGenerator->isRunning()) {
+        frameGenerator->pause();
+        ui->generateButton->setEnabled(true);
+        ui->btnPauseGenerator->setText(tr("Resume"));
+        ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
+    }
+
     const QMessageBox::StandardButton response =
             QMessageBox::question(this, tr("Quit?"), tr("Are you sure?"),
                                   QMessageBox::Yes | QMessageBox::No,
