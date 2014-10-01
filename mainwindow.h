@@ -228,6 +228,18 @@ private:
 
     void activateGifMaker();
 
+    /**
+     * @brief Pause frame generator and update UI
+     * @pre Frame generator must be running
+     */
+    void pauseFrameGenerator();
+
+    /**
+     * @brief Resume frame generator and update UI
+     * @pre Frame generator must be paused
+     */
+    void resumeFrameGenerator();
+
 protected:
     void dragEnterEvent(QDragEnterEvent *ev);
     void dropEvent(QDropEvent *ev);

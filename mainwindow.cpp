@@ -202,10 +202,7 @@ void MainWindow::closeEvent(QCloseEvent *ev)
     qCDebug(MAINWINDOW) << "Close event";
 
     if(frameGenerator->isRunning()) {
-        frameGenerator->pause();
-        ui->generateButton->setEnabled(true);
-        ui->btnPauseGenerator->setText(tr("Resume"));
-        ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
+        pauseFrameGenerator();
     }
 
     const QMessageBox::StandardButton response =
@@ -278,11 +275,7 @@ void MainWindow::screenshotsFull()
     // ...If the user has NOT checked above option and chooses to pause instead
     // as pausing is the other action, then...
     if(frameGenerator->remaining() > 0) {
-        qCDebug(MAINWINDOW) << "Pausing frame generator";
-        frameGenerator->pause();
-        ui->generateButton->setEnabled(true);
-        ui->btnPauseGenerator->setText(tr("Resume"));
-        ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
+        pauseFrameGenerator();
     }
 
     // ...In case the user has checked they want to jump to last generated frame
@@ -606,13 +599,7 @@ void MainWindow::on_actionOpen_triggered()
     qCDebug(MAINWINDOW) << "Triggered Open file";
 
     if(frameGenerator->isRunning()) {
-        qCDebug(MAINWINDOW) << "Pausing frame generator";
-
-        frameGenerator->pause();
-
-        ui->generateButton->setEnabled(true);
-        ui->btnPauseGenerator->setText(tr("Resume"));
-        ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
+        pauseFrameGenerator();
     }
 
     const QString lastOpened(config.value("last_opened", "").toString());
@@ -637,13 +624,7 @@ void MainWindow::on_actionOpen_DVD_triggered()
     qCDebug(MAINWINDOW) << "Triggered Open DVD";
 
     if(frameGenerator->isRunning()) {
-        qCDebug(MAINWINDOW) << "Pausing frame generator";
-
-        frameGenerator->pause();
-
-        ui->generateButton->setEnabled(true);
-        ui->btnPauseGenerator->setText(tr("Resume"));
-        ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
+        pauseFrameGenerator();
     }
 
     const QString lastOpened(config.value("last_opened_dvd", "").toString());
@@ -1028,8 +1009,7 @@ void MainWindow::on_clearThumbsButton_clicked()
     const bool resumeAfterClear = config.value("resumegeneratorafterclear", false).toBool();
     if(resumeAfterClear && frameGenerator->remaining() > 0
             && frameGenerator->isPaused()) {
-        qCDebug(MAINWINDOW) << "Resuming frame generator";
-        QMetaObject::invokeMethod(frameGenerator.get(), "resume", Qt::QueuedConnection);
+        resumeFrameGenerator();
     }
 }
 
@@ -1060,9 +1040,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
 
     // Pause frame generator
     if(frameGenerator->isRunning()) {
-        qCDebug(MAINWINDOW) << "Pausing frame generator";
-
-        frameGenerator->pause();
+        pauseFrameGenerator();
     }
 
     const QString lastSaveDirectory =
@@ -1195,13 +1173,7 @@ void MainWindow::on_btnPauseGenerator_clicked()
 {
     if(frameGenerator->isRunning())
     {
-        qCDebug(MAINWINDOW) << "Paused frame generator";
-
-        frameGenerator->pause();
-
-        ui->btnPauseGenerator->setText(tr("Resume"));
-        ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
-        ui->generateButton->setEnabled(true);
+        pauseFrameGenerator();
 
         // Jump to last generated frame if the option is selected
         const bool jumpAfterPaused = config.value("jumptolastonpause").toBool();
@@ -1211,20 +1183,13 @@ void MainWindow::on_btnPauseGenerator_clicked()
     }
     else if(frameGenerator->isPaused())
     {
-        qCDebug(MAINWINDOW) << "Resuming frame generator";
-
         if(ui->unsavedWidget->isFull()) {
             QMessageBox::information(this, tr(""), tr("Can't resume generator while the container has reached max limit.\n"
                                                       "Click 'Clear' or raise the max thumbnail limit to continue."));
             return;
         }
 
-        ui->btnPauseGenerator->setText(tr("Pause"));
-        ui->btnPauseGenerator->setIcon(QIcon(":/icon/pause.png"));
-        ui->generateButton->setEnabled(false);
-
-        QMetaObject::invokeMethod(frameGenerator.get(), "resume",
-                                  Qt::QueuedConnection);
+        resumeFrameGenerator();
     }
 }
 
@@ -1280,6 +1245,39 @@ void MainWindow::activateGifMaker()
         ui->actionSetEndFrame->setEnabled(false);
         ui->actionSetStartFrame->setEnabled(false);
     }
+}
+
+void MainWindow::pauseFrameGenerator()
+{
+    qCDebug(MAINWINDOW) << "Pausing frame generator";
+    if(!frameGenerator->isRunning()) {
+        qCDebug(MAINWINDOW) << "Not running";
+
+        return;
+    }
+
+    frameGenerator->pause();
+
+    ui->btnPauseGenerator->setText(tr("Resume"));
+    ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
+    ui->generateButton->setEnabled(true);
+}
+
+void MainWindow::resumeFrameGenerator()
+{
+    qCDebug(MAINWINDOW) << "Resuming frame generator";
+    if(!frameGenerator->isPaused()) {
+        qCDebug(MAINWINDOW) << "Not paused";
+
+        return;
+    }
+
+    QMetaObject::invokeMethod(frameGenerator.get(), "resume",
+                              Qt::QueuedConnection);
+
+    ui->btnPauseGenerator->setText(tr("Pause"));
+    ui->btnPauseGenerator->setIcon(QIcon(":/icon/pause.png"));
+    ui->generateButton->setEnabled(false);
 }
 
 void MainWindow::gifContextMenuTriggered(QAction* action)
