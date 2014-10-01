@@ -124,6 +124,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionDebugOn->setChecked(logging);
     ui->actionDebugOff->setChecked(!logging);
 
+    // Open recent
+    buildRecentMenu();
+
     connect(videoZoomGroup.get(),   SIGNAL(triggered(QAction*)),
             this,                   SLOT(videoZoomChanged(QAction*)));
 
@@ -289,6 +292,81 @@ void MainWindow::screenshotsFull()
 
     qCDebug(MAINWINDOW) << "Waiting for user to click clear, generate, "
                            "open a new file, or change max screenshots limit";
+}
+
+void MainWindow::clearRecentMenu()
+{
+    config.setValue("recent", {});
+
+    buildRecentMenu();
+}
+
+void MainWindow::appendRecentMenu(const QString& item)
+{
+    auto recent = config.value("recent").toStringList();
+    // Make sure (existing) item is at the top of the list
+    const auto pos = recent.indexOf(item);
+    if(pos != -1) {
+        recent.removeAt(pos);
+    }
+
+    recent.prepend(item);
+    if(recent.size() > 10) {
+        recent.removeAt(10);
+    }
+
+    config.setValue("recent", recent);
+
+    buildRecentMenu();
+}
+
+void MainWindow::buildRecentMenu()
+{
+    auto menu = ui->actionRecent->menu();
+    if(!menu) {
+        menu = new QMenu;
+        connect(menu,   SIGNAL(triggered(QAction*)),
+                this,   SLOT(recentMenuTriggered(QAction*)));
+
+        ui->actionRecent->setMenu(menu);
+    }
+
+    // Remove old menu items
+    const auto actions = menu->actions();
+    for(const auto& action : actions) {
+        menu->removeAction(action);
+    }
+
+    // Add new menu items
+    const auto recent = config.value("recent").toStringList();
+    for(const auto& it : recent) {
+        menu->addAction(it);
+    }
+
+    auto clearRecent = new QAction("Clear", menu);
+    connect(clearRecent,    SIGNAL(triggered()),
+            this,           SLOT(clearRecentMenu()));
+
+    menu->addSeparator();
+    menu->addAction(clearRecent);
+}
+
+void MainWindow::recentMenuTriggered(QAction* action)
+{
+    if(frameGenerator->isRunning()) {
+        pauseFrameGenerator();
+    }
+
+    const auto path = action->text();
+    qCDebug(MAINWINDOW) << "Triggered recent menu item" << path;
+    if(!QFile::exists(path)) {
+        QMessageBox::critical(this, tr("File missing"), tr("Selected file is missing"));
+    }
+    else {
+        setupUi();
+
+        loadFile(path);
+    }
 }
 
 void MainWindow::frameGeneratorFinished()
@@ -728,6 +806,8 @@ void MainWindow::videoLoaded()
     qCDebug(MAINWINDOW) << "Video loaded";
 
     setWindowTitle(config.value("last_opened").toString());
+
+    appendRecentMenu(config.value("last_opened").toString());
 
     config.setValue("last_opened_script", videoSource->fileName());
 

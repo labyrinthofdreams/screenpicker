@@ -561,8 +561,8 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>98</width>
-                   <height>28</height>
+                   <width>764</width>
+                   <height>200</height>
                   </rect>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -639,6 +639,8 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionOpen_DVD"/>
+    <addaction name="separator"/>
+    <addaction name="actionRecent"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -848,6 +850,11 @@
    </property>
    <property name="text">
     <string>On</string>
+   </property>
+  </action>
+  <action name="actionRecent">
+   <property name="text">
+    <string>Recent</string>
    </property>
   </action>
  </widget>

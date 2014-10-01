@@ -190,6 +190,14 @@ private slots:
      */
     void screenshotsFull();
 
+    void clearRecentMenu();
+
+    void appendRecentMenu(const QString& item);
+
+    void buildRecentMenu();
+
+    void recentMenuTriggered(QAction* action);
+
 private:
     Ui::MainWindow* ui;
 
