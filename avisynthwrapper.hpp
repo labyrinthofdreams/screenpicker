@@ -121,7 +121,7 @@ public:
      * when getting frame
      * @return Captured frame
      */
-    VideoFrame getFrame(int frameNum);
+    VideoFrame getFrame(int frameNum) const;
 
     /**
      * @brief Check that video has been loaded successfully

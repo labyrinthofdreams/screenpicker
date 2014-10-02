@@ -126,7 +126,7 @@ void vfg::avisynth::AvisynthWrapper::load(const std::string& path) {
 }
 
 vfg::avisynth::VideoFrame
-vfg::avisynth::AvisynthWrapper::getFrame(const int frameNum) {
+vfg::avisynth::AvisynthWrapper::getFrame(const int frameNum) const {
     if(!hasVideo()) {
         throw vfg::exception::AvisynthError("No video");
     }
