@@ -251,9 +251,9 @@ private:
     void resumeFrameGenerator();
 
 protected:
-    void dragEnterEvent(QDragEnterEvent *ev);
-    void dropEvent(QDropEvent *ev);
-    void closeEvent(QCloseEvent *ev);
+    void dragEnterEvent(QDragEnterEvent *ev) override;
+    void dropEvent(QDropEvent *ev) override;
+    void closeEvent(QCloseEvent *ev) override;
 };
 
 #endif // MAINWINDOW_H
