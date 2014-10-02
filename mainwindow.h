@@ -194,6 +194,8 @@ private slots:
 
     void appendRecentMenu(const QString& item);
 
+    void removeRecentMenu(const QString& item);
+
     void buildRecentMenu();
 
     void recentMenuTriggered(QAction* action);

@@ -309,7 +309,21 @@ void MainWindow::appendRecentMenu(const QString& item)
 
     recent.prepend(item);
     if(recent.size() > 10) {
-        recent.removeAt(10);
+        recent.removeLast();
+    }
+
+    config.setValue("recent", recent);
+
+    buildRecentMenu();
+}
+
+void MainWindow::removeRecentMenu(const QString &item)
+{
+    auto recent = config.value("recent").toStringList();
+    // Remove item from list
+    const auto pos = recent.indexOf(item);
+    if(pos != -1) {
+        recent.removeAt(pos);
     }
 
     config.setValue("recent", recent);
@@ -358,6 +372,8 @@ void MainWindow::recentMenuTriggered(QAction* action)
     qCDebug(MAINWINDOW) << "Triggered recent menu item" << path;
     if(!QFile::exists(path)) {
         QMessageBox::critical(this, tr("File missing"), tr("Selected file is missing"));
+
+        removeRecentMenu(path);
     }
     else {
         setupUi();
