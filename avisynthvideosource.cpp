@@ -11,8 +11,6 @@
 #include "ptrutil.hpp"
 #include "scriptparser.h"
 
-// TODO: Re-throw AvisynthErrors as VideoSourceErrors
-
 /**
  * @brief Convert AVS_VideoFrame to QImage (32-bit ARGB)
  * @param frame VideoFrame
@@ -51,7 +49,6 @@ void vfg::core::AvisynthVideoSource::load(const QString& fileName) try
 {
     avs.load(fileName.toStdString());
 
-    // Video must be RGB32
     if(avs.pixelFormat() != vfg::avisynth::PixelFormat::BGR32) {
         throw vfg::exception::VideoSourceError("Video is not RGB32. Add ConvertToRGB32() to your script.");
     }
