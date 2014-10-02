@@ -69,7 +69,8 @@ vfg::exception::AvisynthError::AvisynthError(const std::string& msg) :
 
 vfg::avisynth::AvisynthWrapper::AvisynthWrapper() :
     avsHandle(),
-    info()
+    info(),
+    openFilePath()
 {
     if(internal_avs_load_library(&avsHandle) < 0) {
         throw vfg::exception::AvisynthError("Failed to load AviSynth library");
