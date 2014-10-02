@@ -190,14 +190,15 @@ private slots:
      */
     void screenshotsFull();
 
+    /**
+     * @brief Clears recent menu items
+     */
     void clearRecentMenu();
 
-    void appendRecentMenu(const QString& item);
-
-    void removeRecentMenu(const QString& item);
-
-    void buildRecentMenu();
-
+    /**
+     * @brief When recent menu item is clicked
+     * @param action Item that was clicked
+     */
     void recentMenuTriggered(QAction* action);
 
 private:
@@ -249,6 +250,23 @@ private:
      * @pre Frame generator must be paused
      */
     void resumeFrameGenerator();
+
+    /**
+     * @brief Append new item to recent menu items
+     * @param item Item to append
+     */
+    void appendRecentMenu(const QString& item);
+
+    /**
+     * @brief Remove item from recent menu items
+     * @param item Item to remove
+     */
+    void removeRecentMenu(const QString& item);
+
+    /**
+     * @brief Build the recent menu item
+     */
+    void buildRecentMenu();
 
 protected:
     void dragEnterEvent(QDragEnterEvent *ev) override;
