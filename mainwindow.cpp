@@ -526,22 +526,22 @@ void MainWindow::loadFile(const QString& path)
 
         videoSource->load(saveTo);
     }
-    catch(vfg::ScriptParserError& ex)
+    catch(const vfg::ScriptParserError& ex)
     {
         qCCritical(MAINWINDOW) << "Script template error:" << ex.what();
         QMessageBox::warning(this, tr("Script template error"), QString(ex.what()));
     }
-    catch(vfg::exception::VideoSourceError& ex)
+    catch(const vfg::exception::VideoSourceError& ex)
     {
         qCCritical(MAINWINDOW) << "Script processing error:" << ex.what();
         QMessageBox::warning(this, tr("Error while processing script"), QString(ex.what()));
     }
-    catch(vfg::exception::AvisynthError& ex)
+    catch(const vfg::exception::AvisynthError& ex)
     {
         qCCritical(MAINWINDOW) << "Script processing error:" << ex.what();
         QMessageBox::warning(this, tr("Error while processing script"), QString(ex.what()));
     }
-    catch(std::exception& ex)
+    catch(const std::exception& ex)
     {
         qCCritical(MAINWINDOW) << "Generic error:" << ex.what();
         QMessageBox::warning(this, tr("Error while loading file"),
