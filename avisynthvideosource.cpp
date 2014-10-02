@@ -47,7 +47,7 @@ vfg::core::AvisynthVideoSource::AvisynthVideoSource() :
 
 }
 
-void vfg::core::AvisynthVideoSource::load(const QString& fileName)
+void vfg::core::AvisynthVideoSource::load(const QString& fileName) try
 {
     avs.load(fileName.toStdString());
 
@@ -57,6 +57,10 @@ void vfg::core::AvisynthVideoSource::load(const QString& fileName)
     }
 
     emit videoLoaded();
+}
+catch(const vfg::exception::AvisynthError& ex)
+{
+    throw vfg::exception::VideoSourceError(ex.what());
 }
 
 bool vfg::core::AvisynthVideoSource::hasVideo() const

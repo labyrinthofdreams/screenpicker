@@ -536,11 +536,6 @@ void MainWindow::loadFile(const QString& path)
         qCCritical(MAINWINDOW) << "Script processing error:" << ex.what();
         QMessageBox::warning(this, tr("Error while processing script"), QString(ex.what()));
     }
-    catch(const vfg::exception::AvisynthError& ex)
-    {
-        qCCritical(MAINWINDOW) << "Script processing error:" << ex.what();
-        QMessageBox::warning(this, tr("Error while processing script"), QString(ex.what()));
-    }
     catch(const std::exception& ex)
     {
         qCCritical(MAINWINDOW) << "Generic error:" << ex.what();

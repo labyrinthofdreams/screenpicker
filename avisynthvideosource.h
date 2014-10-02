@@ -16,6 +16,12 @@ public:
     AvisynthVideoSource();
     ~AvisynthVideoSource() override = default;
 
+    /**
+     * @brief Load file
+     * @param fileName File to load
+     * @throws vfg::exception::VideoSourceError If video is not RGB32
+     * @throws vfg::exception::VideoSourceError If loading video fails
+     */
     void load(const QString& fileName) override;
     bool hasVideo() const override;
     int getNumFrames() const override;
