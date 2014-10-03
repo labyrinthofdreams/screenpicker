@@ -95,7 +95,8 @@ void vfg::core::VideoFrameGrabber::requestNextFrame()
 {
     QMutexLocker ml(&mutex);
 
-    if(currentFrame == numFrames) {
+    const auto nextFrame = currentFrame + 1;
+    if(nextFrame >= numFrames) {
         qCDebug(GRABBER) << "Reached last frame";
 
         emit errorOccurred(tr("Reached last frame"));
@@ -103,10 +104,11 @@ void vfg::core::VideoFrameGrabber::requestNextFrame()
         return;
     }
 
-    qCDebug(GRABBER) << "Requesting next frame" << currentFrame + 1;
+    ++currentFrame;
+    qCDebug(GRABBER) << "Requesting next frame" << nextFrame << "of" << numFrames;
 
-    QImage frame = avs->getFrame(++currentFrame);
-    emit frameGrabbed(currentFrame, std::move(frame));
+    QImage frame = avs->getFrame(nextFrame);
+    emit frameGrabbed(nextFrame, std::move(frame));
 }
 
 void vfg::core::VideoFrameGrabber::requestPreviousFrame()
