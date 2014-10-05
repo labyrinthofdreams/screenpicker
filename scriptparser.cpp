@@ -77,11 +77,11 @@ QString vfg::ScriptParser::parse(const QMap<QString, QVariant>& settings) const 
 
     return QString::fromStdString(oss.str());
 }
-catch(vfg::ScriptParserError& ex)
+catch(const vfg::ScriptParserError& ex)
 {
     throw;
 }
-catch(std::exception &ex)
+catch(const std::exception &ex)
 {
     throw;
 }

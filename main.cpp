@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 
         return a.exec();
     }
-    catch(std::exception& ex) {
+    catch(const std::exception& ex) {
         QMessageBox::critical(0, a.tr("Critical error"),
                               QString(ex.what()));
         a.exit(1);
