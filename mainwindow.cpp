@@ -265,30 +265,18 @@ void MainWindow::screenshotsFull()
 {
     qCDebug(MAINWINDOW) << "Screenshots tab is full";
 
-    const bool removeOldestAfterMax = config.value("removeoldestafterlimit").toBool();
-    if(removeOldestAfterMax && !ui->unsavedWidget->isEmpty()) {
+    if(config.value("removeoldestafterlimit").toBool()) {
         ui->unsavedWidget->removeFirst();
-
-        return;
     }
+    else {
+        if(frameGenerator->remaining() > 0) {
+            pauseFrameGenerator();
+        }
 
-    // ...If the user has NOT checked above option and chooses to pause instead
-    // as pausing is the other action, then...
-    if(frameGenerator->remaining() > 0) {
-        pauseFrameGenerator();
+        if(config.value("jumptolastonreachingmax").toBool()) {
+            ui->seekSlider->setValue(config.value("last_received_frame").toInt());
+        }
     }
-
-    // ...In case the user has checked they want to jump to last generated frame
-    // after filling the container, then jump...
-    const bool jumpToLastAfterReachingMax = config.value("jumptolastonreachingmax").toBool();
-    if(jumpToLastAfterReachingMax) {
-        qCDebug(MAINWINDOW) << "Set: Jump to last frame after reaching max limit";
-
-        ui->seekSlider->setValue(config.value("last_received_frame").toInt());
-    }
-
-    qCDebug(MAINWINDOW) << "Waiting for user to click clear, generate, "
-                           "open a new file, or change max screenshots limit";
 }
 
 void MainWindow::clearRecentMenu()
