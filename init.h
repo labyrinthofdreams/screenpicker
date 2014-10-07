@@ -17,7 +17,7 @@ QMap<QString, QVariant> getDefaultSettings()
     cfg["avisynthpluginspath"] = QDir::currentPath().append("/avisynth");
     cfg["dgindexexecpath"] = "";
     cfg["showscripteditor"] = false;
-    cfg["maxthumbnails"] = 1000;
+    cfg["maxthumbnails"] = 9999;
     cfg["numscreenshots"] = 100;
     cfg["framestep"] = 100;
     cfg["pauseafterlimit"] = true;
