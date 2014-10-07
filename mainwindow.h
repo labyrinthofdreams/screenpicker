@@ -230,7 +230,7 @@ private:
     /**
      * @brief Setup widgets to default values
      */
-    void setupUi();
+    void resetUi();
 
     /**
      * @brief Setup internal states to default values

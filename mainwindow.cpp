@@ -364,7 +364,7 @@ void MainWindow::recentMenuTriggered(QAction* action)
         removeRecentMenu(path);
     }
     else {
-        setupUi();
+        resetUi();
 
         loadFile(path);
     }
@@ -387,7 +387,7 @@ void MainWindow::frameGeneratorFinished()
     }
 }
 
-void MainWindow::setupUi()
+void MainWindow::resetUi()
 {
     qCDebug(MAINWINDOW) << "Setting up UI";
 
@@ -688,7 +688,7 @@ void MainWindow::on_actionOpen_triggered()
     }
 
     // Reset all states back to zero
-    setupUi();
+    resetUi();
 
     loadFile(filename);           
 }
@@ -755,7 +755,7 @@ void MainWindow::on_actionOpen_DVD_triggered()
     }
 
     // Reset all states back to zero
-    setupUi();
+    resetUi();
 
     dvdProgress->setValue(0);
     dvdProgress->setVisible(true);
@@ -1204,7 +1204,7 @@ void MainWindow::dropEvent(QDropEvent *ev)
     const QString filename = urls.at(0).toLocalFile();
 
     // Reset all states back to zero
-    setupUi();
+    resetUi();
 
     loadFile(filename);
 }
