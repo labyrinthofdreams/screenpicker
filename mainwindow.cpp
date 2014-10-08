@@ -465,6 +465,10 @@ void MainWindow::loadFile(const QString& path)
 {
     try
     {      
+        if(frameGenerator->isRunning()) {
+            pauseFrameGenerator();
+        }
+
         const QFileInfo info(path);
 
         qCDebug(MAINWINDOW) << "Opening file" << info.absoluteFilePath();
@@ -509,9 +513,7 @@ void MainWindow::loadFile(const QString& path)
         const QString saveTo = scriptEditor->path();
 
         // Attempt to load the (parsed) Avisynth script
-        // TODO: Stop screenshot generation if that's happening...
         qCDebug(MAINWINDOW) << "Loading file" << saveTo;
-
         videoSource->load(saveTo);
     }
     catch(const vfg::ScriptParserError& ex)
