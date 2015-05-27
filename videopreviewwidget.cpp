@@ -1,6 +1,6 @@
-#include <map>
 #include <QImage>
 #include <QLabel>
+#include <QMap>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPair>
@@ -122,12 +122,12 @@ QSize vfg::ui::VideoPreviewWidget::calculateSize() const
         return frameLabel->size();
     }
 
-    const std::map<ZoomMode, double> factors {
+    const QMap<ZoomMode, double> factors {
         {ZoomMode::Zoom_25, 0.25}, {ZoomMode::Zoom_50, 0.5},
         {ZoomMode::Zoom_100, 1.0}, {ZoomMode::Zoom_200, 2.0}
     };
 
-    const auto zoomfactor = factors.at(zoomMode);
+    const auto zoomfactor = factors.value(zoomMode);
     return {static_cast<int>(original.width() * zoomfactor),
             static_cast<int>(original.height() * zoomfactor)};
 }
