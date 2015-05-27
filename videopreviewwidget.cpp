@@ -46,10 +46,6 @@ void vfg::ui::VideoPreviewWidget::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
 
-    if(framePixmap.isNull()) {
-        return;
-    }
-
     updateFrame();
 }
 
