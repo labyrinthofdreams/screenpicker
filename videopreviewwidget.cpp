@@ -124,8 +124,7 @@ QSize vfg::ui::VideoPreviewWidget::calculateSize() const
 
     const std::map<ZoomMode, double> factors {
         {ZoomMode::Zoom_25, 0.25}, {ZoomMode::Zoom_50, 0.5},
-        {ZoomMode::Zoom_100, 1.0}, {ZoomMode::Zoom_200, 2.0},
-        {ZoomMode::Zoom_Scale, static_cast<double>(frameLabel->height()) / original.height()}
+        {ZoomMode::Zoom_100, 1.0}, {ZoomMode::Zoom_200, 2.0}
     };
 
     const auto zoomfactor = factors.at(zoomMode);
