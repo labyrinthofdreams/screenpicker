@@ -132,9 +132,13 @@ MainWindow::MainWindow(QWidget *parent) :
     buildRecentMenu();
 
     mediaPlayer->setVideoOutput(ui->videoPreviewWidget->videoWidget);
+    mediaPlayer->setVolume(ui->volumeSlider->value());
 
     connect(mediaPlayer.get(), SIGNAL(positionChanged(qint64)),
             this, SLOT(videoPositionChanged(qint64)));
+
+    connect(ui->volumeSlider, SIGNAL(sliderMoved(int)),
+            mediaPlayer.get(), SLOT(setVolume(int)));
 
     connect(videoZoomGroup.get(),   SIGNAL(triggered(QAction*)),
             this,                   SLOT(videoZoomChanged(QAction*)));
@@ -1472,14 +1476,12 @@ void MainWindow::on_buttonPlay_clicked()
         ui->videoPreviewWidget->hideVideo();
         videoPositionChanged(mediaPlayer->position());
         ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
-        ui->buttonPlay->setText(tr("Play"));
         seekedTime = 0;
     }
     else {
         ui->videoPreviewWidget->showVideo();
         mediaPlayer->play();
         ui->buttonPlay->setIcon(QIcon(":/icon/pause2.png"));
-        ui->buttonPlay->setText(tr("Pause"));
         // Start playing from where the seek slider is
         mediaPlayer->setPosition(convertFrameToMs(ui->seekSlider->value()));
     }
