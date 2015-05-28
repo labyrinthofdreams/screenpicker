@@ -39,6 +39,7 @@ vfg::ui::VideoPreviewWidget::VideoPreviewWidget(QWidget *parent) :
     QPalette plt = palette();
     plt.setColor(QPalette::Window, Qt::white);
     setPalette(plt);
+    videoWidget->setPalette(plt);
 
     setAutoFillBackground(true);
     setContentsMargins(0, 0, 0, 0);
