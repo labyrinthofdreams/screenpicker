@@ -2,6 +2,8 @@
 #include <stdexcept>
 #include <utility>
 #include <QtCore>
+#include <QtMultimedia>
+#include <QtMultimediaWidgets>
 #include <QtWidgets>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -72,6 +74,8 @@ MainWindow::MainWindow(QWidget *parent) :
     dvdProcessor(nullptr),
     previewContext(nullptr),
     gifMaker(nullptr),
+    mediaPlayer(new QMediaPlayer),
+    seekedTime(0),
     config("config.ini", QSettings::IniFormat)
 {
     ui->setupUi(this);
@@ -126,6 +130,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Open recent
     buildRecentMenu();
+
+    mediaPlayer->setVideoOutput(ui->videoPreviewWidget->videoWidget);
+
+    connect(mediaPlayer.get(), SIGNAL(positionChanged(qint64)),
+            this, SLOT(videoPositionChanged(qint64)));
 
     connect(videoZoomGroup.get(),   SIGNAL(triggered(QAction*)),
             this,                   SLOT(videoZoomChanged(QAction*)));
@@ -350,6 +359,21 @@ void MainWindow::buildRecentMenu()
     menu->addAction(clearRecent);
 }
 
+unsigned MainWindow::convertMsToFrame(const unsigned milliSecond) const
+{
+    const auto duration = mediaPlayer->duration();
+    const auto completed = static_cast<double>(milliSecond)/duration;
+    return ui->totalFramesLabel->text().toInt() * completed;
+}
+
+unsigned MainWindow::convertFrameToMs(const unsigned frameNumber) const
+{
+    const auto totalFrames = ui->totalFramesLabel->text().toInt();
+    const auto progress = static_cast<double>(frameNumber) / totalFrames;
+    const auto videoTime = mediaPlayer->duration();
+    return videoTime * progress;
+}
+
 void MainWindow::recentMenuTriggered(QAction* action)
 {
     if(frameGenerator->isRunning()) {
@@ -368,6 +392,13 @@ void MainWindow::recentMenuTriggered(QAction* action)
 
         loadFile(path);
     }
+}
+
+void MainWindow::videoPositionChanged(const qint64 position)
+{
+    const auto sliderPosition = convertMsToFrame(position);
+    seekedTime = sliderPosition;
+    ui->seekSlider->setValue(sliderPosition);
 }
 
 void MainWindow::frameGeneratorFinished()
@@ -418,6 +449,8 @@ void MainWindow::resetUi()
     ui->btnStopGenerator->setEnabled(false);
     ui->generatorProgressBar->setValue(0);
     ui->generatorProgressBar->setTextVisible(false);
+    ui->buttonPlay->setEnabled(false);
+    ui->buttonStop->setEnabled(false);
 
     ui->actionSave_as_PNG->setEnabled(false);
     ui->actionX264_Encoder->setEnabled(false);
@@ -515,6 +548,8 @@ void MainWindow::loadFile(const QString& path)
         // Attempt to load the (parsed) Avisynth script
         qCDebug(MAINWINDOW) << "Loading file" << saveTo;
         videoSource->load(saveTo);
+
+        mediaPlayer->setMedia(QUrl::fromLocalFile(saveTo));
     }
     catch(const vfg::ScriptParserError& ex)
     {
@@ -840,6 +875,9 @@ void MainWindow::videoLoaded()
     ui->grabButton->setEnabled(true);
     ui->generateButton->setEnabled(true);
 
+    ui->buttonPlay->setEnabled(true);
+    ui->buttonStop->setEnabled(true);
+
     ui->actionSave_as_PNG->setEnabled(true);
     ui->actionX264_Encoder->setEnabled(true);
 
@@ -904,6 +942,12 @@ void MainWindow::on_previousButton_clicked()
 void MainWindow::on_seekSlider_valueChanged(const int frameNumber)
 {
     qCDebug(MAINWINDOW) << "Moved seek slider";
+
+    // This check makes sure that the slider was moved by the user
+    // and not auto-moved by videoPositionChanged
+    if(frameNumber != seekedTime && seekedTime > 0) {
+        mediaPlayer->setPosition(convertFrameToMs(frameNumber));
+    }
 
     const int lastRequestedFrame = frameGrabber->lastFrame();
     if(lastRequestedFrame == frameNumber) {
@@ -1420,4 +1464,31 @@ void MainWindow::on_actionDebugOff_triggered(bool checked)
     config.setValue("enable_logging", false);
 
     QMessageBox::information(this, tr("Restart"), tr("Please restart the application"));
+}
+
+void MainWindow::on_buttonPlay_clicked()
+{
+    const auto state = mediaPlayer->state();
+    if(state == QMediaPlayer::PlayingState) {
+        mediaPlayer->pause();
+        ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
+        // Move slider to new position
+        videoPositionChanged(mediaPlayer->position());
+    }
+    else {
+        ui->videoPreviewWidget->showVideo();
+        mediaPlayer->play();
+        ui->buttonPlay->setIcon(QIcon(":/icon/pause2.png"));
+        // Start playing from where the seek slider is
+        mediaPlayer->setPosition(convertFrameToMs(ui->seekSlider->value()));
+    }
+}
+
+void MainWindow::on_buttonStop_clicked()
+{
+    mediaPlayer->pause();
+    ui->videoPreviewWidget->hideVideo();
+    videoPositionChanged(mediaPlayer->position());
+    ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
+    seekedTime = 0;
 }

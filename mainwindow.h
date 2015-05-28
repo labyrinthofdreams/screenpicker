@@ -13,6 +13,7 @@ class QActionGroup;
 class QCloseEvent;
 class QDragEvent;
 class QDropEvent;
+class QMediaPlayer;
 class QMenu;
 class QImage;
 class QPoint;
@@ -201,6 +202,22 @@ private slots:
      */
     void recentMenuTriggered(QAction* action);
 
+    /**
+     * @brief Changes seek slider position to match video position
+     * @param position New position
+     */
+    void videoPositionChanged(qint64 position);
+
+    /**
+     * @brief Starts playing video
+     */
+    void on_buttonPlay_clicked();
+
+    /**
+     * @brief Stops playing video
+     */
+    void on_buttonStop_clicked();
+
 private:
     Ui::MainWindow* ui;
 
@@ -223,6 +240,15 @@ private:
     util::observer_ptr<QMenu> previewContext;
 
     std::unique_ptr<vfg::ui::GifMakerWidget> gifMaker;
+
+    //! Media player for video playback
+    std::unique_ptr<QMediaPlayer> mediaPlayer;
+
+    //! When video is playing, videoPositionChanged is called which moves
+    //! the seek slider. This variable keeps track where the slider was moved
+    //! and is checked in on_seekSlider_valueChanged to make sure user
+    //! moved the seek slider
+    int seekedTime;
 
     //! Application wide configuration settings
     QSettings config;
@@ -267,6 +293,18 @@ private:
      * @brief Build the recent menu item
      */
     void buildRecentMenu();
+
+    /**
+     * @brief Convert frame number to milliseconds
+     * @param frameNumber Frame number to convert
+     */
+    unsigned convertFrameToMs(unsigned frameNumber) const;
+
+    /**
+     * @brief Convert milliseconds to frame number
+     * @param milliSecond Milliseconds to convert
+     */
+    unsigned convertMsToFrame(unsigned milliSecond) const;
 
 protected:
     void dragEnterEvent(QDragEnterEvent *ev) override;

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>501</width>
-    <height>195</height>
+    <height>210</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -152,6 +152,13 @@
       <widget class="QLabel" name="label_7">
        <property name="text">
         <string>Icons &amp;copy; &lt;a href='http://www.customicondesign.com/'&gt;CustomIconDesign&lt;/a&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>Icons &amp;copy; &lt;a href='https://www.google.com/design/icons/'&gt;Google design&lt;/a&gt;</string>
        </property>
       </widget>
      </item>

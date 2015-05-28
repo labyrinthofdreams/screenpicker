@@ -13,6 +13,7 @@ class QRect;
 class QResizeEvent;
 class QSize;
 class QVBoxLayout;
+class QVideoWidget;
 
 namespace vfg {
 
@@ -55,6 +56,15 @@ private:
     //! Specifies the current zoom mode
     ZoomMode zoomMode;
 
+    //! Video state
+    enum class VideoState {
+        Playing, //!< Video is playing
+        Stopped  //!< Video is stopped
+    };
+
+    //! Video state
+    VideoState state;
+
     /**
      * @brief Applies new changes to the current frame
      */
@@ -69,7 +79,7 @@ private:
      * @brief Calculates new size based on zoom mode
      * @return New frame size
      */
-    QSize calculateSize() const;
+    QRect calculateSize() const;
 
 public:
     /**
@@ -77,6 +87,19 @@ public:
      * @param parent Owner of the widget
      */
     explicit VideoPreviewWidget(QWidget *parent = 0);
+
+    //! Widget that displays video
+    QVideoWidget *videoWidget;
+
+    /**
+     * @brief Displays video widget and hides frame
+     */
+    void showVideo();
+
+    /**
+     * @brief Displays frame and hides video widget
+     */
+    void hideVideo();
 
 protected:
     /**

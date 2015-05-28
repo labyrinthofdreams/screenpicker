@@ -1,6 +1,7 @@
 # Ignore everything
 *
 # Whitelist
+!icons/*.txt
 !icons/*.png
 !icons/
 !scripts/*.ini

@@ -10,6 +10,7 @@
 #include <QSize>
 #include <QVBoxLayout>
 #include <QVector>
+#include <QVideoWidget>
 #include <QWidget>
 #include "videopreviewwidget.h"
 
@@ -18,7 +19,9 @@ vfg::ui::VideoPreviewWidget::VideoPreviewWidget(QWidget *parent) :
     cropBorders(),
     framePixmap(),
     original(),
-    zoomMode(ZoomMode::Zoom_Scale)
+    zoomMode(ZoomMode::Zoom_Scale),
+    state(VideoState::Stopped),
+    videoWidget(new QVideoWidget)
 {
     frameLabel = new QLabel;
     frameLabel->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
@@ -40,6 +43,22 @@ vfg::ui::VideoPreviewWidget::VideoPreviewWidget(QWidget *parent) :
     setAutoFillBackground(true);
     setContentsMargins(0, 0, 0, 0);
     setContextMenuPolicy(Qt::CustomContextMenu);
+}
+
+void vfg::ui::VideoPreviewWidget::showVideo()
+{
+    layout->removeWidget(frameLabel);
+    frameLabel->setParent(0);
+    layout->addWidget(videoWidget);
+    state = VideoState::Playing;
+}
+
+void vfg::ui::VideoPreviewWidget::hideVideo()
+{
+    layout->removeWidget(videoWidget);
+    videoWidget->setParent(0);
+    layout->addWidget(frameLabel);
+    state = VideoState::Stopped;
 }
 
 void vfg::ui::VideoPreviewWidget::resizeEvent(QResizeEvent *event)
@@ -87,19 +106,27 @@ void vfg::ui::VideoPreviewWidget::resetCrop()
 
 void vfg::ui::VideoPreviewWidget::updateFrame()
 {
-    if(framePixmap.isNull())
-    {
-        return;
+    if(state == VideoState::Playing) {
+        layout->setGeometry(calculateSize());
+        if(zoomMode == ZoomMode::Zoom_Scale) {
+            layout->invalidate();
+        }
     }
+    else {
+        if(framePixmap.isNull())
+        {
+            return;
+        }
 
-    if(!cropBorders.isEmpty())
-    {
-        drawCropArea();
+        if(!cropBorders.isEmpty())
+        {
+            drawCropArea();
+        }
+
+        frameLabel->setPixmap(framePixmap.scaled(calculateSize().size(),
+                                                 Qt::KeepAspectRatio,
+                                                 Qt::SmoothTransformation));
     }
-
-    frameLabel->setPixmap(framePixmap.scaled(calculateSize(),
-                                             Qt::KeepAspectRatio,
-                                             Qt::SmoothTransformation));
 
 }
 
@@ -116,10 +143,11 @@ void vfg::ui::VideoPreviewWidget::drawCropArea()
     framePixmap.swap(copiedFrame);
 }
 
-QSize vfg::ui::VideoPreviewWidget::calculateSize() const
+QRect vfg::ui::VideoPreviewWidget::calculateSize() const
 {
+    const QRect geometry = layout->geometry();
     if(zoomMode == ZoomMode::Zoom_Scale) {
-        return frameLabel->size();
+        return geometry;
     }
 
     const QMap<ZoomMode, double> factors {
@@ -128,7 +156,8 @@ QSize vfg::ui::VideoPreviewWidget::calculateSize() const
     };
 
     const auto zoomfactor = factors.value(zoomMode);
-    return {static_cast<int>(original.width() * zoomfactor),
+    return {geometry.x(), geometry.y(),
+                static_cast<int>(original.width() * zoomfactor),
             static_cast<int>(original.height() * zoomfactor)};
 }
 
