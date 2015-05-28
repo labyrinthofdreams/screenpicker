@@ -213,6 +213,8 @@ private slots:
      */
     void on_buttonPlay_clicked();
 
+    void on_playbackSpeed_currentIndexChanged(const QString &arg1);
+
 private:
     Ui::MainWindow* ui;
 

@@ -154,6 +154,9 @@
             <property name="enabled">
              <bool>false</bool>
             </property>
+            <property name="toolTip">
+             <string/>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -171,8 +174,11 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="whatsThis">
+            <property name="toolTip">
              <string>Volume</string>
+            </property>
+            <property name="whatsThis">
+             <string/>
             </property>
             <property name="maximum">
              <number>100</number>
@@ -186,6 +192,65 @@
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="playbackSpeed">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Playback rate</string>
+            </property>
+            <property name="whatsThis">
+             <string/>
+            </property>
+            <property name="currentText">
+             <string>100%</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>25%</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>50%</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>75%</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>100%</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>125%</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>150%</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>175%</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>200%</string>
+             </property>
+            </item>
            </widget>
           </item>
           <item>

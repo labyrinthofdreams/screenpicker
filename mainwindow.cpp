@@ -1486,3 +1486,13 @@ void MainWindow::on_buttonPlay_clicked()
         mediaPlayer->setPosition(convertFrameToMs(ui->seekSlider->value()));
     }
 }
+
+void MainWindow::on_playbackSpeed_currentIndexChanged(const QString &arg1)
+{
+    static const QMap<QString, double> rates {{"25%", 0.25}, {"50%", 0.5},
+                                              {"75%", 0.75}, {"100%", 1.0},
+                                              {"125%", 1.25}, {"150%", 1.5},
+                                              {"175%", 1.75}, {"200%", 2.0}};
+
+    mediaPlayer->setPlaybackRate(rates.value(arg1));
+}
