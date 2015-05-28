@@ -450,7 +450,6 @@ void MainWindow::resetUi()
     ui->generatorProgressBar->setValue(0);
     ui->generatorProgressBar->setTextVisible(false);
     ui->buttonPlay->setEnabled(false);
-    ui->buttonStop->setEnabled(false);
 
     ui->actionSave_as_PNG->setEnabled(false);
     ui->actionX264_Encoder->setEnabled(false);
@@ -876,7 +875,6 @@ void MainWindow::videoLoaded()
     ui->generateButton->setEnabled(true);
 
     ui->buttonPlay->setEnabled(true);
-    ui->buttonStop->setEnabled(true);
 
     ui->actionSave_as_PNG->setEnabled(true);
     ui->actionX264_Encoder->setEnabled(true);
@@ -1471,24 +1469,18 @@ void MainWindow::on_buttonPlay_clicked()
     const auto state = mediaPlayer->state();
     if(state == QMediaPlayer::PlayingState) {
         mediaPlayer->pause();
-        ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
-        // Move slider to new position
+        ui->videoPreviewWidget->hideVideo();
         videoPositionChanged(mediaPlayer->position());
+        ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
+        ui->buttonPlay->setText(tr("Play"));
+        seekedTime = 0;
     }
     else {
         ui->videoPreviewWidget->showVideo();
         mediaPlayer->play();
         ui->buttonPlay->setIcon(QIcon(":/icon/pause2.png"));
+        ui->buttonPlay->setText(tr("Pause"));
         // Start playing from where the seek slider is
         mediaPlayer->setPosition(convertFrameToMs(ui->seekSlider->value()));
     }
-}
-
-void MainWindow::on_buttonStop_clicked()
-{
-    mediaPlayer->pause();
-    ui->videoPreviewWidget->hideVideo();
-    videoPositionChanged(mediaPlayer->position());
-    ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
-    seekedTime = 0;
 }

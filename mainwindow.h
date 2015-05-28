@@ -213,11 +213,6 @@ private slots:
      */
     void on_buttonPlay_clicked();
 
-    /**
-     * @brief Stops playing video
-     */
-    void on_buttonStop_clicked();
-
 private:
     Ui::MainWindow* ui;
 
