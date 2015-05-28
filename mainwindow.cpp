@@ -505,6 +505,12 @@ void MainWindow::loadFile(const QString& path)
             pauseFrameGenerator();
         }
 
+        if(mediaPlayer->state() != QMediaPlayer::StoppedState) {
+            mediaPlayer->stop();
+            ui->videoPreviewWidget->hideVideo();
+            ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
+        }
+
         const QFileInfo info(path);
 
         qCDebug(MAINWINDOW) << "Opening file" << info.absoluteFilePath();
