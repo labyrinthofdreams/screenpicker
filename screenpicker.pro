@@ -48,7 +48,8 @@ HEADERS  += mainwindow.h \
     avisynthwrapper.hpp \
     gifmakerwidget.hpp \
     aboutwidget.hpp \
-    x264encoderdialog.hpp
+    x264encoderdialog.hpp \
+    raiideleter.hpp
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
