@@ -833,14 +833,34 @@ void MainWindow::videoSettingsUpdated()
         return;
     }
 
+    const auto seekPosition = ui->seekSlider->value();
+
     loadFile(config.value("last_opened").toString());
+
+    // If video was playing or paused loadFile will stop it,
+    // so move the slider back to where it was
+    ui->seekSlider->setValue(seekPosition);
 }
 
 void MainWindow::scriptEditorUpdated()
 {
     qCDebug(MAINWINDOW) << "Script editor updated";
 
+    const auto seekPosition = ui->seekSlider->value();
+
     loadFile(scriptEditor->path());
+
+    // If video was playing or paused loadFile will stop it,
+    // so move the slider back to where it was
+    // The comparison is necessary because the script might've
+    // changed the frame amount
+    const auto totalFrames = ui->totalFramesLabel->text().toInt();
+    if(seekPosition <= totalFrames) {
+        ui->seekSlider->setValue(seekPosition);
+    }
+    else {
+        ui->seekSlider->setValue(totalFrames);
+    }
 }
 
 void MainWindow::videoLoaded()
