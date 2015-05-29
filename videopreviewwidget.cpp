@@ -1,12 +1,12 @@
 #include <QImage>
 #include <QLabel>
 #include <QMap>
-#include <QMouseEvent>
 #include <QPainter>
 #include <QPair>
 #include <QPalette>
 #include <QPixmap>
 #include <QRect>
+#include <QResizeEvent>
 #include <QSize>
 #include <QVBoxLayout>
 #include <QVector>
