@@ -148,7 +148,7 @@ QRect vfg::ui::VideoPreviewWidget::calculateSize() const
         return geometry;
     }
 
-    const QMap<ZoomMode, double> factors {
+    static const QMap<ZoomMode, double> factors {
         {ZoomMode::Zoom_25, 0.25}, {ZoomMode::Zoom_50, 0.5},
         {ZoomMode::Zoom_100, 1.0}, {ZoomMode::Zoom_200, 2.0}
     };
