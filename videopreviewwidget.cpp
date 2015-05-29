@@ -114,13 +114,11 @@ void vfg::ui::VideoPreviewWidget::updateFrame()
         }
     }
     else {
-        if(framePixmap.isNull())
-        {
+        if(framePixmap.isNull()) {
             return;
         }
 
-        if(!cropBorders.isEmpty())
-        {
+        if(!cropBorders.isEmpty()) {
             drawCropArea();
         }
 
@@ -128,7 +126,6 @@ void vfg::ui::VideoPreviewWidget::updateFrame()
                                                  Qt::KeepAspectRatio,
                                                  Qt::SmoothTransformation));
     }
-
 }
 
 void vfg::ui::VideoPreviewWidget::drawCropArea()
