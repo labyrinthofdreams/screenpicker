@@ -103,6 +103,8 @@ void vfg::ui::VideoPreviewWidget::resetCrop()
     framePixmap = original.copy();
     cropBorders.clear();
     updateFrame();
+    // Prevent widget from disappearing
+    adjustSize();
 }
 
 void vfg::ui::VideoPreviewWidget::updateFrame()
