@@ -6,6 +6,7 @@
 class QModelIndex;
 class QObject;
 class QPainter;
+class QSize;
 class QStyleOptionViewItem;
 
 namespace vfg {
@@ -34,6 +35,8 @@ public:
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
                       const QModelIndex &index) const override;
+
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 };
 
 } // namespace ui

@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QModelIndex>
 #include <QPainter>
+#include <QSize>
 #include <QString>
 #include <QStyle>
 #include <QStyleOptionProgressBar>
@@ -82,6 +83,11 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
     // Draw the progress bar onto the view.
     QApplication::style()->drawControl(QStyle::CE_ProgressBar, &progressBarOption, painter);
+}
+
+QSize ProgressBarDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+    return QSize(QStyledItemDelegate::sizeHint(option, index).width(), height);
 }
 
 } // namespace ui
