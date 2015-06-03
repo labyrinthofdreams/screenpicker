@@ -42,6 +42,8 @@ private slots:
 
     void on_buttonBrowseX264_clicked();
 
+    void on_browseCacheFolder_clicked();
+
 private:
     Ui::ConfigDialog* ui;
 };

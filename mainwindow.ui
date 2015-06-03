@@ -209,7 +209,7 @@
              <string/>
             </property>
             <property name="currentText">
-             <string>100%</string>
+             <string>25%</string>
             </property>
             <item>
              <property name="text">
@@ -665,7 +665,7 @@
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>764</width>
+                   <width>645</width>
                    <height>200</height>
                   </rect>
                  </property>
@@ -743,6 +743,7 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionOpen_DVD"/>
+    <addaction name="actionOpen_URL"/>
     <addaction name="separator"/>
     <addaction name="actionRecent"/>
     <addaction name="separator"/>
@@ -772,6 +773,8 @@
     </property>
     <addaction name="actionAvisynth_Script_Editor"/>
     <addaction name="actionVideo_Settings"/>
+    <addaction name="separator"/>
+    <addaction name="actionDownloads"/>
     <addaction name="separator"/>
     <addaction name="actionOptions"/>
    </widget>
@@ -959,6 +962,16 @@
   <action name="actionRecent">
    <property name="text">
     <string>Recent</string>
+   </property>
+  </action>
+  <action name="actionOpen_URL">
+   <property name="text">
+    <string>Open URL...</string>
+   </property>
+  </action>
+  <action name="actionDownloads">
+   <property name="text">
+    <string>Downloads</string>
    </property>
   </action>
  </widget>

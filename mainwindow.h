@@ -29,6 +29,7 @@ namespace core {
     class VideoFrameGrabber;
 }
 namespace ui {
+    class DownloadsDialog;
     class GifMakerWidget;
     class ScriptEditor;
     class VideoFrameThumbnail;
@@ -215,6 +216,10 @@ private slots:
 
     void on_playbackSpeed_currentIndexChanged(const QString &arg1);
 
+    void on_actionOpen_URL_triggered();
+
+    void on_actionDownloads_triggered();
+
 private:
     Ui::MainWindow* ui;
 
@@ -240,6 +245,9 @@ private:
 
     //! Media player for video playback
     std::unique_ptr<QMediaPlayer> mediaPlayer;
+
+    //! Downloads window
+    std::unique_ptr<vfg::ui::DownloadsDialog> downloads;
 
     //! When video is playing, videoPositionChanged is called which moves
     //! the seek slider. This variable keeps track where the slider was moved

@@ -10,8 +10,10 @@
 #include "aboutwidget.hpp"
 #include "avisynthvideosource.h"
 #include "configdialog.h"
+#include "downloadsdialog.hpp"
 #include "dvdprocessor.h"
 #include "gifmakerwidget.hpp"
+#include "opendialog.hpp"
 #include "ptrutil.hpp"
 #include "scripteditor.h"
 #include "scriptparser.h"
@@ -75,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent) :
     previewContext(nullptr),
     gifMaker(nullptr),
     mediaPlayer(new QMediaPlayer),
+    downloads(new vfg::ui::DownloadsDialog),
     seekedTime(0),
     config("config.ini", QSettings::IniFormat)
 {
@@ -1521,4 +1524,34 @@ void MainWindow::on_playbackSpeed_currentIndexChanged(const QString &arg1)
                                               {"175%", 1.75}, {"200%", 2.0}};
 
     mediaPlayer->setPlaybackRate(rates.value(arg1));
+}
+
+void MainWindow::on_actionOpen_URL_triggered()
+{
+    vfg::ui::OpenDialog dlg;
+    const auto dialogCode = dlg.exec();
+    if(dialogCode == QDialog::Rejected) {
+        return;
+    }
+
+    const auto mode = config.value("open/mode").toString();
+    if(mode == "network") {
+        QUrl url(config.value("open/url").toString());
+        if(url.scheme() == "http" || url.scheme() == "https") {
+            downloads->addDownload(new vfg::net::HttpDownload(url));
+        }
+        else if(url.scheme() == "ftp" || url.scheme() == "ftps") {
+            downloads->addDownload(new vfg::net::HttpDownload(url));
+        }
+        else {
+            QMessageBox::information(this, tr("Unsupported scheme"), tr("This scheme is not supported"));
+        }
+
+        downloads->show();
+    }
+}
+
+void MainWindow::on_actionDownloads_triggered()
+{
+    downloads->show();
 }

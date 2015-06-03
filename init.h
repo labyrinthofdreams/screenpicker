@@ -33,6 +33,7 @@ QMap<QString, QVariant> getDefaultSettings()
     cfg["imagemagicktimeout"] = 90;
     cfg["gifsicletimeout"] = 30;
     cfg["enable_logging"] = false;
+    cfg["cachedirectory"] = QDir::currentPath().append("/cache");
     return cfg;
 }
 

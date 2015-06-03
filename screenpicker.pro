@@ -27,7 +27,12 @@ SOURCES += main.cpp\
     avisynthwrapper.cpp \
     gifmakerwidget.cpp \
     aboutwidget.cpp \
-    x264encoderdialog.cpp
+    x264encoderdialog.cpp \
+    opendialog.cpp \
+    httpdownload.cpp \
+    downloadsdialog.cpp \
+    progressbardelegate.cpp \
+    downloadslistmodel.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -49,7 +54,12 @@ HEADERS  += mainwindow.h \
     gifmakerwidget.hpp \
     aboutwidget.hpp \
     x264encoderdialog.hpp \
-    raiideleter.hpp
+    raiideleter.hpp \
+    opendialog.hpp \
+    httpdownload.hpp \
+    downloadsdialog.hpp \
+    progressbardelegate.hpp \
+    downloadslistmodel.hpp
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
@@ -57,7 +67,9 @@ FORMS    += mainwindow.ui \
     videosettingswidget.ui \
     gifmakerwidget.ui \
     aboutwidget.ui \
-    x264encoderdialog.ui
+    x264encoderdialog.ui \
+    opendialog.ui \
+    downloadsdialog.ui
 
 INCLUDEPATH += .\libs\avs2yuv\src \
     .\libs\templet

@@ -48,6 +48,7 @@ vfg::ConfigDialog::ConfigDialog(QWidget *parent) :
     ui->spinGifsicleTimeout->setValue(cfg.value("gifsicletimeout").toInt());
 
     ui->editX264Path->setText(cfg.value("x264path").toString());
+    ui->cacheFolder->setText(cfg.value("cachedirectory").toString());
 }
 
 vfg::ConfigDialog::~ConfigDialog() {
@@ -79,6 +80,7 @@ void vfg::ConfigDialog::on_buttonBox_accepted()
     cfg.setValue("imagemagickpath", ui->editImageMagickPath->text());
     cfg.setValue("gifsiclepath", ui->editGifsiclePath->text());
     cfg.setValue("x264path", ui->editX264Path->text());
+    cfg.setValue("cachedirectory", ui->cacheFolder->text());
 }
 
 void vfg::ConfigDialog::on_btnDgindexPath_clicked()
@@ -118,4 +120,12 @@ void vfg::ConfigDialog::on_buttonBrowseX264_clicked()
                                           tr("x264 executable path"),
                                           "/", "x264.exe");
     ui->editX264Path->setText(path);
+}
+
+void vfg::ConfigDialog::on_browseCacheFolder_clicked()
+{
+    const QString path = QFileDialog::getOpenFileName(this, tr("Cache directory"), "/");
+    if(!path.isEmpty()) {
+        ui->cacheFolder->setText(path);
+    }
 }
