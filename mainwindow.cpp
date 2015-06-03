@@ -137,6 +137,9 @@ MainWindow::MainWindow(QWidget *parent) :
     mediaPlayer->setVideoOutput(ui->videoPreviewWidget->videoWidget);
     mediaPlayer->setVolume(ui->volumeSlider->value());
 
+    connect(downloads.get(), SIGNAL(play(QString)),
+            this, SLOT(loadDownloadedFile(QString)));
+
     connect(mediaPlayer.get(), SIGNAL(positionChanged(qint64)),
             this, SLOT(videoPositionChanged(qint64)));
 
@@ -582,6 +585,17 @@ void MainWindow::loadFile(const QString& path)
         scriptEditor->show();
         scriptEditor->setWindowState(Qt::WindowActive);
     }
+}
+
+void MainWindow::loadDownloadedFile(const QString& path)
+{
+    if(frameGenerator->isRunning()) {
+        pauseFrameGenerator();
+    }
+
+    resetUi();
+
+    loadFile(path);
 }
 
 void MainWindow::videoZoomChanged(QAction* action)

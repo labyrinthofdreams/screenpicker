@@ -3,10 +3,12 @@
 
 #include <memory>
 #include <QDialog>
+#include <QString>
 #include "httpdownload.hpp"
 
 class QNetworkAccessManager;
 class QNetworkReply;
+class QPoint;
 class QUrl;
 
 namespace vfg {
@@ -64,6 +66,15 @@ private slots:
      * @brief Clear finished downloads
      */
     void on_pushButton_clicked();
+
+    /**
+     * @brief Display context menu
+     * @param pos Cursor position
+     */
+    void contextMenuRequested(const QPoint& pos);
+
+signals:
+    void play(QString path);
 };
 
 

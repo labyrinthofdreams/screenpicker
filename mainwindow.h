@@ -122,6 +122,12 @@ private slots:
     void loadFile(const QString& path);
 
     /**
+     * @brief Load downloaded file
+     * @param path Path to load
+     */
+    void loadDownloadedFile(const QString& path);
+
+    /**
      * @brief Triggered when the video zoom mode is changed
      * @param action The action that was performed
      */
