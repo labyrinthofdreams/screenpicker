@@ -92,9 +92,6 @@ QString HttpDownload::fileName() const
 void HttpDownload::downloadFinished()
 {
     dlDuration = timer.elapsed();
-
-    // reply->readAll() fails to return complete data
-    outFile.write(reply->read(reply->bytesAvailable()));
 }
 
 void HttpDownload::updateProgress(const qint64 bytesReceived, const qint64 bytesTotal)
@@ -103,6 +100,9 @@ void HttpDownload::updateProgress(const qint64 bytesReceived, const qint64 bytes
     total = bytesTotal;
 
     dlDuration = timer.elapsed();
+
+    // reply->readAll() fails to return complete data
+    outFile.write(reply->read(reply->bytesAvailable()));
 
     emit updated();
 }
