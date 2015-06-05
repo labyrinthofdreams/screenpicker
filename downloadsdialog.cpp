@@ -64,7 +64,7 @@ void DownloadsDialog::contextMenuRequested(const QPoint& pos)
     }
 
     const QVariant data = model->data(index);
-    vfg::net::HttpDownload* download = data.value<vfg::net::HttpDownload*>();
+    auto download = data.value<std::shared_ptr<vfg::net::HttpDownload>>();
     const auto status = download->getStatus();
     if(status == vfg::net::HttpDownload::Status::Running) {
         QMenu menu;
