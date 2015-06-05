@@ -44,7 +44,7 @@ public:
      * @brief Add new download request
      * @param request Request to add
      */
-    void addDownload(vfg::net::HttpDownload *request);
+    void addDownload(std::shared_ptr<vfg::net::HttpDownload> request);
 
 private:
     //! UI

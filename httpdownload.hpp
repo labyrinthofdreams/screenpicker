@@ -9,6 +9,8 @@
 #include <QTime>
 #include <QUrl>
 
+Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
+
 class QNetworkAccessManager;
 
 namespace vfg {
@@ -53,27 +55,11 @@ private:
 
 public:
     /**
-     * @brief Default constructor
-     */
-    HttpDownload();
-
-    /**
      * @brief Constructor
      * @param url Request URL
      * @param parent Owner of the object
      */
     explicit HttpDownload(const QUrl& url, QObject *parent = 0);
-
-    /**
-     * @brief Copy constructor
-     * @param other Object to copy from
-     */
-    HttpDownload(const HttpDownload& other);
-
-    /**
-     * Default destructor
-     */
-    ~HttpDownload() = default;
 
     /**
      * @brief Start request

@@ -54,7 +54,7 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         return index.model()->data(index.model()->index(row, column));
     };
 
-    auto dl = get(index.row(), index.column()).value<vfg::net::HttpDownload*>();
+    auto dl = get(index.row(), index.column()).value<std::shared_ptr<vfg::net::HttpDownload>>();
 
     // Set the progress and text values of the style option.
     const auto bytesDownloaded = formatNumber(dl->bytesDownloaded());

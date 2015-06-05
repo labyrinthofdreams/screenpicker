@@ -1,6 +1,7 @@
 #ifndef VFG_CORE_DOWNLOADSLISTMODEL_HPP
 #define VFG_CORE_DOWNLOADSLISTMODEL_HPP
 
+#include <memory>
 #include <QAbstractListModel>
 #include <QList>
 #include <QVariant>
@@ -23,7 +24,7 @@ class DownloadsListModel : public QAbstractListModel
 
 private:
     //! Active download requests
-    QList<vfg::net::HttpDownload*> downloads;
+    QList<std::shared_ptr<vfg::net::HttpDownload>> downloads;
 
 public:
     /**
@@ -42,7 +43,7 @@ public:
      * @brief Add new request
      * @param download New request
      */
-    void addItem(vfg::net::HttpDownload *download);
+    void addItem(std::shared_ptr<vfg::net::HttpDownload> download);
 
     /**
      * @brief Update model data

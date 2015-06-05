@@ -1,3 +1,4 @@
+#include <memory>
 #include <QAction>
 #include <QMenu>
 #include <QModelIndex>
@@ -36,13 +37,13 @@ DownloadsDialog::~DownloadsDialog()
     delete ui;
 }
 
-void DownloadsDialog::addDownload(vfg::net::HttpDownload *request)
+void DownloadsDialog::addDownload(std::shared_ptr<vfg::net::HttpDownload> request)
 {
     request->start(netMan.get());
 
     model->addItem(request);
 
-    connect(request, SIGNAL(updated()), this, SLOT(updateList()));
+    connect(request.get(), SIGNAL(updated()), this, SLOT(updateList()));
 }
 
 void DownloadsDialog::updateList()

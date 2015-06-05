@@ -1,3 +1,4 @@
+#include <memory>
 #include <QAbstractListModel>
 #include <QList>
 #include <QModelIndex>
@@ -43,7 +44,7 @@ QVariant DownloadsListModel::data(const QModelIndex &index, const int role) cons
     return {};
 }
 
-void DownloadsListModel::addItem(vfg::net::HttpDownload *download)
+void DownloadsListModel::addItem(std::shared_ptr<vfg::net::HttpDownload> download)
 {
     beginInsertRows(QModelIndex(), downloads.size(), downloads.size());
     downloads.push_back(download);

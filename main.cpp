@@ -10,8 +10,6 @@
 #include "mainwindow.h"
 #include "init.h"
 
-Q_DECLARE_METATYPE(vfg::net::HttpDownload)
-
 void logToFile(QtMsgType msgType, const QMessageLogContext& ctx, const QString& msg)
 {
     QString type;

@@ -11,12 +11,6 @@
 namespace vfg {
 namespace net {
 
-HttpDownload::HttpDownload() :
-    HttpDownload(QUrl(""), nullptr)
-{
-
-}
-
 HttpDownload::HttpDownload(const QUrl& url, QObject *parent) :
     QObject(parent),
     url(url),
@@ -28,19 +22,6 @@ HttpDownload::HttpDownload(const QUrl& url, QObject *parent) :
     status(Status::Pending)
 {
     // TODO: If filename already exists, try another filename
-    outFile.open(QIODevice::WriteOnly);
-}
-
-HttpDownload::HttpDownload(const HttpDownload& other) :
-    QObject(other.parent()),
-    url(other.url),
-    reply(nullptr),
-    received(other.received),
-    total(other.total),
-    timer(),
-    outFile(other.fileName()),
-    status(other.status)
-{
     outFile.open(QIODevice::WriteOnly);
 }
 

@@ -1,4 +1,5 @@
 #include <map>
+#include <memory>
 #include <stdexcept>
 #include <utility>
 #include <QtCore>
@@ -1552,10 +1553,10 @@ void MainWindow::on_actionOpen_URL_triggered()
     if(mode == "network") {
         QUrl url(config.value("open/url").toString());
         if(url.scheme() == "http" || url.scheme() == "https") {
-            downloads->addDownload(new vfg::net::HttpDownload(url));
+            downloads->addDownload(std::make_shared<vfg::net::HttpDownload>(url));
         }
         else if(url.scheme() == "ftp" || url.scheme() == "ftps") {
-            downloads->addDownload(new vfg::net::HttpDownload(url));
+            downloads->addDownload(std::make_shared<vfg::net::HttpDownload>(url));
         }
         else {
             QMessageBox::information(this, tr("Unsupported scheme"), tr("This scheme is not supported"));
