@@ -63,18 +63,28 @@ void DownloadsDialog::contextMenuRequested(const QPoint& pos)
     }
 
     const QVariant data = model->data(index);
-    const vfg::net::HttpDownload* download = data.value<vfg::net::HttpDownload*>();
-    if(!download->isFinished()) {
-        return;
+    vfg::net::HttpDownload* download = data.value<vfg::net::HttpDownload*>();
+    const auto status = download->getStatus();
+    if(status == vfg::net::HttpDownload::Status::Running) {
+        QMenu menu;
+        QAction* stopAction = new QAction(tr("Stop"), this);
+        stopAction->setData(1);
+        menu.addAction(stopAction);
+        QAction* selected = menu.exec(QCursor::pos());
+        if(selected && selected->data().toInt() == 1) {
+            download->abort();
+        }
     }
-
-    QMenu menu;
-    QAction* playAction = new QAction(tr("Play"), this);
-    playAction->setData(1);
-    menu.addAction(playAction);
-    QAction* selected = menu.exec(QCursor::pos());
-    if(selected && selected->data().toInt() == 1) {
-        emit play(download->fileName());
+    else if(status == vfg::net::HttpDownload::Status::Finished &&
+            status != vfg::net::HttpDownload::Status::Aborted) {
+        QMenu menu;
+        QAction* playAction = new QAction(tr("Play"), this);
+        playAction->setData(1);
+        menu.addAction(playAction);
+        QAction* selected = menu.exec(QCursor::pos());
+        if(selected && selected->data().toInt() == 1) {
+            emit play(download->fileName());
+        }
     }
 }
 

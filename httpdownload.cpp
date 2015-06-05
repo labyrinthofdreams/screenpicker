@@ -24,7 +24,8 @@ HttpDownload::HttpDownload(const QUrl& url, QObject *parent) :
     received(0),
     total(0),
     timer(),
-    outFile(url.fileName())
+    outFile(url.fileName()),
+    status(Status::Pending)
 {
     // TODO: If filename already exists, try another filename
     outFile.open(QIODevice::WriteOnly);
@@ -37,7 +38,8 @@ HttpDownload::HttpDownload(const HttpDownload& other) :
     received(other.received),
     total(other.total),
     timer(),
-    outFile(other.fileName())
+    outFile(other.fileName()),
+    status(other.status)
 {
     outFile.open(QIODevice::WriteOnly);
 }
@@ -52,6 +54,8 @@ void HttpDownload::start(QNetworkAccessManager* netMan)
     connect(reply.get(), SIGNAL(finished()), this, SLOT(downloadFinished()));
 
     timer.start();
+
+    status = Status::Running;
 }
 
 double HttpDownload::percentCompleted() const
@@ -89,9 +93,34 @@ QString HttpDownload::fileName() const
     return reply->url().fileName();
 }
 
+void HttpDownload::abort()
+{
+    if(reply->isFinished()) {
+        return;
+    }
+
+    reply->abort();
+
+    status = Status::Aborted;
+
+    outFile.remove();
+
+    emit updated();
+}
+
+HttpDownload::Status HttpDownload::getStatus() const
+{
+    return status;
+}
+
 void HttpDownload::downloadFinished()
 {
     dlDuration = timer.elapsed();
+
+    // Prevent aborted requests from being marked as finished
+    if(status == Status::Running) {
+        status = Status::Finished;
+    }
 }
 
 void HttpDownload::updateProgress(const qint64 bytesReceived, const qint64 bytesTotal)

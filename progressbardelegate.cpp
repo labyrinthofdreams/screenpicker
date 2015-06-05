@@ -61,7 +61,17 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     const auto bytesTotal = formatNumber(dl->bytesTotal());
     const auto seconds = dl->duration() / 1000.0;
     const auto speed = formatNumber(dl->bytesDownloaded() / seconds);
-    if(dl->isFinished()) {
+    if(dl->getStatus() == vfg::net::HttpDownload::Status::Aborted) {
+        if(!dl->sizeKnown()) {
+            progressBarOption.progress = 0;
+        }
+        else {
+            progressBarOption.progress = dl->percentCompleted();
+        }
+
+        progressBarOption.text = "Aborted";
+    }
+    else if(dl->isFinished()) {
         progressBarOption.progress = dl->percentCompleted();
         progressBarOption.text = QString("%1 (%2/s)").arg(bytesTotal)
                                  .arg(speed);

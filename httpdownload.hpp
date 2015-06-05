@@ -18,6 +18,14 @@ class HttpDownload : public QObject
 {
     Q_OBJECT
 
+public:
+    enum class Status {
+        Pending,
+        Running,
+        Finished,
+        Aborted
+    };
+
 private:
     //! Download URL
     QUrl url;
@@ -39,6 +47,9 @@ private:
 
     //! Output file
     QFile outFile;
+
+    //! Download status
+    Status status;
 
 public:
     /**
@@ -111,6 +122,17 @@ public:
      * @return Filename
      */
     QString fileName() const;
+
+    /**
+     * @brief Abort download
+     */
+    void abort();
+
+    /**
+     * @brief Get reply status
+     * @return Reply status
+     */
+    Status getStatus() const;
 
 private slots:
     /**
