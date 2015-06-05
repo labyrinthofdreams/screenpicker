@@ -1,4 +1,5 @@
 #include <memory>
+#include <QDir>
 #include <QFile>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -11,16 +12,20 @@
 namespace vfg {
 namespace net {
 
-HttpDownload::HttpDownload(const QUrl& url, QObject *parent) :
+HttpDownload::HttpDownload(const QUrl& url, const QDir& cachePath, QObject *parent) :
     QObject(parent),
     url(url),
     reply(nullptr),
     received(0),
     total(0),
     timer(),
-    outFile(url.fileName()),
+    outFile(cachePath.absoluteFilePath(url.fileName())),
     status(Status::Pending)
 {
+    if(!cachePath.exists()) {
+        cachePath.mkpath(cachePath.path());
+    }
+
     // TODO: If filename already exists, try another filename
     outFile.open(QIODevice::WriteOnly);
 }
@@ -71,7 +76,7 @@ int HttpDownload::duration() const
 
 QString HttpDownload::fileName() const
 {
-    return reply->url().fileName();
+    return outFile.fileName();
 }
 
 void HttpDownload::abort()

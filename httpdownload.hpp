@@ -5,13 +5,14 @@
 #include <QFile>
 #include <QNetworkReply>
 #include <QObject>
-#include <QString>
 #include <QTime>
 #include <QUrl>
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
+class QDir;
 class QNetworkAccessManager;
+class QString;
 
 namespace vfg {
 namespace net {
@@ -57,9 +58,10 @@ public:
     /**
      * @brief Constructor
      * @param url Request URL
+     * @param cachePath Path to cache directory
      * @param parent Owner of the object
      */
-    explicit HttpDownload(const QUrl& url, QObject *parent = 0);
+    explicit HttpDownload(const QUrl& url, const QDir& cachePath, QObject *parent = 0);
 
     /**
      * @brief Start request
