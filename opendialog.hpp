@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QSettings>
 
+class QUrl;
+
 namespace Ui {
 class OpenDialog;
 }
@@ -26,6 +28,9 @@ private:
     ::Ui::OpenDialog *ui;
 
     QSettings config;
+
+signals:
+    void openUrl(const QUrl& url);
 };
 
 } // namespace ui

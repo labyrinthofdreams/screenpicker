@@ -20,6 +20,7 @@ class QPoint;
 class QProgressDialog;
 class QString;
 class QThread;
+class QUrl;
 
 namespace vfg {
     class DvdProcessor;
@@ -31,6 +32,7 @@ namespace core {
 namespace ui {
     class DownloadsDialog;
     class GifMakerWidget;
+    class OpenDialog;
     class ScriptEditor;
     class VideoFrameThumbnail;
     class VideoSettingsWidget;
@@ -226,6 +228,8 @@ private slots:
 
     void on_actionDownloads_triggered();
 
+    void openUrl(const QUrl& url);
+
 private:
     Ui::MainWindow* ui;
 
@@ -254,6 +258,9 @@ private:
 
     //! Downloads window
     std::unique_ptr<vfg::ui::DownloadsDialog> downloads;
+
+    //! Open dialog
+    std::unique_ptr<vfg::ui::OpenDialog> openDialog;
 
     //! When video is playing, videoPositionChanged is called which moves
     //! the seek slider. This variable keeps track where the slider was moved

@@ -79,6 +79,7 @@ MainWindow::MainWindow(QWidget *parent) :
     gifMaker(nullptr),
     mediaPlayer(new QMediaPlayer),
     downloads(new vfg::ui::DownloadsDialog),
+    openDialog(new vfg::ui::OpenDialog),
     seekedTime(0),
     config("config.ini", QSettings::IniFormat)
 {
@@ -137,6 +138,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     mediaPlayer->setVideoOutput(ui->videoPreviewWidget->videoWidget);
     mediaPlayer->setVolume(ui->volumeSlider->value());
+
+    connect(openDialog.get(), SIGNAL(openUrl(QUrl)),
+            this, SLOT(openUrl(QUrl)));
 
     connect(downloads.get(), SIGNAL(play(QString)),
             this, SLOT(loadDownloadedFile(QString)));
@@ -1543,30 +1547,22 @@ void MainWindow::on_playbackSpeed_currentIndexChanged(const QString &arg1)
 
 void MainWindow::on_actionOpen_URL_triggered()
 {
-    vfg::ui::OpenDialog dlg;
-    const auto dialogCode = dlg.exec();
-    if(dialogCode == QDialog::Rejected) {
-        return;
-    }
-
-    const auto mode = config.value("open/mode").toString();
-    if(mode == "network") {
-        QUrl url(config.value("open/url").toString());
-        if(url.scheme() == "http" || url.scheme() == "https") {
-            downloads->addDownload(std::make_shared<vfg::net::HttpDownload>(url, config.value("cachedirectory").toString()));
-        }
-        else if(url.scheme() == "ftp" || url.scheme() == "ftps") {
-            downloads->addDownload(std::make_shared<vfg::net::HttpDownload>(url, config.value("cachedirectory").toString()));
-        }
-        else {
-            QMessageBox::information(this, tr("Unsupported scheme"), tr("This scheme is not supported"));
-        }
-
-        downloads->show();
-    }
+    openDialog->exec();
 }
 
 void MainWindow::on_actionDownloads_triggered()
 {
     downloads->show();
+}
+
+void MainWindow::openUrl(const QUrl& url)
+{
+    if(url.scheme() == "http" || url.scheme() == "https" ||
+            url.scheme() == "ftp" || url.scheme() == "ftps") {
+        downloads->addDownload(std::make_shared<vfg::net::HttpDownload>(url, config.value("cachedirectory").toString()));
+        downloads->show();
+    }
+    else {
+        QMessageBox::information(this, tr("Unsupported scheme"), tr("This scheme is not supported"));
+    }
 }
