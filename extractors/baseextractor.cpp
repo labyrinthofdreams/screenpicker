@@ -1,12 +1,15 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
+#include <QObject>
 #include <QUrl>
 #include "baseextractor.hpp"
 
 namespace vfg {
 namespace extractor {
 
-BaseExtractor::BaseExtractor() : net(new QNetworkAccessManager)
+BaseExtractor::BaseExtractor(QObject *parent) :
+    QObject(parent),
+    net(new QNetworkAccessManager)
 {
 }
 

@@ -5,6 +5,7 @@
 #include <QNetworkReply>
 #include "extractors/baseextractor.hpp"
 
+class QObject;
 class QUrl;
 
 namespace vfg {
@@ -30,7 +31,7 @@ public:
     /**
      * @brief Constructor
      */
-    DailyMotionExtractor();
+    explicit DailyMotionExtractor(QObject *parent = 0);
 
     bool isSame(const QUrl& url) const override;
 

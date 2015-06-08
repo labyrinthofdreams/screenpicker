@@ -5,6 +5,7 @@
 #include <QNetworkAccessManager>
 #include <QObject>
 
+class QObject;
 class QUrl;
 
 namespace vfg {
@@ -27,7 +28,7 @@ public:
     /**
      * @brief Constructor
      */
-    BaseExtractor();
+    explicit BaseExtractor(QObject *parent = 0);
 
     /**
      * @brief Matches URL for the current extractor

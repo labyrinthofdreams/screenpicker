@@ -4,6 +4,7 @@
 #include <QList>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QObject>
 #include <QRegExp>
 #include <QString>
 #include <QUrl>
@@ -14,8 +15,8 @@
 namespace vfg {
 namespace extractor {
 
-DailyMotionExtractor::DailyMotionExtractor() :
-    BaseExtractor()
+DailyMotionExtractor::DailyMotionExtractor(QObject *parent) :
+    BaseExtractor(parent)
 {
 }
 
