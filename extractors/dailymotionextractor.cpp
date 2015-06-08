@@ -40,7 +40,7 @@ void DailyMotionExtractor::embedUrlFinished()
 {
     // Valid streams
     const QList<std::string> streams {"stream_h264_hd1080_url", "stream_h264_hd_url", "stream_h264_hq_url",
-                           "stream_h264_ld_url", "stream_h264_url"};
+                                      "stream_h264_ld_url", "stream_h264_url"};
     const QString html = reply->readAll();
     // Get the JSON object
     const QRegExp jsonRx("var\\s*info\\s*=\\s*(\\{.+\\}),\\n");
@@ -54,7 +54,7 @@ void DailyMotionExtractor::embedUrlFinished()
     const std::string parsed = jsonRx.cap(1).toStdString();
     picojson::value json;
     picojson::parse(json, parsed);
-    if (json.is<picojson::object>()) {
+    if(json.is<picojson::object>()) {
         for(const std::string& stream : streams) {
             const picojson::value val = json.get(stream);
             if(val.is<std::string>()) {
