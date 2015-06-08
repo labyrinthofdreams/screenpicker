@@ -69,25 +69,28 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
             progressBarOption.progress = dl->percentCompleted();
         }
 
-        progressBarOption.text = "Aborted";
+        progressBarOption.text = QString("%1: Aborted").arg(dl->url().host());
     }
     else if(dl->isFinished()) {
         progressBarOption.progress = dl->percentCompleted();
-        progressBarOption.text = QString("%1 (%2/s)").arg(bytesTotal)
-                                 .arg(speed);
+        progressBarOption.text = QString("%3: %1 (%2/s)").arg(bytesTotal)
+                                 .arg(speed)
+                                 .arg(dl->url().host());
     }
     else {
         if(dl->sizeKnown()) {
             progressBarOption.progress = dl->percentCompleted();
-            progressBarOption.text = QString("%1 of %2 (%3/s)").arg(bytesDownloaded)
+            progressBarOption.text = QString("%4: %1 of %2 (%3/s)").arg(bytesDownloaded)
                                      .arg(bytesTotal)
-                                     .arg(speed);
+                                     .arg(speed)
+                                     .arg(dl->url().host());
         }
         else {
             // Size of the download is not known, display infinite progress bar
             progressBarOption.maximum = 0;
-            progressBarOption.text = QString("%1 (%2/s)").arg(bytesDownloaded)
-                                     .arg(speed);
+            progressBarOption.text = QString("%3: %1 (%2/s)").arg(bytesDownloaded)
+                                     .arg(speed)
+                                     .arg(dl->url().host());
         }
     }
 

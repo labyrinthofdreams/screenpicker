@@ -122,6 +122,12 @@ public:
      */
     Status getStatus() const;
 
+    /**
+     * @brief Get request URL
+     * @return Request URL
+     */
+    QUrl url() const;
+
 private slots:
     /**
      * @brief Triggered after download has finished

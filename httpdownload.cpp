@@ -99,6 +99,11 @@ HttpDownload::Status HttpDownload::getStatus() const
     return status;
 }
 
+QUrl HttpDownload::url() const
+{
+    return request.url();
+}
+
 void HttpDownload::downloadFinished()
 {
     dlDuration = timer.elapsed();
