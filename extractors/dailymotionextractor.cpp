@@ -27,10 +27,10 @@ bool DailyMotionExtractor::isSame(const QUrl& url) const
 void DailyMotionExtractor::process(const QUrl& url)
 {
     // Get the video id
-    QRegExp rx("\\/video\\/([^\?]+)");
+    const QRegExp rx("\\/video\\/([^\?]+)");
     rx.indexIn(url.toDisplayString());
     // Request the embed page html
-    QUrl embedUrl(QString("http://www.dailymotion.com/embed/video/%1").arg(rx.cap(1)));
+    const QUrl embedUrl(QString("http://www.dailymotion.com/embed/video/%1").arg(rx.cap(1)));
     reply.reset(net->get(QNetworkRequest(embedUrl)));
     connect(reply.get(), SIGNAL(finished()), this, SLOT(embedUrlFinished()));
 }
@@ -38,11 +38,11 @@ void DailyMotionExtractor::process(const QUrl& url)
 void DailyMotionExtractor::embedUrlFinished()
 {
     // Valid streams
-    QList<std::string> streams {"stream_h264_hd1080_url", "stream_h264_hd_url", "stream_h264_hq_url",
+    const QList<std::string> streams {"stream_h264_hd1080_url", "stream_h264_hd_url", "stream_h264_hq_url",
                            "stream_h264_ld_url", "stream_h264_url"};
-    QString html = reply->readAll();
+    const QString html = reply->readAll();
     // Get the JSON object
-    QRegExp jsonRx("var\\s*info\\s*=\\s*(\\{.+\\}),\\n");
+    const QRegExp jsonRx("var\\s*info\\s*=\\s*(\\{.+\\}),\\n");
     if(jsonRx.indexIn(html) == -1) {
         qDebug() << "found nothing";
         return;
@@ -50,12 +50,12 @@ void DailyMotionExtractor::embedUrlFinished()
 
     // Parse the JSON object and get the highest quality stream
     QString streamUrl;
-    std::string parsed = jsonRx.cap(1).toStdString();
+    const std::string parsed = jsonRx.cap(1).toStdString();
     picojson::value json;
     picojson::parse(json, parsed);
     if (json.is<picojson::object>()) {
         for(const std::string& stream : streams) {
-            picojson::value val = json.get(stream);
+            const picojson::value val = json.get(stream);
             if(val.is<std::string>()) {
                 streamUrl = QString::fromStdString(val.get<std::string>());
                 break;
