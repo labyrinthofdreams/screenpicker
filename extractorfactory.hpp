@@ -17,8 +17,16 @@ namespace extractor {
 class ExtractorFactory
 {
 public:
+    /**
+     * Default constructor
+     */
     ExtractorFactory() = default;
 
+    /**
+     * @brief Get extractor
+     * @param url URL to get extractor for
+     * @return Extractor for URL
+     */
     std::unique_ptr<vfg::extractor::BaseExtractor> getExtractor(const QUrl& url) const;
 };
 
