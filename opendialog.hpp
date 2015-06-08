@@ -2,7 +2,6 @@
 #define OPENDIALOG_HPP
 
 #include <QDialog>
-#include <QSettings>
 
 class QUrl;
 
@@ -26,8 +25,6 @@ private slots:
 
 private:
     ::Ui::OpenDialog *ui;
-
-    QSettings config;
 
 signals:
     void openUrl(const QUrl& url);
