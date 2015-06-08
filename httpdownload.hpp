@@ -13,6 +13,7 @@ Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 class QDir;
 class QNetworkAccessManager;
 class QString;
+class QUrl;
 
 namespace vfg {
 namespace net {
