@@ -30,7 +30,7 @@ public:
     std::unique_ptr<vfg::extractor::BaseExtractor> getExtractor(const QUrl& url) const;
 };
 
-} // namespace net
+} // namespace extractor
 } // namespace vfg
 
 #endif // VFG_NET_EXTRACTORFACTORY_HPP

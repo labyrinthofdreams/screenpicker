@@ -20,5 +20,5 @@ void BaseExtractor::process(const QUrl &url) {
     emit requestReady(QNetworkRequest(url));
 }
 
-}
-}
+} // namespace extractor
+} // namespace vfg

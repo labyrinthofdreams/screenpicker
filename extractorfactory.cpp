@@ -19,5 +19,5 @@ std::unique_ptr<vfg::extractor::BaseExtractor> ExtractorFactory::getExtractor(co
     return out;
 }
 
-} // namespace net
+} // namespace extractor
 } // namespace vfg

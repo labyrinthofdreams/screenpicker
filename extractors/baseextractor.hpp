@@ -50,7 +50,7 @@ signals:
     void requestReady(const QNetworkRequest &request);
 };
 
-}
-}
+} // namespace extractor
+} // namespace vfg
 
 #endif // BASEEXTRACTOR_HPP
