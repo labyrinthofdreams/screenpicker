@@ -14,7 +14,8 @@
 namespace vfg {
 namespace extractor {
 
-DailyMotionExtractor::DailyMotionExtractor()
+DailyMotionExtractor::DailyMotionExtractor() :
+    BaseExtractor()
 {
 }
 
