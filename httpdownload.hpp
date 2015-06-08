@@ -33,6 +33,7 @@ private:
     //! Network reply for the request
     std::unique_ptr<QNetworkReply> reply;
 
+    //! Network request
     QNetworkRequest request;
 
     //! Bytes downloaded
