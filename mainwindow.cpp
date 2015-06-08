@@ -82,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mediaPlayer(new QMediaPlayer),
     downloads(new vfg::ui::DownloadsDialog),
     openDialog(new vfg::ui::OpenDialog),
+    extractor(),
     seekedTime(0),
     config("config.ini", QSettings::IniFormat)
 {
@@ -1562,9 +1563,10 @@ void MainWindow::openUrl(const QUrl& url)
     if(url.scheme() == "http" || url.scheme() == "https" ||
             url.scheme() == "ftp" || url.scheme() == "ftps") {
         vfg::extractor::ExtractorFactory ef;
-        std::unique_ptr<vfg::extractor::BaseExtractor> ex = ef.getExtractor(url);
-        connect(ex.get(), SIGNAL(requestReady(QNetworkRequest)), this, SLOT(openNetworkRequest(QNetworkRequest)));
-        ex->process(url);
+        extractor = ef.getExtractor(url);
+        connect(extractor.get(), SIGNAL(requestReady(QNetworkRequest)),
+                this, SLOT(openNetworkRequest(QNetworkRequest)));
+        extractor->process(url);
     }
     else {
         QMessageBox::information(this, tr("Unsupported scheme"), tr("This scheme is not supported"));

@@ -30,6 +30,9 @@ namespace core {
     class VideoFrameGenerator;
     class VideoFrameGrabber;
 }
+namespace extractor {
+    class BaseExtractor;
+}
 namespace ui {
     class DownloadsDialog;
     class GifMakerWidget;
@@ -264,6 +267,9 @@ private:
 
     //! Open dialog
     std::unique_ptr<vfg::ui::OpenDialog> openDialog;
+
+    //! Extractor
+    std::unique_ptr<vfg::extractor::BaseExtractor> extractor;
 
     //! When video is playing, videoPositionChanged is called which moves
     //! the seek slider. This variable keeps track where the slider was moved
