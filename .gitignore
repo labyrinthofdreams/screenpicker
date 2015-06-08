@@ -1,6 +1,7 @@
 # Ignore everything
 *
 # Whitelist
+!extractors/
 !icons/*.txt
 !icons/*.png
 !icons/

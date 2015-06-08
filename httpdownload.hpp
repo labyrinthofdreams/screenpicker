@@ -6,12 +6,12 @@
 #include <QNetworkReply>
 #include <QObject>
 #include <QTime>
-#include <QUrl>
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
 class QDir;
 class QNetworkAccessManager;
+class QNetworkRequest;
 class QString;
 
 namespace vfg {
@@ -30,11 +30,10 @@ public:
     };
 
 private:
-    //! Download URL
-    QUrl url;
-
     //! Network reply for the request
     std::unique_ptr<QNetworkReply> reply;
+
+    QNetworkRequest request;
 
     //! Bytes downloaded
     qint64 received;
@@ -61,7 +60,7 @@ public:
      * @param cachePath Path to cache directory
      * @param parent Owner of the object
      */
-    explicit HttpDownload(const QUrl& url, const QDir& cachePath, QObject *parent = 0);
+    explicit HttpDownload(const QNetworkRequest& url, const QDir& cachePath, QObject *parent = 0);
 
     /**
      * @brief Start request

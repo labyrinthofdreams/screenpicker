@@ -15,6 +15,7 @@ class QDragEvent;
 class QDropEvent;
 class QMediaPlayer;
 class QMenu;
+class QNetworkRequest;
 class QImage;
 class QPoint;
 class QProgressDialog;
@@ -229,6 +230,8 @@ private slots:
     void on_actionDownloads_triggered();
 
     void openUrl(const QUrl& url);
+
+    void openNetworkRequest(const QNetworkRequest& request);
 
 private:
     Ui::MainWindow* ui;

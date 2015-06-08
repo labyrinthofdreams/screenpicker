@@ -20,7 +20,7 @@
       <attribute name="title">
        <string>Network</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
@@ -60,6 +60,22 @@
              </widget>
             </item>
            </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Supported Services</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Dailymotion</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

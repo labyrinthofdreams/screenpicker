@@ -1,3 +1,6 @@
 [submodule "libs/templet"]
 	path = libs/templet
 	url = https://github.com/labyrinthofdreams/templet.git
+[submodule "libs/picojson"]
+	path = libs/picojson
+	url = https://github.com/kazuho/picojson.git

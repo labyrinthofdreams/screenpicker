@@ -13,6 +13,8 @@
 #include "configdialog.h"
 #include "downloadsdialog.hpp"
 #include "dvdprocessor.h"
+#include "extractorfactory.hpp"
+#include "extractors/baseextractor.hpp"
 #include "gifmakerwidget.hpp"
 #include "opendialog.hpp"
 #include "ptrutil.hpp"
@@ -1559,10 +1561,19 @@ void MainWindow::openUrl(const QUrl& url)
 {
     if(url.scheme() == "http" || url.scheme() == "https" ||
             url.scheme() == "ftp" || url.scheme() == "ftps") {
-        downloads->addDownload(std::make_shared<vfg::net::HttpDownload>(url, config.value("cachedirectory").toString()));
-        downloads->show();
+        vfg::extractor::ExtractorFactory ef;
+        std::unique_ptr<vfg::extractor::BaseExtractor> ex = ef.getExtractor(url);
+        connect(ex.get(), SIGNAL(requestReady(QNetworkRequest)), this, SLOT(openNetworkRequest(QNetworkRequest)));
+        ex->process(url);
     }
     else {
         QMessageBox::information(this, tr("Unsupported scheme"), tr("This scheme is not supported"));
     }
+}
+
+void MainWindow::openNetworkRequest(const QNetworkRequest& request)
+{
+    qDebug() << request.url();
+    downloads->addDownload(std::make_shared<vfg::net::HttpDownload>(request, config.value("cachedirectory").toString()));
+    downloads->show();
 }

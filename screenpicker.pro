@@ -32,7 +32,10 @@ SOURCES += main.cpp\
     httpdownload.cpp \
     downloadsdialog.cpp \
     progressbardelegate.cpp \
-    downloadslistmodel.cpp
+    downloadslistmodel.cpp \
+    extractorfactory.cpp \
+    extractors/dailymotionextractor.cpp \
+    extractors/baseextractor.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -59,7 +62,10 @@ HEADERS  += mainwindow.h \
     httpdownload.hpp \
     downloadsdialog.hpp \
     progressbardelegate.hpp \
-    downloadslistmodel.hpp
+    downloadslistmodel.hpp \
+    extractorfactory.hpp \
+    extractors/baseextractor.hpp \
+    extractors/dailymotionextractor.hpp
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \

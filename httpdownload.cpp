@@ -12,14 +12,14 @@
 namespace vfg {
 namespace net {
 
-HttpDownload::HttpDownload(const QUrl& url, const QDir& cachePath, QObject *parent) :
+HttpDownload::HttpDownload(const QNetworkRequest& request, const QDir& cachePath, QObject *parent) :
     QObject(parent),
-    url(url),
     reply(nullptr),
+    request(request),
     received(0),
     total(0),
     timer(),
-    outFile(cachePath.absoluteFilePath(url.fileName())),
+    outFile(cachePath.absoluteFilePath(request.url().fileName())),
     status(Status::Pending)
 {
     if(!cachePath.exists()) {
@@ -32,7 +32,7 @@ HttpDownload::HttpDownload(const QUrl& url, const QDir& cachePath, QObject *pare
 
 void HttpDownload::start(QNetworkAccessManager* netMan)
 {
-    reply.reset(netMan->get(QNetworkRequest(url)));
+    reply.reset(netMan->get(request));
 
     connect(reply.get(), SIGNAL(downloadProgress(qint64, qint64)),
             this, SLOT(updateProgress(qint64, qint64)));
