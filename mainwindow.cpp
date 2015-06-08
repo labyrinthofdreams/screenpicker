@@ -1575,7 +1575,6 @@ void MainWindow::openUrl(const QUrl& url)
 
 void MainWindow::openNetworkRequest(const QNetworkRequest& request)
 {
-    qDebug() << request.url();
     downloads->addDownload(std::make_shared<vfg::net::HttpDownload>(request, config.value("cachedirectory").toString()));
     downloads->show();
 }
