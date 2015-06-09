@@ -73,7 +73,7 @@
           <item>
            <widget class="QLabel" name="label_5">
             <property name="text">
-             <string>Dailymotion</string>
+             <string>Dailymotion, YouTube (partial)</string>
             </property>
            </widget>
           </item>
