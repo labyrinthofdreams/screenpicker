@@ -16,7 +16,7 @@ namespace vfg {
 namespace extractor {
 
 DailyMotionExtractor::DailyMotionExtractor(QObject *parent) :
-    BaseExtractor(parent)
+    BaseExtractor("dailymotion", parent)
 {
 }
 

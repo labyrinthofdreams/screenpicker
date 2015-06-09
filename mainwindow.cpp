@@ -1567,7 +1567,7 @@ void MainWindow::openUrl(const QUrl& url)
         extractor = ef.getExtractor(url);
         connect(extractor.get(), SIGNAL(requestReady(QNetworkRequest)),
                 this, SLOT(openNetworkRequest(QNetworkRequest)));
-        connect(extractor.get(), SIGNAL(log(QString)),
+        connect(extractor.get(), SIGNAL(logReady(QString)),
                 log.get(), SLOT(appendPlainText(QString)));
         log->show();
         extractor->process(url);

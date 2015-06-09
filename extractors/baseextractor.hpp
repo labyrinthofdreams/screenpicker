@@ -4,9 +4,9 @@
 #include <memory>
 #include <QNetworkAccessManager>
 #include <QObject>
+#include <QString>
 
 class QObject;
-class QString;
 class QUrl;
 
 namespace vfg {
@@ -25,11 +25,16 @@ protected:
     //! Network manager
     std::unique_ptr<QNetworkAccessManager> net;
 
+private:
+    //! Extractor name
+    QString name;
+
 public:
     /**
      * @brief Constructor
+     * @param name Extractor name
      */
-    explicit BaseExtractor(QObject *parent = 0);
+    explicit BaseExtractor(const QString& name = "default", QObject *parent = 0);
 
     /**
      * @brief Matches URL for the current extractor
@@ -44,6 +49,9 @@ public:
      */
     virtual void process(const QUrl& url);
 
+protected:
+    void log(const QString &msg);
+
 signals:
     /**
      * @brief Emitted when request is ready for the final URL
@@ -55,7 +63,7 @@ signals:
      * @brief Emitted when a log message is created
      * @param msg Message
      */
-    void log(const QString& msg);
+    void logReady(const QString& msg);
 };
 
 } // namespace extractor

@@ -48,7 +48,7 @@ namespace vfg {
 namespace extractor {
 
 YoutubeExtractor::YoutubeExtractor(QObject *parent) :
-    BaseExtractor(parent)
+    BaseExtractor("youtube", parent)
 {
 }
 
