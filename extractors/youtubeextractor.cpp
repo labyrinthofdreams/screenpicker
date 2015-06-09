@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QNetworkRequest>
 #include <QRegExp>
+#include <QScriptEngine>
 #include <QString>
 #include <QUrl>
 #include <QUrlQuery>
@@ -43,6 +44,18 @@ QNetworkRequest makeYoutubeRequest(const QString& videoId) {
     ytUrl.setQuery(urlQuery);
     return createRequest(ytUrl);
 }
+
+QStringList match(const QString& regex, const QString& text) {
+    const QRegExp rx(regex);
+    if(rx.indexIn(text) > -1) {
+        return rx.capturedTexts();
+    }
+    else {
+        return {};
+    }
+}
+
+QString sub();
 
 namespace vfg {
 namespace extractor {
@@ -123,14 +136,15 @@ void YoutubeExtractor::videoInfoFinished()
 void YoutubeExtractor::videoPageFinished()
 {
     // Get the ytplayer.config JSON object from the page
-    const QByteArray data = videoPageReply->readAll();
+    const QByteArray videoPageHtml = videoPageReply->readAll();
     const QRegExp jsonRx("ytplayer.config = (.+);");
-    if(jsonRx.indexIn(data) == -1) {
+    if(jsonRx.indexIn(videoPageHtml) == -1) {
         log("Could not find ytplayer.config");
         return;
     }
 
     // Parse the JSON object and get the stream list
+    QByteArray decoded;
     const std::string parsed = jsonRx.cap(1).toStdString();
     picojson::value json;
     picojson::parse(json, parsed);
@@ -142,16 +156,68 @@ void YoutubeExtractor::videoPageFinished()
                 log(QString("Title: ").append(QString::fromStdString(title.get<std::string>())));
                 const picojson::value streamMap = args.get("url_encoded_fmt_stream_map");
                 if(streamMap.is<std::string>()) {
-                    QByteArray decoded;
                     decoded.append(QString::fromStdString(streamMap.get<std::string>()));
-                    processStreamList(decoded.split(','));
                 }
             }
             else {
                 log("The uploader has not made this video available in your country");
+                return;
+            }
+        }
+
+        const picojson::value assets = json.get("assets");
+        if(assets.is<picojson::object>()) {
+            const picojson::value js = assets.get("js");
+            if(js.is<std::string>()) {
+                html5Player = QString("https:").append(QString::fromStdString(js.get<std::string>()));
+                log(html5Player);
             }
         }
     }
+
+    processStreamList(decoded.split(','));
+}
+
+void YoutubeExtractor::html5JsFinished()
+{
+    // The following regexes extract the functions used to decrypt the signature
+    const QByteArray js = html5JsReply->readAll();
+    const QString f1 = match("\\w+\\.sig\\|\\|([$\\w]+)\\(\\w+\\.\\w+\\)", js).at(1);
+    QString f1def = match(QString("(function %1\\(\\w+\\)\\{[^\\{]+\\})").arg(QRegExp::escape(f1)), js).at(1);
+    f1def.replace(QRegExp("([$\\w]+\\.)([$\\w]+\\(\\w+,\\d+\\))"), "\\2");
+    QString code = f1def;
+    const QRegExp a("([$\\w]+)\\(\\w+,\\d+\\)");
+    int pos = 0;
+    while((pos = a.indexIn(f1def, pos)) != -1) {
+        pos += a.matchedLength();
+        const QString f2 = a.cap(1);
+        const QString f2e = QRegExp::escape(f2);
+        QStringList f2def = match(QString("[^$\\w]%1:function\\((\\w+,\\w+)\\)(\\{[^\\{\\}]+\\})").arg(f2e), js);
+        if(!f2def.isEmpty()) {
+            const QString tmp = QString("function %1(%2)%3}").arg(f2e).arg(f2def.at(1)).arg(f2def.at(2));
+            f2def.clear();
+            f2def << tmp;
+        }
+        else {
+            f2def = match(QString("[^$\\w]%1:function\\((\\w+)\\)(\\{[^\\{\\}]+\\})").arg(f2e), js);
+            f2def = QStringList(QString("function %1(%2,b)%3").arg(f2e).arg(f2def.at(1)).arg(f2def.at(2)));
+        }
+
+        code.append(f2def.at(0));
+    }
+
+    code.append(QString("var sig=%1(s)").arg(f1));
+    code.replace("}}", "}");
+
+    // Evaluate the code to compute the decrypted signature value
+    QScriptEngine engine;
+    engine.globalObject().setProperty("s", encryptedSig);
+    engine.evaluate(code);
+
+    const QString decryptedSignature = engine.globalObject().property("sig").toString();
+    const QUrl url(QUrl::fromPercentEncoding(bestStream.value("url")).append("&signature=").append(decryptedSignature));
+
+    emit requestReady(createRequest(url));
 }
 
 void YoutubeExtractor::processStreamList(const QList<QByteArray> &streamList)
@@ -171,32 +237,35 @@ void YoutubeExtractor::processStreamList(const QList<QByteArray> &streamList)
     // 18 MP4 360p H.264 Baseline 0.5Mbps AAC 96Kbps
     // 22 MP4 720p H.264 High 2-3Mbps AAC 192Kbps
     const QList<int> nonDashStreams {22, 18};
-    QMap<QByteArray, QByteArray> best;
     for(const int i : nonDashStreams) {
         for(const auto& stream : streams) {
             if(stream.value("itag").toInt() == i) {
                 log(QString("Selected stream #%1").arg(QString(stream.value("itag"))));
-                best = stream;
+                bestStream = stream;
                 break;
             }
         }
 
-        if(!best.empty()) {
+        if(!bestStream.empty()) {
             break;
         }
     }
 
-    if(best.contains("sig")) {
-        QByteArray url = best.value("url");
+    if(bestStream.contains("sig")) {
+        QByteArray url;
+        url.append(QUrl::fromPercentEncoding(bestStream.value("url")));
         url.append("&signature=");
-        url.append(best.value("signature"));
+        url.append(bestStream.value("signature"));
         emit requestReady(QNetworkRequest(QUrl(QString(url))));
     }
-    else if(best.contains("s")) {
-        log("Encrypted videos are not currently supported");
+    else if(bestStream.contains("s")) {
+        // Encrypted signature, decrypt...
+        encryptedSig = bestStream.value("s");
+        html5JsReply.reset(net->get(createRequest(QUrl(html5Player))));
+        connect(html5JsReply.get(), SIGNAL(finished()), this, SLOT(html5JsFinished()));
     }
-    else if(!best.empty()) {
-        emit requestReady(QNetworkRequest(QUrl(QUrl::fromPercentEncoding(best.value("url")))));
+    else if(!bestStream.empty()) {
+        emit requestReady(QNetworkRequest(QUrl(QUrl::fromPercentEncoding(bestStream.value("url")))));
     }
     else {
         log("No streams to download");

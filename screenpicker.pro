@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets concurrent multimedia multimediawidgets
+QT       += core gui widgets concurrent multimedia multimediawidgets script
 
 TARGET = screenpicker
 TEMPLATE = app

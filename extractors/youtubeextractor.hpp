@@ -31,8 +31,20 @@ private:
     //! watch?v=xyz page reply
     std::unique_ptr<QNetworkReply> videoPageReply;
 
+    //! HTML5 JS video player file reply
+    std::unique_ptr<QNetworkReply> html5JsReply;
+
     //! Video ID
     QString videoId;
+
+    //! URL to html5 video player JS file
+    QString html5Player;
+
+    //! Encrypted signature
+    QString encryptedSig;
+
+    //! Highest quality stream
+    QMap<QByteArray, QByteArray> bestStream;
 
 public:
     /**
@@ -62,6 +74,11 @@ private slots:
      * @brief watch?v=xyz request finished
      */
     void videoPageFinished();
+
+    /**
+     * @brief HTML5 player JS file finished downloading
+     */
+    void html5JsFinished();
 };
 
 } // namespace extractor
