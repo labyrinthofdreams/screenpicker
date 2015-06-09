@@ -6,6 +6,7 @@
 #include <QObject>
 
 class QObject;
+class QString;
 class QUrl;
 
 namespace vfg {
@@ -49,6 +50,12 @@ signals:
      * @param request Request
      */
     void requestReady(const QNetworkRequest &request);
+
+    /**
+     * @brief Emitted when a log message is created
+     * @param msg Message
+     */
+    void log(const QString& msg);
 };
 
 } // namespace extractor

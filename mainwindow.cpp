@@ -83,6 +83,7 @@ MainWindow::MainWindow(QWidget *parent) :
     downloads(new vfg::ui::DownloadsDialog),
     openDialog(new vfg::ui::OpenDialog),
     extractor(),
+    log(new QPlainTextEdit),
     seekedTime(0),
     config("config.ini", QSettings::IniFormat)
 {
@@ -1566,6 +1567,9 @@ void MainWindow::openUrl(const QUrl& url)
         extractor = ef.getExtractor(url);
         connect(extractor.get(), SIGNAL(requestReady(QNetworkRequest)),
                 this, SLOT(openNetworkRequest(QNetworkRequest)));
+        connect(extractor.get(), SIGNAL(log(QString)),
+                log.get(), SLOT(appendPlainText(QString)));
+        log->show();
         extractor->process(url);
     }
     else {

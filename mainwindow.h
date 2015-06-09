@@ -17,6 +17,7 @@ class QMediaPlayer;
 class QMenu;
 class QNetworkRequest;
 class QImage;
+class QPlainTextEdit;
 class QPoint;
 class QProgressDialog;
 class QString;
@@ -270,6 +271,8 @@ private:
 
     //! Extractor
     std::unique_ptr<vfg::extractor::BaseExtractor> extractor;
+
+    std::unique_ptr<QPlainTextEdit> log;
 
     //! When video is playing, videoPositionChanged is called which moves
     //! the seek slider. This variable keeps track where the slider was moved

@@ -29,7 +29,10 @@ void DailyMotionExtractor::process(const QUrl& url)
 {
     // Get the video id
     const QRegExp rx("\\/video\\/([^\?]+)");
-    rx.indexIn(url.toDisplayString());
+    if(rx.indexIn(url.toDisplayString()) == -1) {
+        log("Invalid URL");
+    }
+
     // Request the embed page html
     const QUrl embedUrl(QString("http://www.dailymotion.com/embed/video/%1").arg(rx.cap(1)));
     reply.reset(net->get(QNetworkRequest(embedUrl)));
@@ -45,7 +48,7 @@ void DailyMotionExtractor::embedUrlFinished()
     // Get the JSON object
     const QRegExp jsonRx("var\\s*info\\s*=\\s*(\\{.+\\}),\\n");
     if(jsonRx.indexIn(html) == -1) {
-        qDebug() << "found nothing";
+        log("Could not find stream data");
         return;
     }
 
@@ -69,6 +72,9 @@ void DailyMotionExtractor::embedUrlFinished()
         redirectReply.reset(net->get(QNetworkRequest(QUrl(streamUrl))));
         connect(redirectReply.get(), SIGNAL(finished()),
                 this, SLOT(redirectFinished()));
+    }
+    else {
+        log("Could not find streams");
     }
 }
 

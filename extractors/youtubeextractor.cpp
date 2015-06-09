@@ -62,7 +62,7 @@ void YoutubeExtractor::process(const QUrl &url)
     // Get video id
     const QRegExp videoIdRx("watch\\?v=([a-zA-Z0-9-_]{11})");
     if(videoIdRx.indexIn(url.toDisplayString()) == -1) {
-        qDebug() << "Invalid URL";
+        log("Invalid URL");
         return;
     }
 
@@ -82,15 +82,15 @@ void YoutubeExtractor::videoInfoFinished()
     const QByteArray data = videoInfoReply->readAll();
     const QMap<QByteArray, QByteArray> videoInfo = parseQueryString(data);
     if(!videoInfo.contains("status")) {
-        qDebug() << "Unknown status";
+        log("Unknown status");
     }
     else if(videoInfo.value("status") == "ok") {
         // If use_cipher_signature is missing or disabled parse stream list
         // from the get_video_info output, otherwise parse it from the video page
         if(!videoInfo.contains("use_cipher_signature")
                 || videoInfo.value("use_cipher_signature") == "False") {
-            qDebug() << "use_cipher_signature:" << videoInfo.value("use_cipher_signature");
-            qDebug() << "Title:" << videoInfo.value("title");
+            log("use_cipher_signature: Disabled");
+            log(QString("Title: ").append(videoInfo.value("title")));
             QByteArray decoded;
             decoded.append(QUrl::fromPercentEncoding(videoInfo.value("url_encoded_fmt_stream_map")));
             processStreamList(decoded.split(','));
@@ -108,15 +108,15 @@ void YoutubeExtractor::videoInfoFinished()
                     this, SLOT(videoPageFinished()));
         }
         else if(videoInfo.value("errorcode") == "100") {
-            qDebug() << "This video does not exist.";
+            log("This video does not exist");
         }
         else {
-            qDebug() << "Fail:" << videoInfo.value("reason");
+            log(QString("Fail: ").append(videoInfo.value("reason")));
         }
     }
     else {
-        qDebug() << "Invalid status:" << videoInfo.value("status");
-        qDebug() << "Error code:" << videoInfo.value("errorcode");
+        log(QString("Invalid status: ").append(videoInfo.value("status")));
+        log(QString("Error code:").append(videoInfo.value("errorcode")));
     }
 }
 
@@ -124,9 +124,9 @@ void YoutubeExtractor::videoPageFinished()
 {
     // Get the ytplayer.config JSON object from the page
     const QByteArray data = videoPageReply->readAll();
-    const QRegExp jsonRx("ytplayer.config\\s*=\\s*(\\{.+\\});");
+    const QRegExp jsonRx("ytplayer.config = (.+);");
     if(jsonRx.indexIn(data) == -1) {
-        qDebug() << "Could not find ytplayer.config";
+        log("Could not find ytplayer.config");
         return;
     }
 
@@ -139,7 +139,7 @@ void YoutubeExtractor::videoPageFinished()
         if(args.is<picojson::object>()) {
             const picojson::value title = args.get("title");
             if(title.is<std::string>()) {
-                qDebug() << "Title:" << QString::fromStdString(title.get<std::string>());
+                log(QString("Title: ").append(QString::fromStdString(title.get<std::string>())));
                 const picojson::value streamMap = args.get("url_encoded_fmt_stream_map");
                 if(streamMap.is<std::string>()) {
                     QByteArray decoded;
@@ -148,7 +148,7 @@ void YoutubeExtractor::videoPageFinished()
                 }
             }
             else {
-                qDebug() << "The uploader has not made this video available in your country.";
+                log("The uploader has not made this video available in your country");
             }
         }
     }
@@ -158,11 +158,10 @@ void YoutubeExtractor::processStreamList(const QList<QByteArray> &streamList)
 {
     // Get all valid streams from the streamList
     QList<QMap<QByteArray, QByteArray>> streams;
-    qDebug() << "Streams:" << streamList.size();
+    log(QString("Found %1 streams").arg(streamList.size()));
     for(const QByteArray& stream : streamList) {
         const QMap<QByteArray, QByteArray> parsed = parseQueryString(stream);
         if(parsed.contains("itag") && parsed.contains("url")) {
-            qDebug() << "Found stream" << parsed.value("itag");
             streams.append(parsed);
         }
     }
@@ -176,7 +175,7 @@ void YoutubeExtractor::processStreamList(const QList<QByteArray> &streamList)
     for(const int i : nonDashStreams) {
         for(const auto& stream : streams) {
             if(stream.value("itag").toInt() == i) {
-                qDebug() << "Selected" << stream.value("itag");
+                log(QString("Selected stream #%1").arg(QString(stream.value("itag"))));
                 best = stream;
                 break;
             }
@@ -188,21 +187,19 @@ void YoutubeExtractor::processStreamList(const QList<QByteArray> &streamList)
     }
 
     if(best.contains("sig")) {
-        qDebug() << "Found sig";
         QByteArray url = best.value("url");
         url.append("&signature=");
         url.append(best.value("signature"));
         emit requestReady(QNetworkRequest(QUrl(QString(url))));
     }
     else if(best.contains("s")) {
-        qDebug() << "Found s";
+        log("Encrypted videos are not currently supported");
     }
     else if(!best.empty()) {
-        qDebug() << "Did not find s/sig";
         emit requestReady(QNetworkRequest(QUrl(QUrl::fromPercentEncoding(best.value("url")))));
     }
     else {
-        qDebug() << "No stream";
+        log("No streams to download");
     }
 }
 
