@@ -55,8 +55,6 @@ QStringList match(const QString& regex, const QString& text) {
     }
 }
 
-QString sub();
-
 namespace vfg {
 namespace extractor {
 
