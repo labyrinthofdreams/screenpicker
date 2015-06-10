@@ -11,8 +11,11 @@
 #include <QUrlQuery>
 #include "libs/picojson/picojson.h"
 #include "youtubeextractor.hpp"
+#include <QDebug>
 
-// Thanks to: https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/youtube.py
+// Thanks to:
+// https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/youtube.py
+// https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/youtube.py
 
 template <class T>
 static
@@ -94,7 +97,7 @@ void YoutubeExtractor::videoInfoFinished()
 {
     // Parse get_video_info output
     const QByteArray data = videoInfoReply->readAll();
-    const QMap<QByteArray, QByteArray> videoInfo = parseQueryString(data);
+    const auto videoInfo = parseQueryString(data);
     if(!videoInfo.contains("status")) {
         log("Unknown status");
     }
@@ -138,7 +141,9 @@ void YoutubeExtractor::videoPageFinished()
 {
     const QByteArray videoPageHtml = videoPageReply->readAll();
     if(videoPageHtml.contains("player-age-gate-content\">")) {
-        log("Downloading age-restricted videos is currently not supported");
+        log("Found age-restriced video");
+        embedPageReply.reset(net->get(createRequest(QUrl(QString("https://www.youtube.com/embed/").append(videoId)))));
+        connect(embedPageReply.get(), SIGNAL(finished()), this, SLOT(embedPageFinished()));
     }
     else {
         // Get the ytplayer.config JSON object from the page
@@ -149,36 +154,7 @@ void YoutubeExtractor::videoPageFinished()
         }
 
         // Parse the JSON object and get the stream list
-        QByteArray decoded;
-        const std::string parsed = jsonRx.cap(1).toStdString();
-        picojson::value json;
-        picojson::parse(json, parsed);
-        if (json.is<picojson::object>()) {
-            const picojson::value args = json.get("args");
-            if(args.is<picojson::object>()) {
-                const picojson::value title = args.get("title");
-                if(title.is<std::string>()) {
-                    log(QString("Title: ").append(QString::fromStdString(title.get<std::string>())));
-                    const picojson::value streamMap = args.get("url_encoded_fmt_stream_map");
-                    if(streamMap.is<std::string>()) {
-                        decoded.append(QString::fromStdString(streamMap.get<std::string>()));
-                    }
-                }
-                else {
-                    log("The uploader has not made this video available in your country");
-                    return;
-                }
-            }
-
-            const picojson::value assets = json.get("assets");
-            if(assets.is<picojson::object>()) {
-                const picojson::value js = assets.get("js");
-                if(js.is<std::string>()) {
-                    html5Player = QString("https:").append(QString::fromStdString(js.get<std::string>()));
-                }
-            }
-        }
-
+        const QByteArray decoded = parseYtPlayerConfig(jsonRx.cap(1));
         processStreamList(decoded.split(','));
     }
 }
@@ -216,7 +192,7 @@ void YoutubeExtractor::html5JsFinished()
 
     // Evaluate the code to compute the decrypted signature value
     QScriptEngine engine;
-    engine.globalObject().setProperty("s", encryptedSig);
+    engine.globalObject().setProperty("s", QString(bestStream.value("s")));
     engine.evaluate(code);
 
     const QString decryptedSignature = engine.globalObject().property("sig").toString();
@@ -226,37 +202,56 @@ void YoutubeExtractor::html5JsFinished()
     emit requestReady(createRequest(url));
 }
 
+void YoutubeExtractor::embedPageFinished()
+{
+    const QByteArray embedPage = embedPageReply->readAll();
+    // Get the ytplayer.config JSON object from the page
+    const QRegExp jsonRx("ytplayer.config = (\\{.+\\});");
+    if(jsonRx.indexIn(embedPage) == -1) {
+        const QStringList m = match("\"assets\":\\{.*\"js\":\"([^\"]+)\".*\\}", embedPage);
+        if(m.size() == 2) {
+            html5Player = QString("https:").append(m.at(1).replace("\\/", "/"));
+        }
+
+        QUrlQuery query;
+        query.addQueryItem("video_id", videoId);
+        query.addQueryItem("eurl", QString("https://youtube.googleapis.com/v/").append(videoId));
+        query.addQueryItem("sts", match("\"sts\"\\s*:\\s*(\\d+)", embedPage).at(1));
+        QUrl url("https://www.youtube.com/get_video_info");
+        url.setQuery(query);
+        embedVideoInfoReply.reset(net->get(createRequest(url)));
+        connect(embedVideoInfoReply.get(), SIGNAL(finished()), this, SLOT(embedVideoInfoFinished()));
+    }
+    else {
+        // Parse the JSON object and get the stream list
+        const QByteArray decoded = parseYtPlayerConfig(jsonRx.cap(1));
+        processStreamList(decoded.split(','));
+    }
+}
+
+void YoutubeExtractor::embedVideoInfoFinished()
+{
+    const auto videoInfo = parseQueryString(embedVideoInfoReply->readAll());
+    if(!html5Player.isEmpty()) {
+        log(QString("Title: ").append(videoInfo.value("title")));
+        QByteArray decoded;
+        decoded.append(QUrl::fromPercentEncoding(videoInfo.value("url_encoded_fmt_stream_map")));
+        bestStream = getBestStream(getValidStreams(decoded.split(',')));
+        handleStreamDownload();
+    }
+    else {
+        log("Could not find html5player.js");
+    }
+}
+
 void YoutubeExtractor::processStreamList(const QList<QByteArray> &streamList)
 {
-    // Get all valid streams from the streamList
-    QList<QMap<QByteArray, QByteArray>> streams;
-    log(QString("Found %1 streams").arg(streamList.size()));
-    for(const QByteArray& stream : streamList) {
-        const QMap<QByteArray, QByteArray> parsed = parseQueryString(stream);
-        if(parsed.contains("itag") && parsed.contains("url")) {
-            streams.append(parsed);
-        }
-    }
+    bestStream = getBestStream(getValidStreams(streamList));
+    handleStreamDownload();
+}
 
-    // Select the best quality stream, currently only tries to find
-    // the non-dash streams
-    // 18 MP4 360p H.264 Baseline 0.5Mbps AAC 96Kbps
-    // 22 MP4 720p H.264 High 2-3Mbps AAC 192Kbps
-    const QList<int> nonDashStreams {22, 18};
-    for(const int i : nonDashStreams) {
-        for(const auto& stream : streams) {
-            if(stream.value("itag").toInt() == i) {
-                log(QString("Selected stream #%1").arg(QString(stream.value("itag"))));
-                bestStream = stream;
-                break;
-            }
-        }
-
-        if(!bestStream.empty()) {
-            break;
-        }
-    }
-
+void YoutubeExtractor::handleStreamDownload()
+{
     if(bestStream.contains("sig")) {
         QByteArray url;
         url.append(QUrl::fromPercentEncoding(bestStream.value("url")));
@@ -266,8 +261,7 @@ void YoutubeExtractor::processStreamList(const QList<QByteArray> &streamList)
         emit requestReady(QNetworkRequest(QUrl(QString(url))));
     }
     else if(bestStream.contains("s")) {
-        log("Found encrypted stream, decrypting...");
-        encryptedSig = bestStream.value("s");
+        log("Found encrypted stream. Decrypting...");
         html5JsReply.reset(net->get(createRequest(QUrl(html5Player))));
         connect(html5JsReply.get(), SIGNAL(finished()), this, SLOT(html5JsFinished()));
     }
@@ -278,6 +272,74 @@ void YoutubeExtractor::processStreamList(const QList<QByteArray> &streamList)
     else {
         log("No streams to download");
     }
+}
+
+QByteArray YoutubeExtractor::parseYtPlayerConfig(const QString& jsonStr)
+{
+    QByteArray decoded;
+    const std::string parsed = jsonStr.toStdString();
+    picojson::value json;
+    picojson::parse(json, parsed);
+    if(json.is<picojson::object>()) {
+        const picojson::value args = json.get("args");
+        if(args.is<picojson::object>()) {
+            const picojson::value title = args.get("title");
+            if(title.is<std::string>()) {
+                log(QString("Title: ").append(QString::fromStdString(title.get<std::string>())));
+                const picojson::value streamMap = args.get("url_encoded_fmt_stream_map");
+                if(streamMap.is<std::string>()) {
+                    decoded.append(QString::fromStdString(streamMap.get<std::string>()));
+                }
+            }
+            else {
+                log("The uploader has not made this video available in your country");
+                return;
+            }
+        }
+
+        const picojson::value assets = json.get("assets");
+        if(assets.is<picojson::object>()) {
+            const picojson::value js = assets.get("js");
+            if(js.is<std::string>()) {
+                html5Player = QString("https:").append(QString::fromStdString(js.get<std::string>()));
+            }
+        }
+    }
+
+    return decoded;
+}
+
+QMap<QByteArray, QByteArray> YoutubeExtractor::getBestStream(
+        const QList<QMap<QByteArray, QByteArray> >& streamList) const
+{
+    // Select the best quality stream, currently only tries to find
+    // the non-dash streams
+    // 18 MP4 360p H.264 Baseline 0.5Mbps AAC 96Kbps
+    // 22 MP4 720p H.264 High 2-3Mbps AAC 192Kbps
+    const QList<int> nonDashStreams {22, 18};
+    for(const int i : nonDashStreams) {
+        for(const auto& stream : streamList) {
+            if(stream.value("itag").toInt() == i) {
+                log(QString("Selected stream #%1").arg(QString(stream.value("itag"))));
+                return stream;
+            }
+        }
+    }
+}
+
+QList<QMap<QByteArray, QByteArray> > YoutubeExtractor::getValidStreams(
+        const QList<QByteArray>& streamList) const
+{
+    QList<QMap<QByteArray, QByteArray>> streams;
+    log(QString("Found %1 streams").arg(streamList.size()));
+    for(const QByteArray& stream : streamList) {
+        const QMap<QByteArray, QByteArray> parsed = parseQueryString(stream);
+        if(parsed.contains("itag") && parsed.contains("url")) {
+            streams.append(parsed);
+        }
+    }
+
+    return streams;
 }
 
 } // namespace extractor
