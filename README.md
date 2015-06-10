@@ -30,12 +30,16 @@ or by generating thumbnails from a given range
 - For advanced users write custom Avisynth scripts
 - Create GIF image sequences from video source
 - Create HTML5 videos
+- Play video
+- Download videos via HTTP
+- Download Youtube, Dailymotion videos
 
 Requirements for building:  
 - C++11 compiler (recommended GCC >=4.8.2)
 - Qt >=5.0
 - avs2yuv (avs2yuv-0.24bm2) (included)
 - templet (included as a submodule)
+- picojson (included as a submodule)
 
 Requirements for running:  
 - Avisynth 2.5.8 + plug-ins (DGDecode.dll, ffms2.dll, nnedi3.dll, TIVTC.dll, yadifmod.dll)
