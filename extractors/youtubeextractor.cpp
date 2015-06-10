@@ -172,7 +172,6 @@ void YoutubeExtractor::videoPageFinished()
             const picojson::value js = assets.get("js");
             if(js.is<std::string>()) {
                 html5Player = QString("https:").append(QString::fromStdString(js.get<std::string>()));
-                log(html5Player);
             }
         }
     }
@@ -219,6 +218,7 @@ void YoutubeExtractor::html5JsFinished()
     const QString decryptedSignature = engine.globalObject().property("sig").toString();
     const QUrl url(QUrl::fromPercentEncoding(bestStream.value("url")).append("&signature=").append(decryptedSignature));
 
+    log("Downloading...");
     emit requestReady(createRequest(url));
 }
 
@@ -258,15 +258,17 @@ void YoutubeExtractor::processStreamList(const QList<QByteArray> &streamList)
         url.append(QUrl::fromPercentEncoding(bestStream.value("url")));
         url.append("&signature=");
         url.append(bestStream.value("signature"));
+        log("Downloading...");
         emit requestReady(QNetworkRequest(QUrl(QString(url))));
     }
     else if(bestStream.contains("s")) {
-        // Encrypted signature, decrypt...
+        log("Found encrypted stream, decrypting...");
         encryptedSig = bestStream.value("s");
         html5JsReply.reset(net->get(createRequest(QUrl(html5Player))));
         connect(html5JsReply.get(), SIGNAL(finished()), this, SLOT(html5JsFinished()));
     }
     else if(!bestStream.empty()) {
+        log("Downloading...");
         emit requestReady(QNetworkRequest(QUrl(QUrl::fromPercentEncoding(bestStream.value("url")))));
     }
     else {
