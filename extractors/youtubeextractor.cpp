@@ -67,16 +67,20 @@ YoutubeExtractor::YoutubeExtractor(QObject *parent) :
 
 bool YoutubeExtractor::isSame(const QUrl &url) const
 {
-    return url.host() == "youtube.com" || url.host() == "www.youtube.com";
+    return url.host() == "youtube.com" || url.host() == "www.youtube.com" ||
+            url.host() == "youtu.be";
 }
 
 void YoutubeExtractor::process(const QUrl &url)
 {
     // Get video id
-    const QRegExp videoIdRx("watch\\?v=([a-zA-Z0-9-_]{11})");
+    QRegExp videoIdRx("watch\\?v=([a-zA-Z0-9-_]{11})");
     if(videoIdRx.indexIn(url.toDisplayString()) == -1) {
-        log("Invalid URL");
-        return;
+        videoIdRx.setPattern("youtu\\.be\\/([a-zA-Z0-9-_]{11})");
+        if(videoIdRx.indexIn(url.toDisplayString()) == -1) {
+            log("Invalid URL");
+            return;
+        }
     }
 
     videoId = videoIdRx.cap(1);

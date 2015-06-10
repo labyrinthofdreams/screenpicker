@@ -65,7 +65,7 @@
                <string notr="true">margin-left: 20px; color: gray; font-size: 10px</string>
               </property>
               <property name="text">
-               <string>http://www.youtube.com/watch?v=ID</string>
+               <string>https://www.youtube.com/watch?v=ID, https://youtu.be/ID</string>
               </property>
              </widget>
             </item>
