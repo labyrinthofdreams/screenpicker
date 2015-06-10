@@ -1,10 +1,9 @@
-#include <algorithm>
 #include <string>
 #include <QByteArray>
-#include <QDebug>
 #include <QList>
 #include <QMap>
 #include <QNetworkRequest>
+#include <QObject>
 #include <QRegExp>
 #include <QScriptEngine>
 #include <QString>

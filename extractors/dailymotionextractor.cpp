@@ -1,6 +1,4 @@
-#include <iostream>
 #include <string>
-#include <QDebug>
 #include <QList>
 #include <QNetworkReply>
 #include <QNetworkRequest>
