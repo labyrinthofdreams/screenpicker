@@ -136,46 +136,51 @@ void YoutubeExtractor::videoInfoFinished()
 
 void YoutubeExtractor::videoPageFinished()
 {
-    // Get the ytplayer.config JSON object from the page
     const QByteArray videoPageHtml = videoPageReply->readAll();
-    const QRegExp jsonRx("ytplayer.config = (.+);");
-    if(jsonRx.indexIn(videoPageHtml) == -1) {
-        log("Could not find ytplayer.config");
-        return;
+    if(videoPageHtml.contains("player-age-gate-content\">")) {
+        log("Downloading age-restricted videos is currently not supported");
     }
+    else {
+        // Get the ytplayer.config JSON object from the page
+        const QRegExp jsonRx("ytplayer.config = (\\{.+\\});");
+        if(jsonRx.indexIn(videoPageHtml) == -1) {
+            log("Could not find ytplayer.config");
+            return;
+        }
 
-    // Parse the JSON object and get the stream list
-    QByteArray decoded;
-    const std::string parsed = jsonRx.cap(1).toStdString();
-    picojson::value json;
-    picojson::parse(json, parsed);
-    if (json.is<picojson::object>()) {
-        const picojson::value args = json.get("args");
-        if(args.is<picojson::object>()) {
-            const picojson::value title = args.get("title");
-            if(title.is<std::string>()) {
-                log(QString("Title: ").append(QString::fromStdString(title.get<std::string>())));
-                const picojson::value streamMap = args.get("url_encoded_fmt_stream_map");
-                if(streamMap.is<std::string>()) {
-                    decoded.append(QString::fromStdString(streamMap.get<std::string>()));
+        // Parse the JSON object and get the stream list
+        QByteArray decoded;
+        const std::string parsed = jsonRx.cap(1).toStdString();
+        picojson::value json;
+        picojson::parse(json, parsed);
+        if (json.is<picojson::object>()) {
+            const picojson::value args = json.get("args");
+            if(args.is<picojson::object>()) {
+                const picojson::value title = args.get("title");
+                if(title.is<std::string>()) {
+                    log(QString("Title: ").append(QString::fromStdString(title.get<std::string>())));
+                    const picojson::value streamMap = args.get("url_encoded_fmt_stream_map");
+                    if(streamMap.is<std::string>()) {
+                        decoded.append(QString::fromStdString(streamMap.get<std::string>()));
+                    }
+                }
+                else {
+                    log("The uploader has not made this video available in your country");
+                    return;
                 }
             }
-            else {
-                log("The uploader has not made this video available in your country");
-                return;
+
+            const picojson::value assets = json.get("assets");
+            if(assets.is<picojson::object>()) {
+                const picojson::value js = assets.get("js");
+                if(js.is<std::string>()) {
+                    html5Player = QString("https:").append(QString::fromStdString(js.get<std::string>()));
+                }
             }
         }
 
-        const picojson::value assets = json.get("assets");
-        if(assets.is<picojson::object>()) {
-            const picojson::value js = assets.get("js");
-            if(js.is<std::string>()) {
-                html5Player = QString("https:").append(QString::fromStdString(js.get<std::string>()));
-            }
-        }
+        processStreamList(decoded.split(','));
     }
-
-    processStreamList(decoded.split(','));
 }
 
 void YoutubeExtractor::html5JsFinished()
