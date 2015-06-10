@@ -11,7 +11,6 @@
 #include <QUrlQuery>
 #include "libs/picojson/picojson.h"
 #include "youtubeextractor.hpp"
-#include <QDebug>
 
 // Thanks to:
 // https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/youtube.py
@@ -107,7 +106,7 @@ void YoutubeExtractor::videoInfoFinished()
         if(!videoInfo.contains("use_cipher_signature")
                 || videoInfo.value("use_cipher_signature") == "False") {
             log("use_cipher_signature: Disabled");
-            log(QString("Title: ").append(videoInfo.value("title")));
+            log(QString("Title: ").append(QUrl::fromPercentEncoding(videoInfo.value("title"))));
             QByteArray decoded;
             decoded.append(QUrl::fromPercentEncoding(videoInfo.value("url_encoded_fmt_stream_map")));
             processStreamList(decoded.split(','));
@@ -285,7 +284,9 @@ QByteArray YoutubeExtractor::parseYtPlayerConfig(const QString& jsonStr)
         if(args.is<picojson::object>()) {
             const picojson::value title = args.get("title");
             if(title.is<std::string>()) {
-                log(QString("Title: ").append(QString::fromStdString(title.get<std::string>())));
+                QByteArray ba;
+                ba.append(QString::fromStdString(title.get<std::string>()));
+                log(QString("Title: ").append(QUrl::fromPercentEncoding(ba)));
                 const picojson::value streamMap = args.get("url_encoded_fmt_stream_map");
                 if(streamMap.is<std::string>()) {
                     decoded.append(QString::fromStdString(streamMap.get<std::string>()));
