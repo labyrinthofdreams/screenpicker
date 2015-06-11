@@ -294,7 +294,7 @@ QByteArray YoutubeExtractor::parseYtPlayerConfig(const QString& jsonStr)
             }
             else {
                 log("The uploader has not made this video available in your country");
-                return;
+                return decoded;
             }
         }
 
@@ -326,6 +326,8 @@ QMap<QByteArray, QByteArray> YoutubeExtractor::getBestStream(
             }
         }
     }
+
+    return {};
 }
 
 QList<QMap<QByteArray, QByteArray> > YoutubeExtractor::getValidStreams(
