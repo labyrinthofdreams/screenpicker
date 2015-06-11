@@ -16,6 +16,16 @@
 // https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/youtube.py
 // https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/youtube.py
 
+struct Stream
+{
+    int itag;
+    QString defaultContainer;
+    QString videoResolution;
+    QString videoEncoding;
+    QString videoProfile;
+    QString videoBitrate;
+};
+
 template <class T>
 static
 QMap<T, T> parseQueryString(const T& query) {
@@ -313,15 +323,22 @@ QByteArray YoutubeExtractor::parseYtPlayerConfig(const QString& jsonStr)
 QMap<QByteArray, QByteArray> YoutubeExtractor::getBestStream(
         const QList<QMap<QByteArray, QByteArray> >& streamList) const
 {
-    // Select the best quality stream, currently only tries to find
-    // the non-dash streams
-    // 18 MP4 360p H.264 Baseline 0.5Mbps AAC 96Kbps
-    // 22 MP4 720p H.264 High 2-3Mbps AAC 192Kbps
-    const QList<int> nonDashStreams {22, 18};
-    for(const int i : nonDashStreams) {
+    // Select the best quality stream
+    // https://en.wikipedia.org/wiki/YouTube#Quality_and_formats
+    const QList<Stream> streams {{138, "MP4", "2160p-4320p", "H.264", "High", "13.5-25"},
+                                       {137, "MP4", "1080p", "H.264", "High", "2.5-3"},
+                                       {22, "MP4", "720p", "H.264", "High", "2-3"},
+                                       {136, "MP4", "720p", "H.264", "Main", "1-1.5"},
+                                       {135, "MP4", "480p", "H.264", "Main", "0.5-1"},
+                                       {18, "MP4", "360p", "H.264", "Baseline", "0.5"},
+                                       {134, "MP4", "360p", "H.264", "Main", "0.3-0.4"},
+                                       {133, "MP4", "240p", "H.264", "Main", "0.2-0.3"},
+                                       {160, "MP4", "144p", "H.264", "Main", "0.1"}};
+    for(const Stream& str : streams) {
         for(const auto& stream : streamList) {
-            if(stream.value("itag").toInt() == i) {
-                log(QString("Selected stream #%1").arg(QString(stream.value("itag"))));
+            if(stream.value("itag").toInt() == str.itag) {
+                log(QString("Selected stream #%1 (%2, %3Mbps)").arg(QString(stream.value("itag")))
+                    .arg(str.videoResolution).arg(str.videoBitrate));
                 return stream;
             }
         }
