@@ -25,7 +25,7 @@ void BaseExtractor::process(const QUrl &url) {
     emit requestReady(QNetworkRequest(url));
 }
 
-void BaseExtractor::log(const QString& msg)
+void BaseExtractor::log(const QString& msg) const
 {
     emit logReady(QString("[%1] %2").arg(name).arg(msg));
 }

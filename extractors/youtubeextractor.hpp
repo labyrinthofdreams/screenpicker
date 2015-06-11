@@ -109,7 +109,7 @@ private slots:
     /**
      * @brief HTML5 player JS file finished downloading
      */
-    void html5JsFinished();
+    void html5JsFinished() const;
 
     /**
      * @brief Embed page finished downloading

@@ -168,7 +168,7 @@ void YoutubeExtractor::videoPageFinished()
     }
 }
 
-void YoutubeExtractor::html5JsFinished()
+void YoutubeExtractor::html5JsFinished() const
 {
     // The following regexes extract the functions used to decrypt the signature
     const QByteArray js = html5JsReply->readAll();

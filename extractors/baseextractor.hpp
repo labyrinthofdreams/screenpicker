@@ -50,20 +50,20 @@ public:
     virtual void process(const QUrl& url);
 
 protected:
-    void log(const QString &msg);
+    void log(const QString &msg) const;
 
 signals:
     /**
      * @brief Emitted when request is ready for the final URL
      * @param request Request
      */
-    void requestReady(const QNetworkRequest &request);
+    void requestReady(const QNetworkRequest &request) const;
 
     /**
      * @brief Emitted when a log message is created
      * @param msg Message
      */
-    void logReady(const QString& msg);
+    void logReady(const QString& msg) const;
 };
 
 } // namespace extractor

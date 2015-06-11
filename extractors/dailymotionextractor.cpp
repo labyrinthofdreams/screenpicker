@@ -76,7 +76,7 @@ void DailyMotionExtractor::embedUrlFinished()
     }
 }
 
-void DailyMotionExtractor::redirectFinished()
+void DailyMotionExtractor::redirectFinished() const
 {
     emit requestReady(QNetworkRequest(redirectReply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl()));
 }

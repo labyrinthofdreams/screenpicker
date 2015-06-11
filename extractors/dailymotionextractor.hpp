@@ -46,7 +46,7 @@ private slots:
     /**
      * @brief Triggered after request to the redirect page has finished
      */
-    void redirectFinished();
+    void redirectFinished() const;
 };
 
 } // namespace extractor
