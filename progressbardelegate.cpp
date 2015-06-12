@@ -59,8 +59,7 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     // Set the progress and text values of the style option.
     const auto bytesDownloaded = formatNumber(dl->bytesDownloaded());
     const auto bytesTotal = formatNumber(dl->bytesTotal());
-    const auto seconds = dl->duration() / 1000.0;
-    const auto speed = formatNumber(dl->bytesDownloaded() / seconds);
+    const auto speed = formatNumber(dl->downloadSpeed());
     if(dl->getStatus() == vfg::net::HttpDownload::Status::Aborted) {
         if(!dl->sizeKnown()) {
             progressBarOption.progress = 0;

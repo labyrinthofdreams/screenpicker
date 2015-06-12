@@ -55,6 +55,15 @@ private:
     //! Download status
     Status status;
 
+    //! Used to calculate download speed every second
+    QTime speedTimer;
+
+    //! Download speed (bytes per second)
+    double speed;
+
+    //! Download amount in the last second
+    int downloaded;
+
 public:
     /**
      * @brief Constructor
@@ -128,6 +137,12 @@ public:
      * @return Request URL
      */
     QUrl url() const;
+
+    /**
+     * @brief Get download speed
+     * @return Download speed
+     */
+    double downloadSpeed() const;
 
 private slots:
     /**

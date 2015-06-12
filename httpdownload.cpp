@@ -20,7 +20,10 @@ HttpDownload::HttpDownload(const QNetworkRequest& request, const QDir& cachePath
     total(0),
     timer(),
     outFile(cachePath.absoluteFilePath(request.url().fileName())),
-    status(Status::Pending)
+    status(Status::Pending),
+    speedTimer(),
+    speed(),
+    downloaded(0)
 {
     if(!cachePath.exists()) {
         cachePath.mkpath(cachePath.path());
@@ -40,6 +43,7 @@ void HttpDownload::start(QNetworkAccessManager* netMan)
     connect(reply.get(), SIGNAL(finished()), this, SLOT(downloadFinished()));
 
     timer.start();
+    speedTimer.start();
 
     status = Status::Running;
 }
@@ -104,6 +108,11 @@ QUrl HttpDownload::url() const
     return request.url();
 }
 
+double HttpDownload::downloadSpeed() const
+{
+    return speed;
+}
+
 void HttpDownload::downloadFinished()
 {
     dlDuration = timer.elapsed();
@@ -120,6 +129,14 @@ void HttpDownload::updateProgress(const qint64 bytesReceived, const qint64 bytes
     total = bytesTotal;
 
     dlDuration = timer.elapsed();
+
+    // Calculate download speed in the last second
+    if(speedTimer.elapsed() > 1000) {
+        downloaded = received - downloaded;
+        speed = static_cast<double>(downloaded) / (speedTimer.elapsed() / 1000.0);
+        downloaded = received;
+        speedTimer.restart();
+    }
 
     // reply->readAll() fails to return complete data
     outFile.write(reply->read(reply->bytesAvailable()));
