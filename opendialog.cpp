@@ -26,7 +26,10 @@ void vfg::ui::OpenDialog::on_networkUrl_textEdited(const QString &arg1)
             this, SLOT(streamsReady()));
     connect(extractor.get(), SIGNAL(requestReady(QNetworkRequest)),
             this, SIGNAL(openUrl(QNetworkRequest)));
+    connect(extractor.get(), SIGNAL(logReady(QString)),
+            ui->log, SLOT(appendPlainText(QString)));
     ui->streamsComboBox->clear();
+    ui->log->clear();
     extractor->fetchStreams(arg1);
 }
 
