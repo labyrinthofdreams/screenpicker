@@ -7,6 +7,7 @@
 #include <QString>
 #include <QTime>
 #include <QUrl>
+#include <QVariant>
 #include "httpdownload.hpp"
 
 namespace vfg {
@@ -111,6 +112,26 @@ QUrl HttpDownload::url() const
 double HttpDownload::downloadSpeed() const
 {
     return speed;
+}
+
+bool HttpDownload::hasError() const
+{
+    return reply->error() != QNetworkReply::NoError;
+}
+
+QString HttpDownload::errorString() const
+{
+    return reply->errorString();
+}
+
+int HttpDownload::statusCode() const
+{
+    return reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+}
+
+QString HttpDownload::reason() const
+{
+    return reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
 }
 
 void HttpDownload::downloadFinished()

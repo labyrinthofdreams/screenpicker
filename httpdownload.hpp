@@ -144,6 +144,30 @@ public:
      */
     double downloadSpeed() const;
 
+    /**
+     * @brief Check if there's an error
+     * @return True if error, otherwise false
+     */
+    bool hasError() const;
+
+    /**
+     * @brief Get error as a string
+     * @return Error
+     */
+    QString errorString() const;
+
+    /**
+     * @brief Get HTTP status code
+     * @return HTTP status code
+     */
+    int statusCode() const;
+
+    /**
+     * @brief Get HTTP reason phrase, e.g. "Ok", "Not found", etc.
+     * @return HTTP reason phrase
+     */
+    QString reason() const;
+
 private slots:
     /**
      * @brief Triggered after download has finished
