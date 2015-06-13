@@ -143,8 +143,8 @@ MainWindow::MainWindow(QWidget *parent) :
     mediaPlayer->setVideoOutput(ui->videoPreviewWidget->videoWidget);
     mediaPlayer->setVolume(ui->volumeSlider->value());
 
-    connect(openDialog.get(), SIGNAL(openUrl(QUrl)),
-            this, SLOT(openUrl(QUrl)));
+    connect(openDialog.get(), SIGNAL(openUrl(QNetworkRequest)),
+            this, SLOT(openUrl(QNetworkRequest)));
 
     connect(downloads.get(), SIGNAL(play(QString)),
             this, SLOT(loadDownloadedFile(QString)));
@@ -1559,26 +1559,15 @@ void MainWindow::on_actionDownloads_triggered()
     downloads->show();
 }
 
-void MainWindow::openUrl(const QUrl& url)
+void MainWindow::openUrl(const QNetworkRequest& request)
 {
+    const QUrl url = request.url();
     if(url.scheme() == "http" || url.scheme() == "https" ||
             url.scheme() == "ftp" || url.scheme() == "ftps") {
-        vfg::extractor::ExtractorFactory ef;
-        extractor = ef.getExtractor(url);
-        connect(extractor.get(), SIGNAL(requestReady(QNetworkRequest)),
-                this, SLOT(openNetworkRequest(QNetworkRequest)));
-        connect(extractor.get(), SIGNAL(logReady(QString)),
-                log.get(), SLOT(appendPlainText(QString)));
-        log->show();
-        extractor->process(url);
+        downloads->addDownload(std::make_shared<vfg::net::HttpDownload>(request, config.value("cachedirectory").toString()));
+        downloads->show();
     }
     else {
         QMessageBox::information(this, tr("Unsupported scheme"), tr("This scheme is not supported"));
     }
-}
-
-void MainWindow::openNetworkRequest(const QNetworkRequest& request)
-{
-    downloads->addDownload(std::make_shared<vfg::net::HttpDownload>(request, config.value("cachedirectory").toString()));
-    downloads->show();
 }

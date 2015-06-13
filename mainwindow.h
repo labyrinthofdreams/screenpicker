@@ -233,9 +233,7 @@ private slots:
 
     void on_actionDownloads_triggered();
 
-    void openUrl(const QUrl& url);
-
-    void openNetworkRequest(const QNetworkRequest& request);
+    void openUrl(const QNetworkRequest& request);
 
 private:
     Ui::MainWindow* ui;

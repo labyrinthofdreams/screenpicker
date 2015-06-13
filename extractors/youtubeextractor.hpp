@@ -2,14 +2,15 @@
 #define VFG_EXTRACTOR_YOUTUBEEXTRACTOR_HPP
 
 #include <memory>
-#include <QByteArray>
+#include <QList>
 #include <QMap>
 #include <QNetworkReply>
-#include <QObject>
 #include <QString>
-#include <QStringList>
 #include "extractors/baseextractor.hpp"
 
+class QByteArray;
+class QObject;
+class QStringList;
 class QUrl;
 
 namespace vfg {
@@ -49,8 +50,11 @@ private:
     //! URL to html5 video player JS file
     QString html5Player;
 
-    //! Highest quality stream
-    QMap<QByteArray, QByteArray> bestStream;
+    //! Raw streams
+    QList<QMap<QByteArray, QByteArray>> rawStreams;
+
+    //! Found streams
+    QMap<QString, QUrl> foundStreams;
 
 public:
     /**
@@ -61,7 +65,11 @@ public:
 
     bool isSame(const QUrl &url) const override;
 
-    void process(const QUrl &url) override;
+    void fetchStreams(const QUrl &url) override;
+
+    QStringList getStreams() const override;
+
+    void download(const QString &streamName) override;
 
 private:
     /**
@@ -69,13 +77,6 @@ private:
      * @param streamList Stream list to process
      */
     void processStreamList(const QList<QByteArray> &streamList);
-
-    /**
-     * @brief Get the highest quality stream from given streamList
-     * @param streamList Stream list to check
-     * @return Highest quality stream
-     */
-    QMap<QByteArray, QByteArray> getBestStream(const QList<QMap<QByteArray, QByteArray>>& streamList) const;
 
     /**
      * @brief Get a parsed list of valid streams from streamList
@@ -109,7 +110,7 @@ private slots:
     /**
      * @brief HTML5 player JS file finished downloading
      */
-    void html5JsFinished() const;
+    void html5JsFinished();
 
     /**
      * @brief Embed page finished downloading

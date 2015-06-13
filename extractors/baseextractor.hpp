@@ -5,9 +5,10 @@
 #include <QNetworkAccessManager>
 #include <QObject>
 #include <QString>
+#include <QUrl>
 
 class QObject;
-class QUrl;
+class QStringList;
 
 namespace vfg {
 namespace extractor {
@@ -29,6 +30,9 @@ private:
     //! Extractor name
     QString name;
 
+    //! URL
+    QUrl url;
+
 public:
     /**
      * @brief Constructor
@@ -44,10 +48,22 @@ public:
     virtual bool isSame(const QUrl& url) const;
 
     /**
-     * @brief Process URL (http requests, etc...)
-     * @param url URL to process
+     * @brief Fetch streams for a given URL
+     * @param givenUrl URL to fetch
      */
-    virtual void process(const QUrl& url);
+    virtual void fetchStreams(const QUrl& givenUrl);
+
+    /**
+     * @brief Get a list of found streams (names)
+     * @return List of found streams
+     */
+    virtual QStringList getStreams() const;
+
+    /**
+     * @brief Get request for selected stream
+     * @param streamName Stream to get request for
+     */
+    virtual void download(const QString& streamName);
 
 protected:
     void log(const QString &msg) const;
@@ -64,6 +80,11 @@ signals:
      * @param msg Message
      */
     void logReady(const QString& msg) const;
+
+    /**
+     * @brief Emitted when stream URLs have been found
+     */
+    void streamsReady() const;
 };
 
 } // namespace extractor

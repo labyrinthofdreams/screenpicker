@@ -2,10 +2,13 @@
 #define VFG_EXTRACTOR_DAILYMOTIONEXTRACTOR_HPP
 
 #include <memory>
+#include <QMap>
 #include <QNetworkReply>
 #include "extractors/baseextractor.hpp"
 
 class QObject;
+class QString;
+class QStringList;
 class QUrl;
 
 namespace vfg {
@@ -27,6 +30,9 @@ private:
     //! Redirect reply
     std::unique_ptr<QNetworkReply> redirectReply;
 
+    //! Found streams
+    QMap<QString, QUrl> foundStreams;
+
 public:
     /**
      * @brief Constructor
@@ -35,7 +41,11 @@ public:
 
     bool isSame(const QUrl& url) const override;
 
-    void process(const QUrl& url) override;
+    void fetchStreams(const QUrl& url) override;
+
+    QStringList getStreams() const override;
+
+    void download(const QString &streamName) override;
 
 private slots:
     /**
