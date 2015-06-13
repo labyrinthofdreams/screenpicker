@@ -75,9 +75,11 @@ void DailyMotionExtractor::download(const QString& streamName)
 void DailyMotionExtractor::embedUrlFinished()
 {
     // Valid streams
-    const QList<std::string> streams {"stream_h264_hd1080_url", "stream_h264_hd_url",
-                                             "stream_h264_hq_url", "stream_h264_ld_url",
-                                             "stream_h264_url"};
+    static const QMap<QString, QString> formats {
+        {"stream_h264_hd1080_url", "HD1080"}, {"stream_h264_hd_url", "HD"},
+        {"stream_h264_hq_url", "HQ"}, {"stream_h264_ld_url", "LD"},
+        {"stream_h264_url", "Standard"}
+    };
     const QString html = reply->readAll();
     // Get the JSON object
     const QRegExp jsonRx("var\\s*info\\s*=\\s*(\\{.+\\}),\\n");
@@ -91,10 +93,10 @@ void DailyMotionExtractor::embedUrlFinished()
     picojson::value json;
     picojson::parse(json, parsed);
     if(json.is<picojson::object>()) {
-        for(const std::string& stream : streams) {
-            const picojson::value val = json.get(stream);
+        for(const QString& format : formats.keys()) {
+            const picojson::value val = json.get(format.toStdString());
             if(val.is<std::string>()) {
-                foundStreams.insert(QString::fromStdString(stream),
+                foundStreams.insert(formats.value(format),
                                     QString::fromStdString(val.get<std::string>()));
             }
         }
