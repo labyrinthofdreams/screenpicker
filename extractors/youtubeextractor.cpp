@@ -178,6 +178,7 @@ void YoutubeExtractor::videoInfoFinished()
             processStreamList(decoded.split(','));
         }
         else {
+            log("use_cipher_signature: Enabled");
             videoPageReply.reset(net->get(makeYoutubeRequest(videoId)));
             connect(videoPageReply.get(), SIGNAL(finished()),
                     this, SLOT(videoPageFinished()));
