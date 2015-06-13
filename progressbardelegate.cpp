@@ -8,7 +8,6 @@
 #include <QStyleOptionViewItem>
 #include "httpdownload.hpp"
 #include "progressbardelegate.hpp"
-#include <QDebug>
 
 template <class NumberType>
 QString formatNumber(NumberType number) {
