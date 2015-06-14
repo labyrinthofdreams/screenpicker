@@ -66,6 +66,10 @@ public:
     virtual void download(const QString& streamName);
 
 protected:
+    /**
+     * @brief Log message
+     * @param msg Message to log
+     */
     void log(const QString &msg) const;
 
 signals:
