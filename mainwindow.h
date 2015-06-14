@@ -267,11 +267,6 @@ private:
     //! Open dialog
     std::unique_ptr<vfg::ui::OpenDialog> openDialog;
 
-    //! Extractor
-    std::unique_ptr<vfg::extractor::BaseExtractor> extractor;
-
-    std::unique_ptr<QPlainTextEdit> log;
-
     //! When video is playing, videoPositionChanged is called which moves
     //! the seek slider. This variable keeps track where the slider was moved
     //! and is checked in on_seekSlider_valueChanged to make sure user

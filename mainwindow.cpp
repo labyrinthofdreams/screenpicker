@@ -82,8 +82,6 @@ MainWindow::MainWindow(QWidget *parent) :
     mediaPlayer(new QMediaPlayer),
     downloads(new vfg::ui::DownloadsDialog),
     openDialog(new vfg::ui::OpenDialog),
-    extractor(),
-    log(new QPlainTextEdit),
     seekedTime(0),
     config("config.ini", QSettings::IniFormat)
 {
