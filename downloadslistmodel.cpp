@@ -11,7 +11,8 @@ namespace vfg {
 namespace core {
 
 DownloadsListModel::DownloadsListModel(QObject *parent) :
-    QAbstractListModel(parent)
+    QAbstractListModel(parent),
+    downloads()
 {
 }
 

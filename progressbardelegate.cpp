@@ -1,6 +1,8 @@
 #include <QApplication>
 #include <QModelIndex>
 #include <QPainter>
+#include <QPen>
+#include <QRect>
 #include <QSize>
 #include <QString>
 #include <QStyle>
@@ -9,45 +11,61 @@
 #include "httpdownload.hpp"
 #include "progressbardelegate.hpp"
 
+namespace {
+
+enum class SuffixOption
+{
+    IncludeSuffix,
+    ExcludeSuffix
+};
+
 template <class NumberType>
-QString formatNumber(NumberType number) {
+QString formatNumber(const NumberType number,
+                     const SuffixOption suffixOpt = SuffixOption::IncludeSuffix) {
     const auto KB = number / 1000.0;
     if(KB / 1000.0 < 1.0) {
-        return QString("%1KB").arg(QString::number(KB, 'f', 2));
+        return QString("%1%2").arg(QString::number(KB, 'f', 2))
+                .arg(suffixOpt == SuffixOption::IncludeSuffix ? " KB" : "");
     }
 
     const auto MB = KB / 1000.0;
     if(MB / 1000.0 < 1.0) {
-        return QString("%1MB").arg(QString::number(MB, 'f', 2));
+        return QString("%1%2").arg(QString::number(MB, 'f', 2))
+                .arg(suffixOpt == SuffixOption::IncludeSuffix ? " MB" : "");
     }
 
     const auto GB = MB / 1000.0;
-    return QString("%1GB").arg(QString::number(GB, 'f', 2));
+    return QString("%1%2").arg(QString::number(GB, 'f', 2))
+            .arg(suffixOpt == SuffixOption::IncludeSuffix ? " GB" : "");
 }
+
+template <class NumberType>
+QString formatNumberMB(const NumberType number,
+                       const SuffixOption suffixOpt = SuffixOption::IncludeSuffix) {
+    if(number < 1000000) {
+        return formatNumber(number / 1000.0, suffixOpt);
+    }
+
+    return formatNumber(number, suffixOpt);
+}
+
+} // namespace
 
 namespace vfg {
 namespace ui {
 
-ProgressBarDelegate::ProgressBarDelegate(const int height, QObject *parent) :
+ProgressBarDelegate::ProgressBarDelegate(QObject *parent) :
     QStyledItemDelegate(parent),
-    height(height)
+    height(70)
 {
 }
 
 void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                                 const QModelIndex &index) const
 {
-    // Set up a QStyleOptionProgressBar to precisely mimic the
-    // environment of a progress bar.
-    QStyleOptionProgressBar progressBarOption;
-    progressBarOption.state = QStyle::State_Enabled;
-    progressBarOption.direction = QApplication::layoutDirection();
-    progressBarOption.rect = QRect(0, height * index.row(), option.rect.width(), height);
-    progressBarOption.fontMetrics = QApplication::fontMetrics();
-    progressBarOption.minimum = 0;
-    progressBarOption.maximum = 100;
-    progressBarOption.textAlignment = Qt::AlignCenter;
-    progressBarOption.textVisible = true;
+    auto rect = [&](const int left, const int top, const int width, const int height){
+        return QRect(left, (index.row() * this->height) + top, option.rect.width() + width, height);
+    };
 
     auto get = [&index](const int row, const int column){
         return index.model()->data(index.model()->index(row, column));
@@ -55,45 +73,48 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
     auto dl = get(index.row(), index.column()).value<std::shared_ptr<vfg::net::HttpDownload>>();
 
-    // Set the progress and text values of the style option.
-    const auto bytesDownloaded = formatNumber(dl->bytesDownloaded());
-    const auto bytesTotal = formatNumber(dl->bytesTotal());
-    const auto speed = formatNumber(dl->downloadSpeed());
-    if(dl->getStatus() == vfg::net::HttpDownload::Status::Aborted) {
-        if(!dl->sizeKnown()) {
-            progressBarOption.progress = 0;
-        }
-        else {
-            progressBarOption.progress = dl->percentCompleted();
-        }
+    // #000000 (black)
+    painter->setPen(QPen(QColor::fromRgb(0, 0, 0), 1, Qt::SolidLine));
+    painter->drawText(rect(5, 5, 0, 20), Qt::AlignLeft, dl->url().fileName());
 
-        progressBarOption.text = QString("%1: Aborted").arg(dl->url().host());
+    // #4D4D4D (gray)
+    painter->setPen(QPen(QColor::fromRgb(77, 77, 77), 1, Qt::SolidLine));
+    if(dl->getStatus() == vfg::net::HttpDownload::Status::Finished) {
+        painter->drawText(rect(5, 25, 0, 20), Qt::AlignLeft,
+                          QString("%1 - %2").arg(formatNumber(dl->bytesTotal()))
+                                            .arg(dl->url().host()));
     }
-    else if(dl->isFinished()) {
-        progressBarOption.progress = dl->percentCompleted();
-        progressBarOption.text = QString("%3: %1 (%2/s)").arg(bytesTotal)
-                                 .arg(speed)
-                                 .arg(dl->url().host());
+    else if(dl->getStatus() == vfg::net::HttpDownload::Status::Aborted) {
+        painter->drawText(rect(5, 25, 0, 20), Qt::AlignLeft,
+                          QString("Canceled - %1").arg(dl->url().host()));
     }
-    else {
+    else if(dl->getStatus() == vfg::net::HttpDownload::Status::Running) {
+        QStyleOptionProgressBar progressBarOption;
+        progressBarOption.state = QStyle::State_Enabled;
+        progressBarOption.direction = QApplication::layoutDirection();
+        progressBarOption.rect = rect(5, 25, -5, 15);
+        progressBarOption.fontMetrics = QApplication::fontMetrics();
+        progressBarOption.minimum = 0;
+        progressBarOption.maximum = 100;
+
+        QString text;
         if(dl->sizeKnown()) {
             progressBarOption.progress = dl->percentCompleted();
-            progressBarOption.text = QString("%4: %1 of %2 (%3/s)").arg(bytesDownloaded)
-                                     .arg(bytesTotal)
-                                     .arg(speed)
-                                     .arg(dl->url().host());
+            text = QString("%4: %1 of %2 (%3/sec)").arg(formatNumberMB(dl->bytesDownloaded(), SuffixOption::ExcludeSuffix))
+                   .arg(formatNumber(dl->bytesTotal())).arg(formatNumber(dl->downloadSpeed()))
+                   .arg(dl->url().host());
         }
         else {
-            // Size of the download is not known, display infinite progress bar
+            // If the download size is not known, display infinite progress bar
             progressBarOption.maximum = 0;
-            progressBarOption.text = QString("%3: %1 (%2/s)").arg(bytesDownloaded)
-                                     .arg(speed)
-                                     .arg(dl->url().host());
+            text = QString("%3: %1 (%2/sec)").arg(formatNumber(dl->bytesDownloaded()))
+                   .arg(formatNumber(dl->downloadSpeed())).arg(dl->url().host());
         }
-    }
 
-    // Draw the progress bar onto the view.
-    QApplication::style()->drawControl(QStyle::CE_ProgressBar, &progressBarOption, painter);
+        QApplication::style()->drawControl(QStyle::CE_ProgressBar, &progressBarOption, painter);
+
+        painter->drawText(rect(5, 45, 0, 20), Qt::AlignLeft, text);
+    }
 }
 
 QSize ProgressBarDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const

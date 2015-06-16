@@ -26,7 +26,7 @@ public:
      * @param height Height of the widget that's drawn
      * @param parent Owner of the widget
      */
-    explicit ProgressBarDelegate(int height = 50, QObject *parent = 0);
+    explicit ProgressBarDelegate(QObject *parent = 0);
 
     /**
      * Default destructor

@@ -24,9 +24,10 @@ DownloadsDialog::DownloadsDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->downloadList->setItemDelegate(new vfg::ui::ProgressBarDelegate(50, ui->downloadList));
+    ui->downloadList->setItemDelegate(new vfg::ui::ProgressBarDelegate(ui->downloadList));
     ui->downloadList->setModel(model.get());
     ui->downloadList->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->downloadList->setUniformItemSizes(true);
 
     connect(ui->downloadList, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(contextMenuRequested(QPoint)));
