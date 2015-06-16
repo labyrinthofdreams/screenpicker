@@ -1,6 +1,7 @@
 #include <memory>
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -29,8 +30,19 @@ HttpDownload::HttpDownload(const QNetworkRequest& request, const QDir& cachePath
     if(!cachePath.exists()) {
         cachePath.mkpath(cachePath.path());
     }
+    else if(outFile.exists()) {
+        const QFileInfo info(outFile);
+        for(int i = 1; ; ++i) {
+            const QString newFileName = QString("%1-%2.%3").arg(info.baseName())
+                                        .arg(QString::number(i)).arg(info.suffix());
+            const QString newPath = cachePath.absoluteFilePath(newFileName);
+            if(!QFile::exists(newPath)) {
+                outFile.setFileName(newPath);
+                break;
+            }
+        }
+    }
 
-    // TODO: If filename already exists, try another filename
     outFile.open(QIODevice::WriteOnly);
 }
 
