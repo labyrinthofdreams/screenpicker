@@ -115,6 +115,10 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
         painter->drawText(rect(5, 45, 0, 20), Qt::AlignLeft, text);
     }
+    else if(dl->getStatus() == vfg::net::HttpDownload::Status::Pending) {
+        painter->drawText(rect(5, 25, 0, 20), Qt::AlignLeft,
+                          QString("Pending - %1").arg(dl->url().host()));
+    }
 }
 
 QSize ProgressBarDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
