@@ -34,6 +34,11 @@ HttpDownload::HttpDownload(const QNetworkRequest& request, const QDir& cachePath
     outFile.open(QIODevice::WriteOnly);
 }
 
+HttpDownload::~HttpDownload()
+{
+    outFile.remove();
+}
+
 void HttpDownload::start(QNetworkAccessManager* netMan)
 {
     reply.reset(netMan->get(request));

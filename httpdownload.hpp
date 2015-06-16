@@ -74,6 +74,11 @@ public:
     explicit HttpDownload(const QNetworkRequest& url, const QDir& cachePath, QObject *parent = 0);
 
     /**
+     * Destructor
+     */
+    ~HttpDownload();
+
+    /**
      * @brief Start request
      * @param netMan Network manager to use
      */
