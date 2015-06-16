@@ -75,7 +75,7 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
     // #000000 (black)
     painter->setPen(QPen(QColor::fromRgb(0, 0, 0), 1, Qt::SolidLine));
-    painter->drawText(rect(5, 5, 0, 20), Qt::AlignLeft, dl->url().fileName());
+    painter->drawText(rect(5, 5, 0, 20), Qt::AlignLeft, dl->fileName());
 
     // #4D4D4D (gray)
     painter->setPen(QPen(QColor::fromRgb(77, 77, 77), 1, Qt::SolidLine));

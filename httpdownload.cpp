@@ -98,7 +98,8 @@ int HttpDownload::duration() const
 
 QString HttpDownload::fileName() const
 {
-    return outFile.fileName();
+    const QFileInfo info(outFile);
+    return info.fileName();
 }
 
 void HttpDownload::abort()
