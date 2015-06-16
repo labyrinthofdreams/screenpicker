@@ -92,7 +92,7 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         QStyleOptionProgressBar progressBarOption;
         progressBarOption.state = QStyle::State_Enabled;
         progressBarOption.direction = QApplication::layoutDirection();
-        progressBarOption.rect = rect(5, 25, -5, 15);
+        progressBarOption.rect = rect(5, 25, -10, 15);
         progressBarOption.fontMetrics = QApplication::fontMetrics();
         progressBarOption.minimum = 0;
         progressBarOption.maximum = 100;
