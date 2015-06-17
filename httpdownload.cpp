@@ -34,7 +34,7 @@ HttpDownload::HttpDownload(const QNetworkRequest& request, const QDir& cachePath
         const QFileInfo info(outFile);
         for(int i = 1; ; ++i) {
             const QString newFileName = QString("%1-%2.%3").arg(info.baseName())
-                                        .arg(QString::number(i)).arg(info.suffix());
+                                        .arg(QString::number(i)).arg(info.completeSuffix());
             const QString newPath = cachePath.absoluteFilePath(newFileName);
             if(!QFile::exists(newPath)) {
                 outFile.setFileName(newPath);
