@@ -85,7 +85,17 @@ void DownloadsDialog::contextMenuRequested(const QPoint& pos)
         menu.addAction(playAction);
         QAction* selected = menu.exec(QCursor::pos());
         if(selected && selected->data().toInt() == 1) {
-            emit play(download->fileName());
+            emit play(download->path());
+        }
+    }
+    else if(status == vfg::net::HttpDownload::Status::Aborted) {
+        QMenu menu;
+        QAction* retryAction = new QAction(tr("Retry"), this);
+        retryAction->setData(1);
+        menu.addAction(retryAction);
+        QAction* selected = menu.exec(QCursor::pos());
+        if(selected && selected->data().toInt() == 1) {
+            download->retry();
         }
     }
 }

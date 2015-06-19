@@ -24,7 +24,7 @@ HttpDownload::HttpDownload(const QNetworkRequest& request, const QDir& cachePath
     outFile(cachePath.absoluteFilePath(request.url().fileName())),
     status(Status::Pending),
     speedTimer(),
-    speed(),
+    speed(0.0),
     downloaded(0)
 {
     if(!cachePath.exists()) {
@@ -42,8 +42,6 @@ HttpDownload::HttpDownload(const QNetworkRequest& request, const QDir& cachePath
             }
         }
     }
-
-    outFile.open(QIODevice::WriteOnly);
 }
 
 HttpDownload::~HttpDownload()
@@ -53,6 +51,10 @@ HttpDownload::~HttpDownload()
 
 void HttpDownload::start(QNetworkAccessManager* netMan)
 {
+    received = total = dlDuration = downloaded = speed = 0;
+
+    outFile.open(QIODevice::WriteOnly);
+
     reply.reset(netMan->get(request));
 
     connect(reply.get(), SIGNAL(downloadProgress(qint64, qint64)),
@@ -102,6 +104,11 @@ QString HttpDownload::fileName() const
     return info.fileName();
 }
 
+QString HttpDownload::path() const
+{
+    return outFile.fileName();
+}
+
 void HttpDownload::abort()
 {
     if(reply->isFinished()) {
@@ -112,7 +119,7 @@ void HttpDownload::abort()
 
     status = Status::Aborted;
 
-    outFile.remove();
+    outFile.close();
 
     emit updated();
 }
@@ -150,6 +157,11 @@ int HttpDownload::statusCode() const
 QString HttpDownload::reason() const
 {
     return reply->attribute(QNetworkRequest::HttpReasonPhraseAttribute).toString();
+}
+
+void HttpDownload::retry()
+{
+    start(reply->manager());
 }
 
 void HttpDownload::downloadFinished()

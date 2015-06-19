@@ -127,6 +127,12 @@ public:
     QString fileName() const;
 
     /**
+     * @brief Path to downloaded file
+     * @return Path to downloaded file
+     */
+    QString path() const;
+
+    /**
      * @brief Abort download
      */
     void abort();
@@ -172,6 +178,11 @@ public:
      * @return HTTP reason phrase
      */
     QString reason() const;
+
+    /**
+     * @brief Attempt to restart the download
+     */
+    void retry();
 
 private slots:
     /**
