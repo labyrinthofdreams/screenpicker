@@ -9,6 +9,7 @@
 #include "extractors/baseextractor.hpp"
 
 class QByteArray;
+class QNetworkRequest;
 class QObject;
 class QStringList;
 class QUrl;
@@ -95,6 +96,13 @@ private:
      * @param jsonStr JSON object to parse
      */
     QByteArray parseYtPlayerConfig(const QString& jsonStr);
+
+    /**
+     * @brief Make request to Youtube video page
+     * @param videoId Youtube video id
+     * @return Request to Youtube video page
+     */
+    QNetworkRequest makeYoutubeRequest(const QString& videoId) const;
 
 private slots:
     /**

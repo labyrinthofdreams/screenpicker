@@ -7,6 +7,7 @@
 #include <QString>
 #include <QUrl>
 
+class QNetworkRequest;
 class QObject;
 class QStringList;
 
@@ -71,6 +72,13 @@ protected:
      * @param msg Message to log
      */
     void log(const QString &msg) const;
+
+    /**
+     * @brief Create HTTP request
+     * @param url URL to create request for
+     * @return HTTP request
+     */
+    virtual QNetworkRequest createRequest(const QUrl& url) const;
 
 signals:
     /**

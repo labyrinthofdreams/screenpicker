@@ -12,17 +12,6 @@
 #include "dailymotionextractor.hpp"
 #include "libs/picojson/picojson.h"
 
-static
-QNetworkRequest createRequest(const QUrl& url) {
-    QNetworkRequest request(url);
-    request.setRawHeader(QByteArray("Accept"), QByteArray("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"));
-    request.setRawHeader(QByteArray("Accept-Charset"), QByteArray("UTF-8,*;q=0.5"));
-    request.setRawHeader(QByteArray("Accept-Language"), QByteArray("en-US,en;q=0.8"));
-    request.setRawHeader(QByteArray("User-Agent"), QByteArray("Mozilla/5.0 (X11; Linux x86_64; rv:13.0) Gecko/20100101 Firefox/13.0"));
-    request.setRawHeader(QByteArray("Cookie"), QByteArray("family_filter=off; ff=off"));
-    return request;
-}
-
 namespace vfg {
 namespace extractor {
 
@@ -71,6 +60,14 @@ void DailyMotionExtractor::download(const QString& streamName)
     else {
         log("Could not find the selected stream");
     }
+}
+
+QNetworkRequest DailyMotionExtractor::createRequest(const QUrl& url) const
+{
+    QNetworkRequest request = BaseExtractor::createRequest(url);
+    request.setRawHeader(QByteArray("Cookie"), QByteArray("family_filter=off; ff=off"));
+
+    return request;
 }
 
 void DailyMotionExtractor::embedUrlFinished()

@@ -7,19 +7,6 @@
 #include <QUrl>
 #include "instagramextractor.hpp"
 
-namespace {
-
-QNetworkRequest createRequest(const QUrl& url) {
-    QNetworkRequest request(url);
-    request.setRawHeader(QByteArray("Accept"), QByteArray("text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"));
-    request.setRawHeader(QByteArray("Accept-Charset"), QByteArray("UTF-8,*;q=0.5"));
-    request.setRawHeader(QByteArray("Accept-Language"), QByteArray("en-US,en;q=0.8"));
-    request.setRawHeader(QByteArray("User-Agent"), QByteArray("Mozilla/5.0 (X11; Linux x86_64; rv:13.0) Gecko/20100101 Firefox/13.0"));
-    return request;
-}
-
-} // namespace
-
 namespace vfg {
 namespace extractor {
 

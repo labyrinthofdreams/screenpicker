@@ -6,6 +6,7 @@
 #include <QNetworkReply>
 #include "extractors/baseextractor.hpp"
 
+class QNetworkRequest;
 class QObject;
 class QString;
 class QStringList;
@@ -46,6 +47,9 @@ public:
     QStringList getStreams() const override;
 
     void download(const QString &streamName) override;
+
+protected:
+    QNetworkRequest createRequest(const QUrl &url) const override;
 
 private slots:
     /**
