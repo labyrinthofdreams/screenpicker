@@ -2,6 +2,7 @@
 #include <QUrl>
 #include "extractors/baseextractor.hpp"
 #include "extractors/dailymotionextractor.hpp"
+#include "extractors/instagramextractor.hpp"
 #include "extractors/youtubeextractor.hpp"
 #include "extractorfactory.hpp"
 
@@ -12,6 +13,11 @@ std::unique_ptr<vfg::extractor::BaseExtractor> ExtractorFactory::getExtractor(co
 {
     std::unique_ptr<vfg::extractor::BaseExtractor> out;
     out.reset(new vfg::extractor::DailyMotionExtractor);
+    if(out->isSame(url)) {
+        return out;
+    }
+
+    out.reset(new vfg::extractor::InstagramExtractor);
     if(out->isSame(url)) {
         return out;
     }

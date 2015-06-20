@@ -36,7 +36,8 @@ SOURCES += main.cpp\
     extractorfactory.cpp \
     extractors/dailymotionextractor.cpp \
     extractors/baseextractor.cpp \
-    extractors/youtubeextractor.cpp
+    extractors/youtubeextractor.cpp \
+    extractors/instagramextractor.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -67,7 +68,8 @@ HEADERS  += mainwindow.h \
     extractorfactory.hpp \
     extractors/baseextractor.hpp \
     extractors/dailymotionextractor.hpp \
-    extractors/youtubeextractor.hpp
+    extractors/youtubeextractor.hpp \
+    extractors/instagramextractor.hpp
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
