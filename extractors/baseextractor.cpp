@@ -16,13 +16,15 @@ BaseExtractor::BaseExtractor(const QString& name, QObject *parent) :
 {
 }
 
-bool BaseExtractor::isSame(const QUrl &url) const {
+bool BaseExtractor::isSame(const QUrl &url) const
+{
     Q_UNUSED(url);
 
     return true;
 }
 
-void BaseExtractor::fetchStreams(const QUrl &givenUrl) {
+void BaseExtractor::fetchStreams(const QUrl &givenUrl)
+{
     url = givenUrl;
 
     emit streamsReady();
