@@ -14,6 +14,8 @@
 #include "libs/picojson/picojson.h"
 #include "youtubeextractor.hpp"
 
+namespace {
+
 // Thanks to:
 // https://github.com/soimort/you-get/blob/develop/src/you_get/extractors/youtube.py
 // https://github.com/rg3/youtube-dl/blob/master/youtube_dl/extractor/youtube.py
@@ -31,7 +33,7 @@ struct Stream
 };
 
 // https://en.wikipedia.org/wiki/YouTube#Quality_and_formats
-static const QList<Stream> youtubeFormats {
+const QList<Stream> youtubeFormats {
     {5, "flv", "240p", "Sorenson H.263", "N/A", "0.25", "MP3", "64"},
     {17, "3gp", "144p", "MPEG-4 Visual", "Simple", "0.05", "AAC", "24"},
     {18, "mp4", "360p", "H.264", "Baseline", "0.5", "AAC", "96"},
@@ -45,13 +47,11 @@ static const QList<Stream> youtubeFormats {
     {100, "webm", "360p", "VP8", "3D", "N/A", "Vorbis", "128"}
 };
 
-static
 QString stringify(const Stream& stream) {
     return QString("%1 %2 (%3Mbps) / %4 (%5Kbps)").arg(stream.extension.toUpper()).arg(stream.videoResolution)
             .arg(stream.videoBitrate).arg(stream.audioEncoding).arg(stream.audioBitrate);
 }
 
-static
 Stream findStream(const int itag) {
     for(const Stream& stream : youtubeFormats) {
         if(stream.itag == itag) {
@@ -63,7 +63,6 @@ Stream findStream(const int itag) {
 }
 
 template <class T>
-static
 QMap<T, T> parseQueryString(const T& query) {
     QMap<T, T> entries;
     const QList<T> items = query.split('&');
@@ -75,7 +74,6 @@ QMap<T, T> parseQueryString(const T& query) {
     return entries;
 }
 
-static
 QStringList match(const QString& regex, const QString& text) {
     const QRegExp rx(regex);
     if(rx.indexIn(text) > -1) {
@@ -85,6 +83,8 @@ QStringList match(const QString& regex, const QString& text) {
         return {};
     }
 }
+
+} // namespace
 
 namespace vfg {
 namespace extractor {
