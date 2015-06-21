@@ -16,6 +16,7 @@
 #include "extractorfactory.hpp"
 #include "extractors/baseextractor.hpp"
 #include "gifmakerwidget.hpp"
+#include "jumptoframedialog.hpp"
 #include "opendialog.hpp"
 #include "ptrutil.hpp"
 #include "scripteditor.h"
@@ -1567,5 +1568,21 @@ void MainWindow::openUrl(const QNetworkRequest& request)
     }
     else {
         QMessageBox::information(this, tr("Unsupported scheme"), tr("This scheme is not supported"));
+    }
+}
+
+void MainWindow::on_actionJump_to_triggered()
+{
+    vfg::ui::JumpToFrameDialog dlg;
+    if(dlg.exec() == QDialog::Rejected) {
+        return;
+    }
+
+    if(config.value("jumptoformat").toString() == "frame") {
+        ui->seekSlider->setValue(config.value("jumpto").toInt());
+    }
+    else {
+        const auto position = convertMsToFrame(1000 * config.value("jumpto").toInt());
+        ui->seekSlider->setValue(position);
     }
 }

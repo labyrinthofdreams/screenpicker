@@ -235,6 +235,8 @@ private slots:
 
     void openUrl(const QNetworkRequest& request);
 
+    void on_actionJump_to_triggered();
+
 private:
     Ui::MainWindow* ui;
 

@@ -764,6 +764,7 @@
      <addaction name="actionScaleToWindow"/>
     </widget>
     <addaction name="menuZoom"/>
+    <addaction name="actionJump_to"/>
     <addaction name="separator"/>
     <addaction name="actionSave_as_PNG"/>
    </widget>
@@ -972,6 +973,11 @@
   <action name="actionDownloads">
    <property name="text">
     <string>Downloads</string>
+   </property>
+  </action>
+  <action name="actionJump_to">
+   <property name="text">
+    <string>Jump to...</string>
    </property>
   </action>
  </widget>

@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     extractors/baseextractor.cpp \
     extractors/youtubeextractor.cpp \
     extractors/instagramextractor.cpp \
-    extractors/tumblrextractor.cpp
+    extractors/tumblrextractor.cpp \
+    jumptoframedialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -71,7 +72,8 @@ HEADERS  += mainwindow.h \
     extractors/dailymotionextractor.hpp \
     extractors/youtubeextractor.hpp \
     extractors/instagramextractor.hpp \
-    extractors/tumblrextractor.hpp
+    extractors/tumblrextractor.hpp \
+    jumptoframedialog.hpp
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
@@ -81,7 +83,8 @@ FORMS    += mainwindow.ui \
     aboutwidget.ui \
     x264encoderdialog.ui \
     opendialog.ui \
-    downloadsdialog.ui
+    downloadsdialog.ui \
+    jumptoframedialog.ui
 
 INCLUDEPATH += .\libs\avs2yuv\src \
     .\libs\templet
