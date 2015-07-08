@@ -145,6 +145,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(openDialog.get(), SIGNAL(openUrl(QNetworkRequest)),
             this, SLOT(openUrl(QNetworkRequest)));
 
+    connect(openDialog.get(), SIGNAL(processDiscFiles(QStringList)),
+            this, SLOT(processDiscFiles(QStringList)));
+
     connect(downloads.get(), SIGNAL(play(QString)),
             this, SLOT(loadDownloadedFile(QString)));
 
@@ -766,76 +769,8 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionOpen_DVD_triggered()
 {
-    qCDebug(MAINWINDOW) << "Triggered Open DVD";
-
-    if(frameGenerator->isRunning()) {
-        pauseFrameGenerator();
-    }
-
-    const QString lastOpened(config.value("last_opened_dvd", "").toString());
-
-    const QStringList vobFiles = QFileDialog::getOpenFileNames(this, tr("Select DVD VOB/Blu-ray M2TS files"),
-                                                         lastOpened,
-                                                         "DVD VOB (*.vob);;Blu-ray M2TS (*.m2ts)");
-    if(vobFiles.empty()) {
-        qCDebug(MAINWINDOW) << "Cancelled opening DVD";
-
-        return;
-    }
-
-    const QFileInfo openedVobFile(vobFiles.first());
-    config.setValue("last_opened_dvd", openedVobFile.absoluteDir().absolutePath());
-
-    const QString dgIndexPath = config.value("dgindexexecpath").toString();
-    if(!QFile::exists(dgIndexPath)) {
-        qCWarning(MAINWINDOW) << "DGIndex invalid path";
-
-        QMessageBox::critical(this, tr("DGIndex invalid path"),
-                              tr("Please set a valid path to DGIndex"));
-        ui->actionOptions->trigger();
-        return;
-    }
-
-    if(config.value("savedgindexfiles", false).toBool()) {
-        qCDebug(MAINWINDOW) << "Saving DGIndex file";
-
-        const QString out = QFileDialog::getSaveFileName(
-                                0, tr("Select DGIndex project output path"),
-                                openedVobFile.absoluteDir().absoluteFilePath("dgindex_project.d2v"),
-                                tr("DGIndex project (*.d2v)"));
-        if(out.isEmpty()) {
-            return;
-        }
-
-        qCDebug(MAINWINDOW) << out;
-
-        // Get path without suffix
-        const QFileInfo outInfo(out);
-        QString outputPath = outInfo.absoluteDir().absoluteFilePath(
-                                    outInfo.completeBaseName());
-        dvdProcessor->setOutputPath(std::move(outputPath));
-    }
-    else {
-        // Remove existing output file to prevent DGIndex from creating
-        // lots of different .d2v files
-        if(QFile::exists("dgindex_tmp.d2v")) {
-            QFile::remove("dgindex_tmp.d2v");
-        }
-
-        dvdProcessor->setOutputPath("dgindex_tmp");
-    }
-
-    // Reset all states back to zero
-    resetUi();
-
-    dvdProgress->setValue(0);
-    dvdProgress->setVisible(true);
-
-    if(openedVobFile.suffix() == "m2ts") {
-        dvdProgress->setLabelText(tr("Processing Blu-ray..."));
-    }
-
-    dvdProcessor->process(vobFiles);
+    openDialog->setActiveTab(vfg::ui::OpenDialog::Tab::OpenDisc);
+    openDialog->exec();
 }
 
 void MainWindow::dvdProcessorFinished(const QString& path)
@@ -1550,6 +1485,7 @@ void MainWindow::on_playbackSpeed_currentIndexChanged(const QString &arg1)
 
 void MainWindow::on_actionOpen_URL_triggered()
 {
+    openDialog->setActiveTab(vfg::ui::OpenDialog::Tab::OpenStream);
     openDialog->exec();
 }
 
@@ -1585,4 +1521,68 @@ void MainWindow::on_actionJump_to_triggered()
         const auto position = convertMsToFrame(1000 * config.value("jumpto").toInt());
         ui->seekSlider->setValue(position);
     }
+}
+
+void MainWindow::processDiscFiles(const QStringList& files)
+{
+    qDebug() << files;
+    if(files.empty()) {
+        return;
+    }
+
+    if(frameGenerator->isRunning()) {
+        pauseFrameGenerator();
+    }
+
+    const QFileInfo openedVobFile(files.first());
+    config.setValue("last_opened_dvd", openedVobFile.absoluteDir().absolutePath());
+
+    const QString dgIndexPath = config.value("dgindexexecpath").toString();
+    if(!QFile::exists(dgIndexPath)) {
+        QMessageBox::critical(this, tr("DGIndex invalid path"),
+                              tr("Please set a valid path to DGIndex"));
+        ui->actionOptions->trigger();
+        return;
+    }
+
+    if(config.value("savedgindexfiles", false).toBool()) {
+        qCDebug(MAINWINDOW) << "Saving DGIndex file";
+
+        const QString out = QFileDialog::getSaveFileName(
+                                0, tr("Select DGIndex project output path"),
+                                openedVobFile.absoluteDir().absoluteFilePath("dgindex_project.d2v"),
+                                tr("DGIndex project (*.d2v)"));
+        if(out.isEmpty()) {
+            return;
+        }
+
+        qCDebug(MAINWINDOW) << out;
+
+        // Get path without suffix
+        const QFileInfo outInfo(out);
+        QString outputPath = outInfo.absoluteDir().absoluteFilePath(
+                                    outInfo.completeBaseName());
+        dvdProcessor->setOutputPath(std::move(outputPath));
+    }
+    else {
+        // Remove existing output file to prevent DGIndex from creating
+        // lots of different .d2v files
+        if(QFile::exists("dgindex_tmp.d2v")) {
+            QFile::remove("dgindex_tmp.d2v");
+        }
+
+        dvdProcessor->setOutputPath("dgindex_tmp");
+    }
+
+    // Reset all states back to zero
+    resetUi();
+
+    dvdProgress->setValue(0);
+    dvdProgress->setVisible(true);
+
+    if(openedVobFile.suffix() == "m2ts") {
+        dvdProgress->setLabelText(tr("Processing Blu-ray..."));
+    }
+
+    dvdProcessor->process(files);
 }

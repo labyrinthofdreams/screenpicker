@@ -8,45 +8,20 @@
 #include <QStyle>
 #include <QStyleOptionProgressBar>
 #include <QStyleOptionViewItem>
+#include "common.hpp"
 #include "httpdownload.hpp"
 #include "progressbardelegate.hpp"
 
 namespace {
 
-enum class SuffixOption
-{
-    IncludeSuffix,
-    ExcludeSuffix
-};
-
-template <class NumberType>
-QString formatNumber(const NumberType number,
-                     const SuffixOption suffixOpt = SuffixOption::IncludeSuffix) {
-    const auto KB = number / 1000.0;
-    if(KB / 1000.0 < 1.0) {
-        return QString("%1%2").arg(QString::number(KB, 'f', 2))
-                .arg(suffixOpt == SuffixOption::IncludeSuffix ? " KB" : "");
-    }
-
-    const auto MB = KB / 1000.0;
-    if(MB / 1000.0 < 1.0) {
-        return QString("%1%2").arg(QString::number(MB, 'f', 2))
-                .arg(suffixOpt == SuffixOption::IncludeSuffix ? " MB" : "");
-    }
-
-    const auto GB = MB / 1000.0;
-    return QString("%1%2").arg(QString::number(GB, 'f', 2))
-            .arg(suffixOpt == SuffixOption::IncludeSuffix ? " GB" : "");
-}
-
 template <class NumberType>
 QString formatNumberMB(const NumberType number,
-                       const SuffixOption suffixOpt = SuffixOption::IncludeSuffix) {
+                       const vfg::format::SuffixOption suffixOpt = vfg::format::SuffixOption::IncludeSuffix) {
     if(number < 1000000) {
-        return formatNumber(number / 1000.0, suffixOpt);
+        return vfg::format::formatNumber(number / 1000.0, suffixOpt);
     }
 
-    return formatNumber(number, suffixOpt);
+    return vfg::format::formatNumber(number, suffixOpt);
 }
 
 } // namespace
@@ -81,7 +56,7 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     painter->setPen(QPen(QColor::fromRgb(77, 77, 77), 1, Qt::SolidLine));
     if(dl->getStatus() == vfg::net::HttpDownload::Status::Finished) {
         painter->drawText(rect(5, 25, 0, 20), Qt::AlignLeft,
-                          QString("%1 - %2").arg(formatNumber(dl->bytesTotal()))
+                          QString("%1 - %2").arg(vfg::format::formatNumber(dl->bytesTotal()))
                                             .arg(dl->url().host()));
     }
     else if(dl->getStatus() == vfg::net::HttpDownload::Status::Aborted) {
@@ -100,15 +75,15 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         QString text;
         if(dl->sizeKnown()) {
             progressBarOption.progress = dl->percentCompleted();
-            text = QString("%4: %1 of %2 (%3/sec)").arg(formatNumberMB(dl->bytesDownloaded(), SuffixOption::ExcludeSuffix))
-                   .arg(formatNumber(dl->bytesTotal())).arg(formatNumber(dl->downloadSpeed()))
+            text = QString("%4: %1 of %2 (%3/sec)").arg(formatNumberMB(dl->bytesDownloaded(), vfg::format::SuffixOption::ExcludeSuffix))
+                   .arg(vfg::format::formatNumber(dl->bytesTotal())).arg(vfg::format::formatNumber(dl->downloadSpeed()))
                    .arg(dl->url().host());
         }
         else {
             // If the download size is not known, display infinite progress bar
             progressBarOption.maximum = 0;
-            text = QString("%3: %1 (%2/sec)").arg(formatNumber(dl->bytesDownloaded()))
-                   .arg(formatNumber(dl->downloadSpeed())).arg(dl->url().host());
+            text = QString("%3: %1 (%2/sec)").arg(vfg::format::formatNumber(dl->bytesDownloaded()))
+                   .arg(vfg::format::formatNumber(dl->downloadSpeed())).arg(dl->url().host());
         }
 
         QApplication::style()->drawControl(QStyle::CE_ProgressBar, &progressBarOption, painter);

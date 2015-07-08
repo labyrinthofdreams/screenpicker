@@ -73,7 +73,8 @@ HEADERS  += mainwindow.h \
     extractors/youtubeextractor.hpp \
     extractors/instagramextractor.hpp \
     extractors/tumblrextractor.hpp \
-    jumptoframedialog.hpp
+    jumptoframedialog.hpp \
+    common.hpp
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \

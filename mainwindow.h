@@ -21,6 +21,7 @@ class QPlainTextEdit;
 class QPoint;
 class QProgressDialog;
 class QString;
+class QStringList;
 class QThread;
 class QUrl;
 
@@ -236,6 +237,8 @@ private slots:
     void openUrl(const QNetworkRequest& request);
 
     void on_actionJump_to_triggered();
+
+    void processDiscFiles(const QStringList& files);
 
 private:
     Ui::MainWindow* ui;
