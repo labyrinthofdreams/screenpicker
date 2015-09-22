@@ -135,7 +135,7 @@
      <item>
       <widget class="QLabel" name="label_8">
        <property name="text">
-        <string>&lt;a href='http://mediaarea.net/en/MediaInfo'&gt;;MediaInfo&lt;/a&gt; &amp;copy; 2002-2015 </string>
+        <string>&lt;a href='http://mediaarea.net/en/MediaInfo'&gt;MediaInfo&lt;/a&gt; &amp;copy; 2002-2015 </string>
        </property>
        <property name="textFormat">
         <enum>Qt::RichText</enum>
