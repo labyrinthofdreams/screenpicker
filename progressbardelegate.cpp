@@ -38,8 +38,8 @@ ProgressBarDelegate::ProgressBarDelegate(QObject *parent) :
 void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                                 const QModelIndex &index) const
 {
-    auto rect = [&](const int left, const int top, const int width, const int height){
-        return QRect(left, (index.row() * this->height) + top, option.rect.width() + width, height);
+    auto rect = [&option](const int left, const int top, const int width = -1, const int height = -1){
+        return option.rect.adjusted(left, top, width, height);
     };
 
     auto get = [&index](const int row, const int column){
@@ -50,24 +50,24 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
     // #000000 (black)
     painter->setPen(QPen(QColor::fromRgb(0, 0, 0), 1, Qt::SolidLine));
-    painter->drawText(rect(5, 5, 0, 20), Qt::AlignLeft, dl->fileName());
+    painter->drawText(rect(5, 5), Qt::AlignLeft, dl->fileName());
 
     // #4D4D4D (gray)
     painter->setPen(QPen(QColor::fromRgb(77, 77, 77), 1, Qt::SolidLine));
     if(dl->getStatus() == vfg::net::HttpDownload::Status::Finished) {
-        painter->drawText(rect(5, 25, 0, 20), Qt::AlignLeft,
+        painter->drawText(rect(5, 25), Qt::AlignLeft,
                           QString("%1 - %2").arg(vfg::format::formatNumber(dl->bytesTotal()))
                                             .arg(dl->url().host()));
     }
     else if(dl->getStatus() == vfg::net::HttpDownload::Status::Aborted) {
-        painter->drawText(rect(5, 25, 0, 20), Qt::AlignLeft,
+        painter->drawText(rect(5, 25), Qt::AlignLeft,
                           QString("Canceled - %1").arg(dl->url().host()));
     }
     else if(dl->getStatus() == vfg::net::HttpDownload::Status::Running) {
         QStyleOptionProgressBar progressBarOption;
         progressBarOption.state = QStyle::State_Enabled;
         progressBarOption.direction = QApplication::layoutDirection();
-        progressBarOption.rect = rect(5, 25, -10, 15);
+        progressBarOption.rect = rect(5, 25, -5);
         progressBarOption.fontMetrics = QApplication::fontMetrics();
         progressBarOption.minimum = 0;
         progressBarOption.maximum = 100;
@@ -88,10 +88,10 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
         QApplication::style()->drawControl(QStyle::CE_ProgressBar, &progressBarOption, painter);
 
-        painter->drawText(rect(5, 45, 0, 20), Qt::AlignLeft, text);
+        painter->drawText(rect(10, 45), Qt::AlignLeft, text);
     }
     else if(dl->getStatus() == vfg::net::HttpDownload::Status::Pending) {
-        painter->drawText(rect(5, 25, 0, 20), Qt::AlignLeft,
+        painter->drawText(rect(5, 25), Qt::AlignLeft,
                           QString("Pending - %1").arg(dl->url().host()));
     }
 }
