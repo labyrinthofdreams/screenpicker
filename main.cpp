@@ -37,7 +37,7 @@ void logToFile(QtMsgType msgType, const QMessageLogContext& ctx, const QString& 
     ts << text << endl;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[]) try
 {
     // Create config
     QSettings config("config.ini", QSettings::IniFormat);
@@ -63,17 +63,13 @@ int main(int argc, char *argv[])
     a.setApplicationDisplayName(appName);
     a.setApplicationVersion(appName);
 
-    try {
-        MainWindow w;
-        w.show();
+    MainWindow w;
+    w.show();
 
-        return a.exec();
-    }
-    catch(const std::exception& ex) {
-        QMessageBox::critical(0, a.tr("Critical error"),
-                              QString(ex.what()));
-        a.exit(1);
-    }
+    return a.exec();
+}
+catch(const std::exception& ex) {
+    QMessageBox::critical(nullptr, QApplication::tr("Critical error"), QString(ex.what()));
 
-    return 1;
+    return 0;
 }
