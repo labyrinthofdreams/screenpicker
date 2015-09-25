@@ -11,6 +11,8 @@
 #include "videosettingswidget.h"
 #include "ui_videosettingswidget.h"
 
+namespace {
+
 /**
  * @brief noneg prevents negative values being used
  * @param x variable to check for negative value
@@ -20,6 +22,8 @@ constexpr int noneg(const int x)
 {
     return x < 0 ? 0 : x;
 }
+
+} // namespace
 
 vfg::ui::VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
     QWidget(parent),

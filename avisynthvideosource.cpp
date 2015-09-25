@@ -11,13 +11,14 @@
 #include "ptrutil.hpp"
 #include "scriptparser.h"
 
+namespace {
+
 /**
  * @brief Convert AVS_VideoFrame to QImage (32-bit ARGB)
  * @param frame VideoFrame
  * @exception std::runtime_error If frame is nullptr
  * @return Frame as QImage
  */
-static
 QImage videoFrameToQImage(const vfg::avisynth::VideoFrame& frame,
                           const std::size_t width,
                           const std::size_t height) {
@@ -37,6 +38,8 @@ QImage videoFrameToQImage(const vfg::avisynth::VideoFrame& frame,
 
     return image;
 }
+
+} // namespace
 
 vfg::core::AvisynthVideoSource::AvisynthVideoSource() :
     AbstractVideoSource(),

@@ -29,6 +29,8 @@
 
 Q_LOGGING_CATEGORY(MAINWINDOW, "mainwindow")
 
+namespace {
+
 QString QProcessErrorToString(const QProcess::ProcessError errorCode,
                               const QString& errorString) {
     QString error;
@@ -64,6 +66,8 @@ QString getMediaInfoParameter(const QString& path, const QString& param) {
 
     return mediaInfo.readAllStandardOutput();
 }
+
+} // namespace
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

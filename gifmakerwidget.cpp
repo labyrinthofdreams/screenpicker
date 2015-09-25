@@ -10,6 +10,8 @@
 #include "gifmakerwidget.hpp"
 #include "ui_gifmakerwidget.h"
 
+namespace {
+
 QString prettySize(double size) {
     if(size < 1000) {
         return QString("%1 B").arg(size);
@@ -25,6 +27,8 @@ QString prettySize(double size) {
 QString prettyResolution(const QRect& area) {
     return QString("%1x%2").arg(area.width()).arg(area.height());
 }
+
+} // namespace
 
 using vfg::ui::GifMakerWidget;
 

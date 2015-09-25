@@ -16,7 +16,9 @@
 #include "x264encoderdialog.hpp"
 #include "ui_x264encoderdialog.h"
 
-static QString prettySize(double size) {
+namespace {
+
+QString prettySize(double size) {
     if(size < 1000) {
         return QString("%1 B").arg(size);
     }
@@ -27,6 +29,8 @@ static QString prettySize(double size) {
     size /= 1000;
     return QString("%1 MB").arg(QString::number(size, 'f', 2));
 }
+
+} // namespace
 
 vfg::ui::x264EncoderDialog::x264EncoderDialog(QWidget *parent) :
     QDialog(parent),
