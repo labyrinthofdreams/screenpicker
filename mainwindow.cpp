@@ -661,12 +661,13 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
     QProgressDialog progress(tr("Generating frames"), tr("Cancel"), start_frame, end_frame + 2);
     progress.setWindowModality(Qt::WindowModal);
     progress.setMinimumDuration(0);
+    QDir cacheDir(config.value("cachedirectory", "cache").toString());
     for(auto current = start_frame; current <= end_frame; current += skip_frames) {
         if(progress.wasCanceled()) {
             progress.setLabelText(tr("Cancelling"));
             // Remove saved images
             for(const auto frame : frames) {
-                QFile::remove(QString("%1.png").arg(frame));
+                QFile::remove(cacheDir.absoluteFilePath(QString("%1.png")).arg(frame));
             }
 
             return;
@@ -679,7 +680,7 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
         }
 
         // Save as uncompressed PNG images
-        frame.save(QString("%1.png").arg(current), "PNG", 100);
+        frame.save(cacheDir.absoluteFilePath(QString("%1.png").arg(current)), "PNG", 100);
         frames.append(current);
 
         QCoreApplication::processEvents();
@@ -692,7 +693,8 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
     QCoreApplication::processEvents();
 
     QStringList newArgs;
-    newArgs << args.split(" ") << "*.png" << "preview.gif";
+    newArgs << args.split(" ") << cacheDir.absoluteFilePath("*.png")
+            << cacheDir.absoluteFilePath("preview.gif");
 
     QProcess imageMagick;
     imageMagick.start(imageMagickPath, newArgs);
@@ -706,7 +708,7 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
 
     // Remove saved images
     for(const auto frame : frames) {
-        QFile::remove(QString("%1.png").arg(frame));
+        QFile::remove(cacheDir.absoluteFilePath(QString("%1.png").arg(frame)));
     }
 
     progress.setValue(end_frame + 1);
@@ -720,7 +722,7 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
         const auto curDir = QDir::current();
         QStringList newOptArgs;
         newOptArgs << "--batch" << optArgs.split(" ")
-                   << curDir.absoluteFilePath("preview.gif");
+                   << cacheDir.absoluteFilePath("preview.gif");
 
         QProcess gifsicle;
         gifsicle.start(gifsiclePath, newOptArgs);
@@ -735,7 +737,7 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
 
     progress.setValue(end_frame + 2);
 
-    gifMaker->showPreview("preview.gif");
+    gifMaker->showPreview(cacheDir.absoluteFilePath("preview.gif"));
 }
 
 void MainWindow::updateDvdProgressDialog(const int progress)
