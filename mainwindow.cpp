@@ -642,6 +642,7 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
 
         QMessageBox::critical(this, tr("Missing ImageMagick path"),
                               tr("Set path to ImageMagick and try again."));
+        return;
     }
 
     const auto gifsiclePath = config.value("gifsiclepath").toString();
