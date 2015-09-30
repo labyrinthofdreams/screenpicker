@@ -4,3 +4,6 @@
 [submodule "libs/picojson"]
 	path = libs/picojson
 	url = https://github.com/kazuho/picojson.git
+[submodule "libs/qimagegrid"]
+	path = libs/qimagegrid
+	url = https://github.com/labyrinthofdreams/qimagegrid.git
