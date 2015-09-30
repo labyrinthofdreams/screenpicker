@@ -705,6 +705,13 @@
                  </spacer>
                 </item>
                 <item>
+                 <widget class="QPushButton" name="saveGridButton">
+                  <property name="text">
+                   <string>Grid</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QPushButton" name="saveThumbnailsButton">
                   <property name="toolTip">
                    <string>Save screenshots</string>

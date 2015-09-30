@@ -240,6 +240,8 @@ private slots:
 
     void processDiscFiles(const QStringList& files);
 
+    void on_saveGridButton_clicked();
+
 private:
     Ui::MainWindow* ui;
 

@@ -39,7 +39,9 @@ SOURCES += main.cpp\
     extractors/youtubeextractor.cpp \
     extractors/instagramextractor.cpp \
     extractors/tumblrextractor.cpp \
-    jumptoframedialog.cpp
+    jumptoframedialog.cpp \
+    libs\imagegridwidget\imagegridwidget.cpp \
+    savegriddialog.cpp
 
 HEADERS  += mainwindow.h \
     flowlayout.h \
@@ -74,7 +76,9 @@ HEADERS  += mainwindow.h \
     extractors/instagramextractor.hpp \
     extractors/tumblrextractor.hpp \
     jumptoframedialog.hpp \
-    common.hpp
+    common.hpp \
+    libs\imagegridwidget\imagegridwidget.hpp \
+    savegriddialog.hpp
 
 FORMS    += mainwindow.ui \
     scripteditor.ui \
@@ -85,7 +89,8 @@ FORMS    += mainwindow.ui \
     x264encoderdialog.ui \
     opendialog.ui \
     downloadsdialog.ui \
-    jumptoframedialog.ui
+    jumptoframedialog.ui \
+    savegriddialog.ui
 
 INCLUDEPATH += .\libs\avs2yuv\src \
     .\libs\templet
