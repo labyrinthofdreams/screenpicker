@@ -7,3 +7,6 @@
 [submodule "libs/qimagegrid"]
 	path = libs/qimagegrid
 	url = https://github.com/labyrinthofdreams/qimagegrid.git
+[submodule "libs/imagegridwidget"]
+	path = libs/imagegridwidget
+	url = https://github.com/labyrinthofdreams/imagegridwidget.git
