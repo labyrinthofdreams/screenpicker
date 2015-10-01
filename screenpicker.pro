@@ -41,6 +41,7 @@ SOURCES += main.cpp\
     extractors/tumblrextractor.cpp \
     jumptoframedialog.cpp \
     libs\imagegridwidget\imagegridwidget.cpp \
+    libs\qimagegrid\qimagegrid.cpp \
     savegriddialog.cpp
 
 HEADERS  += mainwindow.h \
@@ -78,6 +79,7 @@ HEADERS  += mainwindow.h \
     jumptoframedialog.hpp \
     common.hpp \
     libs\imagegridwidget\imagegridwidget.hpp \
+    libs\qimagegrid\qimagegrid.hpp \
     savegriddialog.hpp
 
 FORMS    += mainwindow.ui \
