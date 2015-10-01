@@ -23,6 +23,9 @@ public:
 
     void addPixmap(const QPixmap &img);
 
+private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::SaveGridDialog ui;
 };
