@@ -9,6 +9,29 @@
 #include "libs/qimagegrid/qimagegrid.hpp"
 #include "savegriddialog.hpp"
 
+namespace {
+
+static const QMap<QString, Qt::GlobalColor> colors {{"Transparent", Qt::transparent},
+                                                    {"White", Qt::white},
+                                                    {"Black", Qt::black},
+                                                    {"Red", Qt::red},
+                                                    {"Dark red", Qt::darkRed},
+                                                    {"Green", Qt::green},
+                                                    {"Dark green", Qt::darkGreen},
+                                                    {"Blue", Qt::blue},
+                                                    {"Dark blue", Qt::darkBlue},
+                                                    {"Cyan", Qt::cyan},
+                                                    {"Dark cyan", Qt::darkCyan},
+                                                    {"Magenta", Qt::magenta},
+                                                    {"Dark magenta", Qt::darkMagenta},
+                                                    {"Yellow", Qt::yellow},
+                                                    {"Dark yellow", Qt::darkYellow},
+                                                    {"Gray", Qt::gray},
+                                                    {"Dark gray", Qt::darkGray},
+                                                    {"Light gray", Qt::lightGray}};
+
+} // namespace
+
 namespace vfg {
 namespace ui {
 
@@ -42,24 +65,6 @@ void SaveGridDialog::addPixmap(const QPixmap &img)
 
 void SaveGridDialog::on_pushButton_clicked()
 {
-    static const QMap<QString, Qt::GlobalColor> colors {{"Transparent", Qt::transparent},
-                                                        {"White", Qt::white},
-                                                        {"Black", Qt::black},
-                                                        {"Red", Qt::red},
-                                                        {"Dark red", Qt::darkRed},
-                                                        {"Green", Qt::green},
-                                                        {"Dark green", Qt::darkGreen},
-                                                        {"Blue", Qt::blue},
-                                                        {"Dark blue", Qt::darkBlue},
-                                                        {"Cyan", Qt::cyan},
-                                                        {"Dark cyan", Qt::darkCyan},
-                                                        {"Magenta", Qt::magenta},
-                                                        {"Dark magenta", Qt::darkMagenta},
-                                                        {"Yellow", Qt::yellow},
-                                                        {"Dark yellow", Qt::darkYellow},
-                                                        {"Gray", Qt::gray},
-                                                        {"Dark gray", Qt::darkGray},
-                                                        {"Light gray", Qt::lightGray}};
     const QString path = QFileDialog::getSaveFileName(this, tr("Save as..."), {}, "PNG Images (*.png)");
     QImageGrid imageGrid;
     imageGrid.setSpacing(ui.spacingSpinBox->value());
@@ -80,6 +85,9 @@ void SaveGridDialog::on_pushButton_clicked()
 
     const QImage image = imageGrid.generateImage().scaledToWidth(ui.resizeToWidth->value());
     image.save(path);
+void SaveGridDialog::on_comboBox_currentIndexChanged(const QString &arg1)
+{
+    ui.gridWidget->setBackgroundColor(colors.value(arg1));
 }
 
 } // namespace ui
