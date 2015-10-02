@@ -72,6 +72,9 @@ void SaveGridDialog::on_pushButton_clicked()
     if(color == Qt::transparent) {
         imageGrid.setImageFormat(QImage::Format_ARGB32);
     }
+    else {
+        imageGrid.setImageFormat(QImage::Format_RGB32);
+    }
 
     imageGrid.setSpacingColor(color);
     const auto rows = ui.gridWidget->getRowCount();
