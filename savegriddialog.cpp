@@ -77,6 +77,7 @@ void SaveGridDialog::on_pushButton_clicked()
     }
 
     imageGrid.setSpacingColor(color);
+    imageGrid.setWidth(ui.resizeToWidth->value());
     const auto rows = ui.gridWidget->getRowCount();
     for(auto idx = 0; idx < rows; ++idx) {
         const auto cols = ui.gridWidget->getColumnCount(idx);
@@ -86,8 +87,9 @@ void SaveGridDialog::on_pushButton_clicked()
         }
     }
 
-    const QImage image = imageGrid.generateImage().scaledToWidth(ui.resizeToWidth->value());
-    image.save(path);
+    imageGrid.save(path);
+}
+
 void SaveGridDialog::on_comboBox_currentIndexChanged(const QString &arg1)
 {
     ui.gridWidget->setBackgroundColor(colors.value(arg1));
