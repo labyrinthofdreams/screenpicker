@@ -65,7 +65,7 @@ void vfg::ui::OpenDialog::on_openButton_clicked()
         // Process the selected DVD/BR files
         QStringList files;
         for(int i = 0; i < ui->fileList->topLevelItemCount(); ++i) {
-            files.append(ui->fileList->itemAt(0, i)->text(0));
+            files.append(ui->fileList->topLevelItem(i)->text(0));
         }
 
         emit processDiscFiles(files);
