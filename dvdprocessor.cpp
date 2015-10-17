@@ -11,7 +11,8 @@ vfg::DvdProcessor::DvdProcessor(QString processorPath, QObject *parent) :
     processor(std::move(processorPath)),
     outputPath("dgindex_tmp"),
     proc(nullptr),
-    aborted(false)
+    aborted(false),
+    lastProgress(0)
 {
     proc = util::make_unique<QProcess>();
 
@@ -36,6 +37,8 @@ void vfg::DvdProcessor::process(const QStringList& files)
         return;
     }
 
+    lastProgress = 0;
+
     QStringList args;
     args << "-ia" << "5" << "-fo" << "0" << "-yr" << "1" << "-om" << "0"
          << "-hide" << "-exit" << "-o" << outputPath << "-i" << files;
@@ -55,10 +58,6 @@ void vfg::DvdProcessor::setOutputPath(QString newOutputPath)
 
 void vfg::DvdProcessor::updateDialog()
 {
-    // Tracks the last processed value from process output
-    // as dgindex can return values smaller than last value
-    static int lastProgress = 0;
-
     // Read last integer value from process output
     const QByteArray rawOutput = proc->readAllStandardOutput();
     QString parsedOutput;

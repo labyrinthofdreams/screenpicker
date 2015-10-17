@@ -93,6 +93,10 @@ private:
     //! Flag to indicate whether the process was aborted by user
     bool aborted;
 
+    //! Tracks the last processed value from process output
+    //! as dgindex can return values smaller than last value
+    int lastProgress;
+
 private slots:
     void updateDialog();
     void handleProcessFinish(int exitCode);
