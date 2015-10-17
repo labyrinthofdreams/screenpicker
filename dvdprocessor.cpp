@@ -26,10 +26,6 @@ vfg::DvdProcessor::DvdProcessor(QString processorPath, QObject *parent) :
             this,       SLOT(handleProcessError(QProcess::ProcessError)));
 }
 
-vfg::DvdProcessor::~DvdProcessor() {
-
-}
-
 void vfg::DvdProcessor::process(const QStringList& files)
 {
     if(files.empty()) {

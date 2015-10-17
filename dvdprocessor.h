@@ -29,7 +29,7 @@ public:
     /**
      * @brief Destructor
      */
-    ~DvdProcessor();
+    ~DvdProcessor() = default;
 
     /**
      * @brief process Processes a list of VOB files to produce a d2v file
