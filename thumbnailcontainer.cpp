@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <limits>
+#include <memory>
 #include <QLoggingCategory>
 #include <QSettings>
 #include "flowlayout.h"
