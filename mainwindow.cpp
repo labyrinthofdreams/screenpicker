@@ -1002,8 +1002,9 @@ void MainWindow::on_generateButton_clicked()
             const bool reached_last_frame = current_frame >= last_frame;
             // Only check for reaching last generated frame
             // IF generating limited number of screenshots
-            if(reached_last_frame)
+            if(reached_last_frame) {
                 break;
+            }
         }
 
         const bool reached_video_end = current_frame > total_video_frames;
