@@ -581,6 +581,8 @@ void MainWindow::loadFile(const QString& path)
         videoSource->load(saveTo);
 
         mediaPlayer->setMedia(QUrl::fromLocalFile(saveTo));
+
+        videoSettingsWindow = util::make_unique<vfg::ui::VideoSettingsWidget>();
     }
     catch(const vfg::ScriptParserError& ex)
     {
