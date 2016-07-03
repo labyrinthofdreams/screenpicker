@@ -74,9 +74,7 @@ int vfg::core::AvisynthVideoSource::getNumFrames() const
 
 QImage vfg::core::AvisynthVideoSource::getFrame(const int frameNumber) try
 {
-    const auto frame = avs.getFrame(frameNumber);
-
-    return videoFrameToQImage(frame, avs.width(), avs.height());
+    return videoFrameToQImage(avs.getFrame(frameNumber), avs.width(), avs.height());
 }
 catch(const std::exception& exc) {
     return {};
