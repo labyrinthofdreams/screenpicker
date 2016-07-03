@@ -32,37 +32,37 @@ public:
 
 private:
     //! Network reply for the request
-    std::unique_ptr<QNetworkReply> reply;
+    std::unique_ptr<QNetworkReply> reply {};
 
     //! Network request
     QNetworkRequest request;
 
     //! Bytes downloaded
-    qint64 received;
+    qint64 received {0};
 
     //! Bytes total
-    qint64 total;
+    qint64 total {0};
 
     //! Keeps track of the download time
-    QTime timer;
+    QTime timer {};
 
     //! Download duration
-    qint64 dlDuration;
+    qint64 dlDuration {0};
 
     //! Output file
     QFile outFile;
 
     //! Download status
-    Status status;
+    Status status {Status::Pending};
 
     //! Used to calculate download speed every second
-    QTime speedTimer;
+    QTime speedTimer {};
 
     //! Download speed (bytes per second)
-    double speed;
+    double speed {0.0};
 
     //! Download amount in the last second
-    int downloaded;
+    int downloaded {0};
 
 public:
     /**

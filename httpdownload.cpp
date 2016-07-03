@@ -16,16 +16,8 @@ namespace net {
 
 HttpDownload::HttpDownload(const QNetworkRequest& request, const QDir& cachePath, QObject *parent) :
     QObject(parent),
-    reply(nullptr),
     request(request),
-    received(0),
-    total(0),
-    timer(),
-    outFile(cachePath.absoluteFilePath(request.url().fileName())),
-    status(Status::Pending),
-    speedTimer(),
-    speed(0.0),
-    downloaded(0)
+    outFile(cachePath.absoluteFilePath(request.url().fileName()))
 {
     if(!cachePath.exists()) {
         cachePath.mkpath(cachePath.path());
@@ -57,10 +49,11 @@ void HttpDownload::start(QNetworkAccessManager* netMan)
 
     reply.reset(netMan->get(request));
 
-    connect(reply.get(), SIGNAL(downloadProgress(qint64, qint64)),
-            this, SLOT(updateProgress(qint64, qint64)));
+    connect(reply.get(), &QNetworkReply::downloadProgress,
+            this, &HttpDownload::updateProgress);
 
-    connect(reply.get(), SIGNAL(finished()), this, SLOT(downloadFinished()));
+    connect(reply.get(), &QNetworkReply::finished,
+            this, &HttpDownload::downloadFinished);
 
     timer.start();
     speedTimer.start();
