@@ -2,10 +2,8 @@
 #define ABSTRACTVIDEOSOURCE_H
 
 #include <stdexcept>
-#include <string>
 #include <QObject>
 
-// Forward declarations
 namespace vfg {
     class ScriptParser;
 } // namespace vfg
@@ -16,23 +14,17 @@ class QSize;
 class QString;
 
 namespace vfg {
-namespace exception {
+namespace core {
 
 /**
  * @brief The VideoSourceError class
  *
  * General exception relating to video source errors
  */
-class VideoSourceError : public std::runtime_error
+struct VideoSourceError : public std::runtime_error
 {
-public:
-    VideoSourceError(const char* msg) : std::runtime_error(msg) {}
-    VideoSourceError(const std::string& msg) : std::runtime_error(msg) {}
+    using std::runtime_error::runtime_error;
 };
-
-} // namespace exception
-
-namespace core {
 
 /**
  * @brief The AbstractVideoSource class

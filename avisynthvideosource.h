@@ -10,7 +10,7 @@ namespace core {
 class AvisynthVideoSource : public vfg::core::AbstractVideoSource
 {
 private:
-    vfg::avisynth::AvisynthWrapper avs;
+    vfg::avisynth::AvisynthWrapper avs {};
 
 public:
     AvisynthVideoSource();

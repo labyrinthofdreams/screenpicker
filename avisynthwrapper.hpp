@@ -8,24 +8,16 @@
 #include "avs_internal.c"
 #include "ptrutil.hpp"
 
-// TODO: Add video frame class
-
 namespace vfg {
-namespace exception {
+namespace avisynth {
 
 /**
  * @brief Avisynth exception error class
  */
-class AvisynthError : public std::runtime_error
+struct AvisynthError : public std::runtime_error
 {
-public:
-    AvisynthError(const char* msg);
-    AvisynthError(const std::string& msg);
+    using std::runtime_error::runtime_error;
 };
-
-} // namespace exception
-
-namespace avisynth {
 
 /**
  * @brief Pixel formats as defined by Avisynth
@@ -89,9 +81,9 @@ public:
 class AvisynthWrapper
 {
 private:
-    avs_hnd_t avsHandle;
-    util::observer_ptr<const AVS_VideoInfo> info;
-    std::string openFilePath;
+    avs_hnd_t avsHandle {};
+    util::observer_ptr<const AVS_VideoInfo> info {};
+    std::string openFilePath {};
 
 public:
     /**

@@ -42,8 +42,7 @@ QImage videoFrameToQImage(const vfg::avisynth::VideoFrame& frame,
 } // namespace
 
 vfg::core::AvisynthVideoSource::AvisynthVideoSource() :
-    AbstractVideoSource(),
-    avs()
+    AbstractVideoSource()
 {
 
 }
@@ -53,14 +52,14 @@ void vfg::core::AvisynthVideoSource::load(const QString& fileName) try
     avs.load(fileName.toStdString());
 
     if(avs.pixelFormat() != vfg::avisynth::PixelFormat::BGR32) {
-        throw vfg::exception::VideoSourceError("Video is not RGB32. Add ConvertToRGB32() to your script.");
+        throw VideoSourceError("Video is not RGB32. Add ConvertToRGB32() to your script.");
     }
 
     emit videoLoaded();
 }
-catch(const vfg::exception::AvisynthError& ex)
+catch(const vfg::avisynth::AvisynthError& ex)
 {
-    throw vfg::exception::VideoSourceError(ex.what());
+    throw VideoSourceError(ex.what());
 }
 
 bool vfg::core::AvisynthVideoSource::hasVideo() const

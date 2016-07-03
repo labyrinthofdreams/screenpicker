@@ -24,29 +24,17 @@ vfg::avisynth::VideoFrame::data() const {
     return avs_get_read_ptr(videoFrame.get());
 }
 
-vfg::exception::AvisynthError::AvisynthError(const char *msg) :
-    std::runtime_error(msg) {
-}
-
-vfg::exception::AvisynthError::AvisynthError(const std::string& msg) :
-    std::runtime_error(msg) {
-}
-
-vfg::avisynth::AvisynthWrapper::AvisynthWrapper() :
-    avsHandle(),
-    info(),
-    openFilePath()
+vfg::avisynth::AvisynthWrapper::AvisynthWrapper()
 {
     if(internal_avs_load_library(&avsHandle) < 0) {
-        throw vfg::exception::AvisynthError("Failed to load AviSynth library");
+        throw AvisynthError("Failed to load AviSynth library");
     }
 
     avsHandle.env = avsHandle.func.avs_create_script_environment(AVS_INTERFACE_25);
     if(avsHandle.func.avs_get_error) {
         const auto error(avsHandle.func.avs_get_error(avsHandle.env));
         if(error) {
-            throw vfg::exception::AvisynthError(
-                        std::string("Failed to create script environment: ") + error);
+            throw AvisynthError(std::string("Failed to create script environment: ") + error);
         }
     }
 }
@@ -73,11 +61,11 @@ void vfg::avisynth::AvisynthWrapper::load(const std::string& path) {
     }
 
     if(avs_is_error(res.get())) {
-        throw vfg::exception::AvisynthError(avs_as_string(res.get()));
+        throw AvisynthError(avs_as_string(res.get()));
     }
 
     if(!avs_is_clip(res.get())) {
-        throw vfg::exception::AvisynthError("Imported script did not return a video clip");
+        throw AvisynthError("Imported script did not return a video clip");
     }
 
     avsHandle.clip = avsHandle.func.avs_take_clip(res.get(), avsHandle.env);
@@ -85,7 +73,7 @@ void vfg::avisynth::AvisynthWrapper::load(const std::string& path) {
     if(!avs_has_video(info.get())) {
         avsHandle.func.avs_release_clip(avsHandle.clip);
         info.reset();
-        throw vfg::exception::AvisynthError("Imported script does not have video data");
+        throw AvisynthError("Imported script does not have video data");
     }
 
     openFilePath = path;
@@ -94,11 +82,11 @@ void vfg::avisynth::AvisynthWrapper::load(const std::string& path) {
 vfg::avisynth::VideoFrame
 vfg::avisynth::AvisynthWrapper::getFrame(const int frameNum) const {
     if(!hasVideo()) {
-        throw vfg::exception::AvisynthError("No video");
+        throw AvisynthError("No video");
     }
 
     if(frameNum < 0 || frameNum >= numFrames()) {
-        throw vfg::exception::AvisynthError("Requested frame number is out of range");
+        throw AvisynthError("Requested frame number is out of range");
     }
 
     std::unique_ptr<AVS_VideoFrame,
@@ -107,7 +95,7 @@ vfg::avisynth::AvisynthWrapper::getFrame(const int frameNum) const {
                 avsHandle.func.avs_release_video_frame);
     const auto error = avsHandle.func.avs_clip_get_error(avsHandle.clip);
     if(error) {
-        throw vfg::exception::AvisynthError(error);
+        throw AvisynthError(error);
     }
 
     return {std::move(frame)};
