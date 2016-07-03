@@ -32,15 +32,12 @@ class VideoFrameGrabber : public QObject
 private:
     std::shared_ptr<vfg::core::AbstractVideoSource> avs;
 
-    //! Number of total frames in the source video
-    int numFrames;
-
     //! Tracks the last requested frame number to enable
     //! the use of next and prev member functions.
     //! Value is between range [0, numFrames)
-    int currentFrame;
+    int currentFrame {0};
 
-    mutable QMutex mutex;
+    mutable QMutex mutex {};
 
 public:
     /**
@@ -77,14 +74,13 @@ public:
      * @brief Get total number of frames in video source
      * @return Total number of frames
      */
-    int totalFrames();
+    int totalFrames() const;
 
     /**
      * @brief Get frame from video source
      * @pre frameNum must be between [0, numFrames)
      * @param frameNum Frame to request
-     * @exception std::runtime_error If frameNum is out of range
-     * @return Frame
+     * @return Frame (may be null)
      */
     QImage getFrame(int frameNum);
 
@@ -126,12 +122,6 @@ public slots:
      * @param frameNum
      */
     void requestFrame(int frameNum);
-
-private slots:
-    /**
-     * @brief Update internal state after video source has updated
-     */
-    void videoSourceUpdated();
 
 signals:
     /**
