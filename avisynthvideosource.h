@@ -25,6 +25,13 @@ public:
     void load(const QString& fileName) override;
     bool hasVideo() const override;
     int getNumFrames() const override;
+
+    /**
+     * @brief getFrame
+     * @param frameNumber
+     * @pre 0 <= frameNum < numFrames()
+     * @return Frame (may be null)
+     */
     QImage getFrame(int frameNumber) override;
     QString getSupportedFormats() override;
     bool isValidFrame(int frameNum) const override;

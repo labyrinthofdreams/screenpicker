@@ -68,6 +68,7 @@ public:
     /**
      * @brief Get frame from the video source
      * @param frameNumber Frame to request
+     * @pre 0 <= frameNumber < getNumFrames()
      * @exception vfg::exception::VideoSourceError
      * @return The requested frame. Empty QImage on error.
      */
