@@ -44,16 +44,16 @@
 
 #define LOAD_AVS_FUNC(name, continue_on_fail)\
 {\
-    h->func.name = (void*)GetProcAddress( h->library, #name );\
+    h->func.name = reinterpret_cast<decltype(h->func.name)>((void*)GetProcAddress( h->library, #name ));\
     if( !continue_on_fail && !h->func.name )\
         goto fail;\
 }
 
 typedef struct
 {
-    AVS_Clip *clip;
-    AVS_ScriptEnvironment *env;
-    HMODULE library;
+    AVS_Clip *clip {};
+    AVS_ScriptEnvironment *env {};
+    HMODULE library {};
     struct
     {
         AVSC_DECLARE_FUNC( avs_clip_get_error );
