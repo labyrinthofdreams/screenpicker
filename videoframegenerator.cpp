@@ -8,15 +8,13 @@
 
 Q_LOGGING_CATEGORY(GENERATOR, "videoframegenerator")
 
-using vfg::core::VideoFrameGenerator;
+namespace vfg {
+namespace core {
 
 VideoFrameGenerator::VideoFrameGenerator(std::shared_ptr<vfg::core::VideoFrameGrabber> newFrameGrabber,
                                          QObject *parent) :
     QObject(parent),
-    frameGrabber(std::move(newFrameGrabber)),
-    frames(),
-    mutex(),
-    state(State::Stopped)
+    frameGrabber(std::move(newFrameGrabber))
 {
     if(!frameGrabber) {
         qCCritical(GENERATOR) << "Invalid frame grabber passed to generator";
@@ -45,7 +43,8 @@ void VideoFrameGenerator::start()
         const int current = frames.first();
 
         lock.unlock();
-        QImage frame = frameGrabber->getFrame(current);
+        // Lock not needed so free it for other member functions
+        const QImage frame = frameGrabber->getFrame(current);
 
         lock.relock();
         if(state == State::Paused || state == State::Stopped) {
@@ -58,7 +57,7 @@ void VideoFrameGenerator::start()
         frames.takeFirst();
         lock.unlock();
 
-        emit frameReady(current, std::move(frame));
+        emit frameReady(current, frame);
     }
 
     if(state != State::Paused) {
@@ -114,9 +113,8 @@ bool VideoFrameGenerator::isPaused() const
 
 void VideoFrameGenerator::enqueue(const QList<int>& newFrames)
 {
-    for(const int frame : newFrames) {
-        frames.append(frame);
-    }
+    QMutexLocker lock(&mutex);
+    frames.append(newFrames);
 
     qCDebug(GENERATOR) << "Enqueued" << newFrames.size() << "frames";
 }
@@ -124,17 +122,9 @@ void VideoFrameGenerator::enqueue(const QList<int>& newFrames)
 void VideoFrameGenerator::enqueue(const int frame)
 {
     QMutexLocker lock(&mutex);
+    frames.append(frame);
 
     qCDebug(GENERATOR) << "Enqueueing frame" << frame;
-
-    if(!frameGrabber->isValidFrame(frame)) {
-        qCCritical(GENERATOR) << "Invalid frame";
-
-        return;
-    }
-
-    // Let duplicate frames be added
-    frames.append(frame);
 }
 
 int VideoFrameGenerator::remaining() const
@@ -142,3 +132,6 @@ int VideoFrameGenerator::remaining() const
     QMutexLocker lock(&mutex);
     return frames.count();
 }
+
+} // namespace core
+} // namespace vfg

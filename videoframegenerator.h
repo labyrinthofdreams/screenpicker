@@ -34,7 +34,8 @@ public:
      * @param parent Owner of the object
      * @exception std::runtime_error If frameGrabber is nullptr
      */
-    explicit VideoFrameGenerator(std::shared_ptr<vfg::core::VideoFrameGrabber> frameGrabber, QObject *parent = 0);
+    explicit VideoFrameGenerator(std::shared_ptr<vfg::core::VideoFrameGrabber> frameGrabber,
+                                 QObject *parent = 0);
 
     /**
      * @brief Get generator running status
@@ -132,9 +133,9 @@ private:
     
 private:
     std::shared_ptr<vfg::core::VideoFrameGrabber> frameGrabber;
-    QList<int> frames;
-    mutable QMutex mutex;
-    State state;
+    QList<int> frames {};
+    mutable QMutex mutex {};
+    State state {State::Stopped};
 };
 
 } // namespace core
