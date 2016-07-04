@@ -5,7 +5,6 @@
 #include <QObject>
 #include <QProcess>
 
-// Forward declarations
 class QString;
 class QStringList;
 
@@ -24,12 +23,7 @@ public:
      * @param processorPath Path to the processor executable file
      * @param parent Owner of the object
      */
-    explicit DvdProcessor(QString processorPath, QObject *parent = 0);
-
-    /**
-     * @brief Destructor
-     */
-    ~DvdProcessor() = default;
+    explicit DvdProcessor(const QString &processorPath, QObject *parent = 0);
 
     /**
      * @brief process Processes a list of VOB files to produce a d2v file
@@ -41,7 +35,7 @@ public:
      * @brief Set processor executable path
      * @param executablePath Path to the executable
      */
-    void setProcessor(QString executablePath);
+    void setProcessor(const QString &executablePath);
 
     /**
      * @brief Set output path
@@ -50,7 +44,7 @@ public:
      * will append .d2v to it automatically
      * @param outputPath Output path without a suffix
      */
-    void setOutputPath(QString outputPath);
+    void setOutputPath(const QString &outputPath);
 
     /**
      * @brief Get output path with proper extension
@@ -86,16 +80,19 @@ signals:
 private:
     //! Path to the executable processor
     QString processor;
+
     //! Path to save the processed file
-    QString outputPath;
+    QString outputPath {"dgindex_tmp"};
+
     //! The interface between the app and the executable
-    std::unique_ptr<QProcess> proc;
+    std::unique_ptr<QProcess> proc {};
+
     //! Flag to indicate whether the process was aborted by user
-    bool aborted;
+    bool aborted {false};
 
     //! Tracks the last processed value from process output
     //! as dgindex can return values smaller than last value
-    int lastProgress;
+    int lastProgress {0};
 
 private slots:
     void updateDialog();

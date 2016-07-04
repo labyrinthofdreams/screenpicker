@@ -6,27 +6,24 @@
 #include "dvdprocessor.h"
 #include "ptrutil.hpp"
 
-vfg::DvdProcessor::DvdProcessor(QString processorPath, QObject *parent) :
+namespace vfg {
+
+DvdProcessor::DvdProcessor(const QString &processorPath, QObject *parent) :
     QObject(parent),
-    processor(std::move(processorPath)),
-    outputPath("dgindex_tmp"),
-    proc(nullptr),
-    aborted(false),
-    lastProgress(0)
+    processor(processorPath),
+    proc(util::make_unique<QProcess>())
 {
-    proc = util::make_unique<QProcess>();
+    connect(proc.get(), &QProcess::readyReadStandardOutput,
+            this,       &DvdProcessor::updateDialog);
 
-    connect(proc.get(), SIGNAL(readyReadStandardOutput()),
-            this,       SLOT(updateDialog()));
+    connect(proc.get(), static_cast<void(QProcess::*)(int)>(&QProcess::finished),
+            this,       &DvdProcessor::handleProcessFinish);
 
-    connect(proc.get(), SIGNAL(finished(int)),
-            this,       SLOT(handleProcessFinish(int)));
-
-    connect(proc.get(), SIGNAL(error(QProcess::ProcessError)),
-            this,       SLOT(handleProcessError(QProcess::ProcessError)));
+    connect(proc.get(), static_cast<void(QProcess::*)(QProcess::ProcessError)>(&QProcess::error),
+            this,       &DvdProcessor::handleProcessError);
 }
 
-void vfg::DvdProcessor::process(const QStringList& files)
+void DvdProcessor::process(const QStringList& files)
 {
     if(files.empty()) {
         emit error(tr("Nothing to process."));
@@ -42,17 +39,17 @@ void vfg::DvdProcessor::process(const QStringList& files)
     proc->start(processor, args);
 }
 
-void vfg::DvdProcessor::setProcessor(QString executablePath)
+void DvdProcessor::setProcessor(const QString &executablePath)
 {
-    processor = std::move(executablePath);
+    processor = executablePath;
 }
 
-void vfg::DvdProcessor::setOutputPath(QString newOutputPath)
+void DvdProcessor::setOutputPath(const QString &newOutputPath)
 {
-    outputPath = std::move(newOutputPath);
+    outputPath = newOutputPath;
 }
 
-void vfg::DvdProcessor::updateDialog()
+void DvdProcessor::updateDialog()
 {
     // Read last integer value from process output
     const QByteArray rawOutput = proc->readAllStandardOutput();
@@ -77,7 +74,7 @@ void vfg::DvdProcessor::updateDialog()
     emit progressUpdate(currentProgress);
 }
 
-void vfg::DvdProcessor::handleProcessFinish(const int exitCode)
+void DvdProcessor::handleProcessFinish(const int exitCode)
 {
     // Non-zero exit code implies crash / abort
     if(exitCode == 0) {
@@ -85,13 +82,13 @@ void vfg::DvdProcessor::handleProcessFinish(const int exitCode)
     }
 }
 
-void vfg::DvdProcessor::handleAbortProcess()
+void DvdProcessor::handleAbortProcess()
 {
     aborted = true;
     proc->close();
 }
 
-void vfg::DvdProcessor::handleProcessError(const QProcess::ProcessError errorCode)
+void DvdProcessor::handleProcessError(const QProcess::ProcessError errorCode)
 {
     proc->close();
 
@@ -113,7 +110,9 @@ void vfg::DvdProcessor::handleProcessError(const QProcess::ProcessError errorCod
     }
 }
 
-QString vfg::DvdProcessor::savedPath() const
+QString DvdProcessor::savedPath() const
 {
     return QString("%1.d2v").arg(outputPath);
 }
+
+} // namespace vfg
