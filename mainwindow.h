@@ -7,9 +7,7 @@
 #include <QtContainerFwd>
 #include "ptrutil.hpp"
 
-// Forward declarations
 class QAction;
-class QActionGroup;
 class QCloseEvent;
 class QDragEvent;
 class QDropEvent;
@@ -89,21 +87,9 @@ private slots:
     void videoSettingsUpdated();
 
     /**
-     * @brief Triggered after the dvd processor has finished
-     * @param path Path to the processed file returned by the dvd processor
-     */
-    void dvdProcessorFinished(const QString& path);
-
-    /**
      * @brief Triggered after a video source has finished loading
      */
     void videoLoaded();
-
-    /**
-     * @brief Handles various errors from video related sources
-     * @param msg Error message
-     */
-    void videoError(const QString& msg);
 
     /**
      * @brief Triggered after a thumbnail has been clicked
@@ -140,18 +126,6 @@ private slots:
      * @param action The action that was performed
      */
     void videoZoomChanged(QAction *action);
-
-    /**
-     * @brief Displays a context menu on the video preview widget
-     * @param pos Position of the right-click event
-     */
-    void contextMenuOnPreview(const QPoint& pos);
-
-    /**
-     * @brief Update DVD Progress Dialog
-     * @param progress Current progress
-     */
-    void updateDvdProgressDialog(int progress);
 
     /**
      * @brief Generate and display GIF preview
@@ -234,8 +208,6 @@ private slots:
 
     void on_actionDownloads_triggered();
 
-    void openUrl(const QNetworkRequest& request);
-
     void on_actionJump_to_triggered();
 
     void processDiscFiles(const QStringList& files);
@@ -247,8 +219,6 @@ private:
 
     std::unique_ptr<QThread> frameGrabberThread;
     std::unique_ptr<QThread> frameGeneratorThread;
-
-    std::unique_ptr<QActionGroup> videoZoomGroup;
 
     //! Display DVD loading progress in a dialog
     std::unique_ptr<QProgressDialog> dvdProgress;
@@ -269,7 +239,7 @@ private:
     std::unique_ptr<QMediaPlayer> mediaPlayer;
 
     //! Downloads window
-    std::unique_ptr<vfg::ui::DownloadsDialog> downloads;
+    std::unique_ptr<vfg::ui::DownloadsDialog> downloadsWindow;
 
     //! Open dialog
     std::unique_ptr<vfg::ui::OpenDialog> openDialog;
@@ -278,10 +248,10 @@ private:
     //! the seek slider. This variable keeps track where the slider was moved
     //! and is checked in on_seekSlider_valueChanged to make sure user
     //! moved the seek slider
-    int seekedTime;
+    int seekedTime {0};
 
     //! Application wide configuration settings
-    QSettings config;
+    QSettings config {"config.ini", QSettings::IniFormat};
 
     /**
      * @brief Setup widgets to default values

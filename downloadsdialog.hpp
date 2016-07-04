@@ -10,6 +10,7 @@
 
 class QNetworkAccessManager;
 class QNetworkReply;
+class QNetworkRequest;
 class QPoint;
 class QUrl;
 
@@ -41,7 +42,7 @@ public:
      * @brief Add new download request
      * @param request Request to add
      */
-    void addDownload(std::shared_ptr<vfg::net::HttpDownload> request);
+    void addDownload(const QNetworkRequest &request);
 
 private:
     //! UI

@@ -1,11 +1,14 @@
 #include <memory>
 #include <utility>
 #include <QAction>
+#include <QDir>
 #include <QMenu>
+#include <QMessageBox>
 #include <QModelIndex>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QSettings>
 #include <QUrl>
 #include <QVariant>
 #include "downloadsdialog.hpp"
@@ -32,13 +35,24 @@ DownloadsDialog::DownloadsDialog(QWidget *parent) :
             this, &DownloadsDialog::contextMenuRequested);
 }
 
-void DownloadsDialog::addDownload(std::shared_ptr<vfg::net::HttpDownload> request)
+void DownloadsDialog::addDownload(const QNetworkRequest &request)
 {
-    connect(request.get(), &vfg::net::HttpDownload::updated, [this]() {
+    const QUrl url = request.url();
+    if(!(url.scheme() == "http" || url.scheme() == "https" ||
+            url.scheme() == "ftp" || url.scheme() == "ftps")) {
+        QMessageBox::information(this, tr("Unsupported scheme"),
+                                 tr("This scheme is not supported"));
+        return;
+    }
+
+    QSettings config("config.ini", QSettings::IniFormat);
+    auto httpReq = std::make_shared<vfg::net::HttpDownload>(request,
+                                                        QDir(config.value("cachedirectory").toString()));
+    connect(httpReq.get(), &vfg::net::HttpDownload::updated, [this]() {
         model->updateData();
     });
-    request->start(netMan.get());
-    model->addItem(std::move(request));
+    httpReq->start(netMan.get());
+    model->addItem(std::move(httpReq));
 }
 
 void DownloadsDialog::on_pushButton_clicked()

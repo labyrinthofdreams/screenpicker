@@ -1,4 +1,3 @@
-#include <map>
 #include <memory>
 #include <stdexcept>
 #include <utility>
@@ -72,55 +71,19 @@ QString getMediaInfoParameter(const QString& path, const QString& param) {
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow),
-    frameGrabberThread(nullptr),
-    frameGeneratorThread(nullptr),
-    videoZoomGroup(nullptr),
-    dvdProgress(nullptr),
-    videoSource(nullptr),
-    frameGrabber(nullptr),
-    frameGenerator(nullptr),
-    scriptEditor(nullptr),
-    videoSettingsWindow(nullptr),
-    dvdProcessor(nullptr),
-    previewContext(nullptr),
-    gifMaker(nullptr),
-    mediaPlayer(new QMediaPlayer),
-    downloads(new vfg::ui::DownloadsDialog),
-    openDialog(new vfg::ui::OpenDialog),
-    seekedTime(0),
-    config("config.ini", QSettings::IniFormat)
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 
     setupInternal();
 
-    dvdProgress = util::make_unique<QProgressDialog>(tr("Processing DVD..."),
-                                                     tr("Abort"), 0, 100);
+    ui->unsavedWidget->setMaxThumbnails(config.value("maxthumbnails").toInt());
+    ui->unsavedProgressBar->setMaximum(config.value("maxthumbnails").toInt());
 
-    scriptEditor = util::make_unique<vfg::ui::ScriptEditor>();
+    ui->screenshotsSpinBox->setValue(config.value("numscreenshots").toInt());
 
-    videoSettingsWindow = util::make_unique<vfg::ui::VideoSettingsWidget>();
+    ui->frameStepSpinBox->setValue(config.value("framestep").toInt());
 
-    QString dgIndexPath = config.value("dgindexexecpath").toString();
-    dvdProcessor = util::make_unique<vfg::DvdProcessor>(dgIndexPath);
-
-    const int maxThumbnails = config.value("maxthumbnails").toInt();
-    ui->unsavedWidget->setMaxThumbnails(maxThumbnails);
-    ui->unsavedProgressBar->setMaximum(maxThumbnails);
-
-    const int numScreenshots = config.value("numscreenshots").toInt();
-    ui->screenshotsSpinBox->setValue(numScreenshots);
-
-    const int frameStep = config.value("framestep").toInt();
-    ui->frameStepSpinBox->setValue(frameStep);
-
-    videoZoomGroup = util::make_unique<QActionGroup>(nullptr);
-    videoZoomGroup->addAction(ui->action25);
-    videoZoomGroup->addAction(ui->action50);
-    videoZoomGroup->addAction(ui->action100);
-    videoZoomGroup->addAction(ui->action200);
-    videoZoomGroup->addAction(ui->actionScaleToWindow);
     ui->action25->setData("25");
     ui->action50->setData("50");
     ui->action100->setData("100");
@@ -135,8 +98,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->unsavedWidget->resizeThumbnails(thumbnailSize);
     ui->savedWidget->resizeThumbnails(thumbnailSize);
 
-    previewContext = ui->menuVideo;
-
     const auto logging = config.value("enable_logging", false).toBool();
     ui->actionDebugOn->setChecked(logging);
     ui->actionDebugOff->setChecked(!logging);
@@ -144,86 +105,169 @@ MainWindow::MainWindow(QWidget *parent) :
     // Open recent
     buildRecentMenu();
 
-    mediaPlayer->setVideoOutput(ui->videoPreviewWidget->videoWidget);
+    //
+    // Downloads window
+    //
+    downloadsWindow = util::make_unique<vfg::ui::DownloadsDialog>();
+
+    // When user requests to play file in downloads window, load it
+    connect(downloadsWindow.get(),  &vfg::ui::DownloadsDialog::play,
+            this,                   &MainWindow::loadDownloadedFile);
+
+    //
+    // Open dialog
+    //
+    openDialog = util::make_unique<vfg::ui::OpenDialog>();
+
+    // When user wants to open URL via open dialog, add it to downloads
+    connect(openDialog.get(), &vfg::ui::OpenDialog::openUrl, [this](const QNetworkRequest &req) {
+        downloadsWindow->addDownload(req);
+        downloadsWindow->show();
+    });
+
+    // When user wants to load DVD/BR files, process them
+    connect(openDialog.get(),   &vfg::ui::OpenDialog::processDiscFiles,
+            this,               &MainWindow::processDiscFiles);
+
+    //
+    // Media player
+    //
+    mediaPlayer = util::make_unique<QMediaPlayer>();
+    mediaPlayer->setVideoOutput(ui->videoPreviewWidget->videoWidget.get());
     mediaPlayer->setVolume(ui->volumeSlider->value());
 
-    connect(openDialog.get(), SIGNAL(openUrl(QNetworkRequest)),
-            this, SLOT(openUrl(QNetworkRequest)));
+    // While video is playing the position of the video changes, so move the slider accordingly
+    connect(mediaPlayer.get(),  &QMediaPlayer::positionChanged,
+            this,               &MainWindow::videoPositionChanged);
 
-    connect(openDialog.get(), SIGNAL(processDiscFiles(QStringList)),
-            this, SLOT(processDiscFiles(QStringList)));
+    // Adjust video volume level when changing the volume slider
+    connect(ui->volumeSlider,   &QSlider::sliderMoved,
+            mediaPlayer.get(),  &QMediaPlayer::setVolume);
 
-    connect(downloads.get(), SIGNAL(play(QString)),
-            this, SLOT(loadDownloadedFile(QString)));
+    //
+    // Video zoom
+    //
+    auto videoZoomGroup = new QActionGroup(this);
+    videoZoomGroup->addAction(ui->action25);
+    videoZoomGroup->addAction(ui->action50);
+    videoZoomGroup->addAction(ui->action100);
+    videoZoomGroup->addAction(ui->action200);
+    videoZoomGroup->addAction(ui->actionScaleToWindow);
 
-    connect(mediaPlayer.get(), SIGNAL(positionChanged(qint64)),
-            this, SLOT(videoPositionChanged(qint64)));
+    // When user changes zoom mode...
+    connect(videoZoomGroup, &QActionGroup::triggered,
+            this,           &MainWindow::videoZoomChanged);
 
-    connect(ui->volumeSlider, SIGNAL(sliderMoved(int)),
-            mediaPlayer.get(), SLOT(setVolume(int)));
+    //
+    // Show context menu on video preview widget
+    //
+    previewContext = ui->menuVideo;
 
-    connect(videoZoomGroup.get(),   SIGNAL(triggered(QAction*)),
-            this,                   SLOT(videoZoomChanged(QAction*)));
+    connect(ui->videoPreviewWidget, &vfg::ui::VideoPreviewWidget::customContextMenuRequested,
+            [this](const QPoint &pos) {
+        previewContext->exec(ui->videoPreviewWidget->mapToGlobal(pos));
+    });
 
-    connect(ui->videoPreviewWidget, SIGNAL(customContextMenuRequested(QPoint)),
-            this,                   SLOT(contextMenuOnPreview(QPoint)));
+    //
+    // Video settings window
+    //
+    videoSettingsWindow = util::make_unique<vfg::ui::VideoSettingsWidget>();
 
-    connect(videoSettingsWindow.get(),  SIGNAL(settingsChanged()),
-            this,                       SLOT(videoSettingsUpdated()));
+    // When video settings are changed update video
+    connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::settingsChanged,
+            this,                       &MainWindow::videoSettingsUpdated);
 
-    connect(videoSettingsWindow.get(),  SIGNAL(cropChanged(QRect)),
-            ui->videoPreviewWidget,     SLOT(setCrop(QRect)));
+    // Draw crop border on video preview when crop changes in video settings
+    connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::cropChanged,
+            ui->videoPreviewWidget,     &vfg::ui::VideoPreviewWidget::setCrop);
 
-    connect(videoSettingsWindow.get(),  SIGNAL(closed()),
-            ui->videoPreviewWidget,     SLOT(resetCrop()));
+    // Remove crop border on video preview when video settings is closed
+    connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::closed,
+            ui->videoPreviewWidget,     &vfg::ui::VideoPreviewWidget::resetCrop);
 
-    connect(scriptEditor.get(), SIGNAL(scriptUpdated()),
-            this,               SLOT(scriptEditorUpdated()));
+    //
+    // Script editor
+    //
+    scriptEditor = util::make_unique<vfg::ui::ScriptEditor>();
 
-    connect(dvdProcessor.get(), SIGNAL(finished(QString)),
-            this, SLOT(dvdProcessorFinished(QString)));
+    // Update video when script is changed
+    connect(scriptEditor.get(), &vfg::ui::ScriptEditor::scriptUpdated,
+            this,               &MainWindow::scriptEditorUpdated);
 
-    connect(dvdProcessor.get(), SIGNAL(error(QString)),
-            this,               SLOT(videoError(QString)));
+    //
+    // DVD processor
+    //
+    dvdProcessor = util::make_unique<vfg::DvdProcessor>(config.value("dgindexexecpath").toString());
 
-    connect(dvdProcessor.get(), SIGNAL(progressUpdate(int)),
-            this,               SLOT(updateDvdProgressDialog(int)));
+    // When DVD processor finishes, hide dialog window and load the processed file
+    connect(dvdProcessor.get(), &vfg::DvdProcessor::finished, [this](const QString& filename) {
+        dvdProgress->accept();
+        loadFile(filename);
+    });
 
-    connect(dvdProgress.get(),  SIGNAL(canceled()),
-            dvdProcessor.get(), SLOT(handleAbortProcess()));
+    // When DVD processor emits an error, hide dialog window and show error
+    connect(dvdProcessor.get(), &vfg::DvdProcessor::error, [this](const QString &msg) {
+        dvdProgress->cancel();
+        QMessageBox::warning(this, tr("Video error"), msg);
+    });
 
-    connect(videoSource.get(),  SIGNAL(videoLoaded()),
-            this,               SLOT(videoLoaded()));
+    // When DVD processor emits an update value, update the dialog window progress
+    connect(dvdProcessor.get(), &vfg::DvdProcessor::progressUpdate, [this](const int progress) {
+        dvdProgress->setValue(progress);
+    });
 
-    connect(frameGrabber.get(), SIGNAL(errorOccurred(QString)),
-            this,               SLOT(videoError(QString)),
+    //
+    // DVD progress dialog
+    //
+    dvdProgress = util::make_unique<QProgressDialog>(tr("Processing DVD..."), tr("Abort"), 0, 100);
+
+    // When user wants to cancel DVD loading...
+    connect(dvdProgress.get(),  &QProgressDialog::canceled,
+            dvdProcessor.get(), &vfg::DvdProcessor::handleAbortProcess);
+
+    // Once the video source has loaded the video successfully
+    connect(videoSource.get(),  &vfg::core::AbstractVideoSource::videoLoaded,
+            this,               &MainWindow::videoLoaded);
+
+    // When frame grabber emits an error, display it to user
+    connect(frameGrabber.get(), &vfg::core::VideoFrameGrabber::errorOccurred,
+            [this](const QString &msg) {
+        QMessageBox::warning(this, tr("Video error"), msg);
+    });
+
+    // Display frame emitted by frame grabber
+    connect(frameGrabber.get(),     &vfg::core::VideoFrameGrabber::frameGrabbed,
+            ui->videoPreviewWidget, static_cast<void(vfg::ui::VideoPreviewWidget::*)(int, const QImage&)>(&vfg::ui::VideoPreviewWidget::setFrame),
             Qt::QueuedConnection);
 
-    connect(frameGrabber.get(),     SIGNAL(frameGrabbed(int, QImage)),
-            ui->videoPreviewWidget, SLOT(setFrame(int, QImage)),
+    // Handle frame generator finish event
+    connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::finished,
+            this,                   &MainWindow::frameGeneratorFinished);
+
+    // Add frame emitted by frame generator to the unsave screenshot widget
+    connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::frameReady,
+            this,                   &MainWindow::frameReceived,
             Qt::QueuedConnection);
 
-    connect(frameGenerator.get(),   SIGNAL(finished()),
-            this,                   SLOT(frameGeneratorFinished()));
+    // Update maximum value for progress bar
+    connect(ui->unsavedWidget,      &vfg::ui::ThumbnailContainer::maximumChanged,
+            ui->unsavedProgressBar, &QProgressBar::setMaximum);
 
-    connect(frameGenerator.get(),   SIGNAL(frameReady(int, QImage)),
-            this,                   SLOT(frameReceived(int, QImage)),
-            Qt::QueuedConnection);
+    // Handle double-click on unsaved screenshot
+    connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::thumbnailDoubleClicked,
+            this,               &MainWindow::thumbnailDoubleClicked);
 
-    connect(ui->unsavedWidget,      SIGNAL(maximumChanged(int)),
-            ui->unsavedProgressBar, SLOT(setMaximum(int)));
+    // Handle when unsaved screenshot container gets full
+    connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::full,
+            this,               &MainWindow::screenshotsFull);
 
-    connect(ui->unsavedWidget,  SIGNAL(thumbnailDoubleClicked(int)),
-            this,               SLOT(thumbnailDoubleClicked(int)));
+    // Handle double-click on saved screenshot
+    connect(ui->savedWidget,    &vfg::ui::ThumbnailContainer::thumbnailDoubleClicked,
+            this,               &MainWindow::thumbnailDoubleClicked);
 
-    connect(ui->unsavedWidget,  SIGNAL(full()),
-            this,               SLOT(screenshotsFull()));
-
-    connect(ui->savedWidget,    SIGNAL(thumbnailDoubleClicked(int)),
-            this,               SLOT(thumbnailDoubleClicked(int)));
-
-    connect(ui->menuCreateGIFImage, SIGNAL(triggered(QAction*)),
-            this,                   SLOT(gifContextMenuTriggered(QAction*)));
+    // Handle when GIF menu action is clicked
+    connect(ui->menuCreateGIFImage, &QMenu::triggered,
+            this,                   &MainWindow::gifContextMenuTriggered);
 }
 
 MainWindow::~MainWindow()
@@ -582,14 +626,15 @@ void MainWindow::loadFile(const QString& path)
 
         mediaPlayer->setMedia(QUrl::fromLocalFile(saveTo));
 
-        videoSettingsWindow = util::make_unique<vfg::ui::VideoSettingsWidget>();
+        // FIXME: Reset won't work here because it will override our resized arguments
+        videoSettingsWindow->resetSettings();
     }
     catch(const vfg::ScriptParserError& ex)
     {
         qCCritical(MAINWINDOW) << "Script template error:" << ex.what();
         QMessageBox::warning(this, tr("Script template error"), QString(ex.what()));
     }
-    catch(const vfg::exception::VideoSourceError& ex)
+    catch(const vfg::core::VideoSourceError& ex)
     {
         qCCritical(MAINWINDOW) << "Script processing error:" << ex.what();
         QMessageBox::warning(this, tr("Error while processing script"), QString(ex.what()));
@@ -618,7 +663,7 @@ void MainWindow::loadDownloadedFile(const QString& path)
 
 void MainWindow::videoZoomChanged(QAction* action)
 {                           
-    static const std::map<QString, vfg::ZoomMode> modes {
+    static const QMap<QString, vfg::ZoomMode> modes {
         {"25", vfg::ZoomMode::Zoom_25},
         {"50", vfg::ZoomMode::Zoom_50},
         {"100", vfg::ZoomMode::Zoom_100},
@@ -627,16 +672,9 @@ void MainWindow::videoZoomChanged(QAction* action)
     };
 
     const QString mode = action->data().toString();
-    ui->videoPreviewWidget->setZoom(modes.at(mode));
+    ui->videoPreviewWidget->setZoom(modes.value(mode));
 
     qCDebug(MAINWINDOW) << "Changing video zoom mode:" << mode;
-}
-
-void MainWindow::contextMenuOnPreview(const QPoint &pos)
-{
-    qCDebug(MAINWINDOW) << "Context menu requested on preview";
-
-    previewContext->exec(ui->videoPreviewWidget->mapToGlobal(pos));
 }
 
 void MainWindow::displayGifPreview(QString args, QString optArgs)
@@ -747,11 +785,6 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
     gifMaker->showPreview(cacheDir.absoluteFilePath("preview.gif"));
 }
 
-void MainWindow::updateDvdProgressDialog(const int progress)
-{
-    dvdProgress->setValue(progress);
-}
-
 void MainWindow::on_actionOpen_triggered()
 {
     qCDebug(MAINWINDOW) << "Triggered Open file";
@@ -781,15 +814,6 @@ void MainWindow::on_actionOpen_DVD_triggered()
 {
     openDialog->setActiveTab(vfg::ui::OpenDialog::Tab::OpenDisc);
     openDialog->exec();
-}
-
-void MainWindow::dvdProcessorFinished(const QString& path)
-{
-    qCDebug(MAINWINDOW) << "DVD Processor finished";
-
-    dvdProgress->setValue(100);
-
-    loadFile(path);
 }
 
 void MainWindow::videoSettingsUpdated()
@@ -896,13 +920,6 @@ void MainWindow::videoLoaded()
         videoSettingsWindow->hide();
         videoSettingsWindow->show();
     }
-}
-
-void MainWindow::videoError(const QString& msg)
-{
-    qCWarning(MAINWINDOW) << "Video error:" << msg;
-    dvdProgress->cancel();
-    QMessageBox::warning(this, tr("Video error"), msg);
 }
 
 void MainWindow::thumbnailDoubleClicked(const int frameNumber)
@@ -1502,20 +1519,7 @@ void MainWindow::on_actionOpen_URL_triggered()
 
 void MainWindow::on_actionDownloads_triggered()
 {
-    downloads->show();
-}
-
-void MainWindow::openUrl(const QNetworkRequest& request)
-{
-    const QUrl url = request.url();
-    if(url.scheme() == "http" || url.scheme() == "https" ||
-            url.scheme() == "ftp" || url.scheme() == "ftps") {
-        downloads->addDownload(std::make_shared<vfg::net::HttpDownload>(request, config.value("cachedirectory").toString()));
-        downloads->show();
-    }
-    else {
-        QMessageBox::information(this, tr("Unsupported scheme"), tr("This scheme is not supported"));
-    }
+    downloadsWindow->show();
 }
 
 void MainWindow::on_actionJump_to_triggered()
