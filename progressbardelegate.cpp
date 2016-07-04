@@ -30,8 +30,7 @@ namespace vfg {
 namespace ui {
 
 ProgressBarDelegate::ProgressBarDelegate(QObject *parent) :
-    QStyledItemDelegate(parent),
-    height(70)
+    QStyledItemDelegate(parent)
 {
 }
 

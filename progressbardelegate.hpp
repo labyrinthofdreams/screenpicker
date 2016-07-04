@@ -18,7 +18,7 @@ class ProgressBarDelegate : public QStyledItemDelegate
 
 private:
     //! Height of the delegate in pixels
-    int height;
+    int height {70};
 
 public:
     /**
@@ -27,11 +27,6 @@ public:
      * @param parent Owner of the widget
      */
     explicit ProgressBarDelegate(QObject *parent = 0);
-
-    /**
-     * Default destructor
-     */
-    ~ProgressBarDelegate() = default;
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
                       const QModelIndex &index) const override;
