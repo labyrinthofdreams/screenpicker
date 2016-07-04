@@ -3,13 +3,13 @@
 
 #include <QPixmap>
 #include <QWidget>
+#include "ptrutil.hpp"
 
 class QImage;
 class QLabel;
 class QMouseEvent;
 class QPaintEvent;
 class QResizeEvent;
-class QVBoxLayout;
 
 namespace vfg {
 namespace ui {
@@ -47,11 +47,9 @@ public:
     int frameNum() const;
 
 private:
-    QVBoxLayout *layout;
-    QLabel *pixmapLabel;
+    util::observer_ptr<QLabel> pixmapLabel;
     QPixmap thumb;
-
-    int frameNumber;
+    const int frameNumber;
 
     /**
      * @brief Scales the thumbnail to the widget size

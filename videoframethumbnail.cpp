@@ -8,66 +8,69 @@
 #include <QWidget>
 #include "videoframethumbnail.h"
 
-vfg::ui::VideoFrameThumbnail::VideoFrameThumbnail(
+namespace vfg {
+namespace ui {
+
+VideoFrameThumbnail::VideoFrameThumbnail(
         const int frame, const QImage& thumbnail, QWidget *parent) :
     QWidget(parent),
-    layout(new QVBoxLayout),
     pixmapLabel(new QLabel),
     thumb(QPixmap::fromImage(thumbnail.scaledToWidth(200, Qt::SmoothTransformation))),
     frameNumber(frame)
 {
     pixmapLabel->setPixmap(thumb);
+    auto layout = new QVBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(pixmapLabel);
+    layout->addWidget(pixmapLabel.get());
     setLayout(layout);
     setContentsMargins(0, 0, 0, 0);
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     setContextMenuPolicy(Qt::CustomContextMenu);
 }
 
-void vfg::ui::VideoFrameThumbnail::updateFrameSize()
+void VideoFrameThumbnail::updateFrameSize()
 {
     pixmapLabel->setPixmap(thumb.scaledToWidth(pixmapLabel->width(),
                                                Qt::SmoothTransformation));
 }
 
-void vfg::ui::VideoFrameThumbnail::markSelected()
+void VideoFrameThumbnail::markSelected()
 {
     setStyleSheet("background-color: #e0e0e0; border: 1px solid #dd22ff;");
 }
 
-void vfg::ui::VideoFrameThumbnail::markUnselected()
+void VideoFrameThumbnail::markUnselected()
 {
     setStyleSheet("background-color: inherit; border: 0;");
 }
 
-int vfg::ui::VideoFrameThumbnail::frameNum() const
+int VideoFrameThumbnail::frameNum() const
 {
     return frameNumber;
 }
 
-void vfg::ui::VideoFrameThumbnail::mouseDoubleClickEvent(QMouseEvent *event)
+void VideoFrameThumbnail::mouseDoubleClickEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
 
     emit doubleClicked(frameNumber);
 }
 
-void vfg::ui::VideoFrameThumbnail::resizeEvent(QResizeEvent *event)
+void VideoFrameThumbnail::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
 
     updateFrameSize();
 }
 
-void vfg::ui::VideoFrameThumbnail::mousePressEvent(QMouseEvent *event)
+void VideoFrameThumbnail::mousePressEvent(QMouseEvent *event)
 {
     Q_UNUSED(event);
 
     emit selected(this);
 }
 
-void vfg::ui::VideoFrameThumbnail::paintEvent(QPaintEvent *event)
+void VideoFrameThumbnail::paintEvent(QPaintEvent *event)
 {
     Q_UNUSED(event);
 
@@ -76,3 +79,6 @@ void vfg::ui::VideoFrameThumbnail::paintEvent(QPaintEvent *event)
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &o, &p, this);
 }
+
+} // namespace ui
+} // namespace vfg
