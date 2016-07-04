@@ -2,11 +2,11 @@
 #define THUMBNAILCONTAINER_H
 
 #include <cstddef>
+#include <limits>
 #include <memory>
 #include <QWidget>
 #include "ptrutil.hpp"
 
-// Forward declarations
 class FlowLayout;
 class QMouseEvent;
 
@@ -34,13 +34,13 @@ private:
     util::observer_ptr<FlowLayout> layout;
 
     //! Selected widget in the container
-    util::observer_ptr<vfg::ui::VideoFrameThumbnail> activeWidget;
+    util::observer_ptr<vfg::ui::VideoFrameThumbnail> activeWidget {};
 
     //! Number of thumbnails allowed in the container
-    int maxThumbnails;
+    int maxThumbnails {std::numeric_limits<int>::max()};
 
     //! Thumbnail width in pixels (default: 200)
-    int thumbnailWidth;
+    int thumbnailWidth {200};
 
 public:
     /**
@@ -110,7 +110,7 @@ public:
      * @param idx Position to get item from (last is zero)
      * @return Observer pointer to the VideoFrameThumbnail widget, or nullptr
      */
-    util::observer_ptr<vfg::ui::VideoFrameThumbnail> at(std::size_t idx) const;
+    util::observer_ptr<vfg::ui::VideoFrameThumbnail> at(int idx) const;
 
     /**
      * @brief Removes the oldest thumbnail from the container

@@ -1,5 +1,3 @@
-#include <cstddef>
-#include <limits>
 #include <memory>
 #include <QLoggingCategory>
 #include <QSettings>
@@ -10,17 +8,17 @@
 
 Q_LOGGING_CATEGORY(CONTAINER, "thumbnailcontainer")
 
-vfg::ui::ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
+namespace vfg {
+namespace ui {
+
+ThumbnailContainer::ThumbnailContainer(QWidget *parent) :
     QWidget(parent),
-    layout(new FlowLayout),
-    activeWidget(nullptr),
-    maxThumbnails(std::numeric_limits<int>::max()),
-    thumbnailWidth(200)
+    layout(new FlowLayout)
 {
     setLayout(layout.get());
 }
 
-void vfg::ui::ThumbnailContainer::removeFirst()
+void ThumbnailContainer::removeFirst()
 {
     qCDebug(CONTAINER) << "Removing first from container";
 
@@ -37,7 +35,7 @@ void vfg::ui::ThumbnailContainer::removeFirst()
     }
 }
 
-void vfg::ui::ThumbnailContainer::addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail> thumbnail)
+void ThumbnailContainer::addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail> thumbnail)
 {
     qCDebug(CONTAINER) << "Adding thumbnail to container";
 
@@ -47,23 +45,23 @@ void vfg::ui::ThumbnailContainer::addThumbnail(std::unique_ptr<vfg::ui::VideoFra
         return;
     }
 
-    const int numThumbnails = layout->count() + 1;
+    const auto numThumbnails = layout->count() + 1;
     if(numThumbnails == maxThumbnails) {
         emit full();
     }
 
     thumbnail->setFixedWidth(thumbnailWidth);
 
-    connect(thumbnail.get(),    SIGNAL(selected(vfg::ui::VideoFrameThumbnail*)),
-            this,               SLOT(handleThumbnailSelection(vfg::ui::VideoFrameThumbnail*)));
+    connect(thumbnail.get(),    &vfg::ui::VideoFrameThumbnail::selected,
+            this,               &ThumbnailContainer::handleThumbnailSelection);
 
-    connect(thumbnail.get(),    SIGNAL(doubleClicked(int)),
-            this,               SIGNAL(thumbnailDoubleClicked(int)));
+    connect(thumbnail.get(),    &vfg::ui::VideoFrameThumbnail::doubleClicked,
+            this,               &ThumbnailContainer::thumbnailDoubleClicked);
 
     layout->addWidget(thumbnail.release());
 }
 
-void vfg::ui::ThumbnailContainer::clearThumbnails()
+void ThumbnailContainer::clearThumbnails()
 {
     qCDebug(CONTAINER) << "Clearing thumbnails";
 
@@ -75,7 +73,7 @@ void vfg::ui::ThumbnailContainer::clearThumbnails()
     layout->invalidate();
 }
 
-void vfg::ui::ThumbnailContainer::resizeThumbnails(const int width)
+void ThumbnailContainer::resizeThumbnails(const int width)
 {
     for(util::observer_ptr<QLayoutItem> item : *layout) {
         item->widget()->setFixedWidth(width);
@@ -84,7 +82,7 @@ void vfg::ui::ThumbnailContainer::resizeThumbnails(const int width)
     thumbnailWidth = width;
 }
 
-void vfg::ui::ThumbnailContainer::handleThumbnailSelection(vfg::ui::VideoFrameThumbnail *thumbnail)
+void ThumbnailContainer::handleThumbnailSelection(vfg::ui::VideoFrameThumbnail *thumbnail)
 {
     qCDebug(CONTAINER) << "Thumbnail selected";
 
@@ -104,21 +102,21 @@ void vfg::ui::ThumbnailContainer::handleThumbnailSelection(vfg::ui::VideoFrameTh
     activeWidget = thumbnail;
 }
 
-std::unique_ptr<vfg::ui::VideoFrameThumbnail> vfg::ui::ThumbnailContainer::takeSelected()
+std::unique_ptr<vfg::ui::VideoFrameThumbnail> ThumbnailContainer::takeSelected()
 {
     qCDebug(CONTAINER) << "Taking selected thumbnail";
 
     if(!activeWidget) {
         qCCritical(CONTAINER) << "No thumbnail selected";
 
-        return nullptr;
+        return {};
     }
 
-    const int widgetIndex = layout->indexOf(activeWidget.get());
+    const auto widgetIndex = layout->indexOf(activeWidget.get());
     if(widgetIndex == -1) {
         qCCritical(CONTAINER) << "Invalid widget while taking selected";
 
-        return nullptr;
+        return {};
     }
 
     activeWidget->markUnselected();
@@ -131,36 +129,35 @@ std::unique_ptr<vfg::ui::VideoFrameThumbnail> vfg::ui::ThumbnailContainer::takeS
     return widget;
 }
 
-int vfg::ui::ThumbnailContainer::numThumbnails() const
+int ThumbnailContainer::numThumbnails() const
 {
     return layout->count();
 }
 
-void vfg::ui::ThumbnailContainer::setMaxThumbnails(const int max)
+void ThumbnailContainer::setMaxThumbnails(const int max)
 {
     maxThumbnails = max;
 
     emit maximumChanged(max);
 }
 
-bool vfg::ui::ThumbnailContainer::isFull() const
+bool ThumbnailContainer::isFull() const
 {
     return numThumbnails() == maxThumbnails;
 }
 
-bool vfg::ui::ThumbnailContainer::isEmpty() const
+bool ThumbnailContainer::isEmpty() const
 {
     return layout->isEmpty();
 }
 
 util::observer_ptr<vfg::ui::VideoFrameThumbnail>
-vfg::ui::ThumbnailContainer::at(const std::size_t idx) const
+ThumbnailContainer::at(const int idx) const
 {
-    const std::size_t count = layout->count();
-    if(idx >= count) {
+    if(idx < 0 || idx >= layout->count()) {
         qCCritical(CONTAINER) << "Index out of range while accessing widget by index";
 
-        return nullptr;
+        return {};
     }
 
     util::observer_ptr<QLayoutItem> item = layout->itemAt(idx);
@@ -168,7 +165,7 @@ vfg::ui::ThumbnailContainer::at(const std::size_t idx) const
     return static_cast<vfg::ui::VideoFrameThumbnail*>(item->widget());
 }
 
-void vfg::ui::ThumbnailContainer::mousePressEvent(QMouseEvent *ev)
+void ThumbnailContainer::mousePressEvent(QMouseEvent *ev)
 {
     Q_UNUSED(ev);
 
@@ -179,3 +176,6 @@ void vfg::ui::ThumbnailContainer::mousePressEvent(QMouseEvent *ev)
         activeWidget.reset();
     }
 }
+
+} // namespace ui
+} // namespace vfg
