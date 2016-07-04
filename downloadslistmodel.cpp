@@ -1,4 +1,5 @@
 #include <memory>
+#include <utility>
 #include <QAbstractListModel>
 #include <QList>
 #include <QModelIndex>
@@ -11,8 +12,7 @@ namespace vfg {
 namespace core {
 
 DownloadsListModel::DownloadsListModel(QObject *parent) :
-    QAbstractListModel(parent),
-    downloads()
+    QAbstractListModel(parent)
 {
 }
 
@@ -34,7 +34,7 @@ QVariant DownloadsListModel::data(const QModelIndex &index, const int role) cons
 {
     Q_UNUSED(role);
 
-    if (!index.isValid()) {
+    if(!index.isValid()) {
         return {};
     }
 
@@ -48,7 +48,7 @@ QVariant DownloadsListModel::data(const QModelIndex &index, const int role) cons
 void DownloadsListModel::addItem(std::shared_ptr<vfg::net::HttpDownload> download)
 {
     beginInsertRows(QModelIndex(), downloads.size(), downloads.size());
-    downloads.push_back(download);
+    downloads.append(std::move(download));
     endInsertRows();
 }
 

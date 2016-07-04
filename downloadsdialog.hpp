@@ -4,7 +4,9 @@
 #include <memory>
 #include <QDialog>
 #include <QString>
+#include "downloadslistmodel.hpp"
 #include "httpdownload.hpp"
+#include "ui_downloadsdialog.h"
 
 class QNetworkAccessManager;
 class QNetworkReply;
@@ -36,11 +38,6 @@ public:
     explicit DownloadsDialog(QWidget *parent = 0);
 
     /**
-     * @brief Destructor
-     */
-    ~DownloadsDialog();
-
-    /**
      * @brief Add new download request
      * @param request Request to add
      */
@@ -48,7 +45,7 @@ public:
 
 private:
     //! UI
-    Ui::DownloadsDialog *ui;
+    Ui::DownloadsDialog ui {};
 
     //! Network access manager
     std::unique_ptr<QNetworkAccessManager> netMan;
@@ -57,10 +54,6 @@ private:
     std::unique_ptr<vfg::core::DownloadsListModel> model;
 
 private slots:
-    /**
-     * @brief Update model data
-     */
-    void updateList();
 
     /**
      * @brief Clear finished downloads

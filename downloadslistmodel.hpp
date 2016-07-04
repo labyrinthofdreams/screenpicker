@@ -24,7 +24,7 @@ class DownloadsListModel : public QAbstractListModel
 
 private:
     //! Active download requests
-    QList<std::shared_ptr<vfg::net::HttpDownload>> downloads;
+    QList<std::shared_ptr<vfg::net::HttpDownload>> downloads {};
 
 public:
     /**
