@@ -1,6 +1,5 @@
 #include <string>
 #include <sstream>
-#include <utility>
 #include <QFile>
 #include <QMap>
 #include <QSettings>
@@ -10,14 +9,9 @@
 #include "scriptparser.h"
 #include "templet.hpp"
 
-vfg::ScriptParser::ScriptParser(QString filePath) :
-    path(std::move(filePath)),
-    tplPath(":/scripts/default_template.avs")
-{
-}
+namespace {
 
-QString vfg::ScriptParser::readTemplate(const QString& path) const
-{
+QString readTemplate(const QString& path) {
     QFile tpl(path);
     if(!tpl.open(QIODevice::ReadOnly | QIODevice::Text)) {
         throw vfg::ScriptParserError(QString("Unable to open %1").arg(path).toStdString());
@@ -27,12 +21,21 @@ QString vfg::ScriptParser::readTemplate(const QString& path) const
     return stream.readAll();
 }
 
-void vfg::ScriptParser::setTemplate(QString path)
+} // namespace
+
+namespace vfg {
+
+ScriptParser::ScriptParser(const QString &filePath) :
+    path(filePath)
 {
-    tplPath = std::move(path);
 }
 
-QString vfg::ScriptParser::parse(const QMap<QString, QVariant>& settings) const try
+void ScriptParser::setTemplate(const QString &path)
+{
+    tplPath = path;
+}
+
+QString ScriptParser::parse(const QMap<QString, QVariant>& settings) const try
 {
     using templet::make_data;
 
@@ -85,3 +88,5 @@ catch(const std::exception &ex)
 {
     throw;
 }
+
+} // namespace vfg

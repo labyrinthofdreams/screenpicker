@@ -10,26 +10,23 @@ class QVariant;
 
 namespace vfg {
 
-class ScriptParserError : public std::runtime_error
+struct ScriptParserError : public std::runtime_error
 {
-public:
-    explicit ScriptParserError(const char* msg) : std::runtime_error(msg) {}
-    explicit ScriptParserError(const std::string& msg) : std::runtime_error(msg) {}
+    using std::runtime_error::runtime_error;
 };
 
 class ScriptParser
 {
 public:
-    explicit ScriptParser(QString filePath);
-    virtual ~ScriptParser() = default;
-    virtual QString parse(const QMap<QString, QVariant>& settings) const;
-    virtual void setTemplate(QString path);
+    explicit ScriptParser(const QString &filePath);
+
+    QString parse(const QMap<QString, QVariant>& settings) const;
+
+    void setTemplate(const QString &path);
 
 protected:
-    QString readTemplate(const QString& path) const;
-
-    QString path;
-    QString tplPath;
+    const QString path;
+    QString tplPath {":/scripts/default_template.avs"};
 };
 
 } // namespace vfg
