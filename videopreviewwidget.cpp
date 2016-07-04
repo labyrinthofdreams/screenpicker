@@ -16,14 +16,10 @@
 
 vfg::ui::VideoPreviewWidget::VideoPreviewWidget(QWidget *parent) :
     QWidget(parent),
-    cropBorders(),
-    framePixmap(),
-    original(),
-    zoomMode(ZoomMode::Zoom_Scale),
-    state(VideoState::Stopped),
+    layout(new QVBoxLayout),
+    frameLabel(new QLabel),
     videoWidget(new QVideoWidget)
 {
-    frameLabel = new QLabel;
     frameLabel->setAlignment(Qt::AlignHCenter|Qt::AlignTop);
     // If size policy is not ignored,
     // it prevents the resizeEvent() from being called properly
@@ -31,10 +27,9 @@ vfg::ui::VideoPreviewWidget::VideoPreviewWidget(QWidget *parent) :
     frameLabel->setSizePolicy(QSizePolicy::Ignored,
                               QSizePolicy::Ignored);
 
-    layout = new QVBoxLayout;
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->addWidget(frameLabel);
-    setLayout(layout);
+    layout->addWidget(frameLabel.get());
+    setLayout(layout.get());
 
     QPalette plt = palette();
     plt.setColor(QPalette::Window, Qt::white);
@@ -48,17 +43,17 @@ vfg::ui::VideoPreviewWidget::VideoPreviewWidget(QWidget *parent) :
 
 void vfg::ui::VideoPreviewWidget::showVideo()
 {
-    layout->removeWidget(frameLabel);
+    layout->removeWidget(frameLabel.get());
     frameLabel->setParent(0);
-    layout->addWidget(videoWidget);
+    layout->addWidget(videoWidget.get());
     state = VideoState::Playing;
 }
 
 void vfg::ui::VideoPreviewWidget::hideVideo()
 {
-    layout->removeWidget(videoWidget);
+    layout->removeWidget(videoWidget.get());
     videoWidget->setParent(0);
-    layout->addWidget(frameLabel);
+    layout->addWidget(frameLabel.get());
     state = VideoState::Stopped;
 }
 

@@ -4,6 +4,7 @@
 #include <QPixmap>
 #include <QVector>
 #include <QWidget>
+#include "ptrutil.hpp"
 
 // Forward declarations
 class QImage;
@@ -37,24 +38,25 @@ namespace ui {
 class VideoPreviewWidget : public QWidget
 {
     Q_OBJECT
+
 private:
     //! Areas to crop are drawn on the current frame
-    QVector<QRect> cropBorders;
+    QVector<QRect> cropBorders {};
 
     //! Layout to hold the preview frame
-    QVBoxLayout* layout;
+    util::observer_ptr<QVBoxLayout> layout;
 
     //! The label contains the frame
-    QLabel* frameLabel;
+    util::observer_ptr<QLabel> frameLabel;
 
     //! Modifiable copy of the frame that is displayed in the widget
-    QPixmap framePixmap;
+    QPixmap framePixmap {};
 
     //! The original frame that is never modified
-    QPixmap original;
+    QPixmap original {};
 
     //! Specifies the current zoom mode
-    ZoomMode zoomMode;
+    ZoomMode zoomMode {ZoomMode::Zoom_Scale};
 
     //! Video state
     enum class VideoState {
@@ -63,7 +65,7 @@ private:
     };
 
     //! Video state
-    VideoState state;
+    VideoState state {VideoState::Stopped};
 
     /**
      * @brief Applies new changes to the current frame
@@ -89,7 +91,7 @@ public:
     explicit VideoPreviewWidget(QWidget *parent = 0);
 
     //! Widget that displays video
-    QVideoWidget *videoWidget;
+    util::observer_ptr<QVideoWidget> videoWidget;
 
     /**
      * @brief Displays video widget and hides frame
