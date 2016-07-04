@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <QAbstractListModel>
@@ -60,24 +61,12 @@ void DownloadsListModel::updateData()
 
 void DownloadsListModel::clearFinished()
 {
-    // The reason this is split in two for loops is because whenever
-    // removeAt is called, the size() and the indexes decrement by one.
-    // The second for loop adjusts the indexes to correct ones as
-    // items are removed with removeAt
-    QList<int> toBeRemoved;
-    for(int i = 0; i < downloads.size(); ++i) {
-        if(downloads[i]->isFinished()) {
-            toBeRemoved.append(i);
-        }
-    }
-
-    for(int i = 0, removed = 0; i < toBeRemoved.size(); ++i, ++removed) {
-        const auto realIndex = toBeRemoved[i] - removed;
-        beginRemoveRows(QModelIndex(), realIndex, realIndex);
-        auto dl = downloads.takeAt(realIndex);
-        dl->deleteLater();
-        endRemoveRows();
-    }
+    downloads.erase(std::remove_if(downloads.begin(), downloads.end(),
+                                   [](const std::shared_ptr<vfg::net::HttpDownload> &dl) {
+                        return dl->isFinished();
+                    }), downloads.end());
+    beginResetModel();
+    endResetModel();
 }
 
 } // namespace core
