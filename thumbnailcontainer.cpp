@@ -1,5 +1,9 @@
 #include <memory>
+#include <QAction>
+#include <QCursor>
 #include <QLoggingCategory>
+#include <QMenu>
+#include <QPoint>
 #include <QSettings>
 #include "flowlayout.h"
 #include "ptrutil.hpp"
@@ -58,6 +62,9 @@ void ThumbnailContainer::addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbna
     connect(thumbnail.get(),    &vfg::ui::VideoFrameThumbnail::doubleClicked,
             this,               &ThumbnailContainer::thumbnailDoubleClicked);
 
+    connect(thumbnail.get(),    &vfg::ui::VideoFrameThumbnail::customContextMenuRequested,
+            this,               &ThumbnailContainer::showContextMenu);
+
     layout->addWidget(thumbnail.release());
 }
 
@@ -100,6 +107,24 @@ void ThumbnailContainer::handleThumbnailSelection(vfg::ui::VideoFrameThumbnail *
 
     thumbnail->markSelected();
     activeWidget = thumbnail;
+}
+
+void ThumbnailContainer::showContextMenu(const QPoint &pos)
+{
+    Q_UNUSED(pos);
+
+    QMenu menu;
+    auto move = new QAction(tr("Move"), &menu);
+    connect(move, &QAction::triggered, [this]() {
+        auto thumb = takeSelected();
+        if(!thumb) {
+            return;
+        }
+        disconnect(thumb.get(), 0);
+        emit moveThumbnail(thumb.release());
+    });
+    menu.addAction(move);
+    menu.exec(QCursor::pos());
 }
 
 std::unique_ptr<vfg::ui::VideoFrameThumbnail> ThumbnailContainer::takeSelected()

@@ -98,18 +98,6 @@ private slots:
     void thumbnailDoubleClicked(int frameNumber);
 
     /**
-     * @brief Triggered when a thumbnail is right-clicked in the unsaved tab
-     * @param pos Position of the click event
-     */
-    void handleUnsavedMenu(const QPoint& pos);
-
-    /**
-     * @brief Triggered when a thumbnail is right-clicked in the saved tab
-     * @param pos Position of the click event
-     */
-    void handleSavedMenu(const QPoint& pos);
-
-    /**
      * @brief Load the given file with the current video source
      * @param path Path to the file to load
      */

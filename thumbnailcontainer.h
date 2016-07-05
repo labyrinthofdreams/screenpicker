@@ -9,6 +9,7 @@
 
 class FlowLayout;
 class QMouseEvent;
+class QPoint;
 
 namespace vfg {
 namespace ui {
@@ -141,6 +142,11 @@ signals:
 
     void full();
 
+    /**
+     * @brief Move thumbnail (receiver takes ownership)
+     * @param thumbnail
+     */
+    void moveThumbnail(vfg::ui::VideoFrameThumbnail *thumbnail);
 private slots:
     /**
      * @brief Handle thumbnail selection
@@ -148,6 +154,11 @@ private slots:
      */
     void handleThumbnailSelection(vfg::ui::VideoFrameThumbnail* thumbnail);
 
+    /**
+     * @brief Show context menu
+     * @param pos Cursor position
+     */
+    void showContextMenu(const QPoint &pos);
 };
 
 } // namespace ui

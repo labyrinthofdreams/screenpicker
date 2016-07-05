@@ -260,6 +260,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::full,
             this,               &MainWindow::screenshotsFull);
 
+    // Move thumbnail from unsaved to saved
+    connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::moveThumbnail,
+            [this](vfg::ui::VideoFrameThumbnail *thumb) {
+        ui->savedWidget->addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail>(thumb));
+        ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
+    });
+
+    // Move thumbnail from saved to unsaved
+    connect(ui->savedWidget,    &vfg::ui::ThumbnailContainer::moveThumbnail,
+            [this](vfg::ui::VideoFrameThumbnail *thumb) {
+        ui->unsavedWidget->addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail>(thumb));
+        ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
+    });
+
     // Handle double-click on saved screenshot
     connect(ui->savedWidget,    &vfg::ui::ThumbnailContainer::thumbnailDoubleClicked,
             this,               &MainWindow::thumbnailDoubleClicked);
@@ -325,14 +339,10 @@ void MainWindow::frameReceived(const int frameNum, const QImage& frame)
         return;
     }
 
-    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, frame);
-    connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
-            this,           SLOT(handleUnsavedMenu(QPoint)));
-
     config.setValue("last_received_frame", frameNum);
 
     // Update widgets
-    ui->unsavedWidget->addThumbnail(std::move(thumb));
+    ui->unsavedWidget->addThumbnail(util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, frame));
     ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
     const int numGenerated = ui->generatorProgressBar->value() + 1;
@@ -1070,70 +1080,6 @@ void MainWindow::on_grabButton_clicked()
     ui->savedWidget->addThumbnail(std::move(thumb));
 
     statusBar()->showMessage(tr("Grabbed frame #%1").arg(selectedFrame), 3000);
-}
-
-void MainWindow::handleUnsavedMenu(const QPoint &pos)
-{
-    Q_UNUSED(pos);
-
-    qCDebug(MAINWINDOW) << "Moving unsaved screenshot";
-
-    QMenu menu;
-    QAction *saveAction = new QAction(tr("Enqueue"), this);
-    saveAction->setData(1);
-    menu.addAction(saveAction);
-    QAction* selected = menu.exec(QCursor::pos());
-    if(selected && selected->data().toInt() == 1)
-    {
-        // Move thumbnail from unsaved tab to saved tab
-        auto thumb = ui->unsavedWidget->takeSelected();
-        if(!thumb) {
-            qCWarning(MAINWINDOW) << "Thumbnail is null";
-
-            return;
-        }
-
-        disconnect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
-                   this,        SLOT(handleUnsavedMenu(QPoint)));
-
-        connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
-                this,           SLOT(handleSavedMenu(QPoint)));
-
-        ui->savedWidget->addThumbnail(std::move(thumb));
-        ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
-    }
-}
-
-void MainWindow::handleSavedMenu(const QPoint &pos)
-{
-    Q_UNUSED(pos);
-
-    qCDebug(MAINWINDOW) << "Moving saved screenshot";
-
-    QMenu menu;
-    QAction *unsaveAction = new QAction(tr("Remove from queue"), this);
-    unsaveAction->setData(1);
-    menu.addAction(unsaveAction);
-    QAction* selected = menu.exec(QCursor::pos());
-    if(selected && selected->data().toInt() == 1)
-    {
-        // Move thumbnail from saved tab to unsaved tab
-        auto thumb = ui->savedWidget->takeSelected();
-        if(!thumb) {
-            qCWarning(MAINWINDOW) << "Thumbnail is null";
-
-            return;
-        }
-
-        disconnect(thumb.get(), SIGNAL(customContextMenuRequested(QPoint)),
-                   this,        SLOT(handleSavedMenu(QPoint)));
-
-        connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
-                this,           SLOT(handleUnsavedMenu(QPoint)));
-
-        ui->unsavedWidget->addThumbnail(std::move(thumb));
-        ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
-    }
 }
 
 void MainWindow::on_clearThumbsButton_clicked()
