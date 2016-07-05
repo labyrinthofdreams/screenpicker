@@ -91,7 +91,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionScaleToWindow->setData("scale");
     // Scale by default
     ui->actionScaleToWindow->setChecked(true);
-    ui->videoPreviewWidget->setZoom(vfg::ZoomMode::Zoom_Scale);
 
     // Set default thumbnail sizes for the containers
     const auto thumbnailSize = ui->thumbnailSizeSlider->value();
