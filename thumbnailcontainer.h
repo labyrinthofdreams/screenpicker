@@ -147,6 +147,13 @@ signals:
      * @param thumbnail
      */
     void moveThumbnail(vfg::ui::VideoFrameThumbnail *thumbnail);
+
+    /**
+     * @brief Emitted when a thumbnail is added/removed
+     * @param newCount New count
+     */
+    void countChanged(int newCount);
+
 private slots:
     /**
      * @brief Handle thumbnail selection

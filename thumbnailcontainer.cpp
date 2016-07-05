@@ -49,8 +49,8 @@ void ThumbnailContainer::addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbna
         return;
     }
 
-    const auto numThumbnails = layout->count() + 1;
-    if(numThumbnails == maxThumbnails) {
+    const auto numThumbs = layout->count() + 1;
+    if(numThumbs == maxThumbnails) {
         emit full();
     }
 
@@ -66,6 +66,8 @@ void ThumbnailContainer::addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbna
             this,               &ThumbnailContainer::showContextMenu);
 
     layout->addWidget(thumbnail.release());
+
+    emit countChanged(numThumbnails());
 }
 
 void ThumbnailContainer::clearThumbnails()
@@ -78,6 +80,8 @@ void ThumbnailContainer::clearThumbnails()
 
     // This will force the layout to resize back to normal size
     layout->invalidate();
+
+    emit countChanged(numThumbnails());
 }
 
 void ThumbnailContainer::resizeThumbnails(const int width)
@@ -150,6 +154,8 @@ std::unique_ptr<vfg::ui::VideoFrameThumbnail> ThumbnailContainer::takeSelected()
     std::unique_ptr<QLayoutItem> item(layout->takeAt(widgetIndex));
     std::unique_ptr<vfg::ui::VideoFrameThumbnail> widget(
                 static_cast<vfg::ui::VideoFrameThumbnail*>(item->widget()));
+
+    emit countChanged(numThumbnails());
 
     return widget;
 }

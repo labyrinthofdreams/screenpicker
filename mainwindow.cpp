@@ -260,18 +260,20 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::full,
             this,               &MainWindow::screenshotsFull);
 
+    // When a thumbnail is added or removed from unsaved container update progress bar value
+    connect(ui->unsavedWidget,      &vfg::ui::ThumbnailContainer::countChanged,
+            ui->unsavedProgressBar, &QProgressBar::setValue);
+
     // Move thumbnail from unsaved to saved
     connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::moveThumbnail,
             [this](vfg::ui::VideoFrameThumbnail *thumb) {
         ui->savedWidget->addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail>(thumb));
-        ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
     });
 
     // Move thumbnail from saved to unsaved
     connect(ui->savedWidget,    &vfg::ui::ThumbnailContainer::moveThumbnail,
             [this](vfg::ui::VideoFrameThumbnail *thumb) {
         ui->unsavedWidget->addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail>(thumb));
-        ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
     });
 
     // Handle double-click on saved screenshot
@@ -343,7 +345,6 @@ void MainWindow::frameReceived(const int frameNum, const QImage& frame)
 
     // Update widgets
     ui->unsavedWidget->addThumbnail(util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, frame));
-    ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
     const int numGenerated = ui->generatorProgressBar->value() + 1;
     ui->generatorProgressBar->setValue(numGenerated);
@@ -1085,7 +1086,6 @@ void MainWindow::on_grabButton_clicked()
 void MainWindow::on_clearThumbsButton_clicked()
 {
     ui->unsavedWidget->clearThumbnails();
-    ui->unsavedProgressBar->setValue(ui->unsavedWidget->numThumbnails());
 
     const bool resumeAfterClear = config.value("resumegeneratorafterclear", false).toBool();
     if(resumeAfterClear && frameGenerator->remaining() > 0
