@@ -135,13 +135,52 @@ MainWindow::MainWindow(QWidget *parent) :
     mediaPlayer->setVideoOutput(ui->videoPreviewWidget->videoWidget.get());
     mediaPlayer->setVolume(ui->volumeSlider->value());
 
-    // While video is playing the position of the video changes, so move the slider accordingly
-    connect(mediaPlayer.get(),  &QMediaPlayer::positionChanged,
-            this,               &MainWindow::videoPositionChanged);
-
     // Adjust video volume level when changing the volume slider
     connect(ui->volumeSlider,   &QSlider::sliderMoved,
             mediaPlayer.get(),  &QMediaPlayer::setVolume);
+
+    connect(mediaPlayer.get(), &QMediaPlayer::mediaStatusChanged,
+            [this](const QMediaPlayer::MediaStatus status) {
+        if(status == QMediaPlayer::BufferedMedia) {
+            // After play() has been called
+            // for the first time and video has buffered and starts playing...
+
+            ui->videoPreviewWidget->showVideo();
+            // Start playing from where the seek slider is
+            mediaPlayer->setPosition(convertFrameToMs(ui->seekSlider->value()));
+
+            // While video is playing the position of the video changes, so move the slider accordingly
+            connect(mediaPlayer.get(),  &QMediaPlayer::positionChanged,
+                    this,               &MainWindow::videoPositionChanged);
+        }
+    });
+
+    connect(mediaPlayer.get(),  &QMediaPlayer::stateChanged,
+            [this](const QMediaPlayer::State state) {
+        if(state == QMediaPlayer::StoppedState) {
+            ui->videoPreviewWidget->hideVideo();
+            ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
+        }
+        else if(state == QMediaPlayer::PausedState) {
+            videoPositionChanged(mediaPlayer->position());
+            ui->videoPreviewWidget->hideVideo();
+            ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
+            seekedTime = 0;
+        }
+        else if(state == QMediaPlayer::PlayingState) {
+            ui->buttonPlay->setIcon(QIcon(":/icon/pause2.png"));
+            if(mediaPlayer->mediaStatus() == QMediaPlayer::BufferedMedia) {
+                // When calling play() for the first time the media player emits "playing" state
+                // while the video is still buffering.
+                // This check prevents the code below from running prematurely
+                // so it only runs when play is called second, third, etc. time
+
+                ui->videoPreviewWidget->showVideo();
+                // Start playing from where the seek slider is
+                mediaPlayer->setPosition(convertFrameToMs(ui->seekSlider->value()));
+            }
+        }
+    });
 
     //
     // Video zoom
@@ -451,7 +490,7 @@ void MainWindow::recentMenuTriggered(QAction* action)
 }
 
 void MainWindow::videoPositionChanged(const qint64 position)
-{
+{    
     const auto sliderPosition = convertMsToFrame(position);
     seekedTime = sliderPosition;
     ui->seekSlider->setValue(sliderPosition);
@@ -585,8 +624,6 @@ void MainWindow::loadFile(const QString& path)
 
         if(mediaPlayer->state() != QMediaPlayer::StoppedState) {
             mediaPlayer->stop();
-            ui->videoPreviewWidget->hideVideo();
-            ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
         }
 
         const QFileInfo info(path);
@@ -1422,20 +1459,11 @@ void MainWindow::on_actionDebugOff_triggered(bool checked)
 
 void MainWindow::on_buttonPlay_clicked()
 {
-    const auto state = mediaPlayer->state();
-    if(state == QMediaPlayer::PlayingState) {
+    if(mediaPlayer->state() == QMediaPlayer::PlayingState) {
         mediaPlayer->pause();
-        ui->videoPreviewWidget->hideVideo();
-        videoPositionChanged(mediaPlayer->position());
-        ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
-        seekedTime = 0;
     }
     else {
-        ui->videoPreviewWidget->showVideo();
         mediaPlayer->play();
-        ui->buttonPlay->setIcon(QIcon(":/icon/pause2.png"));
-        // Start playing from where the seek slider is
-        mediaPlayer->setPosition(convertFrameToMs(ui->seekSlider->value()));
     }
 }
 
