@@ -224,30 +224,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(dvdProgress.get(),  &QProgressDialog::canceled,
             dvdProcessor.get(), &vfg::DvdProcessor::handleAbortProcess);
 
-    // Once the video source has loaded the video successfully
-    connect(videoSource.get(),  &vfg::core::AbstractVideoSource::videoLoaded,
-            this,               &MainWindow::videoLoaded);
-
-    // When frame grabber emits an error, display it to user
-    connect(frameGrabber.get(), &vfg::core::VideoFrameGrabber::errorOccurred,
-            [this](const QString &msg) {
-        QMessageBox::warning(this, tr("Video error"), msg);
-    });
-
-    // Display frame emitted by frame grabber
-    connect(frameGrabber.get(),     &vfg::core::VideoFrameGrabber::frameGrabbed,
-            ui->videoPreviewWidget, static_cast<void(vfg::ui::VideoPreviewWidget::*)(int, const QImage&)>(&vfg::ui::VideoPreviewWidget::setFrame),
-            Qt::QueuedConnection);
-
-    // Handle frame generator finish event
-    connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::finished,
-            this,                   &MainWindow::frameGeneratorFinished);
-
-    // Add frame emitted by frame generator to the unsave screenshot widget
-    connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::frameReady,
-            this,                   &MainWindow::frameReceived,
-            Qt::QueuedConnection);
-
     // Update maximum value for progress bar
     connect(ui->unsavedWidget,      &vfg::ui::ThumbnailContainer::maximumChanged,
             ui->unsavedProgressBar, &QProgressBar::setMaximum);
@@ -540,8 +516,35 @@ void MainWindow::setupInternal()
 
     // Set Avisynth as the default video source
     videoSource = std::make_shared<vfg::core::AvisynthVideoSource>();
+
+    // Once the video source has loaded the video successfully
+    connect(videoSource.get(),  &vfg::core::AbstractVideoSource::videoLoaded,
+            this,               &MainWindow::videoLoaded);
+
     frameGrabber = std::make_shared<vfg::core::VideoFrameGrabber>(videoSource);
+
+    // When frame grabber emits an error, display it to user
+    connect(frameGrabber.get(), &vfg::core::VideoFrameGrabber::errorOccurred,
+            [this](const QString &msg) {
+        QMessageBox::warning(this, tr("Video error"), msg);
+    });
+
+    // Display frame emitted by frame grabber
+    connect(frameGrabber.get(),     &vfg::core::VideoFrameGrabber::frameGrabbed,
+            ui->videoPreviewWidget, static_cast<void(vfg::ui::VideoPreviewWidget::*)(int, const QImage&)>(&vfg::ui::VideoPreviewWidget::setFrame),
+            Qt::QueuedConnection);
+
     frameGenerator = util::make_unique<vfg::core::VideoFrameGenerator>(frameGrabber);
+
+    // Handle frame generator finish event
+    connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::finished,
+            this,                   &MainWindow::frameGeneratorFinished,
+            Qt::QueuedConnection);
+
+    // Add frame emitted by frame generator to the unsave screenshot widget
+    connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::frameReady,
+            this,                   &MainWindow::frameReceived,
+            Qt::QueuedConnection);
 
     if(!frameGrabberThread) {
         qCDebug(MAINWINDOW) << "Creating frame grabber thread";
