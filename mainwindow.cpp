@@ -1070,11 +1070,7 @@ void MainWindow::on_grabButton_clicked()
         return;
     }
 
-    auto thumb = util::make_unique<vfg::ui::VideoFrameThumbnail>(selectedFrame, frame);
-    connect(thumb.get(),    SIGNAL(customContextMenuRequested(QPoint)),
-            this,           SLOT(handleSavedMenu(QPoint)));
-
-    ui->savedWidget->addThumbnail(std::move(thumb));
+    ui->savedWidget->addThumbnail(util::make_unique<vfg::ui::VideoFrameThumbnail>(selectedFrame, frame));
 
     statusBar()->showMessage(tr("Grabbed frame #%1").arg(selectedFrame), 3000);
 }
