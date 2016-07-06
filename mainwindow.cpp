@@ -1225,8 +1225,6 @@ void MainWindow::on_actionOptions_triggered()
 void MainWindow::on_screenshotsSpinBox_valueChanged(const int arg1)
 {
     config.setValue("numscreenshots", arg1);
-
-    ui->screenshotsSpinBox->setValue(arg1);
 }
 
 void MainWindow::on_frameStepSpinBox_valueChanged(const int arg1)
