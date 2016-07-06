@@ -345,24 +345,6 @@ void MainWindow::closeEvent(QCloseEvent *ev)
     ev->accept();
 }
 
-void MainWindow::frameReceived(const int frameNum, const QImage& frame)
-{
-    qCDebug(MAINWINDOW) << "Frame" << frameNum << "received in thread" << qApp->thread()->currentThreadId();
-    if(frame.isNull()) {
-        qCWarning(MAINWINDOW) << "Frame is null";
-
-        return;
-    }
-
-    config.setValue("last_received_frame", frameNum);
-
-    // Update widgets
-    ui->unsavedWidget->addThumbnail(util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, frame));
-
-    const int numGenerated = ui->generatorProgressBar->value() + 1;
-    ui->generatorProgressBar->setValue(numGenerated);
-}
-
 void MainWindow::screenshotsFull()
 {
     qCDebug(MAINWINDOW) << "Screenshots tab is full";
@@ -571,10 +553,14 @@ void MainWindow::setupInternal()
             this,                   &MainWindow::frameGeneratorFinished,
             Qt::QueuedConnection);
 
-    // Add frame emitted by frame generator to the unsave screenshot widget
+    // Add frame emitted by frame generator to the unsaved screenshot widget
+    // Note: this is necessary as context so that widget is created in GUI thread
     connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::frameReady,
-            this,                   &MainWindow::frameReceived,
-            Qt::QueuedConnection);
+            this, [this](const int frameNum, const QImage& frame) {
+        config.setValue("last_received_frame", frameNum);
+        ui->unsavedWidget->addThumbnail(util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, frame));
+        ui->generatorProgressBar->setValue(ui->generatorProgressBar->value() + 1);
+    });
 
     if(!frameGrabberThread) {
         qCDebug(MAINWINDOW) << "Creating frame grabber thread";

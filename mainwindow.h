@@ -69,14 +69,6 @@ public:
     
 private slots:
     /**
-     * @brief Handles a received frame from a generator
-     * and updates widgets
-     * @param frameNum Frame number
-     * @param frame Received frame
-     */
-    void frameReceived(int frameNum, const QImage& frame);
-
-    /**
      * @brief Triggered when a script in the editor is saved
      */
     void scriptEditorUpdated();
