@@ -511,7 +511,6 @@ void MainWindow::resetUi()
 
     ui->unsavedProgressBar->setValue(0);
 
-    ui->currentFrameLabel->setText("0");
     ui->totalFramesLabel->setText("0");
 
     ui->seekSlider->setValue(ui->seekSlider->minimum());
@@ -896,7 +895,6 @@ void MainWindow::videoLoaded()
     const int jumpToFrame = invalidRange ? 0 : lastRequestedFrame;
 
     // Update widgets
-    ui->currentFrameLabel->setText(QString::number(jumpToFrame));
     ui->totalFramesLabel->setText(QString::number(numFrames));
 
     ui->seekSlider->setEnabled(true);
@@ -938,7 +936,6 @@ void MainWindow::thumbnailDoubleClicked(const int frameNumber)
     QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
                               Qt::QueuedConnection, Q_ARG(int, frameNumber));
 
-    ui->currentFrameLabel->setText(QString::number(frameNumber));
     ui->seekSlider->setValue(frameNumber);
 }
 
@@ -949,7 +946,6 @@ void MainWindow::on_nextButton_clicked()
     frameGrabber->requestNextFrame();
     const int lastRequestedFrame = frameGrabber->lastFrame();
 
-    ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
 }
 
@@ -960,13 +956,14 @@ void MainWindow::on_previousButton_clicked()
     frameGrabber->requestPreviousFrame();
     const int lastRequestedFrame = frameGrabber->lastFrame();
 
-    ui->currentFrameLabel->setText(QString::number(lastRequestedFrame));
     ui->seekSlider->setValue(lastRequestedFrame);
 }
 
 void MainWindow::on_seekSlider_valueChanged(const int frameNumber)
 {
     qCDebug(MAINWINDOW) << "Moved seek slider";
+
+    ui->currentFrameLabel->setText(QString::number(frameNumber));
 
     // This check makes sure that the slider was moved by the user
     // and not auto-moved by videoPositionChanged
@@ -980,7 +977,6 @@ void MainWindow::on_seekSlider_valueChanged(const int frameNumber)
     }
 
     frameGrabber->requestFrame(frameNumber);
-    ui->currentFrameLabel->setText(QString::number(frameNumber));
 }
 
 void MainWindow::on_seekSlider_sliderMoved(const int position)
