@@ -1011,11 +1011,6 @@ void MainWindow::on_seekSlider_valueChanged(const int frameNumber)
         mediaPlayer->setPosition(convertFrameToMs(frameNumber));
     }
 
-    const int lastRequestedFrame = frameGrabber->lastFrame();
-    if(lastRequestedFrame == frameNumber) {
-        return;
-    }
-
     frameGrabber->requestFrame(frameNumber);
 }
 
