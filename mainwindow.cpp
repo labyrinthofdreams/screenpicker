@@ -1469,17 +1469,17 @@ void MainWindow::on_actionDownloads_triggered()
 void MainWindow::on_actionJump_to_triggered()
 {
     vfg::ui::JumpToFrameDialog dlg;
-    if(dlg.exec() == QDialog::Rejected) {
-        return;
-    }
-
-    if(config.value("jumptoformat").toString() == "frame") {
-        ui->seekSlider->setValue(config.value("jumpto").toInt());
-    }
-    else {
-        const auto position = convertMsToFrame(1000 * config.value("jumpto").toInt());
-        ui->seekSlider->setValue(position);
-    }
+    connect(&dlg, &vfg::ui::JumpToFrameDialog::jumpTo,
+            [this](const int position, const vfg::ui::TimeFormat tf) {
+        userMovedSlider = true;
+        if(tf == vfg::ui::TimeFormat::Time) {
+            ui->seekSlider->setValue(convertMsToFrame(1000 * position));
+        }
+        else {
+            ui->seekSlider->setValue(position);
+        }
+    });
+    dlg.exec();
 }
 
 void MainWindow::processDiscFiles(const QStringList& files)

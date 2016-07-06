@@ -1,58 +1,36 @@
 #include <QSettings>
 #include "jumptoframedialog.hpp"
-#include "ui_jumptoframedialog.h"
 
 namespace vfg {
 namespace ui {
 
 JumpToFrameDialog::JumpToFrameDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::JumpToFrameDialog)
+    QDialog(parent)
 {
-    ui->setupUi(this);
-
-    // Hide time spin boxes
-    ui->hours->setHidden(true);
-    ui->minutes->setHidden(true);
-    ui->seconds->setHidden(true);
-}
-
-JumpToFrameDialog::~JumpToFrameDialog()
-{
-    delete ui;
+    ui.setupUi(this);
 }
 
 void JumpToFrameDialog::on_frame_clicked()
 {
-    ui->hours->setHidden(true);
-    ui->minutes->setHidden(true);
-    ui->seconds->setHidden(true);
-    ui->frameSpinBox->setHidden(false);
+    ui.stackedWidget->setCurrentIndex(0);
 }
 
 void JumpToFrameDialog::on_time_clicked()
 {
-    ui->hours->setHidden(false);
-    ui->minutes->setHidden(false);
-    ui->seconds->setHidden(false);
-    ui->frameSpinBox->setHidden(true);
+    ui.stackedWidget->setCurrentIndex(1);
 }
 
 void JumpToFrameDialog::on_goButton_clicked()
 {
-    QSettings config("config.ini", QSettings::IniFormat);
-    config.setValue("jumptoformat", ui->time->isChecked() ? "time" : "frame");
-    int jumpTo;
-    if(ui->time->isChecked()) {
-        jumpTo = ui->hours->value() * 60 * 60 +
-                 ui->minutes->value() * 60 +
-                 ui->seconds->value();
+    if(ui.time->isChecked()) {
+        const auto time = ui.hours->value() * 60 * 60 +
+                 ui.minutes->value() * 60 +
+                 ui.seconds->value();
+        emit jumpTo(time, TimeFormat::Time);
     }
     else {
-        jumpTo = ui->frameSpinBox->value();
+        emit jumpTo(ui.frameSpinBox->value(), TimeFormat::Frames);
     }
-
-    config.setValue("jumpto", jumpTo);
 
     accept();
 }
