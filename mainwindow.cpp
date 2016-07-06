@@ -151,23 +151,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
             // While video is playing the position of the video changes, so move the slider accordingly
             connect(mediaPlayer.get(),  &QMediaPlayer::positionChanged,
-                    this,               &MainWindow::videoPositionChanged);
+                    [this](const qint64 position) {
+                ui->seekSlider->setValue(convertMsToFrame(position));
+            });
         }
     });
 
     connect(mediaPlayer.get(),  &QMediaPlayer::stateChanged,
             [this](const QMediaPlayer::State state) {
-        if(state == QMediaPlayer::StoppedState) {
-            ui->videoPreviewWidget->hideVideo();
-            ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
-        }
-        else if(state == QMediaPlayer::PausedState) {
-            videoPositionChanged(mediaPlayer->position());
-            ui->videoPreviewWidget->hideVideo();
-            ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
-            seekedTime = 0;
-        }
-        else if(state == QMediaPlayer::PlayingState) {
+        if(state == QMediaPlayer::PlayingState) {
             ui->buttonPlay->setIcon(QIcon(":/icon/pause2.png"));
             if(mediaPlayer->mediaStatus() == QMediaPlayer::BufferedMedia) {
                 // When calling play() for the first time the media player emits "playing" state
@@ -179,6 +171,12 @@ MainWindow::MainWindow(QWidget *parent) :
                 // Start playing from where the seek slider is
                 mediaPlayer->setPosition(convertFrameToMs(ui->seekSlider->value()));
             }
+        }
+        else {
+            ui->videoPreviewWidget->hideVideo();
+            ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
+            ui->seekSlider->setValue(convertMsToFrame(mediaPlayer->position()));
+            frameGrabber->requestFrame(convertMsToFrame(mediaPlayer->position()));
         }
     });
 
@@ -487,13 +485,6 @@ void MainWindow::recentMenuTriggered(QAction* action)
 
         loadFile(path);
     }
-}
-
-void MainWindow::videoPositionChanged(const qint64 position)
-{    
-    const auto sliderPosition = convertMsToFrame(position);
-    seekedTime = sliderPosition;
-    ui->seekSlider->setValue(sliderPosition);
 }
 
 void MainWindow::frameGeneratorFinished()
@@ -1005,18 +996,24 @@ void MainWindow::on_seekSlider_valueChanged(const int frameNumber)
 
     ui->currentFrameLabel->setText(QString::number(frameNumber));
 
-    // This check makes sure that the slider was moved by the user
-    // and not auto-moved by videoPositionChanged
-    if(frameNumber != seekedTime && seekedTime > 0) {
-        mediaPlayer->setPosition(convertFrameToMs(frameNumber));
+    if(!userMovedSlider) {
+        return;
     }
 
-    frameGrabber->requestFrame(frameNumber);
+    if(mediaPlayer->state() == QMediaPlayer::PlayingState) {
+        mediaPlayer->setPosition(convertFrameToMs(frameNumber));
+    }
+    else {
+        frameGrabber->requestFrame(frameNumber);
+    }
+
+    userMovedSlider = false;
 }
 
 void MainWindow::on_seekSlider_sliderMoved(const int position)
 {
     ui->currentFrameLabel->setText(QString::number(position));
+    userMovedSlider = true;
 }
 
 void MainWindow::on_generateButton_clicked()

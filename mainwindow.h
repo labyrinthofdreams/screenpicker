@@ -180,12 +180,6 @@ private slots:
     void recentMenuTriggered(QAction* action);
 
     /**
-     * @brief Changes seek slider position to match video position
-     * @param position New position
-     */
-    void videoPositionChanged(qint64 position);
-
-    /**
      * @brief Starts playing video
      */
     void on_buttonPlay_clicked();
@@ -232,11 +226,8 @@ private:
     //! Open dialog
     std::unique_ptr<vfg::ui::OpenDialog> openDialog;
 
-    //! When video is playing, videoPositionChanged is called which moves
-    //! the seek slider. This variable keeps track where the slider was moved
-    //! and is checked in on_seekSlider_valueChanged to make sure user
-    //! moved the seek slider
-    int seekedTime {0};
+    //! Did user move the slider or was it updated by playing video?
+    bool userMovedSlider {false};
 
     //! Application wide configuration settings
     QSettings config {"config.ini", QSettings::IniFormat};
