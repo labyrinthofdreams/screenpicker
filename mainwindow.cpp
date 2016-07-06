@@ -389,8 +389,8 @@ void MainWindow::buildRecentMenu()
     auto menu = ui->actionRecent->menu();
     if(!menu) {
         menu = new QMenu;
-        connect(menu,   SIGNAL(triggered(QAction*)),
-                this,   SLOT(recentMenuTriggered(QAction*)));
+        connect(menu,   &QMenu::triggered,
+                this,   &MainWindow::recentMenuTriggered);
 
         ui->actionRecent->setMenu(menu);
     }
@@ -408,8 +408,8 @@ void MainWindow::buildRecentMenu()
     }
 
     auto clearRecent = new QAction("Clear", menu);
-    connect(clearRecent,    SIGNAL(triggered()),
-            this,           SLOT(clearRecentMenu()));
+    connect(clearRecent,    &QAction::triggered,
+            this,           &MainWindow::clearRecentMenu);
 
     menu->addSeparator();
     menu->addAction(clearRecent);
@@ -1310,8 +1310,8 @@ void MainWindow::activateGifMaker()
 
     if(!gifMaker) {
         gifMaker = util::make_unique<vfg::ui::GifMakerWidget>();
-        connect(gifMaker.get(), SIGNAL(requestPreview(QString, QString)),
-                this, SLOT(displayGifPreview(QString, QString)));
+        connect(gifMaker.get(), &vfg::ui::GifMakerWidget::requestPreview,
+                this,           &MainWindow::displayGifPreview);
     }
 
     const auto accepted = gifMaker->exec();
