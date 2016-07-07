@@ -107,12 +107,6 @@ private slots:
      */
     void screenshotsFull();
 
-    /**
-     * @brief When recent menu item is clicked
-     * @param action Item that was clicked
-     */
-    void recentMenuTriggered(QAction* action);
-
     void processDiscFiles(const QStringList& files);
 
     void on_actionOpen_triggered();

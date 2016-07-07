@@ -419,8 +419,17 @@ void MainWindow::buildRecentMenu()
     auto menu = ui->actionRecent->menu();
     if(!menu) {
         menu = new QMenu;
-        connect(menu,   &QMenu::triggered,
-                this,   &MainWindow::recentMenuTriggered);
+        connect(menu,   &QMenu::triggered, [this](QAction *action) {
+            const auto path = action->text();
+            if(!QFile::exists(path)) {
+                QMessageBox::critical(this, tr("File missing"), tr("Selected file is missing"));
+                removeRecentMenu(path);
+            }
+            else {
+                resetUi();
+                loadFile(path);
+            }
+        });
 
         ui->actionRecent->setMenu(menu);
     }
@@ -460,26 +469,6 @@ unsigned MainWindow::convertFrameToMs(const unsigned frameNumber) const
     const auto progress = static_cast<double>(frameNumber) / totalFrames;
     const auto videoTime = mediaPlayer->duration();
     return videoTime * progress;
-}
-
-void MainWindow::recentMenuTriggered(QAction* action)
-{
-    if(frameGenerator->isRunning()) {
-        pauseFrameGenerator();
-    }
-
-    const auto path = action->text();
-    qCDebug(MAINWINDOW) << "Triggered recent menu item" << path;
-    if(!QFile::exists(path)) {
-        QMessageBox::critical(this, tr("File missing"), tr("Selected file is missing"));
-
-        removeRecentMenu(path);
-    }
-    else {
-        resetUi();
-
-        loadFile(path);
-    }
 }
 
 void MainWindow::resetUi()
