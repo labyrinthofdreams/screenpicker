@@ -269,7 +269,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Handle double-click on unsaved screenshot
     connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::thumbnailDoubleClicked,
-            this,               &MainWindow::thumbnailDoubleClicked);
+            [this](const int frameNumber) {
+        userMovedSlider = true;
+        ui->seekSlider->setValue(frameNumber);
+    });
 
     // Handle when unsaved screenshot container gets full
     connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::full,
@@ -293,7 +296,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Handle double-click on saved screenshot
     connect(ui->savedWidget,    &vfg::ui::ThumbnailContainer::thumbnailDoubleClicked,
-            this,               &MainWindow::thumbnailDoubleClicked);
+            [this](const int frameNumber) {
+        userMovedSlider = true;
+        ui->seekSlider->setValue(frameNumber);
+    });
 
     // Handle when GIF menu action is clicked
     connect(ui->menuCreateGIFImage, &QMenu::triggered,
@@ -538,7 +544,7 @@ void MainWindow::setupInternal()
     frameGenerator = util::make_unique<vfg::core::VideoFrameGenerator>(frameGrabber);
 
     // When frame generator finishes, update UI, and conditionally go to last generated frame
-    connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::finished, [this]() {
+    connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::finished, this, [this]() {
         ui->btnPauseGenerator->setEnabled(false);
         ui->btnStopGenerator->setEnabled(false);
         ui->generateButton->setEnabled(true);
@@ -930,15 +936,6 @@ void MainWindow::videoLoaded()
         videoSettingsWindow->hide();
         videoSettingsWindow->show();
     }
-}
-
-void MainWindow::thumbnailDoubleClicked(const int frameNumber)
-{    
-    qCDebug(MAINWINDOW) << "Double clicked thumbnail";
-    QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
-                              Qt::QueuedConnection, Q_ARG(int, frameNumber));
-
-    ui->seekSlider->setValue(frameNumber);
 }
 
 void MainWindow::on_nextButton_clicked()

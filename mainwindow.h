@@ -84,12 +84,6 @@ private slots:
     void videoLoaded();
 
     /**
-     * @brief Triggered after a thumbnail has been clicked
-     * @param frameNumber Frame number of the clicked thumbnail
-     */
-    void thumbnailDoubleClicked(int frameNumber);
-
-    /**
      * @brief Load the given file with the current video source
      * @param path Path to the file to load
      */
