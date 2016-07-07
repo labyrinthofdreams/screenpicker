@@ -145,11 +145,6 @@ private slots:
     void on_actionDebugOff_triggered(bool checked);
 
     /**
-     * @brief When frame generator emits finished signal
-     */
-    void frameGeneratorFinished();
-
-    /**
      * @brief When screenshots tab signals full signal
      */
     void screenshotsFull();

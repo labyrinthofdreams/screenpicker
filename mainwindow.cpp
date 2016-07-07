@@ -471,23 +471,6 @@ void MainWindow::recentMenuTriggered(QAction* action)
     }
 }
 
-void MainWindow::frameGeneratorFinished()
-{
-    qCDebug(MAINWINDOW) << "Frame generator finished";
-
-    ui->btnPauseGenerator->setEnabled(false);
-    ui->btnStopGenerator->setEnabled(false);
-    ui->generateButton->setEnabled(true);
-
-    // Jump to last generated frame
-    const bool jumpAfterFinished = config.value("jumptolastonfinish").toBool();
-    if(jumpAfterFinished) {
-        qCDebug(MAINWINDOW) << "Set: Jump to last generated frame after finishing generation";
-
-        ui->seekSlider->setValue(config.value("last_received_frame").toInt());
-    }
-}
-
 void MainWindow::resetUi()
 {
     qCDebug(MAINWINDOW) << "Setting up UI";
@@ -554,10 +537,17 @@ void MainWindow::setupInternal()
 
     frameGenerator = util::make_unique<vfg::core::VideoFrameGenerator>(frameGrabber);
 
-    // Handle frame generator finish event
-    connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::finished,
-            this,                   &MainWindow::frameGeneratorFinished,
-            Qt::QueuedConnection);
+    // When frame generator finishes, update UI, and conditionally go to last generated frame
+    connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::finished, [this]() {
+        ui->btnPauseGenerator->setEnabled(false);
+        ui->btnStopGenerator->setEnabled(false);
+        ui->generateButton->setEnabled(true);
+
+        // Jump to last generated frame
+        if(config.value("jumptolastonfinish").toBool()) {
+            ui->seekSlider->setValue(config.value("last_received_frame").toInt());
+        }
+    });
 
     // Add frame emitted by frame generator to the unsaved screenshot widget
     // Note: this is necessary as context so that widget is created in GUI thread
