@@ -102,6 +102,24 @@ private slots:
      */
     void displayGifPreview(QString args, QString optArgs);
 
+    /**
+     * @brief Handle GIF menu clicks
+     */
+    void gifContextMenuTriggered(QAction*);
+
+    /**
+     * @brief When screenshots tab signals full signal
+     */
+    void screenshotsFull();
+
+    /**
+     * @brief When recent menu item is clicked
+     * @param action Item that was clicked
+     */
+    void recentMenuTriggered(QAction* action);
+
+    void processDiscFiles(const QStringList& files);
+
     void on_actionOpen_triggered();
     void on_nextButton_clicked();
     void on_previousButton_clicked();
@@ -125,11 +143,6 @@ private slots:
     void on_actionOpen_DVD_triggered();
     void on_actionVideo_Settings_triggered();
 
-    /**
-     * @brief Handle GIF menu clicks
-     */
-    void gifContextMenuTriggered(QAction*);
-
     void on_actionSave_as_PNG_triggered();
 
     void on_actionX264_Encoder_triggered();
@@ -138,20 +151,6 @@ private slots:
 
     void on_actionDebugOff_triggered(bool checked);
 
-    /**
-     * @brief When screenshots tab signals full signal
-     */
-    void screenshotsFull();
-
-    /**
-     * @brief When recent menu item is clicked
-     * @param action Item that was clicked
-     */
-    void recentMenuTriggered(QAction* action);
-
-    /**
-     * @brief Starts playing video
-     */
     void on_buttonPlay_clicked();
 
     void on_playbackSpeed_currentIndexChanged(const QString &arg1);
@@ -161,8 +160,6 @@ private slots:
     void on_actionDownloads_triggered();
 
     void on_actionJump_to_triggered();
-
-    void processDiscFiles(const QStringList& files);
 
     void on_saveGridButton_clicked();
 
