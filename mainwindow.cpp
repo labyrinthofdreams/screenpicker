@@ -221,7 +221,20 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // When video settings are changed update video
     connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::settingsChanged,
-            this,                       &MainWindow::videoSettingsUpdated);
+            [this]() {
+        // TODO: Should this check be somewhere else?
+        if(!videoSource->hasVideo()) {
+            QMessageBox::warning(this, tr("No video"), tr("This operation requires a video"));
+        }
+        else {
+            const auto seekPosition = ui->seekSlider->value();
+            loadFile(config.value("last_opened").toString());
+
+            // If video was playing or paused loadFile will stop it,
+            // so move the slider back to where it was
+            ui->seekSlider->setValue(seekPosition);
+        }
+    });
 
     // Draw crop border on video preview when crop changes in video settings
     connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::cropChanged,
@@ -825,26 +838,6 @@ void MainWindow::on_actionOpen_DVD_triggered()
 {
     openDialog->setActiveTab(vfg::ui::OpenDialog::Tab::OpenDisc);
     openDialog->exec();
-}
-
-void MainWindow::videoSettingsUpdated()
-{    
-    qCDebug(MAINWINDOW) << "Video settings updated";
-
-    if(!frameGrabber->hasVideo()) {
-        qCCritical(MAINWINDOW) << "No video in frame grabber";
-        QMessageBox::warning(this, tr("No video"), tr("This operation requires a video"));
-
-        return;
-    }
-
-    const auto seekPosition = ui->seekSlider->value();
-
-    loadFile(config.value("last_opened").toString());
-
-    // If video was playing or paused loadFile will stop it,
-    // so move the slider back to where it was
-    ui->seekSlider->setValue(seekPosition);
 }
 
 void MainWindow::videoLoaded()

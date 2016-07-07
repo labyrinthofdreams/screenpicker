@@ -69,11 +69,6 @@ public:
     
 private slots:
     /**
-     * @brief Triggered when video settings are saved
-     */
-    void videoSettingsUpdated();
-
-    /**
      * @brief Triggered after a video source has finished loading
      */
     void videoLoaded();
