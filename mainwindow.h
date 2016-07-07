@@ -90,12 +90,6 @@ private slots:
     void loadFile(const QString& path);
 
     /**
-     * @brief Triggered when the video zoom mode is changed
-     * @param action The action that was performed
-     */
-    void videoZoomChanged(QAction *action);
-
-    /**
      * @brief Generate and display GIF preview
      * @param args ImageMagick arguments
      * @param optArgs Optimization arguments

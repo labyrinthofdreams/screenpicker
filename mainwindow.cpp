@@ -193,8 +193,16 @@ MainWindow::MainWindow(QWidget *parent) :
     videoZoomGroup->addAction(ui->actionScaleToWindow);
 
     // When user changes zoom mode...
-    connect(videoZoomGroup, &QActionGroup::triggered,
-            this,           &MainWindow::videoZoomChanged);
+    connect(videoZoomGroup, &QActionGroup::triggered, [this](QAction *action) {
+        static const QMap<QString, vfg::ZoomMode> modes {
+            {"25", vfg::ZoomMode::Zoom_25},
+            {"50", vfg::ZoomMode::Zoom_50},
+            {"100", vfg::ZoomMode::Zoom_100},
+            {"200", vfg::ZoomMode::Zoom_200},
+            {"scale", vfg::ZoomMode::Zoom_Scale}
+        };
+        ui->videoPreviewWidget->setZoom(modes.value(action->data().toString()));
+    });
 
     //
     // Show context menu on video preview widget
@@ -664,22 +672,6 @@ void MainWindow::loadFile(const QString& path)
         scriptEditor->show();
         scriptEditor->setWindowState(Qt::WindowActive);
     }
-}
-
-void MainWindow::videoZoomChanged(QAction* action)
-{                           
-    static const QMap<QString, vfg::ZoomMode> modes {
-        {"25", vfg::ZoomMode::Zoom_25},
-        {"50", vfg::ZoomMode::Zoom_50},
-        {"100", vfg::ZoomMode::Zoom_100},
-        {"200", vfg::ZoomMode::Zoom_200},
-        {"scale", vfg::ZoomMode::Zoom_Scale}
-    };
-
-    const QString mode = action->data().toString();
-    ui->videoPreviewWidget->setZoom(modes.value(mode));
-
-    qCDebug(MAINWINDOW) << "Changing video zoom mode:" << mode;
 }
 
 void MainWindow::displayGifPreview(QString args, QString optArgs)
