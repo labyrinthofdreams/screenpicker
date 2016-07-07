@@ -102,11 +102,6 @@ private slots:
      */
     void displayGifPreview(QString args, QString optArgs);
 
-    /**
-     * @brief When screenshots tab signals full signal
-     */
-    void screenshotsFull();
-
     void processDiscFiles(const QStringList& files);
 
     void on_actionOpen_triggered();

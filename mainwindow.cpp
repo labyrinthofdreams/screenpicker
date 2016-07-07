@@ -275,8 +275,20 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     // Handle when unsaved screenshot container gets full
-    connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::full,
-            this,               &MainWindow::screenshotsFull);
+    connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::full, [this]() {
+        if(config.value("removeoldestafterlimit").toBool()) {
+            ui->unsavedWidget->removeFirst();
+        }
+        else {
+            if(frameGenerator->remaining() > 0) {
+                pauseFrameGenerator();
+            }
+
+            if(config.value("jumptolastonreachingmax").toBool()) {
+                ui->seekSlider->setValue(config.value("last_received_frame").toInt());
+            }
+        }
+    });
 
     // When a thumbnail is added or removed from unsaved container update progress bar value
     connect(ui->unsavedWidget,      &vfg::ui::ThumbnailContainer::countChanged,
@@ -361,24 +373,6 @@ void MainWindow::closeEvent(QCloseEvent *ev)
     videoSettingsWindow->close();
 
     ev->accept();
-}
-
-void MainWindow::screenshotsFull()
-{
-    qCDebug(MAINWINDOW) << "Screenshots tab is full";
-
-    if(config.value("removeoldestafterlimit").toBool()) {
-        ui->unsavedWidget->removeFirst();
-    }
-    else {
-        if(frameGenerator->remaining() > 0) {
-            pauseFrameGenerator();
-        }
-
-        if(config.value("jumptolastonreachingmax").toBool()) {
-            ui->seekSlider->setValue(config.value("last_received_frame").toInt());
-        }
-    }
 }
 
 void MainWindow::appendRecentMenu(const QString& item)
