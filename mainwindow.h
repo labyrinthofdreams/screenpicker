@@ -69,11 +69,6 @@ public:
     
 private slots:
     /**
-     * @brief Triggered when a script in the editor is saved
-     */
-    void scriptEditorUpdated();
-
-    /**
      * @brief Triggered when video settings are saved
      */
     void videoSettingsUpdated();
