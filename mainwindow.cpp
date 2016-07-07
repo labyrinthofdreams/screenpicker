@@ -110,8 +110,10 @@ MainWindow::MainWindow(QWidget *parent) :
     downloadsWindow = util::make_unique<vfg::ui::DownloadsDialog>();
 
     // When user requests to play file in downloads window, load it
-    connect(downloadsWindow.get(),  &vfg::ui::DownloadsDialog::play,
-            this,                   &MainWindow::loadDownloadedFile);
+    connect(downloadsWindow.get(),  &vfg::ui::DownloadsDialog::play, [this](const QString &path) {
+        resetUi();
+        loadFile(path);
+    });
 
     //
     // Open dialog
@@ -490,6 +492,10 @@ void MainWindow::resetUi()
 {
     qCDebug(MAINWINDOW) << "Setting up UI";
 
+    if(frameGenerator->isRunning()) {
+        pauseFrameGenerator();
+    }
+
     videoSettingsWindow->resetSettings();
 
     scriptEditor->reset();
@@ -674,17 +680,6 @@ void MainWindow::loadFile(const QString& path)
         scriptEditor->show();
         scriptEditor->setWindowState(Qt::WindowActive);
     }
-}
-
-void MainWindow::loadDownloadedFile(const QString& path)
-{
-    if(frameGenerator->isRunning()) {
-        pauseFrameGenerator();
-    }
-
-    resetUi();
-
-    loadFile(path);
 }
 
 void MainWindow::videoZoomChanged(QAction* action)
