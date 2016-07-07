@@ -144,11 +144,6 @@ private slots:
     void screenshotsFull();
 
     /**
-     * @brief Clears recent menu items
-     */
-    void clearRecentMenu();
-
-    /**
      * @brief When recent menu item is clicked
      * @param action Item that was clicked
      */

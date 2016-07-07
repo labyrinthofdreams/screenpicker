@@ -371,13 +371,6 @@ void MainWindow::screenshotsFull()
     }
 }
 
-void MainWindow::clearRecentMenu()
-{
-    config.setValue("recent", {});
-
-    buildRecentMenu();
-}
-
 void MainWindow::appendRecentMenu(const QString& item)
 {
     auto recent = config.value("recent").toStringList();
@@ -435,8 +428,10 @@ void MainWindow::buildRecentMenu()
     }
 
     auto clearRecent = new QAction("Clear", menu);
-    connect(clearRecent,    &QAction::triggered,
-            this,           &MainWindow::clearRecentMenu);
+    connect(clearRecent,    &QAction::triggered, [this]() {
+        config.setValue("recent", {});
+        buildRecentMenu();
+    });
 
     menu->addSeparator();
     menu->addAction(clearRecent);
