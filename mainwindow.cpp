@@ -302,8 +302,18 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     // Handle when GIF menu action is clicked
-    connect(ui->menuCreateGIFImage, &QMenu::triggered,
-            this,                   &MainWindow::gifContextMenuTriggered);
+    connect(ui->menuCreateGIFImage, &QMenu::triggered, [this](QAction *action) {
+        const auto objName = action->objectName();
+        if(objName == "actionShowEditor") {
+            activateGifMaker();
+        }
+        else if(objName == "actionSetStartFrame") {
+            gifMaker->updateStartFrame(ui->seekSlider->value());
+        }
+        else if(objName == "actionSetEndFrame") {
+            gifMaker->updateLastFrame(ui->seekSlider->value());
+        }
+    });
 }
 
 MainWindow::~MainWindow()
@@ -1344,20 +1354,6 @@ void MainWindow::resumeFrameGenerator()
     ui->btnPauseGenerator->setText(tr("Pause"));
     ui->btnPauseGenerator->setIcon(QIcon(":/icon/pause.png"));
     ui->generateButton->setEnabled(false);
-}
-
-void MainWindow::gifContextMenuTriggered(QAction* action)
-{
-    const auto objName = action->objectName();
-    if(objName == "actionShowEditor") {
-        activateGifMaker();
-    }
-    else if(objName == "actionSetStartFrame") {
-        gifMaker->updateStartFrame(ui->seekSlider->value());
-    }
-    else if(objName == "actionSetEndFrame") {
-        gifMaker->updateLastFrame(ui->seekSlider->value());
-    }
 }
 
 void MainWindow::on_actionSave_as_PNG_triggered()

@@ -103,11 +103,6 @@ private slots:
     void displayGifPreview(QString args, QString optArgs);
 
     /**
-     * @brief Handle GIF menu clicks
-     */
-    void gifContextMenuTriggered(QAction*);
-
-    /**
      * @brief When screenshots tab signals full signal
      */
     void screenshotsFull();
