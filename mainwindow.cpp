@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <memory>
 #include <stdexcept>
 #include <utility>
@@ -256,15 +257,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
         // If video was playing or paused loadFile will stop it,
         // so move the slider back to where it was
-        // The comparison is necessary because the script might've
-        // changed the frame amount
-        const auto totalFrames = videoSource->getNumFrames();
-        if(seekPosition <= totalFrames) {
-            ui->seekSlider->setValue(seekPosition);
-        }
-        else {
-            ui->seekSlider->setValue(totalFrames);
-        }
+        // The frame amount may have changed so min() makes sure
+        // we don't go to invalid frame
+        ui->seekSlider->setValue(std::min(videoSource->getNumFrames(), seekPosition));
     });
 
     //
