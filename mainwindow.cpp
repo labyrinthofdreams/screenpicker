@@ -382,7 +382,6 @@ void MainWindow::closeEvent(QCloseEvent *ev)
     if(response == QMessageBox::No) {
         qCDebug(MAINWINDOW) << "Close event cancelled";
         ev->ignore();
-
         return;
     }
 
@@ -806,26 +805,18 @@ void MainWindow::displayGifPreview(QString args, QString optArgs)
 
 void MainWindow::on_actionOpen_triggered()
 {
-    qCDebug(MAINWINDOW) << "Triggered Open file";
-
     if(frameGenerator->isRunning()) {
         pauseFrameGenerator();
     }
 
-    const QString lastOpened(config.value("last_opened", "").toString());
-
-    const QString filename =
-            QFileDialog::getOpenFileName(this, tr("Open video"), lastOpened,
+    const auto filename = QFileDialog::getOpenFileName(this, tr("Open video"),
+                                         config.value("last_opened").toString(),
                                          "All (*.*);;Avisynth (*.avs, *.avsi);;DGIndex (*.d2v)");
     if(filename.isEmpty()) {
-        qCDebug(MAINWINDOW) << "Cancelled opening a new file";
-
         return;
     }
 
-    // Reset all states back to zero
     resetUi();
-
     loadFile(filename);           
 }
 
@@ -840,12 +831,9 @@ void MainWindow::videoLoaded()
     qCDebug(MAINWINDOW) << "Video loaded";
 
     setWindowTitle(config.value("last_opened").toString());
-
     appendRecentMenu(config.value("last_opened").toString());
 
     config.setValue("last_opened_script", videoSource->fileName());
-
-    const int numFrames = frameGrabber->totalFrames() - 1;
 
     const QSize resolution = frameGrabber->resolution();
     ui->labelVideoResolution->setText(QString("[%1x%2]").arg(resolution.width())
@@ -856,45 +844,28 @@ void MainWindow::videoLoaded()
     ui->actionSetEndFrame->setEnabled(false);
     ui->actionSetStartFrame->setEnabled(false);
 
-    // lastRequestedFrame may be out of range when the script
-    // is reloaded via the editor and when the script produces
-    // video with fewer frames than the last requested frame
-    const int lastRequestedFrame = frameGrabber->lastFrame();
-    const bool invalidRange = !frameGrabber->isValidFrame(lastRequestedFrame);
-    const int jumpToFrame = invalidRange ? 0 : lastRequestedFrame;
-
     // Update widgets
+    const int numFrames = frameGrabber->totalFrames() - 1;
     ui->totalFramesLabel->setText(QString::number(numFrames));
 
     ui->seekSlider->setEnabled(true);
     ui->seekSlider->setMaximum(numFrames);
-    ui->seekSlider->setValue(jumpToFrame);
+    ui->seekSlider->setValue(frameGrabber->lastFrame());
 
     ui->previousButton->setEnabled(true);
     ui->nextButton->setEnabled(true);
     ui->grabButton->setEnabled(true);
     ui->generateButton->setEnabled(true);
-
     ui->buttonPlay->setEnabled(true);
 
     ui->actionSave_as_PNG->setEnabled(true);
     ui->actionX264_Encoder->setEnabled(true);
 
-    QMetaObject::invokeMethod(frameGrabber.get(), "requestFrame",
-                              Qt::QueuedConnection, Q_ARG(int, jumpToFrame));
-
-    // Load config
-    const bool showEditor = config.value("showscripteditor").toBool();
-    if(showEditor)
-    {
-        scriptEditor->hide();
+    if(config.value("showscripteditor").toBool()) {
         scriptEditor->show();
     }
 
-    const bool showVideoSettings = config.value("showvideosettings").toBool();
-    if(showVideoSettings)
-    {
-        videoSettingsWindow->hide();
+    if(config.value("showvideosettings").toBool()) {
         videoSettingsWindow->show();
     }
 }
@@ -951,8 +922,12 @@ void MainWindow::on_generateButton_clicked()
 
     if(frameGenerator->isRunning()) {
         qCWarning(MAINWINDOW) << "Frame generator is running";
-
         return;
+    }
+
+    if(frameGenerator->isPaused()) {
+        qCDebug(MAINWINDOW) << "Restarting frame generator";
+        frameGenerator->stop();
     }
 
     const bool pauseAfterLimit = config.value("pauseafterlimit").toBool();
@@ -960,7 +935,6 @@ void MainWindow::on_generateButton_clicked()
         // Can't start the generator if the unsaved widget container is full
         // and user has selected to pause after the container is full
         qCWarning(MAINWINDOW) << "Thumbnail container is full";
-
         QMessageBox::information(this, tr("Thumbnail container is full"),
                 tr("Click 'Clear' or raise the max thumbnail limit."));
         return;
@@ -974,16 +948,8 @@ void MainWindow::on_generateButton_clicked()
     const int total_video_frames = frameGrabber->totalFrames();
     const int total_frame_range = frame_step * num_generate;
     const int last_frame = selected_frame + total_frame_range;
-
-    if(frameGenerator->isPaused()) {
-        qCDebug(MAINWINDOW) << "Restarting frame generator";
-
-        frameGenerator->stop();
-    }
-
     QList<int> queue;
-    for(int current_frame = selected_frame; ; current_frame += frame_step)
-    {
+    for(int current_frame = selected_frame; ; current_frame += frame_step) {
         if(!unlimited_screens) {
             const bool reached_last_frame = current_frame >= last_frame;
             // Only check for reaching last generated frame
@@ -1027,7 +993,6 @@ void MainWindow::on_grabButton_clicked()
     if(frame.isNull()) {
         qCCritical(MAINWINDOW) << "Frame is null";
         QMessageBox::critical(this, tr("Invalid image"), tr("Invalid image format. Try again."));
-
         return;
     }
 
@@ -1041,8 +1006,7 @@ void MainWindow::on_clearThumbsButton_clicked()
     ui->unsavedWidget->clearThumbnails();
 
     const bool resumeAfterClear = config.value("resumegeneratorafterclear", false).toBool();
-    if(resumeAfterClear && frameGenerator->remaining() > 0
-            && frameGenerator->isPaused()) {
+    if(resumeAfterClear && frameGenerator->remaining() > 0 && frameGenerator->isPaused()) {
         resumeFrameGenerator();
     }
 }
@@ -1064,8 +1028,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
     qCDebug(MAINWINDOW) << "Clicked save button";
 
     // Save saved images to disk
-    if(ui->savedWidget->isEmpty())
-    {
+    if(ui->savedWidget->isEmpty()) {
         qCWarning(MAINWINDOW) << "Nothing to save";
         QMessageBox::information(this, tr("Nothing to save"),
                                  tr("Add one or more screenshots to queue."));
@@ -1115,11 +1078,9 @@ void MainWindow::on_saveThumbnailsButton_clicked()
         const int frameNumber = widget->frameNum();
         const QString filename = QString("%1.png").arg(QString::number(frameNumber));
         const QString savePath = saveDir.absoluteFilePath(filename);
-
         const QImage frame = frameGrabber->getFrame(frameNumber);
         if(frame.isNull()) {
             qCCritical(MAINWINDOW) << "Frame is null";
-
             continue;
         }
 
@@ -1161,12 +1122,8 @@ void MainWindow::dropEvent(QDropEvent *ev)
 
     ev->acceptProposedAction();
 
-    const QString filename = urls.at(0).toLocalFile();
-
-    // Reset all states back to zero
     resetUi();
-
-    loadFile(filename);
+    loadFile(urls.at(0).toLocalFile());
 }
 
 void MainWindow::on_actionOptions_triggered()
@@ -1203,8 +1160,7 @@ void MainWindow::on_cbUnlimitedScreens_clicked(const bool checked)
 
 void MainWindow::on_btnPauseGenerator_clicked()
 {
-    if(frameGenerator->isRunning())
-    {
+    if(frameGenerator->isRunning()) {
         pauseFrameGenerator();
 
         // Jump to last generated frame if the option is selected
@@ -1213,8 +1169,7 @@ void MainWindow::on_btnPauseGenerator_clicked()
             ui->seekSlider->setValue(config.value("last_received_frame").toInt());
         }
     }
-    else if(frameGenerator->isPaused())
-    {
+    else if(frameGenerator->isPaused()) {
         if(ui->unsavedWidget->isFull()) {
             QMessageBox::information(this, tr(""), tr("Can't resume generator while the container has reached max limit.\n"
                                                       "Click 'Clear' or raise the max thumbnail limit to continue."));
