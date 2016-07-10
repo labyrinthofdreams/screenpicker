@@ -228,12 +228,7 @@ MainWindow::MainWindow(QWidget *parent) :
             QMessageBox::warning(this, tr("No video"), tr("This operation requires a video"));
         }
         else {
-            const auto seekPosition = ui->seekSlider->value();
             loadFile(config.value("last_opened").toString());
-
-            // If video was playing or paused loadFile will stop it,
-            // so move the slider back to where it was
-            ui->seekSlider->setValue(seekPosition);
         }
     });
 
@@ -252,14 +247,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Update video when script is changed
     connect(scriptEditor.get(), &vfg::ui::ScriptEditor::scriptUpdated, [this]() {
-        const auto seekPosition = ui->seekSlider->value();
         loadFile(scriptEditor->path());
-
-        // If video was playing or paused loadFile will stop it,
-        // so move the slider back to where it was
-        // The frame amount may have changed so min() makes sure
-        // we don't go to invalid frame
-        ui->seekSlider->setValue(std::min(videoSource->getNumFrames(), seekPosition));
     });
 
     //
@@ -844,13 +832,11 @@ void MainWindow::videoLoaded()
     ui->actionSetEndFrame->setEnabled(false);
     ui->actionSetStartFrame->setEnabled(false);
 
-    // Update widgets
     const int numFrames = frameGrabber->totalFrames() - 1;
     ui->totalFramesLabel->setText(QString::number(numFrames));
 
     ui->seekSlider->setEnabled(true);
     ui->seekSlider->setMaximum(numFrames);
-    ui->seekSlider->setValue(frameGrabber->lastFrame());
 
     ui->previousButton->setEnabled(true);
     ui->nextButton->setEnabled(true);
@@ -860,6 +846,9 @@ void MainWindow::videoLoaded()
 
     ui->actionSave_as_PNG->setEnabled(true);
     ui->actionX264_Encoder->setEnabled(true);
+
+    frameGrabber->requestFrame(std::min(frameGrabber->lastFrame(),
+                                        videoSource->getNumFrames() - 1));
 
     if(config.value("showscripteditor").toBool()) {
         scriptEditor->show();
