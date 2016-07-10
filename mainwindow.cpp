@@ -1099,20 +1099,33 @@ void MainWindow::dropEvent(QDropEvent *ev)
 {
     qCDebug(MAINWINDOW) << "Drop event";
 
-    const QList<QUrl> urls = ev->mimeData()->urls();
-    if(urls.length() > 1) {
-        qCWarning(MAINWINDOW) << "Too many dropped objects";
-
-        ev->ignore();
-        QMessageBox::information(this, tr("Drop event"),
-                                 tr("You can drop only one file"));
-        return;
-    }
-
     ev->acceptProposedAction();
 
     resetUi();
-    loadFile(urls.at(0).toLocalFile());
+
+    const QList<QUrl> urls = ev->mimeData()->urls();
+    if(urls.length() == 1) {
+        loadFile(urls.at(0).toLocalFile());
+    }
+    else {
+        const auto isDvdOrBr = std::all_of(urls.cbegin(), urls.cend(), [](const QUrl &url) {
+            return url.toLocalFile().endsWith("vob", Qt::CaseInsensitive) ||
+                    url.toLocalFile().endsWith("m2ts", Qt::CaseInsensitive);
+        });
+        if(isDvdOrBr) {
+            QStringList fileList;
+            for(const QUrl &url : urls) {
+                fileList.append(url.toLocalFile());
+            }
+
+            processDiscFiles(fileList);
+        }
+        else {
+            QMessageBox::information(this, tr("Unsupported format"),
+                                     tr("Currently multi-file drops only support "
+                                        "VOB and M2TS files"));
+        }
+    }
 }
 
 void MainWindow::on_actionOptions_triggered()
@@ -1357,7 +1370,6 @@ void MainWindow::on_actionJump_to_triggered()
 
 void MainWindow::processDiscFiles(const QStringList& files)
 {
-    qDebug() << files;
     if(files.empty()) {
         return;
     }
