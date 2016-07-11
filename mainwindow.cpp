@@ -151,13 +151,13 @@ MainWindow::MainWindow(QWidget *parent) :
             ui->videoPreviewWidget->showVideo();
             // Start playing from where the seek slider is
             mediaPlayer->setPosition(convertFrameToMs(ui->seekSlider->value()));
-
-            // While video is playing the position of the video changes, so move the slider accordingly
-            connect(mediaPlayer.get(),  &QMediaPlayer::positionChanged,
-                    [this](const qint64 position) {
-                ui->seekSlider->setValue(convertMsToFrame(position));
-            });
         }
+    });
+
+    // While video is playing the position of the video changes, so move the slider accordingly
+    connect(mediaPlayer.get(),  &QMediaPlayer::positionChanged,
+            [this](const qint64 position) {
+        updateSeekSlider(convertMsToFrame(position), SeekSlider::UpdateText);
     });
 
     connect(mediaPlayer.get(),  &QMediaPlayer::stateChanged,
@@ -178,7 +178,7 @@ MainWindow::MainWindow(QWidget *parent) :
         else {
             ui->videoPreviewWidget->hideVideo();
             ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
-            ui->seekSlider->setValue(convertMsToFrame(mediaPlayer->position()));
+            updateSeekSlider(convertMsToFrame(mediaPlayer->position()), SeekSlider::UpdateText);
             frameGrabber->requestFrame(convertMsToFrame(mediaPlayer->position()));
         }
     });
@@ -288,8 +288,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Handle double-click on unsaved screenshot
     connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::thumbnailDoubleClicked,
             [this](const int frameNumber) {
-        userMovedSlider = true;
-        ui->seekSlider->setValue(frameNumber);
+        updateSeekSlider(frameNumber, SeekSlider::UpdateAll);
     });
 
     // Handle when unsaved screenshot container gets full
@@ -303,7 +302,8 @@ MainWindow::MainWindow(QWidget *parent) :
             }
 
             if(config.value("jumptolastonreachingmax").toBool()) {
-                ui->seekSlider->setValue(config.value("last_received_frame").toInt());
+                updateSeekSlider(config.value("last_received_frame").toInt(),
+                                 SeekSlider::UpdateAll);
             }
         }
     });
@@ -327,8 +327,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // Handle double-click on saved screenshot
     connect(ui->savedWidget,    &vfg::ui::ThumbnailContainer::thumbnailDoubleClicked,
             [this](const int frameNumber) {
-        userMovedSlider = true;
-        ui->seekSlider->setValue(frameNumber);
+        updateSeekSlider(frameNumber, SeekSlider::UpdateAll);
     });
 
     // Handle when GIF menu action is clicked
@@ -474,6 +473,23 @@ unsigned MainWindow::convertMsToFrame(const unsigned milliSecond) const
     return ui->totalFramesLabel->text().toInt() * completed;
 }
 
+void MainWindow::updateSeekSlider(const int value, const MainWindow::SeekSlider update)
+{
+    qCDebug(MAINWINDOW) << "Updating seek slider @" << value;
+
+    ui->seekSlider->setValue(value);
+    ui->currentFrameLabel->setText(QString::number(value));
+
+    if(update == SeekSlider::UpdateAll) {
+        if(mediaPlayer->state() == QMediaPlayer::PlayingState) {
+            mediaPlayer->setPosition(convertFrameToMs(value));
+        }
+        else {
+            frameGrabber->requestFrame(value);
+        }
+    }
+}
+
 unsigned MainWindow::convertFrameToMs(const unsigned frameNumber) const
 {
     const auto totalFrames = ui->totalFramesLabel->text().toInt();
@@ -556,7 +572,7 @@ void MainWindow::setupInternal()
 
         // Jump to last generated frame
         if(config.value("jumptolastonfinish").toBool()) {
-            ui->seekSlider->setValue(config.value("last_received_frame").toInt());
+            updateSeekSlider(config.value("last_received_frame").toInt(), SeekSlider::UpdateAll);
         }
     });
 
@@ -864,9 +880,7 @@ void MainWindow::on_nextButton_clicked()
     qCDebug(MAINWINDOW) << "Clicked next button";
 
     frameGrabber->requestNextFrame();
-    const int lastRequestedFrame = frameGrabber->lastFrame();
-
-    ui->seekSlider->setValue(lastRequestedFrame);
+    updateSeekSlider(frameGrabber->lastFrame(), SeekSlider::UpdateText);
 }
 
 void MainWindow::on_previousButton_clicked()
@@ -874,20 +888,15 @@ void MainWindow::on_previousButton_clicked()
     qCDebug(MAINWINDOW) << "Clicked previous button";
 
     frameGrabber->requestPreviousFrame();
-    const int lastRequestedFrame = frameGrabber->lastFrame();
-
-    ui->seekSlider->setValue(lastRequestedFrame);
+    updateSeekSlider(frameGrabber->lastFrame(), SeekSlider::UpdateText);
 }
 
-void MainWindow::on_seekSlider_valueChanged(const int frameNumber)
+void MainWindow::on_seekSlider_sliderReleased()
 {
-    qCDebug(MAINWINDOW) << "Moved seek slider";
+    qCDebug(MAINWINDOW) << "Seek slider released @" << ui->seekSlider->sliderPosition();
 
+    const auto frameNumber = ui->seekSlider->sliderPosition();
     ui->currentFrameLabel->setText(QString::number(frameNumber));
-
-    if(!userMovedSlider) {
-        return;
-    }
 
     if(mediaPlayer->state() == QMediaPlayer::PlayingState) {
         mediaPlayer->setPosition(convertFrameToMs(frameNumber));
@@ -895,14 +904,11 @@ void MainWindow::on_seekSlider_valueChanged(const int frameNumber)
     else {
         frameGrabber->requestFrame(frameNumber);
     }
-
-    userMovedSlider = false;
 }
 
 void MainWindow::on_seekSlider_sliderMoved(const int position)
 {
     ui->currentFrameLabel->setText(QString::number(position));
-    userMovedSlider = true;
 }
 
 void MainWindow::on_generateButton_clicked()
@@ -1168,7 +1174,7 @@ void MainWindow::on_btnPauseGenerator_clicked()
         // Jump to last generated frame if the option is selected
         const bool jumpAfterPaused = config.value("jumptolastonpause").toBool();
         if(jumpAfterPaused) {
-            ui->seekSlider->setValue(config.value("last_received_frame").toInt());
+            updateSeekSlider(config.value("last_received_frame").toInt(), SeekSlider::UpdateAll);
         }
     }
     else if(frameGenerator->isPaused()) {
@@ -1199,7 +1205,7 @@ void MainWindow::on_btnStopGenerator_clicked()
     // Jump to last generated frame if the option is selected
     const bool jumpAfterStopped = config.value("jumptolastonstop").toBool();
     if(jumpAfterStopped) {
-        ui->seekSlider->setValue(config.value("last_received_frame").toInt());
+        updateSeekSlider(config.value("last_received_frame").toInt(), SeekSlider::UpdateAll);
     }
 }
 
@@ -1357,12 +1363,11 @@ void MainWindow::on_actionJump_to_triggered()
     vfg::ui::JumpToFrameDialog dlg;
     connect(&dlg, &vfg::ui::JumpToFrameDialog::jumpTo,
             [this](const int position, const vfg::ui::TimeFormat tf) {
-        userMovedSlider = true;
         if(tf == vfg::ui::TimeFormat::Time) {
-            ui->seekSlider->setValue(convertMsToFrame(1000 * position));
+            updateSeekSlider(convertMsToFrame(1000 * position), SeekSlider::UpdateAll);
         }
         else {
-            ui->seekSlider->setValue(position);
+            updateSeekSlider(position, SeekSlider::UpdateAll);
         }
     });
     dlg.exec();

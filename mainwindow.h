@@ -92,7 +92,7 @@ private slots:
     void on_nextButton_clicked();
     void on_previousButton_clicked();
     void on_generateButton_clicked();
-    void on_seekSlider_valueChanged(int value);
+    void on_seekSlider_sliderReleased();
     void on_seekSlider_sliderMoved(int position);
     void on_grabButton_clicked();
     void on_clearThumbsButton_clicked();
@@ -161,9 +161,6 @@ private:
     //! Open dialog
     std::unique_ptr<vfg::ui::OpenDialog> openDialog;
 
-    //! Did user move the slider or was it updated by playing video?
-    bool userMovedSlider {false};
-
     //! Application wide configuration settings
     QSettings config {"config.ini", QSettings::IniFormat};
 
@@ -219,6 +216,18 @@ private:
      * @param milliSecond Milliseconds to convert
      */
     unsigned convertMsToFrame(unsigned milliSecond) const;
+
+    enum class SeekSlider {
+        UpdateText, //!< Update only the text label
+        UpdateAll   //!< Update playing video / screenshot
+    };
+
+    /**
+     * @brief Update seek slider value
+     * @param value Frame number
+     * @param update What to update
+     */
+    void updateSeekSlider(int value, SeekSlider update);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *ev) override;
