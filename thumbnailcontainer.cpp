@@ -124,7 +124,7 @@ void ThumbnailContainer::showContextMenu(const QPoint &pos)
         if(!thumb) {
             return;
         }
-        disconnect(thumb.get(), 0);
+        disconnect(thumb.get(), 0, 0, 0);
         emit moveThumbnail(thumb.release());
     });
     menu.addAction(move);
