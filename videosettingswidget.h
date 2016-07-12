@@ -5,8 +5,8 @@
 #include <QMap>
 #include <QSettings>
 #include <QWidget>
+#include "ui_videosettingswidget.h"
 
-// Forward declarations
 class QCloseEvent;
 class QRect;
 class QShowEvent;
@@ -37,11 +37,6 @@ public:
     explicit VideoSettingsWidget(QWidget *parent = 0);
 
     /**
-     * @brief Destructor
-     **/
-    ~VideoSettingsWidget();
-
-    /**
      * @brief Retrieve current settings
      * @return Settings as a map
      */
@@ -70,7 +65,7 @@ private slots:
     /**
      * @brief Emit \link cropChanged() \endlink with area to crop
      */
-    void handleCropChange();
+    void handleCropChange(int);
 
     /**
      * @brief Revert previously applied crop
@@ -88,27 +83,41 @@ private slots:
     void on_sboxResizeHeight_valueChanged(int arg1);
 
 private:
-    ::Ui::VideoSettingsWidget* ui;
+    ::Ui::VideoSettingsWidget ui;
 
-    QSettings config;
+    QSettings config {"config.ini", QSettings::IniFormat};
 
-    QMap<QString, QVariant> prevSettings;
+    QMap<QString, QVariant> prevSettings {};
 
-    struct {
-        int left, top, right, bottom;
-    } crop = {0, 0, 0, 0};
+    struct CropArea {
+        int left {0};
+        int top {0};
+        int right {0};
+        int bottom {0};
+    };
+    CropArea crop {};
 
-    int origWidth, origHeight;
+    //! Video width used when calculating new resolution
+    int videoWidth {0};
+
+    //! Video height used when calculating new resolution
+    int videoHeight {0};
+
+    //! Original source video width
+    int sourceWidth {0};
+
+    //! Original source video height
+    int sourceHeight {0};
 
     /**
      * @brief Common DVD aspect ratios for the resize dropdown
      */
     enum AspectRatio : int {
-        Default_AR = 0, //!< Default aspect ratio
-        NTSC_16_9 = 1, //!< NTSC 16:9
-        NTSC_4_3 = 2, //!< NTSC 4:3
-        PAL_16_9 = 3, //!< PAL 16:9
-        PAL_4_3 = 4 //!< PAL 4:3
+        Original = 0,    //!< Original resolution
+        NTSC_16_9,  //!< NTSC 16:9
+        NTSC_4_3,   //!< NTSC 4:3
+        PAL_16_9,   //!< PAL 16:9
+        PAL_4_3,    //!< PAL 4:3
     };
 
 protected:

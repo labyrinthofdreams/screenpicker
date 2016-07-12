@@ -9,7 +9,6 @@
 #include <QVariant>
 #include "ptrutil.hpp"
 #include "videosettingswidget.h"
-#include "ui_videosettingswidget.h"
 
 namespace {
 
@@ -25,44 +24,43 @@ constexpr int noneg(const int x)
 
 } // namespace
 
-vfg::ui::VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::VideoSettingsWidget),
-    config("config.ini", QSettings::IniFormat),
-    prevSettings(),
-    origWidth(0),
-    origHeight(0)
+namespace vfg {
+namespace ui {
+
+VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
+    QWidget(parent)
 {
-    ui->setupUi(this);
+    ui.setupUi(this);
 
-    ui->cboxDvdResolution->insertItem(Default_AR, tr("Default"));
-    ui->cboxDvdResolution->insertItem(NTSC_16_9, tr("NTSC 16:9"));
-    ui->cboxDvdResolution->insertItem(NTSC_4_3, tr("NTSC 4:3"));
-    ui->cboxDvdResolution->insertItem(PAL_16_9, tr("PAL 16:9"));
-    ui->cboxDvdResolution->insertItem(PAL_4_3, tr("PAL 4:3"));
+    ui.cboxDvdResolution->insertItem(Original, tr("Original"));
+    ui.cboxDvdResolution->insertItem(NTSC_16_9, tr("NTSC 16:9"));
+    ui.cboxDvdResolution->insertItem(NTSC_4_3, tr("NTSC 4:3"));
+    ui.cboxDvdResolution->insertItem(PAL_16_9, tr("PAL 16:9"));
+    ui.cboxDvdResolution->insertItem(PAL_4_3, tr("PAL 4:3"));
 
-    connect(ui->sboxCropBottom, SIGNAL(valueChanged(int)),
-            this,               SLOT(handleCropChange()));
+    connect(ui.sboxCropBottom,  static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            this,               &VideoSettingsWidget::handleCropChange);
 
-    connect(ui->sboxCropLeft,   SIGNAL(valueChanged(int)),
-            this,               SLOT(handleCropChange()));
+    connect(ui.sboxCropLeft,    static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            this,               &VideoSettingsWidget::handleCropChange);
 
-    connect(ui->sboxCropTop,    SIGNAL(valueChanged(int)),
-            this,               SLOT(handleCropChange()));
+    connect(ui.sboxCropTop,     static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            this,               &VideoSettingsWidget::handleCropChange);
 
-    connect(ui->sboxCropRight,  SIGNAL(valueChanged(int)),
-            this,               SLOT(handleCropChange()));
+    connect(ui.sboxCropRight,   static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            this,               &VideoSettingsWidget::handleCropChange);
+
+    const QSize videoRes = config.value("video/resolution").toSize();
+    sourceWidth = videoRes.width();
+    sourceHeight = videoRes.height();
+    ui.sboxResizeWidth->setValue(sourceWidth);
+    ui.sboxResizeHeight->setValue(sourceHeight);
 }
 
-vfg::ui::VideoSettingsWidget::~VideoSettingsWidget()
+void VideoSettingsWidget::on_cboxDvdResolution_activated(const int index)
 {
-    delete ui;
-}
-
-void vfg::ui::VideoSettingsWidget::on_cboxDvdResolution_activated(const int index)
-{
-    static const QMap<int, QSize> resolutions {
-        {Default_AR, {0, 0}},
+    const QMap<int, QSize> resolutions {
+        {Original, {sourceWidth, sourceHeight}},
         {NTSC_16_9, {854, 480}},
         {NTSC_4_3, {720, 540}},
         {PAL_16_9, {1024, 576}},
@@ -70,11 +68,11 @@ void vfg::ui::VideoSettingsWidget::on_cboxDvdResolution_activated(const int inde
     };
 
     const auto& res = resolutions.value(index);
-    ui->sboxResizeWidth->setValue(res.width());
-    ui->sboxResizeHeight->setValue(res.height());
+    ui.sboxResizeWidth->setValue(res.width());
+    ui.sboxResizeHeight->setValue(res.height());
 }
 
-void vfg::ui::VideoSettingsWidget::on_pushButton_clicked()
+void VideoSettingsWidget::on_pushButton_clicked()
 {
     // Override previous settings when applying new settings
     prevSettings = getSettings();
@@ -82,67 +80,62 @@ void vfg::ui::VideoSettingsWidget::on_pushButton_clicked()
     // Since the crop values are always relative to the original
     // frame we cannot have negative crop values which may result
     // if the user is attempting to apply too large negative crop value
-    crop.left = noneg(crop.left + ui->sboxCropLeft->value());
-    crop.top = noneg(crop.top + ui->sboxCropTop->value());
-    crop.right = noneg(crop.right + ui->sboxCropRight->value());
-    crop.bottom = noneg(crop.bottom + ui->sboxCropBottom->value());
+    crop.left = noneg(crop.left + ui.sboxCropLeft->value());
+    crop.top = noneg(crop.top + ui.sboxCropTop->value());
+    crop.right = noneg(crop.right + ui.sboxCropRight->value());
+    crop.bottom = noneg(crop.bottom + ui.sboxCropBottom->value());
 
-    ui->sboxCropBottom->setValue(0);
-    ui->sboxCropLeft->setValue(0);
-    ui->sboxCropRight->setValue(0);
-    ui->sboxCropTop->setValue(0);
+    ui.sboxCropBottom->setValue(0);
+    ui.sboxCropLeft->setValue(0);
+    ui.sboxCropRight->setValue(0);
+    ui.sboxCropTop->setValue(0);
 
     if(crop.left || crop.top || crop.right || crop.bottom) {
-        ui->btnRevertCrop->setEnabled(true);
+        ui.btnRevertCrop->setEnabled(true);
     }
 
     emit settingsChanged();
 }
 
-void vfg::ui::VideoSettingsWidget::handleCropChange()
+void VideoSettingsWidget::handleCropChange(int)
 {
-    const QRect area(noneg(ui->sboxCropLeft->value()),
-                     noneg(ui->sboxCropTop->value()),
-                     noneg(ui->sboxCropRight->value()),
-                     noneg(ui->sboxCropBottom->value()));
+    const QRect area(noneg(ui.sboxCropLeft->value()),
+                     noneg(ui.sboxCropTop->value()),
+                     noneg(ui.sboxCropRight->value()),
+                     noneg(ui.sboxCropBottom->value()));
 
     emit cropChanged(area);
 }
 
-void vfg::ui::VideoSettingsWidget::showEvent(QShowEvent *event)
+void VideoSettingsWidget::showEvent(QShowEvent *event)
 {
-    Q_UNUSED(event);
-
-    const QSize videoRes = config.value("video/resolution").toSize();
-    ui->sboxResizeWidth->setValue(videoRes.width());
-    ui->sboxResizeHeight->setValue(videoRes.height());
-
     // Temporarily store previous settings that can be restored
     // when the window is closed
     prevSettings = getSettings();
+
     event->accept();
 }
 
-void vfg::ui::VideoSettingsWidget::closeEvent(QCloseEvent *event)
+void VideoSettingsWidget::closeEvent(QCloseEvent *event)
 {
+    // Restore previous settings that were applied
+    ui.sboxCropBottom->setValue(0);
+    ui.sboxCropLeft->setValue(0);
+    ui.sboxCropRight->setValue(0);
+    ui.sboxCropTop->setValue(0);
+    ui.sboxResizeHeight->setValue(prevSettings.value("resizeheight").toInt());
+    ui.sboxResizeWidth->setValue(prevSettings.value("resizewidth").toInt());
+    ui.radioButton->setChecked(true);
+    ui.radioDeinterlace->setChecked(prevSettings.value("deinterlace").toBool());
+    ui.radioInverseTelecine->setChecked(prevSettings.value("ivtc").toBool());
+    ui.cboxDvdResolution->setCurrentIndex(prevSettings.value("dvdresolutionidx").toInt());
+
     emit closed();
 
-    // Restore previous settings that were applied
-    ui->sboxCropBottom->setValue(0);
-    ui->sboxCropLeft->setValue(0);
-    ui->sboxCropRight->setValue(0);
-    ui->sboxCropTop->setValue(0);
-    ui->sboxResizeHeight->setValue(prevSettings.value("resizeheight").toInt());
-    ui->sboxResizeWidth->setValue(prevSettings.value("resizewidth").toInt());
-    ui->radioButton->setChecked(true);
-    ui->radioDeinterlace->setChecked(prevSettings.value("deinterlace").toBool());
-    ui->radioInverseTelecine->setChecked(prevSettings.value("ivtc").toBool());
-    ui->cboxDvdResolution->setCurrentIndex(prevSettings.value("dvdresolutionidx").toInt());
-
     event->accept();
 }
 
-QMap<QString, QVariant> vfg::ui::VideoSettingsWidget::getSettings() const
+QMap<QString, QVariant> VideoSettingsWidget::getSettings() const
 {
     QMap<QString, QVariant> settings;
     settings.clear();
@@ -150,82 +143,91 @@ QMap<QString, QVariant> vfg::ui::VideoSettingsWidget::getSettings() const
     settings.insert("cropright", crop.right);
     settings.insert("cropbottom", crop.bottom);
     settings.insert("cropleft", crop.left);
-    settings.insert("resizewidth", ui->sboxResizeWidth->value());
-    settings.insert("resizeheight", ui->sboxResizeHeight->value());
-    settings.insert("ivtc", ui->radioInverseTelecine->isChecked());
-    settings.insert("deinterlace", ui->radioDeinterlace->isChecked());
-    settings.insert("dvdresolutionidx", ui->cboxDvdResolution->currentIndex());
+    settings.insert("resizewidth", ui.sboxResizeWidth->value());
+    settings.insert("resizeheight", ui.sboxResizeHeight->value());
+    settings.insert("ivtc", ui.radioInverseTelecine->isChecked());
+    settings.insert("deinterlace", ui.radioDeinterlace->isChecked());
+    settings.insert("dvdresolutionidx", ui.cboxDvdResolution->currentIndex());
     return settings;
 }
 
-void vfg::ui::VideoSettingsWidget::resetSettings()
+void VideoSettingsWidget::resetSettings()
 {
-    crop.bottom = crop.left = crop.right = crop.top = 0;
-    prevSettings.clear();
+    crop = {};
+    prevSettings = getSettings();
 
-    ui->sboxCropBottom->setValue(0);
-    ui->sboxCropLeft->setValue(0);
-    ui->sboxCropRight->setValue(0);
-    ui->sboxCropTop->setValue(0);
-    ui->sboxResizeHeight->setValue(0);
-    ui->sboxResizeWidth->setValue(0);
-    ui->radioButton->setChecked(true);
-    ui->cboxDvdResolution->setCurrentIndex(0);
+    ui.sboxCropBottom->setValue(0);
+    ui.sboxCropLeft->setValue(0);
+    ui.sboxCropRight->setValue(0);
+    ui.sboxCropTop->setValue(0);
+    ui.sboxResizeHeight->setValue(0);
+    ui.sboxResizeWidth->setValue(0);
+    ui.radioButton->setChecked(true);
+    ui.cboxDvdResolution->setCurrentIndex(0);
+
+    const QSize videoRes = config.value("video/resolution").toSize();
+    sourceWidth = videoRes.width();
+    sourceHeight = videoRes.height();
+    ui.sboxResizeWidth->setValue(sourceWidth);
+    ui.sboxResizeHeight->setValue(sourceHeight);
 }
 
-void vfg::ui::VideoSettingsWidget::on_btnRevertCrop_clicked()
+void VideoSettingsWidget::on_btnRevertCrop_clicked()
 {
-    ui->sboxCropBottom->setValue(crop.bottom);
-    ui->sboxCropLeft->setValue(crop.left);
-    ui->sboxCropRight->setValue(crop.right);
-    ui->sboxCropTop->setValue(crop.top);
+    ui.sboxCropBottom->setValue(crop.bottom);
+    ui.sboxCropLeft->setValue(crop.left);
+    ui.sboxCropRight->setValue(crop.right);
+    ui.sboxCropTop->setValue(crop.top);
 
-    crop.bottom = crop.left = crop.right = crop.top = 0;
+    crop = {};
 
     emit settingsChanged();
 }
 
-void vfg::ui::VideoSettingsWidget::on_radioLockWidth_clicked()
+void VideoSettingsWidget::on_radioLockWidth_clicked()
 {
-    ui->sboxResizeWidth->setEnabled(false);
-    ui->sboxResizeHeight->setEnabled(true);
+    ui.sboxResizeWidth->setEnabled(false);
+    ui.sboxResizeHeight->setEnabled(true);
 
-    origHeight = ui->sboxResizeHeight->value();
-    origWidth = ui->sboxResizeWidth->value();
+    videoHeight = ui.sboxResizeHeight->value();
+    videoWidth = ui.sboxResizeWidth->value();
 }
 
-void vfg::ui::VideoSettingsWidget::on_radioLockHeight_clicked()
+void VideoSettingsWidget::on_radioLockHeight_clicked()
 {
-    ui->sboxResizeWidth->setEnabled(true);
-    ui->sboxResizeHeight->setEnabled(false);
+    ui.sboxResizeWidth->setEnabled(true);
+    ui.sboxResizeHeight->setEnabled(false);
 
-    origHeight = ui->sboxResizeHeight->value();
-    origWidth = ui->sboxResizeWidth->value();
+    videoHeight = ui.sboxResizeHeight->value();
+    videoWidth = ui.sboxResizeWidth->value();
 }
 
-void vfg::ui::VideoSettingsWidget::on_radioLockDefault_clicked()
+void VideoSettingsWidget::on_radioLockDefault_clicked()
 {
-    ui->sboxResizeWidth->setEnabled(true);
-    ui->sboxResizeHeight->setEnabled(true);
+    ui.sboxResizeWidth->setEnabled(true);
+    ui.sboxResizeHeight->setEnabled(true);
 
-    origHeight = 0;
-    origWidth = 0;
+    videoHeight = 0;
+    videoWidth = 0;
 }
 
-void vfg::ui::VideoSettingsWidget::on_sboxResizeWidth_valueChanged(const int width)
+void VideoSettingsWidget::on_sboxResizeWidth_valueChanged(const int width)
 {
-    if(ui->radioLockHeight->isChecked()) {
-        const double ratio = static_cast<double>(origHeight) / origWidth;
+    if(ui.radioLockHeight->isChecked()) {
+        const double ratio = static_cast<double>(videoHeight) / videoWidth;
         const int newHeight = std::ceil(ratio * width);
-        ui->sboxResizeHeight->setValue(newHeight);
+        ui.sboxResizeHeight->setValue(newHeight);
     }
 }
 
-void vfg::ui::VideoSettingsWidget::on_sboxResizeHeight_valueChanged(const int height)
+void VideoSettingsWidget::on_sboxResizeHeight_valueChanged(const int height)
 {
-    if(ui->radioLockWidth->isChecked()) {
-        const double ratio = static_cast<double>(origHeight) / origWidth;
+    if(ui.radioLockWidth->isChecked()) {
+        const double ratio = static_cast<double>(videoHeight) / videoWidth;
         const int newWidth = std::ceil(height / ratio);
-        ui->sboxResizeWidth->setValue(newWidth);
+        ui.sboxResizeWidth->setValue(newWidth);
     }
 }
+
+} // namespace ui
+} // namespace vfg
