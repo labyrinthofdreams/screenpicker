@@ -7,7 +7,6 @@
 #include <QtMultimediaWidgets>
 #include <QtWidgets>
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include "aboutwidget.hpp"
 #include "avisynthvideosource.h"
 #include "configdialog.h"
@@ -71,36 +70,35 @@ QString getMediaInfoParameter(const QString& path, const QString& param) {
 } // namespace
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    QMainWindow(parent)
 {
-    ui->setupUi(this);
+    ui.setupUi(this);
 
     setupInternal();
 
-    ui->unsavedWidget->setMaxThumbnails(config.value("maxthumbnails").toInt());
-    ui->unsavedProgressBar->setMaximum(config.value("maxthumbnails").toInt());
+    ui.unsavedWidget->setMaxThumbnails(config.value("maxthumbnails").toInt());
+    ui.unsavedProgressBar->setMaximum(config.value("maxthumbnails").toInt());
 
-    ui->screenshotsSpinBox->setValue(config.value("numscreenshots").toInt());
+    ui.screenshotsSpinBox->setValue(config.value("numscreenshots").toInt());
 
-    ui->frameStepSpinBox->setValue(config.value("framestep").toInt());
+    ui.frameStepSpinBox->setValue(config.value("framestep").toInt());
 
-    ui->action25->setData("25");
-    ui->action50->setData("50");
-    ui->action100->setData("100");
-    ui->action200->setData("200");
-    ui->actionScaleToWindow->setData("scale");
+    ui.action25->setData("25");
+    ui.action50->setData("50");
+    ui.action100->setData("100");
+    ui.action200->setData("200");
+    ui.actionScaleToWindow->setData("scale");
     // Scale by default
-    ui->actionScaleToWindow->setChecked(true);
+    ui.actionScaleToWindow->setChecked(true);
 
     // Set default thumbnail sizes for the containers
-    const auto thumbnailSize = ui->thumbnailSizeSlider->value();
-    ui->unsavedWidget->resizeThumbnails(thumbnailSize);
-    ui->savedWidget->resizeThumbnails(thumbnailSize);
+    const auto thumbnailSize = ui.thumbnailSizeSlider->value();
+    ui.unsavedWidget->resizeThumbnails(thumbnailSize);
+    ui.savedWidget->resizeThumbnails(thumbnailSize);
 
     const auto logging = config.value("enable_logging", false).toBool();
-    ui->actionDebugOn->setChecked(logging);
-    ui->actionDebugOff->setChecked(!logging);
+    ui.actionDebugOn->setChecked(logging);
+    ui.actionDebugOff->setChecked(!logging);
 
     // Open recent
     buildRecentMenu();
@@ -135,11 +133,11 @@ MainWindow::MainWindow(QWidget *parent) :
     // Media player
     //
     mediaPlayer = util::make_unique<QMediaPlayer>();
-    mediaPlayer->setVideoOutput(ui->videoPreviewWidget->videoWidget.get());
-    mediaPlayer->setVolume(ui->volumeSlider->value());
+    mediaPlayer->setVideoOutput(ui.videoPreviewWidget->videoWidget.get());
+    mediaPlayer->setVolume(ui.volumeSlider->value());
 
     // Adjust video volume level when changing the volume slider
-    connect(ui->volumeSlider,   &QSlider::sliderMoved,
+    connect(ui.volumeSlider,   &QSlider::sliderMoved,
             mediaPlayer.get(),  &QMediaPlayer::setVolume);
 
     connect(mediaPlayer.get(), &QMediaPlayer::mediaStatusChanged,
@@ -148,9 +146,9 @@ MainWindow::MainWindow(QWidget *parent) :
             // After play() has been called
             // for the first time and video has buffered and starts playing...
 
-            ui->videoPreviewWidget->showVideo();
+            ui.videoPreviewWidget->showVideo();
             // Start playing from where the seek slider is
-            mediaPlayer->setPosition(convertFrameToMs(ui->seekSlider->value()));
+            mediaPlayer->setPosition(convertFrameToMs(ui.seekSlider->value()));
         }
     });
 
@@ -163,21 +161,21 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mediaPlayer.get(),  &QMediaPlayer::stateChanged,
             [this](const QMediaPlayer::State state) {
         if(state == QMediaPlayer::PlayingState) {
-            ui->buttonPlay->setIcon(QIcon(":/icon/pause2.png"));
+            ui.buttonPlay->setIcon(QIcon(":/icon/pause2.png"));
             if(mediaPlayer->mediaStatus() == QMediaPlayer::BufferedMedia) {
                 // When calling play() for the first time the media player emits "playing" state
                 // while the video is still buffering.
                 // This check prevents the code below from running prematurely
                 // so it only runs when play is called second, third, etc. time
 
-                ui->videoPreviewWidget->showVideo();
+                ui.videoPreviewWidget->showVideo();
                 // Start playing from where the seek slider is
-                mediaPlayer->setPosition(convertFrameToMs(ui->seekSlider->value()));
+                mediaPlayer->setPosition(convertFrameToMs(ui.seekSlider->value()));
             }
         }
         else {
-            ui->videoPreviewWidget->hideVideo();
-            ui->buttonPlay->setIcon(QIcon(":/icon/play.png"));
+            ui.videoPreviewWidget->hideVideo();
+            ui.buttonPlay->setIcon(QIcon(":/icon/play.png"));
             updateSeekSlider(convertMsToFrame(mediaPlayer->position()), SeekSlider::UpdateText);
             frameGrabber->requestFrame(convertMsToFrame(mediaPlayer->position()));
         }
@@ -187,11 +185,11 @@ MainWindow::MainWindow(QWidget *parent) :
     // Video zoom
     //
     auto videoZoomGroup = new QActionGroup(this);
-    videoZoomGroup->addAction(ui->action25);
-    videoZoomGroup->addAction(ui->action50);
-    videoZoomGroup->addAction(ui->action100);
-    videoZoomGroup->addAction(ui->action200);
-    videoZoomGroup->addAction(ui->actionScaleToWindow);
+    videoZoomGroup->addAction(ui.action25);
+    videoZoomGroup->addAction(ui.action50);
+    videoZoomGroup->addAction(ui.action100);
+    videoZoomGroup->addAction(ui.action200);
+    videoZoomGroup->addAction(ui.actionScaleToWindow);
 
     // When user changes zoom mode...
     connect(videoZoomGroup, &QActionGroup::triggered, [this](QAction *action) {
@@ -202,17 +200,17 @@ MainWindow::MainWindow(QWidget *parent) :
             {"200", vfg::ZoomMode::Zoom_200},
             {"scale", vfg::ZoomMode::Zoom_Scale}
         };
-        ui->videoPreviewWidget->setZoom(modes.value(action->data().toString()));
+        ui.videoPreviewWidget->setZoom(modes.value(action->data().toString()));
     });
 
     //
     // Show context menu on video preview widget
     //
-    previewContext = ui->menuVideo;
+    previewContext = ui.menuVideo;
 
-    connect(ui->videoPreviewWidget, &vfg::ui::VideoPreviewWidget::customContextMenuRequested,
+    connect(ui.videoPreviewWidget, &vfg::ui::VideoPreviewWidget::customContextMenuRequested,
             [this](const QPoint &pos) {
-        previewContext->exec(ui->videoPreviewWidget->mapToGlobal(pos));
+        previewContext->exec(ui.videoPreviewWidget->mapToGlobal(pos));
     });
 
     //
@@ -234,11 +232,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Draw crop border on video preview when crop changes in video settings
     connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::cropChanged,
-            ui->videoPreviewWidget,     &vfg::ui::VideoPreviewWidget::setCrop);
+            ui.videoPreviewWidget,     &vfg::ui::VideoPreviewWidget::setCrop);
 
     // Remove crop border on video preview when video settings is closed
     connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::closed,
-            ui->videoPreviewWidget,     &vfg::ui::VideoPreviewWidget::resetCrop);
+            ui.videoPreviewWidget,     &vfg::ui::VideoPreviewWidget::resetCrop);
 
     //
     // Script editor
@@ -282,19 +280,19 @@ MainWindow::MainWindow(QWidget *parent) :
             dvdProcessor.get(), &vfg::DvdProcessor::handleAbortProcess);
 
     // Update maximum value for progress bar
-    connect(ui->unsavedWidget,      &vfg::ui::ThumbnailContainer::maximumChanged,
-            ui->unsavedProgressBar, &QProgressBar::setMaximum);
+    connect(ui.unsavedWidget,      &vfg::ui::ThumbnailContainer::maximumChanged,
+            ui.unsavedProgressBar, &QProgressBar::setMaximum);
 
     // Handle double-click on unsaved screenshot
-    connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::thumbnailDoubleClicked,
+    connect(ui.unsavedWidget,  &vfg::ui::ThumbnailContainer::thumbnailDoubleClicked,
             [this](const int frameNumber) {
         updateSeekSlider(frameNumber, SeekSlider::UpdateAll);
     });
 
     // Handle when unsaved screenshot container gets full
-    connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::full, [this]() {
+    connect(ui.unsavedWidget,  &vfg::ui::ThumbnailContainer::full, [this]() {
         if(config.value("removeoldestafterlimit").toBool()) {
-            ui->unsavedWidget->removeFirst();
+            ui.unsavedWidget->removeFirst();
         }
         else {
             if(frameGenerator->remaining() > 0) {
@@ -309,38 +307,38 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     // When a thumbnail is added or removed from unsaved container update progress bar value
-    connect(ui->unsavedWidget,      &vfg::ui::ThumbnailContainer::countChanged,
-            ui->unsavedProgressBar, &QProgressBar::setValue);
+    connect(ui.unsavedWidget,      &vfg::ui::ThumbnailContainer::countChanged,
+            ui.unsavedProgressBar, &QProgressBar::setValue);
 
     // Move thumbnail from unsaved to saved
-    connect(ui->unsavedWidget,  &vfg::ui::ThumbnailContainer::moveThumbnail,
+    connect(ui.unsavedWidget,  &vfg::ui::ThumbnailContainer::moveThumbnail,
             [this](vfg::ui::VideoFrameThumbnail *thumb) {
-        ui->savedWidget->addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail>(thumb));
+        ui.savedWidget->addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail>(thumb));
     });
 
     // Move thumbnail from saved to unsaved
-    connect(ui->savedWidget,    &vfg::ui::ThumbnailContainer::moveThumbnail,
+    connect(ui.savedWidget,    &vfg::ui::ThumbnailContainer::moveThumbnail,
             [this](vfg::ui::VideoFrameThumbnail *thumb) {
-        ui->unsavedWidget->addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail>(thumb));
+        ui.unsavedWidget->addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail>(thumb));
     });
 
     // Handle double-click on saved screenshot
-    connect(ui->savedWidget,    &vfg::ui::ThumbnailContainer::thumbnailDoubleClicked,
+    connect(ui.savedWidget,    &vfg::ui::ThumbnailContainer::thumbnailDoubleClicked,
             [this](const int frameNumber) {
         updateSeekSlider(frameNumber, SeekSlider::UpdateAll);
     });
 
     // Handle when GIF menu action is clicked
-    connect(ui->menuCreateGIFImage, &QMenu::triggered, [this](QAction *action) {
+    connect(ui.menuCreateGIFImage, &QMenu::triggered, [this](QAction *action) {
         const auto objName = action->objectName();
         if(objName == "actionShowEditor") {
             activateGifMaker();
         }
         else if(objName == "actionSetStartFrame") {
-            gifMaker->updateStartFrame(ui->seekSlider->value());
+            gifMaker->updateStartFrame(ui.seekSlider->value());
         }
         else if(objName == "actionSetEndFrame") {
-            gifMaker->updateLastFrame(ui->seekSlider->value());
+            gifMaker->updateLastFrame(ui.seekSlider->value());
         }
     });
 }
@@ -350,8 +348,6 @@ MainWindow::~MainWindow()
     qCDebug(MAINWINDOW) << "Destructor";
 
     config.remove("video");
-
-    delete ui;
 }
 
 void MainWindow::closeEvent(QCloseEvent *ev)
@@ -426,7 +422,7 @@ void MainWindow::removeRecentMenu(const QString &item)
 
 void MainWindow::buildRecentMenu()
 {
-    auto menu = ui->actionRecent->menu();
+    auto menu = ui.actionRecent->menu();
     if(!menu) {
         menu = new QMenu;
         connect(menu,   &QMenu::triggered, [this](QAction *action) {
@@ -441,7 +437,7 @@ void MainWindow::buildRecentMenu()
             }
         });
 
-        ui->actionRecent->setMenu(menu);
+        ui.actionRecent->setMenu(menu);
     }
 
     // Remove old menu items
@@ -470,15 +466,15 @@ unsigned MainWindow::convertMsToFrame(const unsigned milliSecond) const
 {
     const auto duration = mediaPlayer->duration();
     const auto completed = static_cast<double>(milliSecond)/duration;
-    return ui->totalFramesLabel->text().toInt() * completed;
+    return ui.totalFramesLabel->text().toInt() * completed;
 }
 
 void MainWindow::updateSeekSlider(const int value, const MainWindow::SeekSlider update)
 {
     qCDebug(MAINWINDOW) << "Updating seek slider @" << value;
 
-    ui->seekSlider->setValue(value);
-    ui->currentFrameLabel->setText(QString::number(value));
+    ui.seekSlider->setValue(value);
+    ui.currentFrameLabel->setText(QString::number(value));
 
     if(update == SeekSlider::UpdateAll) {
         if(mediaPlayer->state() == QMediaPlayer::PlayingState) {
@@ -492,7 +488,7 @@ void MainWindow::updateSeekSlider(const int value, const MainWindow::SeekSlider 
 
 unsigned MainWindow::convertFrameToMs(const unsigned frameNumber) const
 {
-    const auto totalFrames = ui->totalFramesLabel->text().toInt();
+    const auto totalFrames = ui.totalFramesLabel->text().toInt();
     const auto progress = static_cast<double>(frameNumber) / totalFrames;
     const auto videoTime = mediaPlayer->duration();
     return videoTime * progress;
@@ -510,32 +506,32 @@ void MainWindow::resetUi()
 
     scriptEditor->reset();
 
-    ui->unsavedWidget->clearThumbnails();
-    ui->savedWidget->clearThumbnails();
+    ui.unsavedWidget->clearThumbnails();
+    ui.savedWidget->clearThumbnails();
 
-    ui->unsavedProgressBar->setValue(0);
+    ui.unsavedProgressBar->setValue(0);
 
-    ui->totalFramesLabel->setText("0");
+    ui.totalFramesLabel->setText("0");
 
-    ui->seekSlider->setValue(ui->seekSlider->minimum());
+    ui.seekSlider->setValue(ui.seekSlider->minimum());
 
     // Select first tab
-    ui->tabWidget->setCurrentIndex(0);
+    ui.tabWidget->setCurrentIndex(0);
 
     // Disable buttons
-    ui->seekSlider->setEnabled(false);
-    ui->previousButton->setEnabled(false);
-    ui->nextButton->setEnabled(false);
-    ui->grabButton->setEnabled(false);
-    ui->generateButton->setEnabled(false);
-    ui->btnPauseGenerator->setEnabled(false);
-    ui->btnStopGenerator->setEnabled(false);
-    ui->generatorProgressBar->setValue(0);
-    ui->generatorProgressBar->setTextVisible(false);
-    ui->buttonPlay->setEnabled(false);
+    ui.seekSlider->setEnabled(false);
+    ui.previousButton->setEnabled(false);
+    ui.nextButton->setEnabled(false);
+    ui.grabButton->setEnabled(false);
+    ui.generateButton->setEnabled(false);
+    ui.btnPauseGenerator->setEnabled(false);
+    ui.btnStopGenerator->setEnabled(false);
+    ui.generatorProgressBar->setValue(0);
+    ui.generatorProgressBar->setTextVisible(false);
+    ui.buttonPlay->setEnabled(false);
 
-    ui->actionSave_as_PNG->setEnabled(false);
-    ui->actionX264_Encoder->setEnabled(false);
+    ui.actionSave_as_PNG->setEnabled(false);
+    ui.actionX264_Encoder->setEnabled(false);
 }
 
 void MainWindow::setupInternal()
@@ -559,16 +555,16 @@ void MainWindow::setupInternal()
 
     // Display frame emitted by frame grabber
     connect(frameGrabber.get(),     &vfg::core::VideoFrameGrabber::frameGrabbed,
-            ui->videoPreviewWidget, static_cast<void(vfg::ui::VideoPreviewWidget::*)(int, const QImage&)>(&vfg::ui::VideoPreviewWidget::setFrame),
+            ui.videoPreviewWidget, static_cast<void(vfg::ui::VideoPreviewWidget::*)(int, const QImage&)>(&vfg::ui::VideoPreviewWidget::setFrame),
             Qt::QueuedConnection);
 
     frameGenerator = util::make_unique<vfg::core::VideoFrameGenerator>(frameGrabber);
 
     // When frame generator finishes, update UI, and conditionally go to last generated frame
     connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::finished, this, [this]() {
-        ui->btnPauseGenerator->setEnabled(false);
-        ui->btnStopGenerator->setEnabled(false);
-        ui->generateButton->setEnabled(true);
+        ui.btnPauseGenerator->setEnabled(false);
+        ui.btnStopGenerator->setEnabled(false);
+        ui.generateButton->setEnabled(true);
 
         // Jump to last generated frame
         if(config.value("jumptolastonfinish").toBool()) {
@@ -581,8 +577,8 @@ void MainWindow::setupInternal()
     connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::frameReady,
             this, [this](const int frameNum, const QImage& frame) {
         config.setValue("last_received_frame", frameNum);
-        ui->unsavedWidget->addThumbnail(util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, frame));
-        ui->generatorProgressBar->setValue(ui->generatorProgressBar->value() + 1);
+        ui.unsavedWidget->addThumbnail(util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, frame));
+        ui.generatorProgressBar->setValue(ui.generatorProgressBar->value() + 1);
     });
 
     if(!frameGrabberThread) {
@@ -840,28 +836,28 @@ void MainWindow::videoLoaded()
     config.setValue("last_opened_script", videoSource->fileName());
 
     const QSize resolution = frameGrabber->resolution();
-    ui->labelVideoResolution->setText(QString("[%1x%2]").arg(resolution.width())
+    ui.labelVideoResolution->setText(QString("[%1x%2]").arg(resolution.width())
                                       .arg(resolution.height()));
     config.setValue("video/resolution", resolution);
 
-    ui->menuCreateGIFImage->setEnabled(true);
-    ui->actionSetEndFrame->setEnabled(false);
-    ui->actionSetStartFrame->setEnabled(false);
+    ui.menuCreateGIFImage->setEnabled(true);
+    ui.actionSetEndFrame->setEnabled(false);
+    ui.actionSetStartFrame->setEnabled(false);
 
     const int numFrames = frameGrabber->totalFrames() - 1;
-    ui->totalFramesLabel->setText(QString::number(numFrames));
+    ui.totalFramesLabel->setText(QString::number(numFrames));
 
-    ui->seekSlider->setEnabled(true);
-    ui->seekSlider->setMaximum(numFrames);
+    ui.seekSlider->setEnabled(true);
+    ui.seekSlider->setMaximum(numFrames);
 
-    ui->previousButton->setEnabled(true);
-    ui->nextButton->setEnabled(true);
-    ui->grabButton->setEnabled(true);
-    ui->generateButton->setEnabled(true);
-    ui->buttonPlay->setEnabled(true);
+    ui.previousButton->setEnabled(true);
+    ui.nextButton->setEnabled(true);
+    ui.grabButton->setEnabled(true);
+    ui.generateButton->setEnabled(true);
+    ui.buttonPlay->setEnabled(true);
 
-    ui->actionSave_as_PNG->setEnabled(true);
-    ui->actionX264_Encoder->setEnabled(true);
+    ui.actionSave_as_PNG->setEnabled(true);
+    ui.actionX264_Encoder->setEnabled(true);
 
     frameGrabber->requestFrame(std::min(frameGrabber->lastFrame(),
                                         videoSource->getNumFrames() - 1));
@@ -893,10 +889,10 @@ void MainWindow::on_previousButton_clicked()
 
 void MainWindow::on_seekSlider_sliderReleased()
 {
-    qCDebug(MAINWINDOW) << "Seek slider released @" << ui->seekSlider->sliderPosition();
+    qCDebug(MAINWINDOW) << "Seek slider released @" << ui.seekSlider->sliderPosition();
 
-    const auto frameNumber = ui->seekSlider->sliderPosition();
-    ui->currentFrameLabel->setText(QString::number(frameNumber));
+    const auto frameNumber = ui.seekSlider->sliderPosition();
+    ui.currentFrameLabel->setText(QString::number(frameNumber));
 
     if(mediaPlayer->state() == QMediaPlayer::PlayingState) {
         mediaPlayer->setPosition(convertFrameToMs(frameNumber));
@@ -908,7 +904,7 @@ void MainWindow::on_seekSlider_sliderReleased()
 
 void MainWindow::on_seekSlider_sliderMoved(const int position)
 {
-    ui->currentFrameLabel->setText(QString::number(position));
+    ui.currentFrameLabel->setText(QString::number(position));
 }
 
 void MainWindow::on_generateButton_clicked()
@@ -926,7 +922,7 @@ void MainWindow::on_generateButton_clicked()
     }
 
     const bool pauseAfterLimit = config.value("pauseafterlimit").toBool();
-    if(pauseAfterLimit && ui->unsavedWidget->isFull()) {
+    if(pauseAfterLimit && ui.unsavedWidget->isFull()) {
         // Can't start the generator if the unsaved widget container is full
         // and user has selected to pause after the container is full
         qCWarning(MAINWINDOW) << "Thumbnail container is full";
@@ -936,10 +932,10 @@ void MainWindow::on_generateButton_clicked()
     }
 
     // Compute list of frame numbers to grab
-    const int selected_frame = ui->seekSlider->value();
-    const int frame_step = ui->frameStepSpinBox->value();
-    const int num_generate = ui->screenshotsSpinBox->value();
-    const int unlimited_screens = ui->cbUnlimitedScreens->isChecked();
+    const int selected_frame = ui.seekSlider->value();
+    const int frame_step = ui.frameStepSpinBox->value();
+    const int num_generate = ui.screenshotsSpinBox->value();
+    const int unlimited_screens = ui.cbUnlimitedScreens->isChecked();
     const int total_video_frames = frameGrabber->totalFrames();
     const int total_frame_range = frame_step * num_generate;
     const int last_frame = selected_frame + total_frame_range;
@@ -966,14 +962,14 @@ void MainWindow::on_generateButton_clicked()
     frameGenerator->enqueue(queue);
 
     // Update generator widgets
-    ui->generateButton->setEnabled(false);
-    ui->btnPauseGenerator->setEnabled(true);
-    ui->btnPauseGenerator->setText(tr("Pause"));
-    ui->btnPauseGenerator->setIcon(QIcon(":/icon/pause.png"));
-    ui->btnStopGenerator->setEnabled(true);
-    ui->generatorProgressBar->setValue(0);
-    ui->generatorProgressBar->setMaximum(frameGenerator->remaining());
-    ui->generatorProgressBar->setTextVisible(true);
+    ui.generateButton->setEnabled(false);
+    ui.btnPauseGenerator->setEnabled(true);
+    ui.btnPauseGenerator->setText(tr("Pause"));
+    ui.btnPauseGenerator->setIcon(QIcon(":/icon/pause.png"));
+    ui.btnStopGenerator->setEnabled(true);
+    ui.generatorProgressBar->setValue(0);
+    ui.generatorProgressBar->setMaximum(frameGenerator->remaining());
+    ui.generatorProgressBar->setTextVisible(true);
 
     QMetaObject::invokeMethod(frameGenerator.get(), "start",
                               Qt::QueuedConnection);
@@ -983,7 +979,7 @@ void MainWindow::on_grabButton_clicked()
 {
     qCDebug(MAINWINDOW) << "Clicked grab button";
 
-    const int selectedFrame = ui->seekSlider->value();
+    const int selectedFrame = ui.seekSlider->value();
     const QImage frame = frameGrabber->getFrame(selectedFrame);
     if(frame.isNull()) {
         qCCritical(MAINWINDOW) << "Frame is null";
@@ -991,14 +987,14 @@ void MainWindow::on_grabButton_clicked()
         return;
     }
 
-    ui->savedWidget->addThumbnail(util::make_unique<vfg::ui::VideoFrameThumbnail>(selectedFrame, frame));
+    ui.savedWidget->addThumbnail(util::make_unique<vfg::ui::VideoFrameThumbnail>(selectedFrame, frame));
 
     statusBar()->showMessage(tr("Grabbed frame #%1").arg(selectedFrame), 3000);
 }
 
 void MainWindow::on_clearThumbsButton_clicked()
 {
-    ui->unsavedWidget->clearThumbnails();
+    ui.unsavedWidget->clearThumbnails();
 
     const bool resumeAfterClear = config.value("resumegeneratorafterclear", false).toBool();
     if(resumeAfterClear && frameGenerator->remaining() > 0 && frameGenerator->isPaused()) {
@@ -1008,14 +1004,14 @@ void MainWindow::on_clearThumbsButton_clicked()
 
 void MainWindow::on_thumbnailSizeSlider_sliderMoved(const int position)
 {
-    ui->unsavedWidget->resizeThumbnails(position);
-    ui->savedWidget->resizeThumbnails(position);
+    ui.unsavedWidget->resizeThumbnails(position);
+    ui.savedWidget->resizeThumbnails(position);
 }
 
 void MainWindow::on_thumbnailSizeSlider_valueChanged(const int value)
 {
-    ui->unsavedWidget->resizeThumbnails(value);
-    ui->savedWidget->resizeThumbnails(value);
+    ui.unsavedWidget->resizeThumbnails(value);
+    ui.savedWidget->resizeThumbnails(value);
 }
 
 void MainWindow::on_saveThumbnailsButton_clicked()
@@ -1023,7 +1019,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
     qCDebug(MAINWINDOW) << "Clicked save button";
 
     // Save saved images to disk
-    if(ui->savedWidget->isEmpty()) {
+    if(ui.savedWidget->isEmpty()) {
         qCWarning(MAINWINDOW) << "Nothing to save";
         QMessageBox::information(this, tr("Nothing to save"),
                                  tr("Add one or more screenshots to queue."));
@@ -1044,7 +1040,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
 
     config.setValue("last_save_dir", lastSaveDirectory);
 
-    const std::size_t numSaved = ui->savedWidget->numThumbnails();    
+    const std::size_t numSaved = ui.savedWidget->numThumbnails();
     const QDir saveDir(lastSaveDirectory);
 
     QProgressDialog prog("", "Cancel", 0, numSaved, this);
@@ -1052,7 +1048,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
     prog.setCancelButton(0);
     prog.setMinimumDuration(0);
     for(std::size_t idx = 0; idx < numSaved; ++idx) {
-        const auto widget = ui->savedWidget->at(idx);
+        const auto widget = ui.savedWidget->at(idx);
         if(!widget) {
             qCCritical(MAINWINDOW) << "Invalid widget";
 
@@ -1139,7 +1135,7 @@ void MainWindow::on_actionOptions_triggered()
     vfg::ConfigDialog configDialog;
     const auto saved = configDialog.exec();
     if(saved) {
-        ui->unsavedWidget->setMaxThumbnails(config.value("maxthumbnails").toInt());
+        ui.unsavedWidget->setMaxThumbnails(config.value("maxthumbnails").toInt());
 
         dvdProcessor->setProcessor(config.value("dgindexexecpath").toString());
     }
@@ -1163,7 +1159,7 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_cbUnlimitedScreens_clicked(const bool checked)
 {
-    ui->screenshotsSpinBox->setEnabled(!checked);
+    ui.screenshotsSpinBox->setEnabled(!checked);
 }
 
 void MainWindow::on_btnPauseGenerator_clicked()
@@ -1178,7 +1174,7 @@ void MainWindow::on_btnPauseGenerator_clicked()
         }
     }
     else if(frameGenerator->isPaused()) {
-        if(ui->unsavedWidget->isFull()) {
+        if(ui.unsavedWidget->isFull()) {
             QMessageBox::information(this, tr(""), tr("Can't resume generator while the container has reached max limit.\n"
                                                       "Click 'Clear' or raise the max thumbnail limit to continue."));
             return;
@@ -1194,13 +1190,13 @@ void MainWindow::on_btnStopGenerator_clicked()
 
     frameGenerator->stop();
 
-    ui->generateButton->setEnabled(true);
-    ui->generatorProgressBar->setValue(0);
-    ui->generatorProgressBar->setTextVisible(false);
-    ui->btnPauseGenerator->setEnabled(false);
-    ui->btnPauseGenerator->setText(tr("Pause"));
-    ui->btnPauseGenerator->setIcon(QIcon(":/icon/pause.png"));
-    ui->btnStopGenerator->setEnabled(false);
+    ui.generateButton->setEnabled(true);
+    ui.generatorProgressBar->setValue(0);
+    ui.generatorProgressBar->setTextVisible(false);
+    ui.btnPauseGenerator->setEnabled(false);
+    ui.btnPauseGenerator->setText(tr("Pause"));
+    ui.btnPauseGenerator->setIcon(QIcon(":/icon/pause.png"));
+    ui.btnStopGenerator->setEnabled(false);
 
     // Jump to last generated frame if the option is selected
     const bool jumpAfterStopped = config.value("jumptolastonstop").toBool();
@@ -1218,14 +1214,14 @@ void MainWindow::on_actionVideo_Settings_triggered()
 
 void MainWindow::activateGifMaker()
 {
-    if(previewContext == ui->menuCreateGIFImage) {
+    if(previewContext == ui.menuCreateGIFImage) {
         return;
     }
 
-    previewContext = ui->menuCreateGIFImage;
+    previewContext = ui.menuCreateGIFImage;
 
-    ui->actionSetEndFrame->setEnabled(true);
-    ui->actionSetStartFrame->setEnabled(true);
+    ui.actionSetEndFrame->setEnabled(true);
+    ui.actionSetStartFrame->setEnabled(true);
 
     if(!gifMaker) {
         gifMaker = util::make_unique<vfg::ui::GifMakerWidget>();
@@ -1235,10 +1231,10 @@ void MainWindow::activateGifMaker()
 
     const auto accepted = gifMaker->exec();
     if(!accepted) {
-        previewContext = ui->menuVideo;
+        previewContext = ui.menuVideo;
 
-        ui->actionSetEndFrame->setEnabled(false);
-        ui->actionSetStartFrame->setEnabled(false);
+        ui.actionSetEndFrame->setEnabled(false);
+        ui.actionSetStartFrame->setEnabled(false);
     }
 }
 
@@ -1253,9 +1249,9 @@ void MainWindow::pauseFrameGenerator()
 
     frameGenerator->pause();
 
-    ui->btnPauseGenerator->setText(tr("Resume"));
-    ui->btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
-    ui->generateButton->setEnabled(true);
+    ui.btnPauseGenerator->setText(tr("Resume"));
+    ui.btnPauseGenerator->setIcon(QIcon(":/icon/resume.png"));
+    ui.generateButton->setEnabled(true);
 }
 
 void MainWindow::resumeFrameGenerator()
@@ -1270,9 +1266,9 @@ void MainWindow::resumeFrameGenerator()
     QMetaObject::invokeMethod(frameGenerator.get(), "resume",
                               Qt::QueuedConnection);
 
-    ui->btnPauseGenerator->setText(tr("Pause"));
-    ui->btnPauseGenerator->setIcon(QIcon(":/icon/pause.png"));
-    ui->generateButton->setEnabled(false);
+    ui.btnPauseGenerator->setText(tr("Pause"));
+    ui.btnPauseGenerator->setIcon(QIcon(":/icon/pause.png"));
+    ui.generateButton->setEnabled(false);
 }
 
 void MainWindow::on_actionSave_as_PNG_triggered()
@@ -1285,7 +1281,7 @@ void MainWindow::on_actionSave_as_PNG_triggered()
         return;
     }
 
-    const int selected = ui->seekSlider->value();
+    const int selected = ui.seekSlider->value();
     const QDir saveDir(config.value("last_save_dir", "/").toString());
     const auto saveName = QString("%1.png").arg(QString::number(selected));
     const QString defaultSavePath = saveDir.absoluteFilePath(saveName);
@@ -1313,7 +1309,7 @@ void MainWindow::on_actionX264_Encoder_triggered()
 
 void MainWindow::on_actionDebugOn_triggered(bool checked)
 {
-    ui->actionDebugOff->setChecked(!checked);
+    ui.actionDebugOff->setChecked(!checked);
     config.setValue("enable_logging", true);
 
     QMessageBox::information(this, tr("Restart"), tr("Please restart the application"));
@@ -1321,7 +1317,7 @@ void MainWindow::on_actionDebugOn_triggered(bool checked)
 
 void MainWindow::on_actionDebugOff_triggered(bool checked)
 {
-    ui->actionDebugOn->setChecked(!checked);
+    ui.actionDebugOn->setChecked(!checked);
     config.setValue("enable_logging", false);
 
     QMessageBox::information(this, tr("Restart"), tr("Please restart the application"));
@@ -1390,7 +1386,7 @@ void MainWindow::processDiscFiles(const QStringList& files)
     if(!QFile::exists(dgIndexPath)) {
         QMessageBox::critical(this, tr("DGIndex invalid path"),
                               tr("Please set a valid path to DGIndex"));
-        ui->actionOptions->trigger();
+        ui.actionOptions->trigger();
         return;
     }
 
@@ -1440,9 +1436,9 @@ void MainWindow::on_saveGridButton_clicked()
 {
     vfg::ui::SaveGridDialog dialog;
 
-    const auto numScreens = ui->savedWidget->numThumbnails();
+    const auto numScreens = ui.savedWidget->numThumbnails();
     for(auto idx = 0; idx < numScreens; ++idx) {
-        const util::observer_ptr<vfg::ui::VideoFrameThumbnail> widget = ui->savedWidget->at(idx);
+        const util::observer_ptr<vfg::ui::VideoFrameThumbnail> widget = ui.savedWidget->at(idx);
         if(!widget) {
             continue;
         }

@@ -6,6 +6,7 @@
 #include <QSettings>
 #include <QtContainerFwd>
 #include "ptrutil.hpp"
+#include "ui_mainwindow.h"
 
 class QAction;
 class QCloseEvent;
@@ -126,7 +127,7 @@ private slots:
     void on_saveGridButton_clicked();
 
 private:
-    Ui::MainWindow* ui;
+    Ui::MainWindow ui;
 
     std::unique_ptr<QThread> frameGrabberThread;
     std::unique_ptr<QThread> frameGeneratorThread;
