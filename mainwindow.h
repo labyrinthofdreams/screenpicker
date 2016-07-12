@@ -74,12 +74,6 @@ private slots:
     void videoLoaded();
 
     /**
-     * @brief Load the given file with the current video source
-     * @param path Path to the file to load
-     */
-    void loadFile(const QString& path);
-
-    /**
      * @brief Generate and display GIF preview
      * @param args ImageMagick arguments
      * @param optArgs Optimization arguments
@@ -173,6 +167,12 @@ private:
      * @brief Setup internal states to default values
      */
     void setupInternal();
+
+    /**
+     * @brief Load the given file with the current video source
+     * @param path Path to the file to load
+     */
+    void loadFile(const QString& path);
 
     void activateGifMaker();
 
