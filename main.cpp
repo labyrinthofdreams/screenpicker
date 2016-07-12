@@ -1,3 +1,4 @@
+#include <exception>
 #include <QApplication>
 #include <QDir>
 #include <QFile>
@@ -5,7 +6,6 @@
 #include <QSettings>
 #include <QString>
 #include <QTextStream>
-#include <stdexcept>
 #include "httpdownload.hpp"
 #include "mainwindow.h"
 #include "init.h"
