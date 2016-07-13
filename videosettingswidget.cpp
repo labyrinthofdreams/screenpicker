@@ -50,11 +50,7 @@ VideoSettingsWidget::VideoSettingsWidget(QWidget *parent) :
     connect(ui.sboxCropRight,   static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
             this,               &VideoSettingsWidget::handleCropChange);
 
-    const QSize videoRes = config.value("video/resolution").toSize();
-    sourceWidth = videoRes.width();
-    sourceHeight = videoRes.height();
-    ui.sboxResizeWidth->setValue(sourceWidth);
-    ui.sboxResizeHeight->setValue(sourceHeight);
+    resetSettings();
 }
 
 void VideoSettingsWidget::on_cboxDvdResolution_activated(const int index)
@@ -138,7 +134,6 @@ void VideoSettingsWidget::closeEvent(QCloseEvent *event)
 QMap<QString, QVariant> VideoSettingsWidget::getSettings() const
 {
     QMap<QString, QVariant> settings;
-    settings.clear();
     settings.insert("croptop", crop.top);
     settings.insert("cropright", crop.right);
     settings.insert("cropbottom", crop.bottom);
