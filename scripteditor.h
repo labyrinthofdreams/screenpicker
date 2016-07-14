@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QString>
+#include "ui_scripteditor.h"
 
 namespace Ui {
 class ScriptEditor;
@@ -17,25 +18,27 @@ class ScriptEditor : public QWidget
 
 public:
     explicit ScriptEditor(QWidget *parent = 0);
+
     ~ScriptEditor();
 
     // Loads contents of script file
-    void setContent(QString content);
+    void setContent(const QString &content);
     void save();
     void reset();
     QString path() const;
 
-    static QString defaultPath();
 private slots:
     void on_updateButton_clicked();
 
     void on_btnSaveAs_clicked();
 
 private:
-    ::Ui::ScriptEditor *ui;
+    ::Ui::ScriptEditor ui;
 
     QString savePath;
-    void setSavePath(QString path);
+
+    void setSavePath(const QString &path);
+
 signals:
     void scriptUpdated();
 };
