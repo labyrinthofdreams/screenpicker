@@ -11,24 +11,25 @@
 
 namespace {
 
-static const QMap<QString, Qt::GlobalColor> colors {{"Transparent", Qt::transparent},
-                                                    {"White", Qt::white},
-                                                    {"Black", Qt::black},
-                                                    {"Red", Qt::red},
-                                                    {"Dark red", Qt::darkRed},
-                                                    {"Green", Qt::green},
-                                                    {"Dark green", Qt::darkGreen},
-                                                    {"Blue", Qt::blue},
-                                                    {"Dark blue", Qt::darkBlue},
-                                                    {"Cyan", Qt::cyan},
-                                                    {"Dark cyan", Qt::darkCyan},
-                                                    {"Magenta", Qt::magenta},
-                                                    {"Dark magenta", Qt::darkMagenta},
-                                                    {"Yellow", Qt::yellow},
-                                                    {"Dark yellow", Qt::darkYellow},
-                                                    {"Gray", Qt::gray},
-                                                    {"Dark gray", Qt::darkGray},
-                                                    {"Light gray", Qt::lightGray}};
+const QMap<QString, Qt::GlobalColor> colors {
+    {"Transparent", Qt::transparent},
+    {"White", Qt::white},
+    {"Black", Qt::black},
+    {"Red", Qt::red},
+    {"Dark red", Qt::darkRed},
+    {"Green", Qt::green},
+    {"Dark green", Qt::darkGreen},
+    {"Blue", Qt::blue},
+    {"Dark blue", Qt::darkBlue},
+    {"Cyan", Qt::cyan},
+    {"Dark cyan", Qt::darkCyan},
+    {"Magenta", Qt::magenta},
+    {"Dark magenta", Qt::darkMagenta},
+    {"Yellow", Qt::yellow},
+    {"Dark yellow", Qt::darkYellow},
+    {"Gray", Qt::gray},
+    {"Dark gray", Qt::darkGray},
+    {"Light gray", Qt::lightGray}};
 
 } // namespace
 
@@ -36,8 +37,7 @@ namespace vfg {
 namespace ui {
 
 SaveGridDialog::SaveGridDialog(QWidget *parent) :
-    QDialog(parent),
-    ui()
+    QDialog(parent)
 {
     ui.setupUi(this);
     ui.iconList->setUniformItemSizes(true);
@@ -46,18 +46,17 @@ SaveGridDialog::SaveGridDialog(QWidget *parent) :
     ui.iconList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui.gridWidget->setSpacing(ui.spacingSpinBox->value());
 
-    connect(ui.spacingSpinBox,  SIGNAL(valueChanged(int)),
-            ui.gridWidget,      SLOT(setSpacing(int)));
+    connect(ui.spacingSpinBox,  static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            ui.gridWidget,      &ImageGridWidget::setSpacing);
 
-    connect(ui.resizeToWidth,   SIGNAL(valueChanged(int)),
-            ui.gridWidget,      SLOT(setWidth(int)));
+    connect(ui.resizeToWidth,   static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+            ui.gridWidget,      &ImageGridWidget::setWidth);
 }
 
 void SaveGridDialog::addPixmap(const QPixmap &img)
 {
     auto item = new QListWidgetItem;
-    QIcon icon(img);
-    item->setIcon(icon);
+    item->setIcon({img});
     ui.iconList->insertItem(0, item);
     ui.iconList->setIconSize(img.scaledToWidth(150).size());
     ui.resizeToWidth->setValue(img.width());
@@ -65,7 +64,8 @@ void SaveGridDialog::addPixmap(const QPixmap &img)
 
 void SaveGridDialog::on_pushButton_clicked()
 {
-    const QString path = QFileDialog::getSaveFileName(this, tr("Save as..."), {}, "PNG Images (*.png)");
+    const QString path = QFileDialog::getSaveFileName(this, tr("Save as..."), {},
+                                                      "PNG Images (*.png)");
     QImageGrid imageGrid;
     imageGrid.setSpacing(ui.spacingSpinBox->value());
     const QColor color(colors.value(ui.comboBox->currentText()));

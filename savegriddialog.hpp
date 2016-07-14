@@ -5,6 +5,7 @@
 #include "ui_savegriddialog.h"
 
 class QPixmap;
+class QString;
 
 namespace vfg {
 namespace ui {
@@ -19,7 +20,6 @@ class SaveGridDialog : public QDialog
 
 public:
     explicit SaveGridDialog(QWidget *parent = 0);
-    ~SaveGridDialog() = default;
 
     void addPixmap(const QPixmap &img);
 
