@@ -2,6 +2,7 @@
 #define VFG_UI_ABOUTWIDGET_HPP
 
 #include <QDialog>
+#include "ui_aboutwidget.h"
 
 namespace vfg {
 namespace ui {
@@ -16,10 +17,9 @@ class AboutWidget : public QDialog
 
 public:
     explicit AboutWidget(QWidget *parent = 0);
-    ~AboutWidget();
 
 private:
-    Ui::AboutWidget *ui;
+    Ui::AboutWidget ui;
 };
 
 
