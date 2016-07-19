@@ -6,6 +6,7 @@
 #include <QFileInfo>
 #include <QProcess>
 #include <QSettings>
+#include "ui_x264encoderdialog.h"
 
 class QMediaPlayer;
 class QPlainTextEdit;
@@ -26,6 +27,7 @@ class x264EncoderDialog : public QDialog
 
 public:
     explicit x264EncoderDialog(QWidget *parent = 0);
+
     ~x264EncoderDialog();
 
 private slots:
@@ -52,10 +54,7 @@ private slots:
     void on_buttonStopEncode_clicked();
 
 private:
-    Ui::x264EncoderDialog *ui;
-
-    QSettings config;
-    QSettings x264config;
+    Ui::x264EncoderDialog ui;
 
     std::unique_ptr<QProcess> x264;
 
@@ -66,7 +65,9 @@ private:
 
     std::unique_ptr<QPlainTextEdit> logWindow;
 
-    QFileInfo previewFile;
+    QSettings config {"config.ini", QSettings::IniFormat};
+    QSettings x264config {"scripts/x264.ini", QSettings::IniFormat};
+    QFileInfo previewFile {"preview.mkv"};
 
     QString parseArgs(const QString& section) const;
 };

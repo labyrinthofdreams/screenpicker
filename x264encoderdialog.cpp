@@ -14,7 +14,6 @@
 #include <QVBoxLayout>
 #include <QVideoWidget>
 #include "x264encoderdialog.hpp"
-#include "ui_x264encoderdialog.h"
 
 namespace {
 
@@ -32,19 +31,18 @@ QString prettySize(double size) {
 
 } // namespace
 
-vfg::ui::x264EncoderDialog::x264EncoderDialog(QWidget *parent) :
+namespace vfg {
+namespace ui {
+
+x264EncoderDialog::x264EncoderDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::x264EncoderDialog),
-    config("config.ini", QSettings::IniFormat),
-    x264config("scripts/x264.ini", QSettings::IniFormat),
     x264(new QProcess),
     mediaPlayer(new QMediaPlayer),
     videoLayout(new QVBoxLayout),
     videoWidget(new QVideoWidget),
-    logWindow(new QPlainTextEdit),
-    previewFile("preview.mkv")
+    logWindow(new QPlainTextEdit)
 {
-    ui->setupUi(this);
+    ui.setupUi(this);
 
     logWindow->setWindowTitle(tr("x264 Log"));
     logWindow->resize(400, 500);
@@ -52,56 +50,54 @@ vfg::ui::x264EncoderDialog::x264EncoderDialog(QWidget *parent) :
     mediaPlayer->setVideoOutput(videoWidget);
 
     videoLayout->addWidget(videoWidget);
-    ui->groupBoxPreview->setLayout(videoLayout);
+    ui.groupBoxPreview->setLayout(videoLayout);
 
-    connect(x264.get(), SIGNAL(readyReadStandardOutput()),
-            this,       SLOT(parseProcessOutput()));
+    connect(x264.get(), &QProcess::readyReadStandardOutput,
+            this,       &x264EncoderDialog::parseProcessOutput);
 
-    connect(x264.get(), SIGNAL(started()),
-            this,       SLOT(processStarted()));
+    connect(x264.get(), &QProcess::started,
+            this,       &x264EncoderDialog::processStarted);
 
-    connect(x264.get(), SIGNAL(finished(int, QProcess::ExitStatus)),
-            this,       SLOT(processFinished(int, QProcess::ExitStatus)));
+    connect(x264.get(), static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+            this,       &x264EncoderDialog::processFinished);
 
-    ui->comboPreset->addItems(x264config.childGroups());
+    ui.comboPreset->addItems(x264config.childGroups());
 
-    ui->plainTextEditPreset->setPlainText(parseArgs(ui->comboPreset->currentText()));
+    ui.plainTextEditPreset->setPlainText(parseArgs(ui.comboPreset->currentText()));
 }
 
-vfg::ui::x264EncoderDialog::~x264EncoderDialog()
+x264EncoderDialog::~x264EncoderDialog()
 {
     QFile::remove(previewFile.absoluteFilePath());
-
-    delete ui;
 }
 
-void vfg::ui::x264EncoderDialog::on_comboPreset_activated(const QString &arg1)
+void x264EncoderDialog::on_comboPreset_activated(const QString &arg1)
 {
-    ui->plainTextEditPreset->setPlainText(parseArgs(arg1));
+    ui.plainTextEditPreset->setPlainText(parseArgs(arg1));
 }
 
-QString vfg::ui::x264EncoderDialog::parseArgs(const QString& section) const
+QString x264EncoderDialog::parseArgs(const QString& section) const
 {
     const QSize resolution = config.value("video/resolution").toSize();
     QString args = x264config.value(QString("%1/args").arg(section)).toString();
-    args.replace("$quality", QString::number(ui->spinQuality->value()))
+    args.replace("$quality", QString::number(ui.spinQuality->value()))
             .replace("$width", QString::number(resolution.width()))
             .replace("$height", QString::number(resolution.height()));
 
     // Add tune only if set
-    if(ui->comboTune->currentIndex() != 0) {
-        args.append(" --tune ").append(ui->comboTune->currentText().toLower());
+    if(ui.comboTune->currentIndex() != 0) {
+        args.append(" --tune ").append(ui.comboTune->currentText().toLower());
     }
 
     // Add FPS only if auto-detect is not set
-    if(!ui->checkBoxFpsAutoDetect->isChecked()) {
-        args.append(" --fps ").append(QString::number(ui->spinFps->value()));
+    if(!ui.checkBoxFpsAutoDetect->isChecked()) {
+        args.append(" --fps ").append(QString::number(ui.spinFps->value()));
     }
 
     return args;
 }
 
-void vfg::ui::x264EncoderDialog::parseProcessOutput()
+void x264EncoderDialog::parseProcessOutput()
 {
     // Get first integer indicating progress from output
     // Matches from output: [3.3%] and [33.3%]
@@ -119,45 +115,45 @@ void vfg::ui::x264EncoderDialog::parseProcessOutput()
         else {
             rx.indexIn(current);
             const int progress = rx.cap(1).toInt();
-            ui->labelStatusText->setText(current);
-            ui->progressBar->setValue(progress);
+            ui.labelStatusText->setText(current);
+            ui.progressBar->setValue(progress);
         }
     }
 }
 
-void vfg::ui::x264EncoderDialog::processStarted()
+void x264EncoderDialog::processStarted()
 {
     logWindow->clear();
     logWindow->show();
 
-    ui->buttonStopEncode->setEnabled(true);
+    ui.buttonStopEncode->setEnabled(true);
 }
 
-void vfg::ui::x264EncoderDialog::processFinished(int exitCode, QProcess::ExitStatus status)
+void x264EncoderDialog::processFinished(const int exitCode, const QProcess::ExitStatus status)
 {
-    ui->buttonStopEncode->setEnabled(false);
+    ui.buttonStopEncode->setEnabled(false);
 
     if(exitCode == -1) {
-        ui->labelStatusText->setText("Exited with error (see log window)");
-        ui->progressBar->setValue(0);
+        ui.labelStatusText->setText("Exited with error (see log window)");
+        ui.progressBar->setValue(0);
         logWindow->appendPlainText("\nProcess exited.");
 
         return;
     }
     else if(status == QProcess::CrashExit) {
-        ui->labelStatusText->setText("Cancelled");
-        ui->progressBar->setValue(0);
+        ui.labelStatusText->setText("Cancelled");
+        ui.progressBar->setValue(0);
         logWindow->appendPlainText("\nProcess cancelled.");
 
         return;
     }
 
-    ui->progressBar->setValue(100);
-    ui->labelStatusText->setText(tr("Done!"));
-    ui->buttonSaveAs->setEnabled(true);
+    ui.progressBar->setValue(100);
+    ui.labelStatusText->setText(tr("Done!"));
+    ui.buttonSaveAs->setEnabled(true);
 
     previewFile.refresh();
-    ui->labelEncodeSize->setText(prettySize(previewFile.size()));
+    ui.labelEncodeSize->setText(prettySize(previewFile.size()));
 
     videoLayout->setSizeConstraint(QLayout::SetFixedSize);
     videoWidget->setFixedSize(config.value("video/resolution").toSize());
@@ -166,30 +162,30 @@ void vfg::ui::x264EncoderDialog::processFinished(int exitCode, QProcess::ExitSta
     mediaPlayer->play();
 }
 
-void vfg::ui::x264EncoderDialog::on_spinFps_valueChanged(const QString &arg1)
+void x264EncoderDialog::on_spinFps_valueChanged(const QString &arg1)
 {
     Q_UNUSED(arg1);
 
-    ui->plainTextEditPreset->setPlainText(parseArgs(ui->comboPreset->currentText()));
+    ui.plainTextEditPreset->setPlainText(parseArgs(ui.comboPreset->currentText()));
 }
 
-void vfg::ui::x264EncoderDialog::on_spinQuality_valueChanged(const QString &arg1)
+void x264EncoderDialog::on_spinQuality_valueChanged(const QString &arg1)
 {
     Q_UNUSED(arg1);
 
-    ui->plainTextEditPreset->setPlainText(parseArgs(ui->comboPreset->currentText()));
+    ui.plainTextEditPreset->setPlainText(parseArgs(ui.comboPreset->currentText()));
 }
 
-void vfg::ui::x264EncoderDialog::on_comboTune_activated(const QString &arg1)
+void x264EncoderDialog::on_comboTune_activated(const QString &arg1)
 {
     Q_UNUSED(arg1);
 
-    ui->plainTextEditPreset->setPlainText(parseArgs(ui->comboPreset->currentText()));
+    ui.plainTextEditPreset->setPlainText(parseArgs(ui.comboPreset->currentText()));
 }
 
-void vfg::ui::x264EncoderDialog::on_buttonEncode_clicked()
+void x264EncoderDialog::on_buttonEncode_clicked()
 {
-    QStringList args = ui->plainTextEditPreset->toPlainText().split(" ");
+    QStringList args = ui.plainTextEditPreset->toPlainText().split(" ");
     args << "--output" << previewFile.absoluteFilePath()
          << config.value("last_opened_script").toString();
 
@@ -197,7 +193,7 @@ void vfg::ui::x264EncoderDialog::on_buttonEncode_clicked()
     x264->start(config.value("x264path").toString(), args);
 }
 
-void vfg::ui::x264EncoderDialog::on_buttonSaveAs_clicked()
+void x264EncoderDialog::on_buttonSaveAs_clicked()
 {
     const QString savePath = QFileDialog::getSaveFileName(this, tr("Select save path"),
                                                           "", tr("MKV (*.mkv)"));
@@ -208,13 +204,16 @@ void vfg::ui::x264EncoderDialog::on_buttonSaveAs_clicked()
     }
 }
 
-void vfg::ui::x264EncoderDialog::on_checkBoxFpsAutoDetect_toggled(const bool checked)
+void x264EncoderDialog::on_checkBoxFpsAutoDetect_toggled(const bool checked)
 {
-    ui->spinFps->setEnabled(!checked);
-    ui->plainTextEditPreset->setPlainText(parseArgs(ui->comboPreset->currentText()));
+    ui.spinFps->setEnabled(!checked);
+    ui.plainTextEditPreset->setPlainText(parseArgs(ui.comboPreset->currentText()));
 }
 
-void vfg::ui::x264EncoderDialog::on_buttonStopEncode_clicked()
+void x264EncoderDialog::on_buttonStopEncode_clicked()
 {
     x264->kill();
 }
+
+} // namespace ui
+} // namespace vfg
