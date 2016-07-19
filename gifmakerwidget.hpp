@@ -4,6 +4,7 @@
 #include <memory>
 #include <QDialog>
 #include <QSettings>
+#include "ui_gifmakerwidget.h"
 
 class QMovie;
 
@@ -20,6 +21,7 @@ class GifMakerWidget : public QDialog
 
 public:
     explicit GifMakerWidget(QWidget *parent = 0);
+
     ~GifMakerWidget();
 
     void updateStartFrame(int value);
@@ -49,7 +51,7 @@ private slots:
     void on_spinFrameDelay_valueChanged(const QString &arg1);
 
 private:
-    Ui::GifMakerWidget *ui;
+    Ui::GifMakerWidget ui;
 
     //! Last generated preview
     std::unique_ptr<QMovie> preview;
@@ -57,9 +59,9 @@ private:
     //! Previously generated preview for comparison
     std::unique_ptr<QMovie> previousPreview;
 
-    QSettings config;
-    QSettings imageMagick;
-    QSettings gifsicle;
+    QSettings config {"config.ini", QSettings::IniFormat};
+    QSettings imageMagick {"scripts/imagemagick.ini", QSettings::IniFormat};
+    QSettings gifsicle {"scripts/gifsicle.ini", QSettings::IniFormat};
 
     int totalFrames() const;
 

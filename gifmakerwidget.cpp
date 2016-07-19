@@ -8,7 +8,7 @@
 #include <QSettings>
 #include <QString>
 #include "gifmakerwidget.hpp"
-#include "ui_gifmakerwidget.h"
+#include "ptrutil.hpp"
 
 namespace {
 
@@ -30,25 +30,20 @@ QString prettyResolution(const QRect& area) {
 
 } // namespace
 
-using vfg::ui::GifMakerWidget;
+namespace vfg {
+namespace ui {
 
 GifMakerWidget::GifMakerWidget(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::GifMakerWidget),
-    preview(),
-    previousPreview(),
-    config("config.ini", QSettings::IniFormat),
-    imageMagick("scripts/imagemagick.ini", QSettings::IniFormat),
-    gifsicle("scripts/gifsicle.ini", QSettings::IniFormat)
+    QDialog(parent)
 {
-    ui->setupUi(this);
+    ui.setupUi(this);
 
-    ui->comboImageMagick->addItems(imageMagick.childGroups());
-    const auto first = ui->comboImageMagick->currentText();
-    ui->plainTextPreset->setPlainText(parseImageMagickArgs(first));
+    ui.comboImageMagick->addItems(imageMagick.childGroups());
+    const auto first = ui.comboImageMagick->currentText();
+    ui.plainTextPreset->setPlainText(parseImageMagickArgs(first));
 
-    ui->comboGifsicle->addItem(tr("None"));
-    ui->comboGifsicle->addItems(gifsicle.childGroups());
+    ui.comboGifsicle->addItem(tr("None"));
+    ui.comboGifsicle->addItems(gifsicle.childGroups());
 }
 
 GifMakerWidget::~GifMakerWidget()
@@ -58,68 +53,66 @@ GifMakerWidget::~GifMakerWidget()
         preview.reset();
         QFile::remove(fileName);
     }
-
-    delete ui;
 }
 
 void GifMakerWidget::showPreview(const QString& path)
 {
-    if(preview && ui->checkBoxCompare->isChecked()) {
+    if(preview && ui.checkBoxCompare->isChecked()) {
         preview->stop();
         previousPreview.reset(preview.release());
-        ui->labelPreviousGif->setMovie(previousPreview.get());
+        ui.labelPreviousGif->setMovie(previousPreview.get());
         previousPreview->start();
 
-        ui->checkBoxCompare->setChecked(false);
+        ui.checkBoxCompare->setChecked(false);
     }
 
-    preview.reset(new QMovie(path));
+    preview = util::make_unique<QMovie>(path);
     preview->setCacheMode(QMovie::CacheAll);
-    ui->labelPreview->setMovie(preview.get());
+    ui.labelPreview->setMovie(preview.get());
     preview->start();
 
     const auto bytes = prettySize(preview->device()->size());
     const auto res = prettyResolution(preview->frameRect());
-    ui->labelGifSize->setText(QString("%1 [%2]").arg(bytes).arg(res));
+    ui.labelGifSize->setText(QString("%1 [%2]").arg(bytes).arg(res));
 
-    ui->buttonSave->setEnabled(true);
-    ui->checkBoxCompare->setEnabled(true);
+    ui.buttonSave->setEnabled(true);
+    ui.checkBoxCompare->setEnabled(true);
 }
 
 void GifMakerWidget::updateStartFrame(const int value)
 {
-    if(value > ui->spinLastFrame->value()) {
-        ui->spinLastFrame->setValue(value);
+    if(value > ui.spinLastFrame->value()) {
+        ui.spinLastFrame->setValue(value);
         config.setValue("gif/endframe", value);
     }
 
-    ui->spinStartFrame->setValue(value);
+    ui.spinStartFrame->setValue(value);
     config.setValue("gif/startframe", value);
-    ui->labelTotalFrames->setText(QString::number(totalFrames()));
+    ui.labelTotalFrames->setText(QString::number(totalFrames()));
 }
 
 void GifMakerWidget::updateLastFrame(const int value)
 {
-    if(value < ui->spinStartFrame->value()) {
-        ui->spinStartFrame->setValue(value);
+    if(value < ui.spinStartFrame->value()) {
+        ui.spinStartFrame->setValue(value);
         config.setValue("gif/startframe", value);
     }
 
-    ui->spinLastFrame->setValue(value);
+    ui.spinLastFrame->setValue(value);
     config.setValue("gif/endframe", value);
-    ui->labelTotalFrames->setText(QString::number(totalFrames()));
+    ui.labelTotalFrames->setText(QString::number(totalFrames()));
 }
 
 int GifMakerWidget::totalFrames() const
 {
-    return (ui->spinLastFrame->value() - ui->spinStartFrame->value()) /
-            (ui->spinSkipFrames->value() + 1);
+    return (ui.spinLastFrame->value() - ui.spinStartFrame->value()) /
+            (ui.spinSkipFrames->value() + 1);
 }
 
 QString GifMakerWidget::parseImageMagickArgs(const QString& argName)
 {
     auto args = imageMagick.value(QString("%1/args").arg(argName)).toString();
-    args.replace(QString("%delay%"), QString::number(ui->spinFrameDelay->value()));
+    args.replace(QString("%delay%"), QString::number(ui.spinFrameDelay->value()));
     return args;
 }
 
@@ -135,20 +128,19 @@ void GifMakerWidget::on_spinLastFrame_valueChanged(const int value)
 
 void GifMakerWidget::on_buttonAutoDelay_clicked()
 {
-    const auto delay = (ui->spinSkipFrames->value() * 4) + 4;
-    const auto adjusted = delay <= ui->spinFrameDelay->maximum() ?
-                              delay : ui->spinFrameDelay->maximum();
-    ui->spinFrameDelay->setValue(adjusted);
+    const auto delay = (ui.spinSkipFrames->value() * 4) + 4;
+    const auto adjusted = delay <= ui.spinFrameDelay->maximum() ?
+                              delay : ui.spinFrameDelay->maximum();
+    ui.spinFrameDelay->setValue(adjusted);
 }
 
 void GifMakerWidget::on_spinSkipFrames_valueChanged(const int value)
 {
-    Q_UNUSED(value);
     config.setValue("gif/skipframes", value);
-    ui->labelTotalFrames->setText(QString::number(totalFrames()));
+    ui.labelTotalFrames->setText(QString::number(totalFrames()));
 }
 
-void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
+void GifMakerWidget::on_buttonPreviewGif_clicked()
 {
     if(totalFrames() == 0) {
         QMessageBox::information(this, tr("Nothing to process"),
@@ -156,21 +148,21 @@ void vfg::ui::GifMakerWidget::on_buttonPreviewGif_clicked()
         return;
     }
 
-    config.setValue("gif/delay", ui->spinFrameDelay->value());
-    config.setValue("gif/skipframes", ui->spinSkipFrames->value());
+    config.setValue("gif/delay", ui.spinFrameDelay->value());
+    config.setValue("gif/skipframes", ui.spinSkipFrames->value());
 
-    auto args = ui->plainTextPreset->toPlainText();
+    auto args = ui.plainTextPreset->toPlainText();
     if(args.isEmpty()) {
-        const auto key = ui->comboImageMagick->currentText();
+        const auto key = ui.comboImageMagick->currentText();
         args = imageMagick.value(QString("%1/args").arg(key)).toString();
     }
 
-    const auto optKey = ui->comboGifsicle->currentText();
+    const auto optKey = ui.comboGifsicle->currentText();
     const auto optArgs = optKey == "None" ? "" : gifsicle.value(QString("%1/args").arg(optKey)).toString();
     emit requestPreview(args, optArgs);
 }
 
-void vfg::ui::GifMakerWidget::on_buttonSave_clicked()
+void GifMakerWidget::on_buttonSave_clicked()
 {
     const QDir saveDir(config.value("last_saved_gif_dir").toString());
     const QString savePath = QFileDialog::getSaveFileName(this, tr("Select save path"),
@@ -198,28 +190,31 @@ void vfg::ui::GifMakerWidget::on_buttonSave_clicked()
     config.setValue("last_saved_gif_dir", saved.absoluteDir().absolutePath());
 }
 
-void vfg::ui::GifMakerWidget::on_buttonReset_clicked()
+void GifMakerWidget::on_buttonReset_clicked()
 {
-    ui->spinStartFrame->setValue(0);
-    ui->spinLastFrame->setValue(0);
-    ui->spinSkipFrames->setValue(0);
-    ui->spinFrameDelay->setValue(4);
-    ui->comboGifsicle->setCurrentIndex(0);
-    ui->labelPreview->clear();
-    ui->labelGifSize->setText(tr("n/a"));
-    ui->labelTotalFrames->clear();
-    ui->buttonSave->setEnabled(false);
+    ui.spinStartFrame->setValue(0);
+    ui.spinLastFrame->setValue(0);
+    ui.spinSkipFrames->setValue(0);
+    ui.spinFrameDelay->setValue(4);
+    ui.comboGifsicle->setCurrentIndex(0);
+    ui.labelPreview->clear();
+    ui.labelGifSize->setText(tr("n/a"));
+    ui.labelTotalFrames->clear();
+    ui.buttonSave->setEnabled(false);
 }
 
-void vfg::ui::GifMakerWidget::on_comboImageMagick_activated(const QString &arg1)
+void GifMakerWidget::on_comboImageMagick_activated(const QString &arg1)
 {
-    ui->plainTextPreset->setPlainText(parseImageMagickArgs(arg1));
+    ui.plainTextPreset->setPlainText(parseImageMagickArgs(arg1));
 }
 
-void vfg::ui::GifMakerWidget::on_spinFrameDelay_valueChanged(const QString &arg1)
+void GifMakerWidget::on_spinFrameDelay_valueChanged(const QString &arg1)
 {
     Q_UNUSED(arg1);
 
-    const auto current = ui->comboImageMagick->currentText();
-    ui->plainTextPreset->setPlainText(parseImageMagickArgs(current));
+    const auto current = ui.comboImageMagick->currentText();
+    ui.plainTextPreset->setPlainText(parseImageMagickArgs(current));
 }
+
+} // namespace ui
+} // namespace vfg
