@@ -2,6 +2,7 @@
 #define CONFIGDIALOG_H
 
 #include <QDialog>
+#include "ui_configdialog.h"
 
 namespace Ui {
 class ConfigDialog;
@@ -23,13 +24,6 @@ public:
      */
     explicit ConfigDialog(QWidget *parent = 0);
 
-    /**
-     * @brief Destructor
-     *
-     * Definition is required for the unique_ptr
-     */
-    ~ConfigDialog();
-
 private slots:
     void on_buttonBox_rejected();
     void on_buttonBox_accepted();
@@ -45,7 +39,7 @@ private slots:
     void on_browseCacheFolder_clicked();
 
 private:
-    Ui::ConfigDialog* ui;
+    Ui::ConfigDialog ui;
 };
 
 } // namespace vfg
