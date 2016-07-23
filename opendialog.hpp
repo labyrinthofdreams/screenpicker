@@ -5,6 +5,7 @@
 #include <QDialog>
 #include <QSettings>
 #include "extractors/baseextractor.hpp"
+#include "ui_opendialog.h"
 
 class QNetworkRequest;
 class QString;
@@ -24,7 +25,6 @@ class OpenDialog : public QDialog
 
 public:
     explicit OpenDialog(QWidget *parent = 0);
-    ~OpenDialog();
 
     enum class Tab {
         OpenDisc,
@@ -34,11 +34,11 @@ public:
     void setActiveTab(Tab tabName);
 
 private:
-    ::Ui::OpenDialog *ui;
+    ::Ui::OpenDialog ui;
 
     std::unique_ptr<vfg::extractor::BaseExtractor> extractor;
 
-    QSettings config;
+    QSettings config {"config.ini", QSettings::IniFormat};
 
 private slots:
     void on_networkUrl_textEdited(const QString &arg1);
