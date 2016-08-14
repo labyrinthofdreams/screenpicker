@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include <memory>
 #include <stdexcept>
 #include <utility>
@@ -104,74 +105,6 @@ MainWindow::MainWindow(QWidget *parent) :
     buildRecentMenu();
 
     //
-    // Open dialog
-    //
-    openDialog = util::make_unique<vfg::ui::OpenDialog>();
-
-    // When user wants to open URL via open dialog, add it to downloads
-    connect(openDialog.get(), &vfg::ui::OpenDialog::openUrl, [this](const QNetworkRequest &req) {
-        auto downloadsWindow = getDownloadsWindow();
-        downloadsWindow->addDownload(req);
-        downloadsWindow->show();
-    });
-
-    // When user wants to load DVD/BR files, process them
-    connect(openDialog.get(),   &vfg::ui::OpenDialog::processDiscFiles,
-            this,               &MainWindow::processDiscFiles);
-
-    //
-    // Media player
-    //
-    mediaPlayer = util::make_unique<QMediaPlayer>();
-    mediaPlayer->setVideoOutput(ui.videoPreviewWidget->videoWidget.get());
-    mediaPlayer->setVolume(ui.volumeSlider->value());
-
-    // Adjust video volume level when changing the volume slider
-    connect(ui.volumeSlider,   &QSlider::sliderMoved,
-            mediaPlayer.get(),  &QMediaPlayer::setVolume);
-
-    connect(mediaPlayer.get(), &QMediaPlayer::mediaStatusChanged,
-            [this](const QMediaPlayer::MediaStatus status) {
-        if(status == QMediaPlayer::BufferedMedia) {
-            // After play() has been called
-            // for the first time and video has buffered and starts playing...
-
-            ui.videoPreviewWidget->showVideo();
-            // Start playing from where the seek slider is
-            mediaPlayer->setPosition(convertFrameToMs(ui.seekSlider->value()));
-        }
-    });
-
-    // While video is playing the position of the video changes, so move the slider accordingly
-    connect(mediaPlayer.get(),  &QMediaPlayer::positionChanged,
-            [this](const qint64 position) {
-        updateSeekSlider(convertMsToFrame(position), SeekSlider::UpdateText);
-    });
-
-    connect(mediaPlayer.get(),  &QMediaPlayer::stateChanged,
-            [this](const QMediaPlayer::State state) {
-        if(state == QMediaPlayer::PlayingState) {
-            ui.buttonPlay->setIcon(QIcon(":/icon/pause2.png"));
-            if(mediaPlayer->mediaStatus() == QMediaPlayer::BufferedMedia) {
-                // When calling play() for the first time the media player emits "playing" state
-                // while the video is still buffering.
-                // This check prevents the code below from running prematurely
-                // so it only runs when play is called second, third, etc. time
-
-                ui.videoPreviewWidget->showVideo();
-                // Start playing from where the seek slider is
-                mediaPlayer->setPosition(convertFrameToMs(ui.seekSlider->value()));
-            }
-        }
-        else {
-            ui.videoPreviewWidget->hideVideo();
-            ui.buttonPlay->setIcon(QIcon(":/icon/play.png"));
-            updateSeekSlider(convertMsToFrame(mediaPlayer->position()), SeekSlider::UpdateText);
-            frameGrabber->requestFrame(convertMsToFrame(mediaPlayer->position()));
-        }
-    });
-
-    //
     // Video zoom
     //
     auto videoZoomGroup = new QActionGroup(this);
@@ -202,72 +135,6 @@ MainWindow::MainWindow(QWidget *parent) :
             [this](const QPoint &pos) {
         previewContext->exec(ui.videoPreviewWidget->mapToGlobal(pos));
     });
-
-    //
-    // Video settings window
-    //
-    videoSettingsWindow = util::make_unique<vfg::ui::VideoSettingsWidget>();
-
-    // When video settings are changed update video
-    connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::settingsChanged,
-            [this]() {
-        // TODO: Should this check be somewhere else?
-        if(!videoSource->hasVideo()) {
-            QMessageBox::warning(this, tr("No video"), tr("This operation requires a video"));
-        }
-        else {
-            loadFile(config.value("last_opened").toString());
-        }
-    });
-
-    // Draw crop border on video preview when crop changes in video settings
-    connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::cropChanged,
-            ui.videoPreviewWidget,     &vfg::ui::VideoPreviewWidget::setCrop);
-
-    // Remove crop border on video preview when video settings is closed
-    connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::closed,
-            ui.videoPreviewWidget,     &vfg::ui::VideoPreviewWidget::resetCrop);
-
-    //
-    // Script editor
-    //
-    scriptEditor = util::make_unique<vfg::ui::ScriptEditor>();
-
-    // Update video when script is changed
-    connect(scriptEditor.get(), &vfg::ui::ScriptEditor::scriptUpdated, [this]() {
-        loadFile(scriptEditor->path());
-    });
-
-    //
-    // DVD processor
-    //
-    dvdProcessor = util::make_unique<vfg::DvdProcessor>(config.value("dgindexexecpath").toString());
-
-    // When DVD processor finishes, hide dialog window and load the processed file
-    connect(dvdProcessor.get(), &vfg::DvdProcessor::finished, [this](const QString& filename) {
-        dvdProgress->accept();
-        loadFile(filename);
-    });
-
-    // When DVD processor emits an error, hide dialog window and show error
-    connect(dvdProcessor.get(), &vfg::DvdProcessor::error, [this](const QString &msg) {
-        dvdProgress->cancel();
-        QMessageBox::warning(this, tr("Video error"), msg);
-    });
-
-    // When DVD processor emits an update value, update the dialog window progress
-    connect(dvdProcessor.get(), &vfg::DvdProcessor::progressUpdate, [this](const int progress) {
-        dvdProgress->setValue(progress);
-    });
-
-    //
-    // DVD progress dialog
-    //
-    dvdProgress = util::make_unique<QProgressDialog>(tr("Processing DVD..."), tr("Abort"), 0, 100);
-
-    // When user wants to cancel DVD loading...
-    connect(dvdProgress.get(),  &QProgressDialog::canceled,
-            dvdProcessor.get(), &vfg::DvdProcessor::handleAbortProcess);
 
     // Update maximum value for progress bar
     connect(ui.unsavedWidget,      &vfg::ui::ThumbnailContainer::maximumChanged,
@@ -371,7 +238,10 @@ void MainWindow::closeEvent(QCloseEvent *ev)
         frameGrabberThread->wait();
     }
 
+    auto scriptEditor = getScriptEditor();
     scriptEditor->close();
+
+    auto videoSettingsWindow = getVideoSettingsWindow();
     videoSettingsWindow->close();
 
     ev->accept();
@@ -454,6 +324,8 @@ void MainWindow::buildRecentMenu()
 
 unsigned MainWindow::convertMsToFrame(const unsigned milliSecond) const
 {
+    assert(mediaPlayer);
+
     const auto duration = mediaPlayer->duration();
     const auto completed = static_cast<double>(milliSecond)/duration;
     return ui.totalFramesLabel->text().toInt() * completed;
@@ -467,6 +339,7 @@ void MainWindow::updateSeekSlider(const int value, const MainWindow::SeekSlider 
     ui.currentFrameLabel->setText(QString::number(value));
 
     if(update == SeekSlider::UpdateAll) {
+        auto mediaPlayer = getMediaPlayer();
         if(mediaPlayer->state() == QMediaPlayer::PlayingState) {
             mediaPlayer->setPosition(convertFrameToMs(value));
         }
@@ -491,8 +364,172 @@ vfg::ui::DownloadsDialog *MainWindow::getDownloadsWindow()
     return downloadsWindow.get();
 }
 
+vfg::ui::OpenDialog *MainWindow::getOpenDialog()
+{
+    if(!openDialog) {
+        openDialog = util::make_unique<vfg::ui::OpenDialog>();
+
+        // When user wants to open URL via open dialog, add it to downloads
+        connect(openDialog.get(), &vfg::ui::OpenDialog::openUrl, [this](const QNetworkRequest &req) {
+            auto downloadsWindow = getDownloadsWindow();
+            downloadsWindow->addDownload(req);
+            downloadsWindow->show();
+        });
+
+        // When user wants to load DVD/BR files, process them
+        connect(openDialog.get(),   &vfg::ui::OpenDialog::processDiscFiles,
+                this,               &MainWindow::processDiscFiles);
+    }
+
+    return openDialog.get();
+}
+
+vfg::ui::VideoSettingsWidget *MainWindow::getVideoSettingsWindow()
+{
+    if(!videoSettingsWindow) {
+        videoSettingsWindow = util::make_unique<vfg::ui::VideoSettingsWidget>();
+
+        // When video settings are changed update video
+        connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::settingsChanged,
+                [this]() {
+            // TODO: Should this check be somewhere else?
+            if(!videoSource->hasVideo()) {
+                QMessageBox::warning(this, tr("No video"), tr("This operation requires a video"));
+            }
+            else {
+                loadFile(config.value("last_opened").toString());
+            }
+        });
+
+        // Draw crop border on video preview when crop changes in video settings
+        connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::cropChanged,
+                ui.videoPreviewWidget,     &vfg::ui::VideoPreviewWidget::setCrop);
+
+        // Remove crop border on video preview when video settings is closed
+        connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::closed,
+                ui.videoPreviewWidget,     &vfg::ui::VideoPreviewWidget::resetCrop);
+    }
+
+    return videoSettingsWindow.get();
+}
+
+vfg::ui::ScriptEditor *MainWindow::getScriptEditor()
+{
+    if(!scriptEditor) {
+        scriptEditor = util::make_unique<vfg::ui::ScriptEditor>();
+
+        // Update video when script is changed
+        connect(scriptEditor.get(), &vfg::ui::ScriptEditor::scriptUpdated, [this]() {
+            loadFile(scriptEditor->path());
+        });
+    }
+
+    return scriptEditor.get();
+}
+
+QMediaPlayer *MainWindow::getMediaPlayer()
+{
+    if(!mediaPlayer) {
+        mediaPlayer = util::make_unique<QMediaPlayer>();
+        mediaPlayer->setVideoOutput(ui.videoPreviewWidget->videoWidget.get());
+        mediaPlayer->setVolume(ui.volumeSlider->value());
+
+        // Adjust video volume level when changing the volume slider
+        connect(ui.volumeSlider,   &QSlider::sliderMoved,
+                mediaPlayer.get(),  &QMediaPlayer::setVolume);
+
+        connect(mediaPlayer.get(), &QMediaPlayer::mediaStatusChanged,
+                [this](const QMediaPlayer::MediaStatus status) {
+            if(status == QMediaPlayer::BufferedMedia) {
+                // After play() has been called
+                // for the first time and video has buffered and starts playing...
+
+                ui.videoPreviewWidget->showVideo();
+                // Start playing from where the seek slider is
+                mediaPlayer->setPosition(convertFrameToMs(ui.seekSlider->value()));
+            }
+        });
+
+        // While video is playing the position of the video changes, so move the slider accordingly
+        connect(mediaPlayer.get(),  &QMediaPlayer::positionChanged,
+                [this](const qint64 position) {
+            updateSeekSlider(convertMsToFrame(position), SeekSlider::UpdateText);
+        });
+
+        connect(mediaPlayer.get(),  &QMediaPlayer::stateChanged,
+                [this](const QMediaPlayer::State state) {
+            if(state == QMediaPlayer::PlayingState) {
+                ui.buttonPlay->setIcon(QIcon(":/icon/pause2.png"));
+                if(mediaPlayer->mediaStatus() == QMediaPlayer::BufferedMedia) {
+                    // When calling play() for the first time the media player emits "playing" state
+                    // while the video is still buffering.
+                    // This check prevents the code below from running prematurely
+                    // so it only runs when play is called second, third, etc. time
+
+                    ui.videoPreviewWidget->showVideo();
+                    // Start playing from where the seek slider is
+                    mediaPlayer->setPosition(convertFrameToMs(ui.seekSlider->value()));
+                }
+            }
+            else {
+                ui.videoPreviewWidget->hideVideo();
+                ui.buttonPlay->setIcon(QIcon(":/icon/play.png"));
+                updateSeekSlider(convertMsToFrame(mediaPlayer->position()), SeekSlider::UpdateText);
+                frameGrabber->requestFrame(convertMsToFrame(mediaPlayer->position()));
+            }
+        });
+    }
+
+    return mediaPlayer.get();
+}
+
+vfg::DvdProcessor *MainWindow::getDvdProcessor()
+{
+    if(!dvdProcessor) {
+        dvdProcessor = util::make_unique<vfg::DvdProcessor>(config.value("dgindexexecpath").toString());
+
+        // When DVD processor finishes, hide dialog window and load the processed file
+        connect(dvdProcessor.get(), &vfg::DvdProcessor::finished, [this](const QString& filename) {
+            auto dvdProgress = getDvdProgress();
+            dvdProgress->accept();
+            loadFile(filename);
+        });
+
+        // When DVD processor emits an error, hide dialog window and show error
+        connect(dvdProcessor.get(), &vfg::DvdProcessor::error, [this](const QString &msg) {
+            auto dvdProgress = getDvdProgress();
+            dvdProgress->cancel();
+            QMessageBox::warning(this, tr("Video error"), msg);
+        });
+
+        // When DVD processor emits an update value, update the dialog window progress
+        connect(dvdProcessor.get(), &vfg::DvdProcessor::progressUpdate, [this](const int progress) {
+            auto dvdProgress = getDvdProgress();
+            dvdProgress->setValue(progress);
+        });
+    }
+
+    return dvdProcessor.get();
+}
+
+QProgressDialog *MainWindow::getDvdProgress()
+{
+    if(!dvdProgress) {
+        dvdProgress = util::make_unique<QProgressDialog>(tr("Processing DVD..."), tr("Abort"), 0, 100);
+
+        // When user wants to cancel DVD loading...
+        auto dvdProcessor = getDvdProcessor();
+        connect(dvdProgress.get(),  &QProgressDialog::canceled,
+                dvdProcessor, &vfg::DvdProcessor::handleAbortProcess);
+    }
+
+    return dvdProgress.get();
+}
+
 unsigned MainWindow::convertFrameToMs(const unsigned frameNumber) const
 {
+    assert(mediaPlayer);
+
     const auto totalFrames = ui.totalFramesLabel->text().toInt();
     const auto progress = static_cast<double>(frameNumber) / totalFrames;
     const auto videoTime = mediaPlayer->duration();
@@ -507,8 +544,10 @@ void MainWindow::resetUi()
         pauseFrameGenerator();
     }
 
+    auto videoSettingsWindow = getVideoSettingsWindow();
     videoSettingsWindow->resetSettings();
 
+    auto scriptEditor = getScriptEditor();
     scriptEditor->reset();
 
     ui.unsavedWidget->clearThumbnails();
@@ -537,6 +576,8 @@ void MainWindow::resetUi()
 
     ui.actionSave_as_PNG->setEnabled(false);
     ui.actionX264_Encoder->setEnabled(false);
+
+    ui.actionJump_to->setEnabled(false);
 }
 
 void MainWindow::setupInternal()
@@ -623,6 +664,7 @@ void MainWindow::loadFile(const QString& path)
             pauseFrameGenerator();
         }
 
+        auto mediaPlayer = getMediaPlayer();
         if(mediaPlayer->state() != QMediaPlayer::StoppedState) {
             mediaPlayer->stop();
         }
@@ -632,6 +674,7 @@ void MainWindow::loadFile(const QString& path)
         qCDebug(MAINWINDOW) << "Opening file" << info.absoluteFilePath();
         config.setValue("last_opened", info.absoluteFilePath());
 
+        auto videoSettingsWindow = getVideoSettingsWindow();
         QMap<QString, QVariant> videoSettings = videoSettingsWindow->getSettings();
         videoSettings.insert("avisynthpluginspath", config.value("avisynthpluginspath"));
 
@@ -666,6 +709,7 @@ void MainWindow::loadFile(const QString& path)
         const vfg::ScriptParser parser = videoSource->getParser(path);
         const QString parsedScript = parser.parse(videoSettings);
 
+        auto scriptEditor = getScriptEditor();
         scriptEditor->setContent(parsedScript);
         scriptEditor->save();
         const QString saveTo = scriptEditor->path();
@@ -695,6 +739,7 @@ void MainWindow::loadFile(const QString& path)
         QMessageBox::warning(this, tr("Error while loading file"),
                              QString(ex.what()));
 
+        auto scriptEditor = getScriptEditor();
         scriptEditor->show();
         scriptEditor->setWindowState(Qt::WindowActive);
     }
@@ -827,6 +872,7 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionOpen_DVD_triggered()
 {
+    auto openDialog = getOpenDialog();
     openDialog->setActiveTab(vfg::ui::OpenDialog::Tab::OpenDisc);
     openDialog->exec();
 }
@@ -863,15 +909,18 @@ void MainWindow::videoLoaded()
 
     ui.actionSave_as_PNG->setEnabled(true);
     ui.actionX264_Encoder->setEnabled(true);
+    ui.actionJump_to->setEnabled(true);
 
     frameGrabber->requestFrame(std::min(frameGrabber->lastFrame(),
                                         videoSource->getNumFrames() - 1));
 
     if(config.value("showscripteditor").toBool()) {
+        auto scriptEditor = getScriptEditor();
         scriptEditor->show();
     }
 
     if(config.value("showvideosettings").toBool()) {
+        auto videoSettingsWindow = getVideoSettingsWindow();
         videoSettingsWindow->show();
     }
 }
@@ -899,6 +948,7 @@ void MainWindow::on_seekSlider_sliderReleased()
     const auto frameNumber = ui.seekSlider->sliderPosition();
     ui.currentFrameLabel->setText(QString::number(frameNumber));
 
+    auto mediaPlayer = getMediaPlayer();
     if(mediaPlayer->state() == QMediaPlayer::PlayingState) {
         mediaPlayer->setPosition(convertFrameToMs(frameNumber));
     }
@@ -1088,6 +1138,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
 
 void MainWindow::on_actionAvisynth_Script_Editor_triggered()
 {
+    auto scriptEditor = getScriptEditor();
     scriptEditor->show();
     scriptEditor->setWindowState(Qt::WindowActive);
 }
@@ -1142,6 +1193,7 @@ void MainWindow::on_actionOptions_triggered()
     if(saved) {
         ui.unsavedWidget->setMaxThumbnails(config.value("maxthumbnails").toInt());
 
+        auto dvdProcessor = getDvdProcessor();
         dvdProcessor->setProcessor(config.value("dgindexexecpath").toString());
     }
 }
@@ -1212,6 +1264,7 @@ void MainWindow::on_btnStopGenerator_clicked()
 
 void MainWindow::on_actionVideo_Settings_triggered()
 {
+    auto videoSettingsWindow = getVideoSettingsWindow();
     videoSettingsWindow->hide();
     videoSettingsWindow->show();
     videoSettingsWindow->setWindowState(Qt::WindowActive);
@@ -1330,6 +1383,7 @@ void MainWindow::on_actionDebugOff_triggered(bool checked)
 
 void MainWindow::on_buttonPlay_clicked()
 {
+    auto mediaPlayer = getMediaPlayer();
     if(mediaPlayer->state() == QMediaPlayer::PlayingState) {
         mediaPlayer->pause();
     }
@@ -1345,11 +1399,13 @@ void MainWindow::on_playbackSpeed_currentIndexChanged(const QString &arg1)
                                               {"125%", 1.25}, {"150%", 1.5},
                                               {"175%", 1.75}, {"200%", 2.0}};
 
+    auto mediaPlayer = getMediaPlayer();
     mediaPlayer->setPlaybackRate(rates.value(arg1));
 }
 
 void MainWindow::on_actionOpen_URL_triggered()
 {
+    auto openDialog = getOpenDialog();
     openDialog->setActiveTab(vfg::ui::OpenDialog::Tab::OpenStream);
     openDialog->exec();
 }
@@ -1413,6 +1469,7 @@ void MainWindow::processDiscFiles(const QStringList& files)
         const QFileInfo outInfo(out);
         QString outputPath = outInfo.absoluteDir().absoluteFilePath(
                                     outInfo.completeBaseName());
+        auto dvdProcessor = getDvdProcessor();
         dvdProcessor->setOutputPath(std::move(outputPath));
     }
     else {
@@ -1422,12 +1479,14 @@ void MainWindow::processDiscFiles(const QStringList& files)
             QFile::remove("dgindex_tmp.d2v");
         }
 
+        auto dvdProcessor = getDvdProcessor();
         dvdProcessor->setOutputPath("dgindex_tmp");
     }
 
     // Reset all states back to zero
     resetUi();
 
+    auto dvdProgress = getDvdProgress();
     dvdProgress->setValue(0);
     dvdProgress->setVisible(true);
 
@@ -1435,6 +1494,7 @@ void MainWindow::processDiscFiles(const QStringList& files)
         dvdProgress->setLabelText(tr("Processing Blu-ray..."));
     }
 
+    auto dvdProcessor = getDvdProcessor();
     dvdProcessor->process(files);
 }
 

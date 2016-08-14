@@ -232,6 +232,18 @@ private:
 
     vfg::ui::DownloadsDialog *getDownloadsWindow();
 
+    vfg::ui::OpenDialog *getOpenDialog();
+
+    vfg::ui::VideoSettingsWidget *getVideoSettingsWindow();
+
+    vfg::ui::ScriptEditor *getScriptEditor();
+
+    QMediaPlayer *getMediaPlayer();
+
+    vfg::DvdProcessor *getDvdProcessor();
+
+    QProgressDialog *getDvdProgress();
+
 protected:
     void dragEnterEvent(QDragEnterEvent *ev) override;
     void dropEvent(QDropEvent *ev) override;

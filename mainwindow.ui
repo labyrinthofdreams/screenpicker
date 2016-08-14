@@ -983,6 +983,9 @@
    </property>
   </action>
   <action name="actionJump_to">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Jump to...</string>
    </property>
