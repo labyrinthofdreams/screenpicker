@@ -230,6 +230,8 @@ private:
      */
     void updateSeekSlider(int value, SeekSlider update);
 
+    vfg::ui::DownloadsDialog *getDownloadsWindow();
+
 protected:
     void dragEnterEvent(QDragEnterEvent *ev) override;
     void dropEvent(QDropEvent *ev) override;

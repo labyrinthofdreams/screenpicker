@@ -104,23 +104,13 @@ MainWindow::MainWindow(QWidget *parent) :
     buildRecentMenu();
 
     //
-    // Downloads window
-    //
-    downloadsWindow = util::make_unique<vfg::ui::DownloadsDialog>();
-
-    // When user requests to play file in downloads window, load it
-    connect(downloadsWindow.get(),  &vfg::ui::DownloadsDialog::play, [this](const QString &path) {
-        resetUi();
-        loadFile(path);
-    });
-
-    //
     // Open dialog
     //
     openDialog = util::make_unique<vfg::ui::OpenDialog>();
 
     // When user wants to open URL via open dialog, add it to downloads
     connect(openDialog.get(), &vfg::ui::OpenDialog::openUrl, [this](const QNetworkRequest &req) {
+        auto downloadsWindow = getDownloadsWindow();
         downloadsWindow->addDownload(req);
         downloadsWindow->show();
     });
@@ -484,6 +474,21 @@ void MainWindow::updateSeekSlider(const int value, const MainWindow::SeekSlider 
             frameGrabber->requestFrame(value);
         }
     }
+}
+
+vfg::ui::DownloadsDialog *MainWindow::getDownloadsWindow()
+{
+    if(!downloadsWindow) {
+        downloadsWindow = util::make_unique<vfg::ui::DownloadsDialog>();
+
+        // When user requests to play file in downloads window, load it
+        connect(downloadsWindow.get(),  &vfg::ui::DownloadsDialog::play, [this](const QString &path) {
+            resetUi();
+            loadFile(path);
+        });
+    }
+
+    return downloadsWindow.get();
 }
 
 unsigned MainWindow::convertFrameToMs(const unsigned frameNumber) const
@@ -1351,6 +1356,7 @@ void MainWindow::on_actionOpen_URL_triggered()
 
 void MainWindow::on_actionDownloads_triggered()
 {
+    auto downloadsWindow = getDownloadsWindow();
     downloadsWindow->show();
 }
 
