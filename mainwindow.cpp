@@ -168,15 +168,13 @@ MainWindow::MainWindow(QWidget *parent) :
             ui.unsavedProgressBar, &QProgressBar::setValue);
 
     // Move thumbnail from unsaved to saved
-    connect(ui.unsavedWidget,  &vfg::ui::ThumbnailContainer::moveThumbnail,
-            [this](vfg::ui::VideoFrameThumbnail *thumb) {
-        ui.savedWidget->addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail>(thumb));
+    connect(ui.unsavedWidget,  &vfg::ui::ThumbnailContainer::requestMove, [this]() {
+        ui.savedWidget->addThumbnail(ui.unsavedWidget->takeSelected());
     });
 
     // Move thumbnail from saved to unsaved
-    connect(ui.savedWidget,    &vfg::ui::ThumbnailContainer::moveThumbnail,
-            [this](vfg::ui::VideoFrameThumbnail *thumb) {
-        ui.unsavedWidget->addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail>(thumb));
+    connect(ui.savedWidget,    &vfg::ui::ThumbnailContainer::requestMove, [this]() {
+        ui.unsavedWidget->addThumbnail(ui.savedWidget->takeSelected());
     });
 
     // Handle double-click on saved screenshot

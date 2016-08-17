@@ -119,14 +119,7 @@ void ThumbnailContainer::showContextMenu(const QPoint &pos)
 
     QMenu menu;
     auto move = new QAction(tr("Move"), &menu);
-    connect(move, &QAction::triggered, [this]() {
-        auto thumb = takeSelected();
-        if(!thumb) {
-            return;
-        }
-        disconnect(thumb.get(), 0, 0, 0);
-        emit moveThumbnail(thumb.release());
-    });
+    connect(move, &QAction::triggered, this, &ThumbnailContainer::requestMove);
     menu.addAction(move);
     menu.exec(QCursor::pos());
 }
@@ -154,6 +147,8 @@ std::unique_ptr<vfg::ui::VideoFrameThumbnail> ThumbnailContainer::takeSelected()
     std::unique_ptr<QLayoutItem> item(layout->takeAt(widgetIndex));
     std::unique_ptr<vfg::ui::VideoFrameThumbnail> widget(
                 static_cast<vfg::ui::VideoFrameThumbnail*>(item->widget()));
+
+    disconnect(widget.get(), 0, 0, 0);
 
     emit countChanged(numThumbnails());
 

@@ -143,10 +143,9 @@ signals:
     void full();
 
     /**
-     * @brief Move thumbnail (receiver takes ownership)
-     * @param thumbnail
+     * @brief Request receiver to remove selected thumbnail
      */
-    void moveThumbnail(vfg::ui::VideoFrameThumbnail *thumbnail);
+    void requestMove();
 
     /**
      * @brief Emitted when a thumbnail is added/removed
