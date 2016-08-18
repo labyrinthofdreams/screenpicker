@@ -82,8 +82,8 @@ void ThumbnailContainer::clearThumbnails()
 
 void ThumbnailContainer::resizeThumbnails(const int width)
 {
-    for(util::observer_ptr<QLayoutItem> item : *layout) {
-        item->widget()->setFixedWidth(width);
+    for(auto &widget : *this) {
+        widget.setFixedWidth(width);
     }
 
     thumbnailWidth = width;

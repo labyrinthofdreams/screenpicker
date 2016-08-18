@@ -2,6 +2,7 @@
 #define THUMBNAILCONTAINER_H
 
 #include <cstddef>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <QWidget>
@@ -42,6 +43,27 @@ private:
 
     //! Thumbnail width in pixels (default: 200)
     int thumbnailWidth {200};
+
+public:
+    class iterator : public std::iterator<std::input_iterator_tag,
+                                          vfg::ui::VideoFrameThumbnail,
+                                          vfg::ui::VideoFrameThumbnail,
+                                          const vfg::ui::VideoFrameThumbnail*,
+                                          vfg::ui::VideoFrameThumbnail&> {
+    private:
+        int from;
+        ThumbnailContainer &cont;
+    public:
+        explicit iterator(const int index, ThumbnailContainer &_cont) : from(index), cont(_cont) {}
+        iterator& operator++() { ++from; return *this;}
+        iterator operator++(int) { iterator retval = *this; ++(*this); return retval; }
+        bool operator==(const iterator &other) const { return from == other.from;}
+        bool operator!=(const iterator &other) const {return !(*this == other);}
+        reference operator*() const { return *cont.at(from); }
+    };
+
+    iterator begin() { return iterator(0, *this); }
+    iterator end() { return iterator(numThumbnails(), *this); }
 
 public:
     /**
@@ -166,6 +188,14 @@ private slots:
      */
     void showContextMenu(const QPoint &pos);
 };
+
+inline ThumbnailContainer::iterator begin(ThumbnailContainer *&c) {
+    return c->begin();
+}
+
+inline ThumbnailContainer::iterator end(ThumbnailContainer *&c) {
+    return c->end();
+}
 
 } // namespace ui
 } // namespace vfg

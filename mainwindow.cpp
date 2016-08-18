@@ -1489,17 +1489,8 @@ void MainWindow::on_saveGridButton_clicked()
 {
     vfg::ui::SaveGridDialog dialog;
 
-    const auto numScreens = ui.savedWidget->numThumbnails();
-    for(auto idx = 0; idx < numScreens; ++idx) {
-        const util::observer_ptr<vfg::ui::VideoFrameThumbnail> widget = ui.savedWidget->at(idx);
-        if(!widget) {
-            continue;
-        }
-
-        const auto frameNum = widget->frameNum();
-        const QImage img = frameGrabber->getFrame(frameNum);
-
-        dialog.addPixmap(QPixmap::fromImage(img));
+    for(const auto &widget : ui.savedWidget) {
+        dialog.addPixmap(QPixmap::fromImage(frameGrabber->getFrame(widget.frameNum())));
     }
 
     dialog.exec();
