@@ -223,18 +223,8 @@ void MainWindow::closeEvent(QCloseEvent *ev)
         return;
     }
 
-    if(frameGeneratorThread->isRunning()) {
-        qCDebug(MAINWINDOW) << "Quitting frame generator + thread";
-        frameGenerator->stop();
-        frameGeneratorThread->quit();
-        frameGeneratorThread->wait();
-    }
-
-    if(frameGrabberThread->isRunning()) {
-        qCDebug(MAINWINDOW) << "Quitting frame grabber thread";
-        frameGrabberThread->quit();
-        frameGrabberThread->wait();
-    }
+    frameGeneratorThread->quit();
+    frameGrabberThread->quit();
 
     scriptEditor.reset();
     videoSettingsWindow.reset();
