@@ -236,11 +236,10 @@ void MainWindow::closeEvent(QCloseEvent *ev)
         frameGrabberThread->wait();
     }
 
-    auto scriptEditor = getScriptEditor();
-    scriptEditor->close();
-
-    auto videoSettingsWindow = getVideoSettingsWindow();
-    videoSettingsWindow->close();
+    scriptEditor.reset();
+    videoSettingsWindow.reset();
+    downloadsWindow.reset();
+    gifMaker.reset();
 
     ev->accept();
 }

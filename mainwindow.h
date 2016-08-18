@@ -138,22 +138,22 @@ private:
     std::shared_ptr<vfg::core::AbstractVideoSource> videoSource;
     std::shared_ptr<vfg::core::VideoFrameGrabber> frameGrabber;
     std::unique_ptr<vfg::core::VideoFrameGenerator> frameGenerator;
-    std::unique_ptr<vfg::ui::ScriptEditor> scriptEditor;
-    std::unique_ptr<vfg::ui::VideoSettingsWidget> videoSettingsWindow;
+
     std::unique_ptr<vfg::DvdProcessor> dvdProcessor;
 
     //! Current context menu for preview widget
     util::observer_ptr<QMenu> previewContext;
 
-    std::unique_ptr<vfg::ui::GifMakerWidget> gifMaker;
-
     //! Media player for video playback
     std::unique_ptr<QMediaPlayer> mediaPlayer;
 
-    //! Downloads window
+    //
+    // Windows
+    //
+    std::unique_ptr<vfg::ui::ScriptEditor> scriptEditor;
+    std::unique_ptr<vfg::ui::VideoSettingsWidget> videoSettingsWindow;
+    std::unique_ptr<vfg::ui::GifMakerWidget> gifMaker;
     std::unique_ptr<vfg::ui::DownloadsDialog> downloadsWindow;
-
-    //! Open dialog
     std::unique_ptr<vfg::ui::OpenDialog> openDialog;
 
     //! Application wide configuration settings
