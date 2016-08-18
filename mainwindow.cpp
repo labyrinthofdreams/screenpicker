@@ -1051,11 +1051,8 @@ void MainWindow::on_thumbnailSizeSlider_valueChanged(const int value)
 
 void MainWindow::on_saveThumbnailsButton_clicked()
 {
-    qCDebug(MAINWINDOW) << "Clicked save button";
-
     // Save saved images to disk
     if(ui.savedWidget->isEmpty()) {
-        qCWarning(MAINWINDOW) << "Nothing to save";
         QMessageBox::information(this, tr("Nothing to save"),
                                  tr("Add one or more screenshots to queue."));
         return;
@@ -1066,7 +1063,7 @@ void MainWindow::on_saveThumbnailsButton_clicked()
         pauseFrameGenerator();
     }
 
-    const QString lastSaveDirectory =
+    const auto lastSaveDirectory =
             QFileDialog::getExistingDirectory(this, tr("Select save directory"),
                                               config.value("last_save_dir", "/").toString());
     if(lastSaveDirectory.isEmpty()) {
@@ -1075,41 +1072,27 @@ void MainWindow::on_saveThumbnailsButton_clicked()
 
     config.setValue("last_save_dir", lastSaveDirectory);
 
-    const std::size_t numSaved = ui.savedWidget->numThumbnails();
-    const QDir saveDir(lastSaveDirectory);
+    const auto numSaved = ui.savedWidget->numThumbnails();
+    const QDir saveDir {lastSaveDirectory};
 
-    QProgressDialog prog("", "Cancel", 0, numSaved, this);
+    QProgressDialog prog {"", "Cancel", 0, numSaved, this};
     prog.setWindowModality(Qt::WindowModal);
     prog.setCancelButton(0);
     prog.setMinimumDuration(0);
-    for(std::size_t idx = 0; idx < numSaved; ++idx) {
-        const auto widget = ui.savedWidget->at(idx);
-        if(!widget) {
-            qCCritical(MAINWINDOW) << "Invalid widget";
-
-            break;
-        }
-
-        const int current = prog.value();
+    for(const auto &widget : ui.savedWidget) {
+        const auto current = prog.value();
         prog.setLabelText(tr("Saving image %1 of %2").arg(current).arg(numSaved));
         prog.setValue(current + 1);
         if(prog.wasCanceled()) {
-            qCCritical(MAINWINDOW) << "Aborted";
-
             QMessageBox::warning(this, tr("Saving thumbnails aborted"),
                                  tr("Saved %1 of %2 thumbnails").arg(current).arg(numSaved));
             break;
         }
 
-        const int frameNumber = widget->frameNum();
-        const QString filename = QString("%1.png").arg(QString::number(frameNumber));
-        const QString savePath = saveDir.absoluteFilePath(filename);
-        const QImage frame = frameGrabber->getFrame(frameNumber);
-        if(frame.isNull()) {
-            qCCritical(MAINWINDOW) << "Frame is null";
-            continue;
-        }
-
+        const auto frameNumber = widget.frameNum();
+        const auto filename = QString("%1.png").arg(QString::number(frameNumber));
+        const auto savePath = saveDir.absoluteFilePath(filename);
+        const auto frame = frameGrabber->getFrame(frameNumber);
         frame.save(savePath, "PNG");
     }
 
