@@ -974,31 +974,17 @@ void MainWindow::on_generateButton_clicked()
     }
 
     // Compute list of frame numbers to grab
-    const int selected_frame = ui.seekSlider->value();
-    const int frame_step = ui.frameStepSpinBox->value();
-    const int num_generate = ui.screenshotsSpinBox->value();
-    const int unlimited_screens = ui.cbUnlimitedScreens->isChecked();
-    const int total_video_frames = frameGrabber->totalFrames();
-    const int total_frame_range = frame_step * num_generate;
-    const int last_frame = selected_frame + total_frame_range;
+    const auto selectedFrame = ui.seekSlider->value();
+    const auto frameStep = ui.frameStepSpinBox->value();
+    const auto numToGenerate = ui.screenshotsSpinBox->value();
+    const auto totalFrames = frameGrabber->totalFrames();
+    const auto unlimited = ui.cbUnlimitedScreens->isChecked();
+    const auto lastFrame = unlimited ? totalFrames :
+                           std::min(selectedFrame + frameStep * numToGenerate, totalFrames);
     QList<int> queue;
-    for(int current_frame = selected_frame; ; current_frame += frame_step) {
-        if(!unlimited_screens) {
-            const bool reached_last_frame = current_frame >= last_frame;
-            // Only check for reaching last generated frame
-            // IF generating limited number of screenshots
-            if(reached_last_frame) {
-                break;
-            }
-        }
-
-        const bool reached_video_end = current_frame > total_video_frames;
-        // Always check for reaching last frame of the video
-        if(reached_video_end) {
-            break;
-        }
-
-        queue.append(current_frame);
+    for(auto currentFrame = selectedFrame; currentFrame <= lastFrame;
+            currentFrame += frameStep) {
+        queue.append(currentFrame);
     }
 
     frameGenerator->enqueue(queue);
@@ -1013,8 +999,7 @@ void MainWindow::on_generateButton_clicked()
     ui.generatorProgressBar->setMaximum(frameGenerator->remaining());
     ui.generatorProgressBar->setTextVisible(true);
 
-    QMetaObject::invokeMethod(frameGenerator.get(), "start",
-                              Qt::QueuedConnection);
+    QMetaObject::invokeMethod(frameGenerator.get(), "start", Qt::QueuedConnection);
 }
 
 void MainWindow::on_grabButton_clicked()
