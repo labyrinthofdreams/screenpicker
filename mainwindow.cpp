@@ -1311,32 +1311,20 @@ void MainWindow::resumeFrameGenerator()
 
 void MainWindow::on_actionSave_as_PNG_triggered()
 {
-    qCDebug(MAINWINDOW) << "Saving current as PNG";
-
     if(!frameGrabber->hasVideo()) {
-        qCCritical(MAINWINDOW) << "No video";
-
+        QMessageBox::critical(this, tr("No video"), tr("This operation requires video"));
         return;
     }
 
-    const int selected = ui.seekSlider->value();
-    const QDir saveDir(config.value("last_save_dir", "/").toString());
-    const auto saveName = QString("%1.png").arg(QString::number(selected));
-    const QString defaultSavePath = saveDir.absoluteFilePath(saveName);
-    const QString outFilename =
-            QFileDialog::getSaveFileName(this, tr("Save as..."),
-                                         defaultSavePath, tr("PNG (*.png)"));
-    const auto absOutPath = QFileInfo(outFilename).absoluteDir().absolutePath();
-    config.setValue("last_save_dir", absOutPath);
-
-    QImage frame = frameGrabber->getFrame(selected);
-    if(!frame.isNull()) {
-        frame.save(outFilename);
-    }
-    else {
-        qCWarning(MAINWINDOW) << "Frame is null";
-        QMessageBox::critical(this, tr("Invalid image"), tr("Invalid image format. Try again."));
-    }
+    const auto selected = ui.seekSlider->value();
+    const auto saveDir = QDir{config.value("last_save_dir", "/").toString()};
+    const auto saveName = QString{"%1.png"}.arg(QString::number(selected));
+    const auto defaultSavePath = saveDir.absoluteFilePath(saveName);
+    const auto outFilename = QFileDialog::getSaveFileName(this, tr("Save as..."),
+                                                          defaultSavePath, tr("PNG (*.png)"));
+    config.setValue("last_save_dir", QFileInfo{outFilename}.absoluteDir().absolutePath());
+    const auto frame = frameGrabber->getFrame(selected);
+    frame.save(outFilename);
 }
 
 void MainWindow::on_actionX264_Encoder_triggered()
