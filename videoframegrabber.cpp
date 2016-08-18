@@ -43,8 +43,6 @@ void VideoFrameGrabber::setVideoSource(
         throw std::runtime_error("Video source must be a valid object");
     }
 
-    qCDebug(GRABBER) << "Set video source";
-
     disconnect(avs.get(), 0);
     avs = std::move(newAvs);
     currentFrame = 0;
@@ -68,8 +66,6 @@ void VideoFrameGrabber::requestFrame(const int frameNum)
         return;
     }
 
-    qCDebug(GRABBER) << "Request frame" << frameNum << "from" << QThread::currentThreadId();
-
     currentFrame = frameNum;
     emit frameGrabbed(frameNum, avs->getFrame(frameNum));
 }
@@ -85,8 +81,6 @@ void VideoFrameGrabber::requestNextFrame()
         return;
     }
 
-    qCDebug(GRABBER) << "Requesting next frame" << nextFrame << "of" << avs->getNumFrames();
-
     ++currentFrame;
     emit frameGrabbed(nextFrame, avs->getFrame(nextFrame));
 }
@@ -101,8 +95,6 @@ void VideoFrameGrabber::requestPreviousFrame()
         return;
     }
 
-    qCDebug(GRABBER) << "Requesting previous frame" << currentFrame - 1;
-
     --currentFrame;
     emit frameGrabbed(currentFrame, avs->getFrame(currentFrame));
 }
@@ -110,8 +102,6 @@ void VideoFrameGrabber::requestPreviousFrame()
 QImage VideoFrameGrabber::getFrame(const int frameNum)
 {
     QMutexLocker ml(&mutex);
-
-    qCDebug(GRABBER) << "Get frame" << frameNum;
 
     if(!avs->isValidFrame(frameNum)) {
         qCCritical(GRABBER) << "Frame out of range:" << frameNum << "(" << avs->getNumFrames() << ")";

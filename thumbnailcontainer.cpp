@@ -41,11 +41,7 @@ void ThumbnailContainer::removeFirst()
 
 void ThumbnailContainer::addThumbnail(std::unique_ptr<vfg::ui::VideoFrameThumbnail> thumbnail)
 {
-    qCDebug(CONTAINER) << "Adding thumbnail to container";
-
     if(!thumbnail) {
-        qCCritical(CONTAINER) << "Invalid thumbnail while adding";
-
         return;
     }
 
