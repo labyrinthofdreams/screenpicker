@@ -1022,15 +1022,8 @@ void MainWindow::on_grabButton_clicked()
     qCDebug(MAINWINDOW) << "Clicked grab button";
 
     const int selectedFrame = ui.seekSlider->value();
-    const QImage frame = frameGrabber->getFrame(selectedFrame);
-    if(frame.isNull()) {
-        qCCritical(MAINWINDOW) << "Frame is null";
-        QMessageBox::critical(this, tr("Invalid image"), tr("Invalid image format. Try again."));
-        return;
-    }
-
-    ui.savedWidget->addThumbnail(util::make_unique<vfg::ui::VideoFrameThumbnail>(selectedFrame, frame));
-
+    ui.savedWidget->addThumbnail(util::make_unique<vfg::ui::VideoFrameThumbnail>(selectedFrame,
+                                                                                 frameGrabber->getFrame(selectedFrame)));
     statusBar()->showMessage(tr("Grabbed frame #%1").arg(selectedFrame), 3000);
 }
 
