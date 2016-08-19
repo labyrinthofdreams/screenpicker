@@ -614,29 +614,15 @@ void MainWindow::setupInternal()
         ui.generatorProgressBar->setValue(ui.generatorProgressBar->value() + 1);
     });
 
-    if(!frameGrabberThread) {
-        qCDebug(MAINWINDOW) << "Creating frame grabber thread";
-        frameGrabberThread = util::make_unique<QThread>();
-    }
-
-    if(frameGrabberThread->isRunning()) {
-        qCDebug(MAINWINDOW) << "Quitting frame grabber thread";
-        frameGrabberThread->quit();
-    }
+    qCDebug(MAINWINDOW) << "Creating frame grabber thread";
+    frameGrabberThread = util::make_unique<QThread>();
 
     qCDebug(MAINWINDOW) << "Starting frame grabber thread";
     frameGrabber->moveToThread(frameGrabberThread.get());
     frameGrabberThread->start();
 
-    if(!frameGeneratorThread) {
-        qCDebug(MAINWINDOW) << "Creating frame generator thread";
-        frameGeneratorThread = util::make_unique<QThread>();
-    }
-
-    if(frameGeneratorThread->isRunning()) {
-        qCDebug(MAINWINDOW) << "Quitting frame generator thread";
-        frameGeneratorThread->quit();
-    }
+    qCDebug(MAINWINDOW) << "Creating frame generator thread";
+    frameGeneratorThread = util::make_unique<QThread>();
 
     qCDebug(MAINWINDOW) << "Starting frame generator thread";
     frameGenerator->moveToThread(frameGeneratorThread.get());
