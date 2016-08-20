@@ -90,6 +90,12 @@ void VideoSettingsWidget::on_pushButton_clicked()
         ui.btnRevertCrop->setEnabled(true);
     }
 
+    config.setValue("video/crop", QRect(crop.left, crop.top, crop.right, crop.bottom));
+    config.setValue("video/resize", QSize(ui.sboxResizeWidth->value(),
+                                          ui.sboxResizeHeight->value()));
+    config.setValue("video/deinterlace", ui.radioDeinterlace->isChecked());
+    config.setValue("video/ivtc", ui.radioInverseTelecine->isChecked());
+
     emit settingsChanged();
 }
 
@@ -167,6 +173,15 @@ void VideoSettingsWidget::resetSettings()
     ui.sboxResizeHeight->setValue(sourceHeight);
 }
 
+void VideoSettingsWidget::refresh()
+{
+    const QSize videoRes = config.value("video/resolution").toSize();
+    sourceWidth = videoRes.width();
+    sourceHeight = videoRes.height();
+    ui.sboxResizeWidth->setValue(sourceWidth);
+    ui.sboxResizeHeight->setValue(sourceHeight);
+}
+
 void VideoSettingsWidget::on_btnRevertCrop_clicked()
 {
     ui.sboxCropBottom->setValue(crop.bottom);
@@ -175,6 +190,12 @@ void VideoSettingsWidget::on_btnRevertCrop_clicked()
     ui.sboxCropTop->setValue(crop.top);
 
     crop = {};
+
+    config.setValue("video/crop", QRect(crop.left, crop.top, crop.right, crop.bottom));
+    config.setValue("video/resize", QSize(ui.sboxResizeWidth->value(),
+                                          ui.sboxResizeHeight->value()));
+    config.setValue("video/deinterlace", ui.radioDeinterlace->isChecked());
+    config.setValue("video/ivtc", ui.radioInverseTelecine->isChecked());
 
     emit settingsChanged();
 }

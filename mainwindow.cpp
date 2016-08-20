@@ -531,6 +531,9 @@ void MainWindow::resetUi()
         pauseFrameGenerator();
     }
 
+    // Prevent loading old settings when loading new video
+    config.remove("video");
+
     auto videoSettingsWindow = getVideoSettingsWindow();
     videoSettingsWindow->resetSettings();
 
@@ -642,42 +645,26 @@ void MainWindow::loadFile(const QString& path)
             mediaPlayer->stop();
         }
 
-        const QFileInfo info(path);
+        const QFileInfo info {path};
 
         qCDebug(MAINWINDOW) << "Opening file" << info.absoluteFilePath();
         config.setValue("last_opened", info.absoluteFilePath());
 
-        auto videoSettingsWindow = getVideoSettingsWindow();
-        QMap<QString, QVariant> videoSettings = videoSettingsWindow->getSettings();
+        QMap<QString, QVariant> videoSettings;
+        videoSettings.insert("resize", config.value("video/resize", QSize{}));
+        videoSettings.insert("crop", config.value("video/crop", QRect{}));
+        videoSettings.insert("deinterlace", config.value("video/deinterlace", false));
+        videoSettings.insert("ivtc", config.value("video/ivtc", false));
         videoSettings.insert("avisynthpluginspath", config.value("avisynthpluginspath"));
 
-        // Only overwrite values in video settings if
-        // they've not been set explicitly by the user
-        const bool overrideWidth = (videoSettings.value("resizewidth") == 0);
-        if(overrideWidth) {
-            qCDebug(MAINWINDOW) << "Overriding video width";
-            const int width = getMediaInfoParameter(info.absoluteFilePath(), "Video;%Width%").toInt();
-            if(width != 0) {
-                const double par = getMediaInfoParameter(info.absoluteFilePath(), "Video;%PixelAspectRatio%").toDouble();
-                const int parWidth = par * width;
-                qCDebug(MAINWINDOW) << "Original:" << width << "Par:" << par << "Width:" << parWidth;
-                const int newWidth = ((parWidth % 2 == 0) ? parWidth : parWidth + 1);
-                videoSettings.insert("resizewidth", newWidth);
-            }
+        // When loading video for the first time we must
+        // override the resize values since they're 0
+        const QSize resize = videoSettings.value("resize").toSize();
+        if(resize.width() < 1 && resize.height() < 1) {
+            const auto width = getMediaInfoParameter(info.absoluteFilePath(), "Video;%Width%").toInt();
+            const auto height = getMediaInfoParameter(info.absoluteFilePath(), "Video;%Height%").toInt();
+            videoSettings.insert("resize", QSize{width, height});
         }
-
-        const bool overrideHeight = (videoSettings.value("resizeheight") == 0);
-        if(overrideHeight) {
-            qCDebug(MAINWINDOW) << "Overriding video height";
-            const int height = getMediaInfoParameter(info.absoluteFilePath(), "Video;%Height%").toInt();
-            if(height != 0) {
-                qCDebug(MAINWINDOW) << "Height:" << height;
-                const int newHeight = (height % 2 == 0) ? height : height + 1;
-                videoSettings.insert("resizeheight", newHeight);
-            }
-        }
-
-        qCDebug(MAINWINDOW) << "Parsing script template";
 
         const vfg::ScriptParser parser = videoSource->getParser(path);
         const QString parsedScript = parser.parse(videoSettings);
@@ -689,12 +676,7 @@ void MainWindow::loadFile(const QString& path)
 
         // Attempt to load the (parsed) Avisynth script
         qCDebug(MAINWINDOW) << "Loading file" << saveTo;
-        videoSource->load(saveTo);
-
-        mediaPlayer->setMedia(QUrl::fromLocalFile(saveTo));
-
-        // FIXME: Reset won't work here because it will override our resized arguments
-        videoSettingsWindow->resetSettings();
+        videoSource->load(saveTo);        
     }
     catch(const vfg::ScriptParserError& ex)
     {
@@ -857,12 +839,17 @@ void MainWindow::videoLoaded()
     setWindowTitle(config.value("last_opened").toString());
     appendRecentMenu(config.value("last_opened").toString());
 
-    config.setValue("last_opened_script", videoSource->fileName());
-
-    const QSize resolution = frameGrabber->resolution();
-    ui.labelVideoResolution->setText(QString("[%1x%2]").arg(resolution.width())
-                                      .arg(resolution.height()));
+    const auto resolution = videoSource->resolution();
     config.setValue("video/resolution", resolution);
+    ui.labelVideoResolution->setText(QString{"[%1x%2]"}
+                                     .arg(resolution.width()).arg(resolution.height()));
+    auto videoSettingsWindow = getVideoSettingsWindow();
+    videoSettingsWindow->refresh();
+
+    auto mediaPlayer = getMediaPlayer();
+    mediaPlayer->setMedia(QUrl::fromLocalFile(videoSource->fileName()));
+
+    config.setValue("last_opened_script", videoSource->fileName());
 
     ui.menuCreateGIFImage->setEnabled(true);
     ui.actionSetEndFrame->setEnabled(false);

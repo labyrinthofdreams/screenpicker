@@ -37,15 +37,14 @@ public:
     explicit VideoSettingsWidget(QWidget *parent = 0);
 
     /**
-     * @brief Retrieve current settings
-     * @return Settings as a map
-     */
-    QMap<QString, QVariant> getSettings() const;
-
-    /**
      * @brief Reset all settings to default values
      */
     void resetSettings();
+
+    /**
+     * @brief Refresh values
+     */
+    void refresh();
     
 private slots:
     /**
@@ -119,6 +118,12 @@ private:
         PAL_16_9,   //!< PAL 16:9
         PAL_4_3,    //!< PAL 4:3
     };
+
+    /**
+     * @brief Retrieve current settings
+     * @return Settings as a map
+     */
+    QMap<QString, QVariant> getSettings() const;
 
 protected:
     void showEvent(QShowEvent *event);

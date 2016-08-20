@@ -2,7 +2,9 @@
 #include <sstream>
 #include <QFile>
 #include <QMap>
+#include <QRect>
 #include <QSettings>
+#include <QSize>
 #include <QString>
 #include <QTextStream>
 #include <QVariant>
@@ -52,19 +54,19 @@ QString ScriptParser::parse(const QMap<QString, QVariant>& settings) const try
         data["deinterlace"] = make_data("true");
     }
 
-    const int resizeWidth = settings.value("resizewidth", 0).toInt();
-    const int resizeHeight = settings.value("resizeheight", 0).toInt();
-    if(resizeWidth || resizeHeight) {
+    const QSize resized = settings.value("resize").toSize();
+    if(resized.width() || resized.height()) {
         templet::DataMap resize;
-        resize["width"] = make_data(resizeWidth);
-        resize["height"] = make_data(resizeHeight);
+        resize["width"] = make_data(resized.width());
+        resize["height"] = make_data(resized.height());
         data["resize"] = make_data(resize);
     }
 
-    const int cropTop = settings.value("croptop", 0).toInt();
-    const int cropRight = settings.value("cropright", 0).toInt();
-    const int cropBottom = settings.value("cropbottom", 0).toInt();
-    const int cropLeft = settings.value("cropleft", 0).toInt();
+    const QRect crop = settings.value("crop").toRect();
+    const auto cropTop = crop.y();
+    const auto cropRight = crop.width();
+    const auto cropBottom = crop.height();
+    const auto cropLeft = crop.x();
     if(cropTop || cropRight || cropBottom || cropLeft) {
         templet::DataMap crop;
         crop["top"] = make_data(cropTop);
