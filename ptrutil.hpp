@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include <utility>
 #include <memory>
 
-namespace util {
+namespace vfg {
 
 /**
  * @brief The observer_ptr class wraps a raw pointer
@@ -128,6 +128,6 @@ std::unique_ptr<T> make_unique(Args&&... args)
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
-} // namespace util
+} // namespace vfg
 
 #endif

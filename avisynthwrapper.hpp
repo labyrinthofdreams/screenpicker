@@ -82,7 +82,7 @@ class AvisynthWrapper
 {
 private:
     avs_hnd_t avsHandle {};
-    util::observer_ptr<const AVS_VideoInfo> info {};
+    vfg::observer_ptr<const AVS_VideoInfo> info {};
     std::string openFilePath {};
 
 public:

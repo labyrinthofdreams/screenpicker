@@ -44,10 +44,10 @@ private:
     QVector<QRect> cropBorders {};
 
     //! Layout to hold the preview frame
-    util::observer_ptr<QVBoxLayout> layout;
+    vfg::observer_ptr<QVBoxLayout> layout;
 
     //! The label contains the frame
-    util::observer_ptr<QLabel> frameLabel;
+    vfg::observer_ptr<QLabel> frameLabel;
 
     //! Modifiable copy of the frame that is displayed in the widget
     QPixmap framePixmap {};
@@ -91,7 +91,7 @@ public:
     explicit VideoPreviewWidget(QWidget *parent = 0);
 
     //! Widget that displays video
-    util::observer_ptr<QVideoWidget> videoWidget;
+    vfg::observer_ptr<QVideoWidget> videoWidget;
 
     /**
      * @brief Displays video widget and hides frame

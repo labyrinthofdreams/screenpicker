@@ -142,7 +142,7 @@ private:
     std::unique_ptr<vfg::DvdProcessor> dvdProcessor;
 
     //! Current context menu for preview widget
-    util::observer_ptr<QMenu> previewContext;
+    vfg::observer_ptr<QMenu> previewContext;
 
     //! Media player for video playback
     std::unique_ptr<QMediaPlayer> mediaPlayer;

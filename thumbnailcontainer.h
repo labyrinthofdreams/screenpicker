@@ -33,10 +33,10 @@ class ThumbnailContainer : public QWidget
 
 private:
     //! Widgets are stored in a FlowLayout
-    util::observer_ptr<FlowLayout> layout;
+    vfg::observer_ptr<FlowLayout> layout;
 
     //! Selected widget in the container
-    util::observer_ptr<vfg::ui::VideoFrameThumbnail> activeWidget {};
+    vfg::observer_ptr<vfg::ui::VideoFrameThumbnail> activeWidget {};
 
     //! Number of thumbnails allowed in the container
     int maxThumbnails {std::numeric_limits<int>::max()};
@@ -133,7 +133,7 @@ public:
      * @param idx Position to get item from (last is zero)
      * @return Observer pointer to the VideoFrameThumbnail widget, or nullptr
      */
-    util::observer_ptr<vfg::ui::VideoFrameThumbnail> at(int idx) const;
+    vfg::observer_ptr<vfg::ui::VideoFrameThumbnail> at(int idx) const;
 
     /**
      * @brief Removes the oldest thumbnail from the container

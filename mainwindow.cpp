@@ -339,7 +339,7 @@ void MainWindow::updateSeekSlider(const int value, const MainWindow::SeekSlider 
 vfg::ui::DownloadsDialog *MainWindow::getDownloadsWindow()
 {
     if(!downloadsWindow) {
-        downloadsWindow = util::make_unique<vfg::ui::DownloadsDialog>();
+        downloadsWindow = vfg::make_unique<vfg::ui::DownloadsDialog>();
 
         // When user requests to play file in downloads window, load it
         connect(downloadsWindow.get(),  &vfg::ui::DownloadsDialog::play, [this](const QString &path) {
@@ -354,7 +354,7 @@ vfg::ui::DownloadsDialog *MainWindow::getDownloadsWindow()
 vfg::ui::OpenDialog *MainWindow::getOpenDialog()
 {
     if(!openDialog) {
-        openDialog = util::make_unique<vfg::ui::OpenDialog>();
+        openDialog = vfg::make_unique<vfg::ui::OpenDialog>();
 
         // When user wants to open URL via open dialog, add it to downloads
         connect(openDialog.get(), &vfg::ui::OpenDialog::openUrl, [this](const QNetworkRequest &req) {
@@ -374,7 +374,7 @@ vfg::ui::OpenDialog *MainWindow::getOpenDialog()
 vfg::ui::VideoSettingsWidget *MainWindow::getVideoSettingsWindow()
 {
     if(!videoSettingsWindow) {
-        videoSettingsWindow = util::make_unique<vfg::ui::VideoSettingsWidget>();
+        videoSettingsWindow = vfg::make_unique<vfg::ui::VideoSettingsWidget>();
 
         // When video settings are changed update video
         connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::settingsChanged,
@@ -399,7 +399,7 @@ vfg::ui::VideoSettingsWidget *MainWindow::getVideoSettingsWindow()
 vfg::ui::ScriptEditor *MainWindow::getScriptEditor()
 {
     if(!scriptEditor) {
-        scriptEditor = util::make_unique<vfg::ui::ScriptEditor>();
+        scriptEditor = vfg::make_unique<vfg::ui::ScriptEditor>();
 
         // Update video when script is changed
         connect(scriptEditor.get(), &vfg::ui::ScriptEditor::scriptUpdated, [this]() {
@@ -413,7 +413,7 @@ vfg::ui::ScriptEditor *MainWindow::getScriptEditor()
 QMediaPlayer *MainWindow::getMediaPlayer()
 {
     if(!mediaPlayer) {
-        mediaPlayer = util::make_unique<QMediaPlayer>();
+        mediaPlayer = vfg::make_unique<QMediaPlayer>();
         mediaPlayer->setVideoOutput(ui.videoPreviewWidget->videoWidget.get());
         mediaPlayer->setVolume(ui.volumeSlider->value());
 
@@ -469,7 +469,7 @@ QMediaPlayer *MainWindow::getMediaPlayer()
 vfg::DvdProcessor *MainWindow::getDvdProcessor()
 {
     if(!dvdProcessor) {
-        dvdProcessor = util::make_unique<vfg::DvdProcessor>(config.value("dgindexexecpath").toString());
+        dvdProcessor = vfg::make_unique<vfg::DvdProcessor>(config.value("dgindexexecpath").toString());
 
         // When DVD processor finishes, hide dialog window and load the processed file
         connect(dvdProcessor.get(), &vfg::DvdProcessor::finished, [this](const QString& filename) {
@@ -498,7 +498,7 @@ vfg::DvdProcessor *MainWindow::getDvdProcessor()
 QProgressDialog *MainWindow::getDvdProgress()
 {
     if(!dvdProgress) {
-        dvdProgress = util::make_unique<QProgressDialog>(tr("Processing DVD..."), tr("Abort"), 0, 100);
+        dvdProgress = vfg::make_unique<QProgressDialog>(tr("Processing DVD..."), tr("Abort"), 0, 100);
 
         // When user wants to cancel DVD loading...
         auto dvdProcessor = getDvdProcessor();
@@ -590,7 +590,7 @@ void MainWindow::setupInternal()
             ui.videoPreviewWidget, static_cast<void(vfg::ui::VideoPreviewWidget::*)(int, const QImage&)>(&vfg::ui::VideoPreviewWidget::setFrame),
             Qt::QueuedConnection);
 
-    frameGenerator = util::make_unique<vfg::core::VideoFrameGenerator>(frameGrabber);
+    frameGenerator = vfg::make_unique<vfg::core::VideoFrameGenerator>(frameGrabber);
 
     // When frame generator finishes, update UI, and conditionally go to last generated frame
     connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::finished, this, [this]() {
@@ -609,19 +609,19 @@ void MainWindow::setupInternal()
     connect(frameGenerator.get(),   &vfg::core::VideoFrameGenerator::frameReady,
             this, [this](const int frameNum, const QImage& frame) {
         config.setValue("last_received_frame", frameNum);
-        ui.unsavedWidget->addThumbnail(util::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, frame));
+        ui.unsavedWidget->addThumbnail(vfg::make_unique<vfg::ui::VideoFrameThumbnail>(frameNum, frame));
         ui.generatorProgressBar->setValue(ui.generatorProgressBar->value() + 1);
     });
 
     qCDebug(MAINWINDOW) << "Creating frame grabber thread";
-    frameGrabberThread = util::make_unique<QThread>();
+    frameGrabberThread = vfg::make_unique<QThread>();
 
     qCDebug(MAINWINDOW) << "Starting frame grabber thread";
     frameGrabber->moveToThread(frameGrabberThread.get());
     frameGrabberThread->start();
 
     qCDebug(MAINWINDOW) << "Creating frame generator thread";
-    frameGeneratorThread = util::make_unique<QThread>();
+    frameGeneratorThread = vfg::make_unique<QThread>();
 
     qCDebug(MAINWINDOW) << "Starting frame generator thread";
     frameGenerator->moveToThread(frameGeneratorThread.get());
@@ -976,7 +976,7 @@ void MainWindow::on_grabButton_clicked()
     qCDebug(MAINWINDOW) << "Clicked grab button";
 
     const int selectedFrame = ui.seekSlider->value();
-    ui.savedWidget->addThumbnail(util::make_unique<vfg::ui::VideoFrameThumbnail>(selectedFrame,
+    ui.savedWidget->addThumbnail(vfg::make_unique<vfg::ui::VideoFrameThumbnail>(selectedFrame,
                                                                                  frameGrabber->getFrame(selectedFrame)));
     statusBar()->showMessage(tr("Grabbed frame #%1").arg(selectedFrame), 3000);
 }
@@ -1199,7 +1199,7 @@ void MainWindow::activateGifMaker()
     ui.actionSetStartFrame->setEnabled(true);
 
     if(!gifMaker) {
-        gifMaker = util::make_unique<vfg::ui::GifMakerWidget>();
+        gifMaker = vfg::make_unique<vfg::ui::GifMakerWidget>();
         connect(gifMaker.get(), &vfg::ui::GifMakerWidget::requestPreview,
                 this,           &MainWindow::displayGifPreview);
     }

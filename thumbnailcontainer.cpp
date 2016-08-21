@@ -173,7 +173,7 @@ bool ThumbnailContainer::isEmpty() const
     return layout->isEmpty();
 }
 
-util::observer_ptr<vfg::ui::VideoFrameThumbnail>
+vfg::observer_ptr<vfg::ui::VideoFrameThumbnail>
 ThumbnailContainer::at(const int idx) const
 {
     if(idx < 0 || idx >= layout->count()) {
@@ -182,7 +182,7 @@ ThumbnailContainer::at(const int idx) const
         return {};
     }
 
-    util::observer_ptr<QLayoutItem> item = layout->itemAt(idx);
+    vfg::observer_ptr<QLayoutItem> item = layout->itemAt(idx);
 
     return static_cast<vfg::ui::VideoFrameThumbnail*>(item->widget());
 }

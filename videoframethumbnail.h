@@ -47,7 +47,7 @@ public:
     int frameNum() const;
 
 private:
-    util::observer_ptr<QLabel> pixmapLabel;
+    vfg::observer_ptr<QLabel> pixmapLabel;
     QPixmap thumb;
     const int frameNumber;
 

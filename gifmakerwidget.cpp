@@ -66,7 +66,7 @@ void GifMakerWidget::showPreview(const QString& path)
         ui.checkBoxCompare->setChecked(false);
     }
 
-    preview = util::make_unique<QMovie>(path);
+    preview = vfg::make_unique<QMovie>(path);
     preview->setCacheMode(QMovie::CacheAll);
     ui.labelPreview->setMovie(preview.get());
     preview->start();

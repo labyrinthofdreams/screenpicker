@@ -11,7 +11,7 @@ namespace vfg {
 DvdProcessor::DvdProcessor(const QString &processorPath, QObject *parent) :
     QObject(parent),
     processor(processorPath),
-    proc(util::make_unique<QProcess>())
+    proc(vfg::make_unique<QProcess>())
 {
     connect(proc.get(), &QProcess::readyReadStandardOutput,
             this,       &DvdProcessor::updateDialog);
