@@ -140,11 +140,6 @@ signals:
      * @param area Area to crop
      */
     void cropChanged(const QRect& area);
-
-    /**
-     * @brief Signal window close event
-     */
-    void closed();
 };
 
 } // namespace ui

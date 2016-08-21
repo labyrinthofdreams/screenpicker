@@ -132,7 +132,7 @@ void VideoSettingsWidget::closeEvent(QCloseEvent *event)
     ui.radioInverseTelecine->setChecked(prevSettings.value("ivtc").toBool());
     ui.cboxDvdResolution->setCurrentIndex(prevSettings.value("dvdresolutionidx").toInt());
 
-    emit closed();
+    emit cropChanged({});
 
     event->accept();
 }

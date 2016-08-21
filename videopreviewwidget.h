@@ -135,11 +135,6 @@ public slots:
      * @param area Area to crop
      */
     void setCrop(const QRect& area);
-
-    /**
-     * @brief Resets the areas to crop
-     */
-    void resetCrop();
 };
 
 } // namespace ui

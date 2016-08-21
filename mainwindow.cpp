@@ -391,10 +391,6 @@ vfg::ui::VideoSettingsWidget *MainWindow::getVideoSettingsWindow()
         // Draw crop border on video preview when crop changes in video settings
         connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::cropChanged,
                 ui.videoPreviewWidget,     &vfg::ui::VideoPreviewWidget::setCrop);
-
-        // Remove crop border on video preview when video settings is closed
-        connect(videoSettingsWindow.get(),  &vfg::ui::VideoSettingsWidget::closed,
-                ui.videoPreviewWidget,     &vfg::ui::VideoPreviewWidget::resetCrop);
     }
 
     return videoSettingsWindow.get();

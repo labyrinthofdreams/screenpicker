@@ -80,24 +80,23 @@ void vfg::ui::VideoPreviewWidget::setFrame(const int frameNum, const QImage& fra
 
 void vfg::ui::VideoPreviewWidget::setCrop(const QRect& area)
 {
-    const QRect left(0, 0, area.left(), framePixmap.height());
-    const QRect top(0, 0, framePixmap.width(), area.top());
-    const QRect right(framePixmap.width() - area.width(), 0,
-                        area.width(), framePixmap.height());
-    const QRect bottom(0, framePixmap.height() - area.height(),
-                        framePixmap.width(), area.height());
-
-    QVector<QRect> newBorders {left, top, right, bottom};
-    cropBorders.swap(newBorders);
+    if(area == QRect{}) {
+        framePixmap = original.copy();
+        cropBorders.clear();
+    }
+    else {
+        const QRect left(0, 0, area.left(), framePixmap.height());
+        const QRect top(0, 0, framePixmap.width(), area.top());
+        const QRect right(framePixmap.width() - area.width(), 0,
+                            area.width(), framePixmap.height());
+        const QRect bottom(0, framePixmap.height() - area.height(),
+                            framePixmap.width(), area.height());
+        QVector<QRect> newBorders {left, top, right, bottom};
+        cropBorders.swap(newBorders);
+    }
 
     updateFrame();
-}
 
-void vfg::ui::VideoPreviewWidget::resetCrop()
-{
-    framePixmap = original.copy();
-    cropBorders.clear();
-    updateFrame();
     // Prevent widget from disappearing
     adjustSize();
 }
