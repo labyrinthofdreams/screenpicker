@@ -37,6 +37,8 @@ ProgressBarDelegate::ProgressBarDelegate(QObject *parent) :
 void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                                 const QModelIndex &index) const
 {
+    QStyledItemDelegate::paint(painter, option, index);
+
     auto rect = [&option](const int left, const int top, const int width = -1, const int height = -1){
         return option.rect.adjusted(left, top, width, height);
     };
