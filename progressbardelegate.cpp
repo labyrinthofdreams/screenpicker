@@ -43,11 +43,8 @@ void ProgressBarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
         return option.rect.adjusted(left, top, width, height);
     };
 
-    auto get = [&index](const int row, const int column){
-        return index.model()->data(index.model()->index(row, column));
-    };
-
-    auto dl = get(index.row(), index.column()).value<std::shared_ptr<vfg::net::HttpDownload>>();
+    auto dl = index.model()->data(index.model()->index(index.row(), index.column()))
+              .value<std::shared_ptr<vfg::net::HttpDownload>>();
 
     // #000000 (black)
     painter->setPen(QPen(QColor::fromRgb(0, 0, 0), 1, Qt::SolidLine));
