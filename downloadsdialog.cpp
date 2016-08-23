@@ -15,6 +15,7 @@
 #include "downloadslistmodel.hpp"
 #include "httpdownload.hpp"
 #include "progressbardelegate.hpp"
+#include "ptrutil.hpp"
 
 namespace vfg {
 namespace ui {
@@ -70,33 +71,28 @@ void DownloadsDialog::contextMenuRequested(const QPoint& pos)
     const QVariant data = model->data(index);
     const auto download = data.value<std::shared_ptr<vfg::net::HttpDownload>>();
     const auto status = download->getStatus();
-    if(status == vfg::net::HttpDownload::Status::Running) {
-        QMenu menu;
-        auto stopAction = new QAction(tr("Stop"), &menu);
-        connect(stopAction, &QAction::triggered, [&download]() {
+    QMenu menu;
+    auto action = vfg::make_unique<QAction>(&menu);
+    if(status == vfg::net::HttpDownload::Status::Running) {        
+        action->setText(tr("Stop"));
+        connect(action.get(), &QAction::triggered, [&download]() {
             download->abort();
         });
-        menu.addAction(stopAction);
-        menu.exec(QCursor::pos());
     }
     else if(status == vfg::net::HttpDownload::Status::Finished) {
-        QMenu menu;
-        auto playAction = new QAction(tr("Play"), &menu);
-        connect(playAction, &QAction::triggered, [&download, this]() {
+        action->setText(tr("Play"));
+        connect(action.get(), &QAction::triggered, [&download, this]() {
             emit play(download->path());
         });
-        menu.addAction(playAction);
-        menu.exec(QCursor::pos());
     }
     else if(status == vfg::net::HttpDownload::Status::Aborted) {
-        QMenu menu;
-        auto retryAction = new QAction(tr("Retry"), &menu);
-        connect(retryAction, &QAction::triggered, [&download]() {
+        action->setText(tr("Retry"));
+        connect(action.get(), &QAction::triggered, [&download]() {
             download->retry();
         });
-        menu.addAction(retryAction);
-        menu.exec(QCursor::pos());
     }
+    menu.addAction(action.release());
+    menu.exec(QCursor::pos());
 }
 
 } // namespace ui
