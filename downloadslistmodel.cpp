@@ -61,11 +61,11 @@ void DownloadsListModel::updateData()
 
 void DownloadsListModel::clearFinished()
 {
+    beginResetModel();
     downloads.erase(std::remove_if(downloads.begin(), downloads.end(),
                                    [](const std::shared_ptr<vfg::net::HttpDownload> &dl) {
                         return dl->isFinished();
                     }), downloads.end());
-    beginResetModel();
     endResetModel();
 }
 
