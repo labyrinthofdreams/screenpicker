@@ -49,6 +49,8 @@ QVariant DownloadsListModel::data(const QModelIndex &index, const int role) cons
 void DownloadsListModel::addItem(std::shared_ptr<vfg::net::HttpDownload> download)
 {
     beginInsertRows(QModelIndex(), downloads.size(), downloads.size());
+    connect(download.get(), &vfg::net::HttpDownload::updated,
+            this,           &DownloadsListModel::updateData);
     downloads.append(std::move(download));
     endInsertRows();
 }

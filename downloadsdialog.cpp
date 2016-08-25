@@ -49,9 +49,6 @@ void DownloadsDialog::addDownload(const QNetworkRequest &request)
     QSettings config("config.ini", QSettings::IniFormat);
     auto httpReq = std::make_shared<vfg::net::HttpDownload>(request,
                                                         QDir(config.value("cachedirectory").toString()));
-    connect(httpReq.get(), &vfg::net::HttpDownload::updated, [this]() {
-        model->updateData();
-    });
     httpReq->start(netMan.get());
     model->addItem(std::move(httpReq));
 }

@@ -46,14 +46,15 @@ public:
     void addItem(std::shared_ptr<vfg::net::HttpDownload> download);
 
     /**
-     * @brief Update model data
-     */
-    void updateData();
-
-    /**
      * @brief Clear finished requests
      */
     void clearFinished();
+
+private slots:
+    /**
+     * @brief Update model data
+     */
+    void updateData();
 };
 
 } // namespace core
