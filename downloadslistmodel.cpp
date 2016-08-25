@@ -8,12 +8,14 @@
 #include <QVariant>
 #include "downloadslistmodel.hpp"
 #include "httpdownload.hpp"
+#include "ptrutil.hpp"
 
 namespace vfg {
 namespace core {
 
 DownloadsListModel::DownloadsListModel(QObject *parent) :
-    QAbstractListModel(parent)
+    QAbstractListModel(parent),
+    netMan(vfg::make_unique<QNetworkAccessManager>())
 {
 }
 
@@ -51,6 +53,7 @@ void DownloadsListModel::addItem(std::shared_ptr<vfg::net::HttpDownload> downloa
     beginInsertRows(QModelIndex(), downloads.size(), downloads.size());
     connect(download.get(), &vfg::net::HttpDownload::updated,
             this,           &DownloadsListModel::updateData);
+    download->start(netMan.get());
     downloads.append(std::move(download));
     endInsertRows();
 }

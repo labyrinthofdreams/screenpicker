@@ -8,7 +8,6 @@
 #include "httpdownload.hpp"
 #include "ui_downloadsdialog.h"
 
-class QNetworkAccessManager;
 class QNetworkReply;
 class QNetworkRequest;
 class QPoint;
@@ -47,9 +46,6 @@ public:
 private:
     //! UI
     Ui::DownloadsDialog ui {};
-
-    //! Network access manager
-    std::unique_ptr<QNetworkAccessManager> netMan;
 
     //! Model data
     std::unique_ptr<vfg::core::DownloadsListModel> model;

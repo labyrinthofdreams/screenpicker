@@ -4,6 +4,7 @@
 #include <memory>
 #include <QAbstractListModel>
 #include <QList>
+#include <QNetworkAccessManager>
 #include <QVariant>
 
 class QModelIndex;
@@ -25,6 +26,9 @@ class DownloadsListModel : public QAbstractListModel
 private:
     //! Active download requests
     QList<std::shared_ptr<vfg::net::HttpDownload>> downloads {};
+
+    //! Network access manager
+    std::unique_ptr<QNetworkAccessManager> netMan;
 
 public:
     /**

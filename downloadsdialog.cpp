@@ -5,7 +5,6 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QModelIndex>
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QSettings>
@@ -22,7 +21,6 @@ namespace ui {
 
 DownloadsDialog::DownloadsDialog(QWidget *parent) :
     QDialog(parent),
-    netMan(new QNetworkAccessManager),
     model(new vfg::core::DownloadsListModel)
 {
     ui.setupUi(this);
@@ -49,7 +47,6 @@ void DownloadsDialog::addDownload(const QNetworkRequest &request)
     QSettings config("config.ini", QSettings::IniFormat);
     auto httpReq = std::make_shared<vfg::net::HttpDownload>(request,
                                                         QDir(config.value("cachedirectory").toString()));
-    httpReq->start(netMan.get());
     model->addItem(std::move(httpReq));
 }
 
