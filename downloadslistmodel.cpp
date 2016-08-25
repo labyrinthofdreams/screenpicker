@@ -54,7 +54,7 @@ void DownloadsListModel::addItem(std::shared_ptr<vfg::net::HttpDownload> downloa
     connect(download.get(), &vfg::net::HttpDownload::updated,
             this,           &DownloadsListModel::updateData);
     download->start(netMan.get());
-    downloads.append(std::move(download));
+    downloads.prepend(std::move(download));
     endInsertRows();
 }
 
