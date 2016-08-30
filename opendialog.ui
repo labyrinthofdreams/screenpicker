@@ -40,11 +40,6 @@
               <string>Path</string>
              </property>
             </column>
-            <column>
-             <property name="text">
-              <string>Filesize</string>
-             </property>
-            </column>
            </widget>
           </item>
           <item>

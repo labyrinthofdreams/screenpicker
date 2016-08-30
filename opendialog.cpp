@@ -82,18 +82,16 @@ void OpenDialog::on_cancelButton_clicked()
 
 void OpenDialog::on_browseFiles_clicked()
 {
-    const QStringList files = QFileDialog::getOpenFileNames(this, tr("Select DVD VOB/Blu-ray M2TS files"),
-                                                         config.value("last_opened_dvd", "").toString(),
-                                                         "DVD VOB (*.vob);;Blu-ray M2TS (*.m2ts)");
-    if(files.empty()) {
+    const auto files = QFileDialog::getOpenFileNames(this, tr("Select DVD VOB/Blu-ray M2TS files"),
+                                                     config.value("last_opened_dvd", "").toString(),
+                                                     "DVD VOB (*.vob);;Blu-ray M2TS (*.m2ts)");
+    if(files.isEmpty()) {
         return;
     }
 
     QList<QTreeWidgetItem*> items;
-    for(const QString &file : files) {
-        const QFileInfo fi(file);
-        items.append(new QTreeWidgetItem(QStringList() << file
-                                         << vfg::format::formatNumber(fi.size())));
+    for(const auto &file : files) {
+        items.append(new QTreeWidgetItem(QStringList() << file));
     }
 
     ui.fileList->insertTopLevelItems(0, items);
