@@ -1,3 +1,4 @@
+#include <memory>
 #include <QComboBox>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -103,6 +104,12 @@ void OpenDialog::on_clearButton_clicked()
 {
     ui.fileList->clear();
     ui.openButton->setEnabled(false);
+}
+
+void OpenDialog::on_removeButton_clicked()
+{
+    const std::unique_ptr<QTreeWidgetItem> discard {ui.fileList->takeTopLevelItem(
+                    ui.fileList->currentIndex().row())};
 }
 
 } // namespace ui

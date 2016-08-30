@@ -53,6 +53,8 @@ private slots:
 
     void on_clearButton_clicked();
 
+    void on_removeButton_clicked();
+
 signals:
     void openUrl(const QNetworkRequest& url);
 
