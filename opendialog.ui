@@ -45,16 +45,16 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
-             <widget class="QPushButton" name="clearButton">
+             <widget class="QPushButton" name="browseFiles">
               <property name="text">
-               <string>Clear</string>
+               <string>Add...</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="browseFiles">
+             <widget class="QPushButton" name="clearButton">
               <property name="text">
-               <string>Add...</string>
+               <string>Clear</string>
               </property>
              </widget>
             </item>
